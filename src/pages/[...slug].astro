@@ -1,0 +1,49 @@
+---
+import BaseLayout from '#layouts/BaseLayout.astro';
+
+import { useStoryblokApi } from '@storyblok/astro';
+import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro';
+
+import parseUrl from '#utils/parseUrl.ts';
+import locales from '#utils/locales.json';
+import { HOME_SLUG } from '#storyblok/helpers/specialSlugs.ts';
+import fetchStory from '#storyblok/helpers/fetchStory.ts';
+
+// Variables :
+let story = undefined;
+
+const params = Astro.params;
+const props = parseUrl(params?.slug);
+const { slug = HOME_SLUG, language = locales[0] } = props;
+
+// Handle dev tool route send by Chrome for some reason :
+// https://stackoverflow.com/questions/79629915/well-known-appspecific-com-chrome-devtools-json-request
+if (slug.startsWith('.')) return Astro.rewrite('/500');
+
+// Early rewrite to 404 for unkown astro assets to avoid querying Storyblok :
+if (slug.startsWith('_astro/')) return Astro.rewrite('/404');
+
+try {
+	// Fetch the current story :
+	const [storyResult] = await Promise.all([fetchStory(slug, language, false)]);
+
+	// If the story is not found, which should never happen without throwing an error, throw 404 :
+	if (!storyResult) throw new Error(`Error: Not found ${slug}, in ${language}`);
+
+	// Deep clone the story to avoid mutating the original story cacheable by Storyblok :
+	story = structuredClone(storyResult);
+
+	Astro.response.headers.set('Cache-Control', 'public, max-age=600, s-maxage=31536000');
+
+	const storyblokApi = useStoryblokApi();
+	Astro.response.headers.set('X-Storyblok-CV', storyblokApi.cacheVersion().toString());
+} catch (e: any) {
+	console.error('Error:', e);
+}
+
+console.log(story.content);
+---
+
+<BaseLayout>
+	<StoryblokComponent blok={story.content as any} />
+</BaseLayout>

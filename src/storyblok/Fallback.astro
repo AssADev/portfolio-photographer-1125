@@ -1,0 +1,14 @@
+---
+import { Debug } from 'astro:components';
+import type { SbBlokData } from '@storyblok/js';
+
+type Props = {
+	blok: SbBlokData;
+};
+
+const props = Astro.props;
+---
+
+<div>
+	<Debug props={props} />
+</div>

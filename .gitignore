@@ -27,3 +27,7 @@ pnpm-debug.log*
 
 # utils
 .eslintcache
+
+# generated locales
+src/utils/locales.json
+src/assets/locales/*.json

@@ -1,0 +1,22 @@
+---
+import BaseLayout from '#layouts/BaseLayout.astro';
+
+import { t } from '#utils/i18n.ts';
+import locales from '#utils/locales.json';
+import parseUrl from '#utils/parseUrl.ts';
+import { setState } from '#utils/astro-state.ts';
+
+const pathname = Astro.originPathname;
+const { language = locales[0] } = parseUrl(pathname);
+
+setState('language', language);
+
+Astro.response.headers.set('Cache-Control', 'max-age=300');
+---
+
+<BaseLayout>
+	<section>
+		<h1>404</h1>
+		<p>{t('pageNotFound')}</p>
+	</section>
+</BaseLayout>

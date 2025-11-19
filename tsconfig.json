@@ -1,10 +1,10 @@
 {
-	"baseUrl": ".",
 	"extends": "astro/tsconfigs/strict",
 	"include": [".astro/types.d.ts", "**/*"],
 	"exclude": ["dist"],
 
 	"compilerOptions": {
+		"baseUrl": ".",
 		"module": "esnext",
 
 		// Needed for TypeScript intellisense in the template inside Vue files
@@ -16,6 +16,12 @@
 		"resolveJsonModule": true,
 		"resolvePackageJsonImports": true,
 		"allowImportingTsExtensions": true,
-		"moduleResolution": "Bundler"
+		"moduleResolution": "Bundler",
+		"paths": {
+			"#pages/*": ["src/pages/*"],
+			"#layouts/*": ["src/layouts/*"],
+			"#partials/*": ["src/partials/*"],
+			"#components/*": ["src/components/*"]
+		}
 	}
 }
