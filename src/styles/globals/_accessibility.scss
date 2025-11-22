@@ -1,0 +1,13 @@
+@use '../tools/accessibility' as *;
+
+.sr-only-focusable:not(:focus, :active, :focus-within) {
+	@include sr-only-base;
+}
+
+.sr-only {
+	@include sr-only;
+}
+
+body:not(.a11y-active) .a11y-only {
+	@include sr-only;
+}

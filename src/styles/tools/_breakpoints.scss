@@ -1,0 +1,17 @@
+$large-mobile: 376px;
+$tablet: 768px;
+$desktop: 1024px;
+$mlarge: 1280px;
+$large: 1440px;
+$xlarge: 1680px;
+$xxlarge: 1920px;
+
+$breakpoints: (
+	large-mobile: $large-mobile,
+	tablet: $tablet,
+	desktop: $desktop,
+	mlarge: $mlarge,
+	large: $large,
+	xlarge: $xlarge,
+	xxlarge: $xxlarge
+);

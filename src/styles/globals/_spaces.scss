@@ -1,0 +1,14 @@
+@use '../tools' as *;
+
+$gutterMobile: fluidSize(60px, 20px);
+$gutterDesktop: fluidSize(72px, 20px);
+
+:root {
+	--gutter: #{$gutterMobile};
+	--max-ctn-w: 1920px;
+	--ctn-w: clamp(200px, calc(100vw - var(--gutter) * 2), var(--max-ctn-w));
+
+	@include mq(desktop) {
+		--gutter: #{$gutterDesktop};
+	}
+}

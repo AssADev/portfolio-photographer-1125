@@ -1,0 +1,8 @@
+@use '../tools/breakpoints' as *;
+
+// Export Breakpoints :
+:export {
+	@each $name, $value in $breakpoints {
+		#{$name}: $value;
+	}
+}

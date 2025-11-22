@@ -1,0 +1,61 @@
+// Hover :
+@mixin hover($forwardHover: false) {
+	@media (hover: hover) and (pointer: fine) {
+		&:not(:disabled):hover {
+			@content;
+		}
+	}
+
+	@if $forwardHover {
+		.forward-hover:not(:disabled):hover & {
+			@content;
+		}
+	}
+}
+
+// Hide scrollbar :
+@mixin hide-scrollbar {
+	scrollbar-width: none;
+
+	&::-webkit-scrollbar {
+		display: none;
+	}
+}
+
+// Accessibility :
+@mixin outline($border-width: 2px) {
+	outline: $border-width solid #4285f4;
+	outline: $border-width solid -webkit-focus-ring-color;
+}
+
+@mixin focus-within($border-width: 2px) {
+	body:is(.keyboard-focus, .a11y-active) &:focus-within {
+		@include outline($border-width: 2px);
+		@content;
+	}
+}
+
+// Viewport height with Safari support :
+@mixin svh($percentage: 100, $property: height) {
+	#{$property}: #{$percentage}svh;
+
+	@supports (-webkit-touch-callout: none) {
+		@media screen and (max-width: 991px) {
+			& {
+				#{$property}: calc(var(--svh, 1svh) * #{$percentage});
+			}
+		}
+	}
+}
+
+@mixin lvh($percentage: 100, $property: height) {
+	#{$property}: #{$percentage}lvh;
+
+	@supports (-webkit-touch-callout: none) {
+		@media screen and (max-width: 991px) {
+			& {
+				#{$property}: calc(var(--lvh, 1lvh) * #{$percentage});
+			}
+		}
+	}
+}

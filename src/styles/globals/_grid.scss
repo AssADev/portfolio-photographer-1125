@@ -1,0 +1,23 @@
+@use 'sass:map';
+@use '../tools/media-queries' as *;
+@use '../tools/grid' as *;
+@use '../tools/breakpoints' as *;
+@include create-selectors;
+
+@each $breakpoint, $config in $gridBreakpoints {
+	@media (min-width: map.get($config, width)) {
+		@include create-selectors($breakpoint);
+	}
+}
+
+.container {
+	@include container;
+}
+
+.grid {
+	@include grid;
+}
+
+.container-grid {
+	@include container-grid;
+}

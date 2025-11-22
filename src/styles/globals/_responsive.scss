@@ -1,0 +1,31 @@
+@use '../tools/media-queries' as *;
+
+.hide-mobile {
+	@include mq($until: tablet) {
+		display: none !important;
+	}
+}
+
+.hide-tablet {
+	@include mq(tablet) {
+		display: none !important;
+	}
+}
+
+.hide-tablet-only {
+	@include mq($from: tablet, $until: desktop) {
+		display: none !important;
+	}
+}
+
+.hide-mobile-tablet {
+	@include mq($until: desktop) {
+		display: none !important;
+	}
+}
+
+.hide-desktop {
+	@include mq(desktop) {
+		display: none !important;
+	}
+}

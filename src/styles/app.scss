@@ -1,0 +1,27 @@
+// @forward 'tools';
+@forward 'globals';
+@use 'tools' as *;
+
+html {
+	font-family: Roobert, sans-serif;
+	font-weight: 500;
+	scrollbar-width: thin;
+	background: $white;
+
+	&.no-scrollbar {
+		@include hide-scrollbar;
+	}
+}
+
+body {
+	color: $eerieBlack;
+	-moz-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	-webkit-font-smoothing: antialiased;
+}
+
+main {
+	position: relative;
+	z-index: 1;
+	background: $white;
+}

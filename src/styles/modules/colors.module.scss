@@ -1,0 +1,12 @@
+@use '../tools/colors' as *;
+
+// Export colors :
+:export {
+	@each $name, $value in $colors {
+		#{$name}: $value;
+	}
+
+	@each $name, $gradient in $gradients {
+		#{'gradient-' + $name}: $gradient;
+	}
+}

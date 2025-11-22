@@ -1,0 +1,40 @@
+@use 'sass:map';
+
+$white: #fff;
+$black: #000;
+
+$grey: #84817a;
+$eerieBlack: #1c1b19;
+$smokyBlack: #100b08;
+
+$ivory: #f7f6f2;
+$whiteChoco: #ede7db;
+$khaki: #b6a897;
+
+$red: #c1121f;
+
+/* stylelint-disable-next-line prettier/prettier */
+$colors: (
+	#{white}: $white,
+	#{black}: $black,
+	#{grey}: $grey,
+	#{eerieBlack}: $eerieBlack,
+	#{smokyBlack}: $smokyBlack,
+	#{ivory}: $ivory,
+	#{whiteChoco}: $whiteChoco,
+	#{khaki}: $khaki,
+	#{red}: $red
+);
+
+$gradients: (
+	'white-ivory': linear-gradient(180deg, $white 0%, $ivory 100%),
+	'ivory-white': linear-gradient(180deg, $ivory 0%, $white 100%)
+);
+
+@mixin gradient($name: 'white-black') {
+	@if map.has-key($gradients, $name) {
+		$gradient: map.get($gradients, $name);
+
+		background: $gradient;
+	}
+}

@@ -92,8 +92,9 @@ export default defineConfig({
 						let prepend = '';
 
 						// Avoid circule module loop :
-						if (!id.endsWith('.module.scss') && !id.endsWith('globals/index.scss'))
+						if (!id.endsWith('.module.scss') && !id.endsWith('app.scss')) {
 							prepend += `@use "#styles/tools" as *;`;
+						}
 
 						return prepend + source;
 					}

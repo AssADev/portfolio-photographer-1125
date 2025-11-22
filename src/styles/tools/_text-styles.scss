@@ -1,0 +1,27 @@
+@use 'media-queries' as *;
+@use 'responsive' as *;
+
+@mixin tracking($tracking: 0) {
+	letter-spacing: $tracking;
+	$text-indent: $tracking;
+}
+
+@mixin tracking-0025($font-size, $line-height: 1) {
+	font-size: $font-size;
+	line-height: $line-height;
+
+	@include tracking($tracking: -0.025em);
+}
+
+@mixin text-fluid-100($line-height: 0.9) {
+	@include tracking-0025(fluidFontSize(100px, 50px), $line-height);
+}
+
+@mixin text-leading-20($line-height: 1.1) {
+	@include tracking-0025(pxToRem(20), $line-height);
+}
+
+@mixin text-16($line-height: 1.4) {
+	font-size: pxToRem(16);
+	line-height: $line-height;
+}

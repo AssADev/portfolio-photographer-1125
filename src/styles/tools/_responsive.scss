@@ -1,0 +1,63 @@
+@use 'media-queries' as *;
+@use 'breakpoints' as *;
+@use 'sass:math';
+@use 'sass:map';
+
+$BASE_FONT_SIZE: 16;
+
+@function pxToRem($size) {
+	// unitless $size
+	$size: math.div($size, ($size * 0 + 1));
+
+	@return math.div($size, $BASE_FONT_SIZE) * 1rem;
+}
+
+$figma: (
+	small: 375px,
+	large: 1440px,
+	xxlarge: 1920px
+);
+
+@function pxToVw($value, $bp: small) {
+	@return #{math.div($value, map.get($figma, $bp)) * 100}vw;
+}
+
+@function pxToVwLarge($value) {
+	@return pxToVw($value, large);
+}
+
+@function clampVw($value, $min: null, $max: null, $bp: small) {
+	@if $min and $max {
+		@return clamp($min, pxToVw($value, $bp), $max);
+	}
+
+	@if $min {
+		@return max($min, pxToVw($value, $bp));
+	}
+
+	@if $max {
+		@return min($max, pxToVw($value, $bp));
+	}
+}
+
+@function clampVwLarge($value, $min: null, $max: null) {
+	@return clampVw($value, $min, $max, large);
+}
+
+@function fluidFontSize($value, $min: 12px, $max: null, $bp: large) {
+	$max: if($max, pxToRem($max), pxToRem($value));
+	$min: if($min, pxToRem($min), null);
+
+	@return clampVw($value, $min, $max, $bp);
+}
+
+@function fluidSize($value, $min: 12px, $max: null, $bp: large) {
+	$max: if($max, $max, $value);
+	$min: if($min, $min, null);
+
+	@return clampVw($value, $min, $max, $bp);
+}
+
+@function itemInGridSize($width, $number, $gutter: 24px) {
+	@return calc((#{$width} - #{$number - 1} * #{$gutter}) / #{$number});
+}

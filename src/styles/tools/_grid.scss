@@ -1,0 +1,67 @@
+@use 'sass:map';
+@use 'media-queries' as *;
+@use 'breakpoints' as *;
+
+$baseColumns: 12;
+$gap: 10px;
+
+$gridBreakpoints: (
+	mb: (
+		width: $tablet - 1px,
+		columns: 12
+	),
+	tb: (
+		width: $tablet,
+		columns: 16
+	),
+	dk: (
+		width: $desktop,
+		columns: 32
+	)
+);
+
+// Mixin that is just called once to create all the grid selectors :
+@mixin create-selectors($breakpoint: null) {
+	$infix: if($breakpoint == null, '', '-#{$breakpoint}');
+	$columns: if($breakpoint == null, $baseColumns, map.get(map.get($gridBreakpoints, $breakpoint), columns));
+
+	// Grid columns
+	@for $i from 1 through ($columns + 1) {
+		.col#{$infix}-#{$i} {
+			grid-column-end: span $i;
+		}
+
+		.col-start#{$infix}-#{$i} {
+			grid-column-start: $i;
+		}
+
+		.col-end#{$infix}-#{$i} {
+			grid-column-end: $i;
+		}
+	}
+}
+
+@mixin container() {
+	position: relative;
+	width: var(--ctn-w);
+	margin-inline: auto;
+}
+
+@mixin grid() {
+	& {
+		display: grid;
+		grid-template-columns: repeat($baseColumns, minmax(0, 1fr));
+		column-gap: $gap;
+	}
+
+	@each $breakpoint, $config in $gridBreakpoints {
+		@media (min-width: map.get($config, width)) {
+			grid-template-columns: repeat(map.get($config, columns), minmax(0, 1fr));
+		}
+	}
+}
+
+@mixin container-grid {
+	@include container;
+	@include grid;
+}
