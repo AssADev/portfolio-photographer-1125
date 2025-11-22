@@ -1,0 +1,11 @@
+---
+const { card, site, title, creator, description, image, imageAlt } = Astro.props;
+---
+
+{card && <meta name="twitter:card" content={card} />}
+{site && <meta name="twitter:site" content={site} />}
+{title && <meta name="twitter:title" content={title} />}
+{image && <meta name="twitter:image" content={image} />}
+{imageAlt && <meta name="twitter:image:alt" content={imageAlt} />}
+{description && <meta name="twitter:description" content={description} />}
+{creator && <meta name="twitter:creator" content={creator} />}

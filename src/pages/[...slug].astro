@@ -42,10 +42,8 @@ try {
 } catch (e: any) {
 	console.error('Error:', e);
 }
-
-console.log(story.content);
 ---
 
-<BaseLayout>
+<BaseLayout language={language} story={story}>
 	<StoryblokComponent blok={story.content as any} />
 </BaseLayout>

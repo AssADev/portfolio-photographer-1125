@@ -1,0 +1,30 @@
+---
+import { STORYBLOK_ASSETS_DOMAIN } from 'astro:env/server';
+import { ClientRouter } from 'astro:transitions';
+---
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width" />
+	<meta name="generator" content={Astro.generator} />
+	<meta name="pinterest" content="nopin" />
+	<link rel="preconnect" href={`https://${STORYBLOK_ASSETS_DOMAIN}`} />
+	<link rel="preconnect" href="https://www.googletagmanager.com" />
+	<link rel="sitemap" href="/sitemap.xml" />
+	<link
+		rel="preload"
+		as="font"
+		type="font/woff2"
+		href="/assets/fonts/Roobert/Roobert-Medium.woff2"
+		crossorigin="anonymous"
+	/>
+	<link
+		rel="preload"
+		as="font"
+		type="font/woff2"
+		href="/assets/fonts/Romie/Romie-Medium.woff2"
+		crossorigin="anonymous"
+	/>
+	<ClientRouter fallback="swap" />
+	<slot />
+</head>

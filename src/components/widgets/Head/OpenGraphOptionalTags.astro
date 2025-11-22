@@ -1,0 +1,11 @@
+---
+const { audio, description, determiner, locale, localeAlternate, siteName, video } = Astro.props;
+---
+
+{audio && <meta property="og:audio" content={audio} />}
+{description && <meta property="og:description" content={description} />}
+{determiner && <meta property="og:determiner" content={determiner} />}
+{locale && <meta property="og:locale" content={locale} />}
+{localeAlternate?.map((locale: string) => <meta property="og:locale:alternate" content={locale} />)}
+{siteName && <meta property="og:site_name" content={siteName} />}
+{video && <meta property="og:video" content={video} />}

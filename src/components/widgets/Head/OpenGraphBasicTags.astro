@@ -1,0 +1,11 @@
+---
+const { title, type, image, url } = Astro.props;
+
+const baseUrl = Astro.site ?? Astro.url;
+const defaultCanonicalUrl = new URL(Astro.url.pathname + Astro.url.search, baseUrl);
+---
+
+<meta property="og:title" content={title} />
+<meta property="og:type" content={type || 'website'} />
+{image && <meta property="og:image" content={image} />}
+<meta property="og:url" content={url || defaultCanonicalUrl.href} />

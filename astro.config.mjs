@@ -2,7 +2,7 @@ import node from '@astrojs/node';
 import vue from '@astrojs/vue';
 import { storyblok } from '@storyblok/astro';
 import basicSsl from '@vitejs/plugin-basic-ssl';
-import { defineConfig } from 'astro/config';
+import { defineConfig, envField } from 'astro/config';
 import autoprefixer from 'autoprefixer';
 import { cwd, env } from 'node:process';
 import { loadEnv } from 'vite';
@@ -59,6 +59,25 @@ export default defineConfig({
 	// Configure server-side rendering :
 	output: 'server',
 	adapter: node({ mode: 'standalone' }),
+
+	// Define environment variable schema :
+	env: {
+		schema: {
+			STORYBLOK_TOKEN: envField.string({ context: 'server', access: 'secret' }),
+			STORYBLOK_SPACE_ID: envField.number({
+				context: 'server',
+				access: 'secret'
+			}),
+			STORYBLOK_ASSETS_DOMAIN: envField.string({
+				context: 'server',
+				access: 'public',
+				default: 'a2.storyblok.com',
+				optional: true
+			}),
+
+			SITE_URL: envField.string({ context: 'client', access: 'public' })
+		}
+	},
 
 	// Vite configuration :
 	vite: {

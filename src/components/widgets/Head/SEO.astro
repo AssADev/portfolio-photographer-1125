@@ -1,0 +1,65 @@
+---
+import ExtendedTags from '#components/widgets/Head/ExtendedTags.astro';
+import Favicon from '#components/widgets/Head/Favicon.astro';
+import LanguageAlternatesTags from '#components/widgets/Head/LanguageAlternatesTags.astro';
+import OpenGraphBasicTags from '#components/widgets/Head/OpenGraphBasicTags.astro';
+import OpenGraphOptionalTags from '#components/widgets/Head/OpenGraphOptionalTags.astro';
+import TwitterTags from '#components/widgets/Head/TwitterTags.astro';
+import { transform as sbTransform } from 'unpic/providers/storyblok';
+
+const { seo, storyTitle, themeColor, canonical, noindex, nofollow, extend, languageAlternates } = Astro.props;
+
+const { titleTemplate, defaultTitle, defaultDescription, defaultImage, favicon } = {
+	titleTemplate: '%s | Title template',
+	defaultTitle: 'Default title',
+	defaultDescription: 'Default description',
+	defaultImage: {
+		filename: '/'
+	},
+	favicon: {
+		filename: '/'
+	}
+};
+
+const pageTitle = seo?.title || storyTitle;
+const title = pageTitle ? titleTemplate.replace(/%s/g, pageTitle) : defaultTitle;
+const description = seo?.description || defaultDescription;
+
+const image = seo?.og_image || defaultImage.filename;
+
+const ogBasicTags = {
+	title: seo?.og_title || title,
+	image: image ? sbTransform(image, { width: 1200, height: 630 }) : undefined
+};
+
+const ogOptionalTags = {
+	description: seo?.og_description || description
+};
+
+const twitterTags = {
+	card: 'summary_large_image',
+	title: title,
+	description: description,
+	image: defaultImage.filename
+};
+
+const baseUrl = Astro.site ?? Astro.url;
+const defaultCanonicalUrl = new URL(Astro.url.pathname + Astro.url.search, baseUrl);
+---
+
+{title && <title set:html={title} />}
+{description && <meta name="description" content={description} />}
+{!!seo?.keywords?.length && <meta name="keywords" content={seo.keywords} />}
+{themeColor && <meta name="theme-color" content={themeColor} />}
+
+<link rel="canonical" href={canonical || defaultCanonicalUrl.href} />
+<meta name="robots" content={`${noindex ? 'noindex' : 'index'}, ${nofollow ? 'nofollow' : 'follow'}`} />
+
+{ogBasicTags && <OpenGraphBasicTags {...ogBasicTags} />}
+{ogOptionalTags && <OpenGraphOptionalTags {...ogOptionalTags} />}
+
+{twitterTags && <TwitterTags {...twitterTags} />}
+
+{extend && <ExtendedTags {...extend} />}
+{languageAlternates && <LanguageAlternatesTags languageAlternates={languageAlternates} />}
+{favicon?.filename && <Favicon src={favicon.filename} />}

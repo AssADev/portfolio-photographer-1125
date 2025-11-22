@@ -1,17 +1,43 @@
 ---
 import Lenis from '#components/providers/Lenis.vue';
+
+import Header from '#components/widgets/Header.vue';
+
+import SEO from '#components/widgets/Head/SEO.astro';
+import Head from '#components/widgets/Head/Head.astro';
+
+import localesRegions from '#utils/localesRegions.ts';
+import getAlternatesForStory from '#storyblok/helpers/getAlternatesForStory.ts';
+
+const { language, story, noindex, nofollow } = Astro.props;
+
+// SEO :
+const seoRaw = (story?.content as any)?.SEO;
+const seo = Array.isArray(seoRaw) ? seoRaw[0] : seoRaw;
+
+// Languages :
+const lang = localesRegions[language];
+const languageAlternates = story ? getAlternatesForStory(Astro.site!.toString(), story, language) : undefined;
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Photographer Portfolio</title>
-	</head>
+<html lang={lang} data-page-type={story?.name}>
+	<Head>
+		<SEO
+			storyTitle={story?.name}
+			seo={seo}
+			languageAlternates={languageAlternates}
+			nofollow={nofollow}
+			noindex={noindex}
+		/>
+		<slot name="head" />
+	</Head>
 	<body>
-		<Lenis client:load root />
-		<slot />
+		<div id="app">
+			<Header language={language} client:load />
+			<main>
+				<Lenis client:load root />
+				<slot />
+			</main>
+		</div>
 	</body>
 </html>
