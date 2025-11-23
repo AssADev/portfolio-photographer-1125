@@ -26,7 +26,7 @@ const storyblokComponents = Object.fromEntries(
 );
 
 // Load environment variables based on current NODE_ENV :
-const { SITE_URL, STORYBLOK_TOKEN } = loadEnv(env.NODE_ENV, cwd(), '');
+const { SITE_URL, STORYBLOK_TOKEN, PREVIEW_HOSTS } = loadEnv(env.NODE_ENV, cwd(), '');
 
 export default defineConfig({
 	// Set the site URL from environment variables :
@@ -63,6 +63,12 @@ export default defineConfig({
 	// Define environment variable schema :
 	env: {
 		schema: {
+			PREVIEW_HOSTS: envField.string({
+				context: 'server',
+				access: 'public',
+				optional: true
+			}),
+
 			STORYBLOK_TOKEN: envField.string({ context: 'server', access: 'secret' }),
 			STORYBLOK_SPACE_ID: envField.number({
 				context: 'server',

@@ -17,6 +17,7 @@
 		"lint": "npx pnpm run eslint --fix && npx pnpm run stylelint --fix",
 		"prettier": "prettier --write './**/*.+(ts|mts|js|mjs|vue|astro)'",
 		"format": "npx pnpm run lint && npx pnpm run prettier",
+		"check": "vue-tsc --noEmit && astro check --tsconfig ./astro.tsconfig.json",
 		"sb-types:pull": "dotenv -e .env -- cross-var storyblok components pull --space %STORYBLOK_SPACE_ID%",
 		"sb-types:generate": "dotenv -e .env -- cross-var storyblok types generate --strict --space %STORYBLOK_SPACE_ID% --type-prefix Storyblok",
 		"sb-types:resolve": "dotenv -e .env -- cross-var npx tsx tools/resolveTypes.ts --space %STORYBLOK_SPACE_ID%",
@@ -54,6 +55,7 @@
 		"eslint-plugin-astro": "^1.5.0",
 		"eslint-plugin-vue": "^10.5.1",
 		"eslint-plugin-vuejs-accessibility": "^2.4.1",
+		"lint-staged": "^16.2.7",
 		"postcss": "^8.5.6",
 		"prettier": "^3.6.2",
 		"prettier-plugin-astro": "^0.14.1",
@@ -69,10 +71,21 @@
 		"stylelint-config-standard-scss": "^16.0.0",
 		"stylelint-prettier": "^5.0.3",
 		"ts-morph": "^27.0.2",
-		"vite": "^7.2.2"
+		"vite": "^7.2.2",
+		"vue-tsc": "^3.1.5"
 	},
 	"engines": {
 		"node": ">=22",
 		"npm": ">=10"
+	},
+	"lint-staged": {
+		"*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc,astro,vue}": [
+			"bash -c 'vue-tsc --noEmit'",
+			"eslint --cache --fix",
+			"prettier --write --ignore-unknown"
+		],
+		"*.{css,scss,astro,vue}": [
+			"stylelint --fix"
+		]
 	}
 }
