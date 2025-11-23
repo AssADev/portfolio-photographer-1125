@@ -10,6 +10,7 @@ import parseUrl from '#utils/parseUrl.ts';
 import locales from '#utils/locales.json';
 import { HOME_SLUG } from '#storyblok/helpers/specialSlugs.ts';
 import fetchStory from '#storyblok/helpers/fetchStory.ts';
+import { AppError } from '#lib/AppError.ts';
 
 // Variables :
 let story = undefined;
@@ -30,7 +31,7 @@ try {
 	const [storyResult] = await Promise.all([fetchStory(slug, language, false)]);
 
 	// If the story is not found, which should never happen without throwing an error, throw 404 :
-	if (!storyResult) throw new Error(`Error: Not found ${slug}, in ${language}`);
+	if (!storyResult) throw AppError.notFound(slug, language);
 
 	// Deep clone the story to avoid mutating the original story cacheable by Storyblok :
 	story = structuredClone(storyResult);

@@ -5,4 +5,5 @@ export const configPrefix = 'config';
 export const previewSlugs = [`${configPrefix}/site-config`];
 export const forbiddenSlugs = [configPrefix, 'stories/'];
 
-export const specialApiSlugs = [];
+export const specialApiSlugs = ['api', 'sitemap.xml', 'robots.txt'];
+

@@ -1,4 +1,8 @@
 ---
+import type { OpenGraphArticleTagsType } from '#types/seo.ts';
+
+type Props = OpenGraphArticleTagsType;
+
 const { publishedTime, modifiedTime, expirationTime, authors, section, tags } = Astro.props;
 ---
 

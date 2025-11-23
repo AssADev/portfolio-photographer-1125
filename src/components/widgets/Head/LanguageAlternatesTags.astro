@@ -1,4 +1,10 @@
 ---
+import type { LanguageAlternate } from '#types/seo.ts';
+
+type Props = {
+	languageAlternates: LanguageAlternate[];
+};
+
 const { languageAlternates } = Astro.props;
 ---
 

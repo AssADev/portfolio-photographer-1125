@@ -1,4 +1,24 @@
 ---
+import type { StoryblokSEO } from '#types/component-types-sb.js';
+import type {
+	ExtendedTagsType,
+	LanguageAlternate,
+	OpenGraphBasicTagsType,
+	OpenGraphOptionalTagsType,
+	TwitterTagsType
+} from '#types/seo.ts';
+
+type Props = {
+	seo?: StoryblokSEO;
+	storyTitle?: string;
+	themeColor?: string;
+	canonical?: URL | string;
+	nofollow?: boolean;
+	noindex?: boolean;
+	extend?: ExtendedTagsType;
+	languageAlternates?: LanguageAlternate[];
+};
+
 import ExtendedTags from '#components/widgets/Head/ExtendedTags.astro';
 import Favicon from '#components/widgets/Head/Favicon.astro';
 import LanguageAlternatesTags from '#components/widgets/Head/LanguageAlternatesTags.astro';
@@ -14,10 +34,10 @@ const { titleTemplate, defaultTitle, defaultDescription, defaultImage, favicon }
 	defaultTitle: 'Default title',
 	defaultDescription: 'Default description',
 	defaultImage: {
-		filename: '/'
+		filename: ''
 	},
 	favicon: {
-		filename: '/'
+		filename: ''
 	}
 };
 
@@ -25,18 +45,18 @@ const pageTitle = seo?.title || storyTitle;
 const title = pageTitle ? titleTemplate.replace(/%s/g, pageTitle) : defaultTitle;
 const description = seo?.description || defaultDescription;
 
-const image = seo?.og_image || defaultImage.filename;
+const image = seo?.og_image?.filename || defaultImage.filename;
 
-const ogBasicTags = {
+const ogBasicTags: OpenGraphBasicTagsType = {
 	title: seo?.og_title || title,
 	image: image ? sbTransform(image, { width: 1200, height: 630 }) : undefined
 };
 
-const ogOptionalTags = {
+const ogOptionalTags: OpenGraphOptionalTagsType = {
 	description: seo?.og_description || description
 };
 
-const twitterTags = {
+const twitterTags: TwitterTagsType = {
 	card: 'summary_large_image',
 	title: title,
 	description: description,

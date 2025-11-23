@@ -1,4 +1,8 @@
 ---
+import type { OpenGraphBasicTagsType } from '#types/seo.ts';
+
+type Props = OpenGraphBasicTagsType;
+
 const { title, type, image, url } = Astro.props;
 
 const baseUrl = Astro.site ?? Astro.url;

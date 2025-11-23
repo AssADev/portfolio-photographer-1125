@@ -1,6 +1,7 @@
 import { useStoryblokApi } from '@storyblok/astro';
 
 import { pageContentTypes } from './specialSlugs';
+import { AppError } from '#lib/AppError.ts';
 
 export default async function fetchStory(slug: string, language: string, isPreviewMode: boolean) {
 	const storyblokApi = useStoryblokApi();
@@ -12,7 +13,7 @@ export default async function fetchStory(slug: string, language: string, isPrevi
 	});
 
 	if (!pageContentTypes.includes(data?.story?.content.component)) {
-		throw new Error(`Error: Not found ${slug}, in ${language}`);
+		throw AppError.notFound(slug, language);
 	}
 
 	return data?.story;
