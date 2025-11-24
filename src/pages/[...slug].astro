@@ -2,18 +2,22 @@
 import '#styles/app.scss';
 
 import BaseLayout from '#layouts/BaseLayout.astro';
+import { type ISbStoryData } from '@storyblok/astro';
 
 import { useStoryblokApi } from '@storyblok/astro';
 import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro';
+import type { PageContentTypes } from '#types/utils.ts';
 
 import parseUrl from '#utils/parseUrl.ts';
 import locales from '#utils/locales.json';
 import { HOME_SLUG } from '#storyblok/helpers/specialSlugs.ts';
 import fetchStory from '#storyblok/helpers/fetchStory.ts';
 import { AppError } from '#lib/AppError.ts';
+import getSiteConfig from '#storyblok/helpers/getSiteConfig.ts';
 
 // Variables :
-let story = undefined;
+let story: ISbStoryData<PageContentTypes>;
+const isPreviewMode = Astro.locals.isPreviewMode;
 
 const params = Astro.params;
 const props = parseUrl(params?.slug);
@@ -27,11 +31,16 @@ if (slug.startsWith('.')) return Astro.rewrite('/500');
 if (slug.startsWith('_astro/')) return Astro.rewrite('/404');
 
 try {
-	// Fetch the current story :
-	const [storyResult] = await Promise.all([fetchStory(slug, language, false)]);
+	// Parallelize independent API calls: siteConfig and story fetching
+	const [siteConfig, storyResult] = await Promise.all([
+		getSiteConfig(language, isPreviewMode),
+		fetchStory(slug, language, isPreviewMode)
+	]);
 
 	// If the story is not found, which should never happen without throwing an error, throw 404 :
 	if (!storyResult) throw AppError.notFound(slug, language);
+
+	Astro.locals.siteConfig = siteConfig.content;
 
 	// Deep clone the story to avoid mutating the original story cacheable by Storyblok :
 	story = structuredClone(storyResult);
@@ -41,7 +50,11 @@ try {
 	const storyblokApi = useStoryblokApi();
 	Astro.response.headers.set('X-Storyblok-CV', storyblokApi.cacheVersion().toString());
 } catch (e: any) {
-	console.error('Error:', e);
+	const error = AppError.autoError(e, slug, language);
+
+	error.log();
+	Astro.response.status = error.statusCode;
+	return Astro.rewrite(error.redirectPath);
 }
 ---
 

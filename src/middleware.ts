@@ -1,6 +1,8 @@
 import { onRequest as storyblokMiddleware } from '@storyblok/astro/middleware.ts';
 import { defineMiddleware, sequence } from 'astro:middleware';
 
+import { isPreviewMode } from '#lib/previewMode.ts';
+
 import { getRouteList } from './storyblok/helpers/routeList';
 
 const noop = defineMiddleware((_context, next) => next());
@@ -47,8 +49,8 @@ function requestIs404Or500(request: Request, base = '') {
 }
 
 const previewMiddleware = defineMiddleware((context, next) => {
-	const isPreview = false;
-	// context.locals.isPreviewMode = isPreview;
+	const isPreview = isPreviewMode(context.request);
+	context.locals.isPreviewMode = isPreview;
 
 	if (isPreview) return storyblokMiddleware(context, next);
 

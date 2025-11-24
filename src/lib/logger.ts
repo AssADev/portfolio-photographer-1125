@@ -23,4 +23,4 @@ export const createLogger = (prefix: string) =>
 		transports: [new transports.Console()]
 	});
 
-export default createLogger('defile-webservice');
+export default createLogger('portfolio-photographer');

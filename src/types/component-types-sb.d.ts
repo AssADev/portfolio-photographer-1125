@@ -97,12 +97,6 @@ export interface StoryblokMenu {
 	_uid: string;
 }
 
-export interface StoryblokPage {
-	seo: StoryblokSEO;
-	component: 'Page';
-	_uid: string;
-}
-
 export interface StoryblokPicture {
 	media: StoryblokAsset;
 	component: 'Picture';
@@ -142,8 +136,8 @@ export interface StoryblokSiteConfig {
 	titleTemplate: string;
 	defaultTitle: string;
 	defaultDescription: string;
-	defaultImage?: StoryblokAsset;
-	favicon?: StoryblokAsset;
+	defaultImage: StoryblokAsset;
+	favicon: StoryblokAsset;
 	identity: string;
 	email: StoryblokEmail[];
 	socials: StoryblokLabelLink[];
@@ -157,7 +151,6 @@ export type ContentType =
 	| StoryblokHome
 	| StoryblokLinks
 	| StoryblokMenu
-	| StoryblokPage
 	| StoryblokProject
 	| StoryblokService
 	| StoryblokServices

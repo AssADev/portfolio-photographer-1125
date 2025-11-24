@@ -29,17 +29,7 @@ import { transform as sbTransform } from 'unpic/providers/storyblok';
 
 const { seo, storyTitle, themeColor, canonical, noindex, nofollow, extend, languageAlternates } = Astro.props;
 
-const { titleTemplate, defaultTitle, defaultDescription, defaultImage, favicon } = {
-	titleTemplate: '%s | Title template',
-	defaultTitle: 'Default title',
-	defaultDescription: 'Default description',
-	defaultImage: {
-		filename: ''
-	},
-	favicon: {
-		filename: ''
-	}
-};
+const { titleTemplate, defaultTitle, defaultDescription, defaultImage, favicon } = Astro.locals.siteConfig;
 
 const pageTitle = seo?.title || storyTitle;
 const title = pageTitle ? titleTemplate.replace(/%s/g, pageTitle) : defaultTitle;

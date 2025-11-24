@@ -1,4 +1,9 @@
 ---
+import type { StoryblokSEO } from '#types/component-types-sb.js';
+import type { PageContentTypes } from '#types/utils.ts';
+import type { LanguageAlternate } from '#types/seo.ts';
+import type { ISbStoryData } from '@storyblok/astro';
+
 import Lenis from '#components/providers/Lenis.vue';
 
 import Header from '#components/widgets/Header.vue';
@@ -6,18 +11,32 @@ import Header from '#components/widgets/Header.vue';
 import SEO from '#components/widgets/Head/SEO.astro';
 import Head from '#components/widgets/Head/Head.astro';
 
+import { setState } from '#utils/astro-state.ts';
 import localesRegions from '#utils/localesRegions.ts';
 import getAlternatesForStory from '#storyblok/helpers/getAlternatesForStory.ts';
 
+type Props = {
+	language: string;
+	story?: Partial<ISbStoryData<PageContentTypes>>;
+	alternates?: LanguageAlternate[];
+	noindex?: boolean;
+	nofollow?: boolean;
+};
+
+const siteConfig = Astro.locals.siteConfig;
 const { language, story, noindex, nofollow } = Astro.props;
 
 // SEO :
-const seoRaw = (story?.content as any)?.SEO;
+const seoRaw: StoryblokSEO | undefined = (story?.content as any)?.seo;
 const seo = Array.isArray(seoRaw) ? seoRaw[0] : seoRaw;
 
 // Languages :
 const lang = localesRegions[language];
 const languageAlternates = story ? getAlternatesForStory(Astro.site!.toString(), story, language) : undefined;
+
+// State :
+setState('language', language);
+setState('url', Astro.url);
 ---
 
 <html lang={lang} data-page-type={story?.name}>

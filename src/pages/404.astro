@@ -2,6 +2,7 @@
 import '#styles/app.scss';
 
 import BaseLayout from '#layouts/BaseLayout.astro';
+import getSiteConfig from '#storyblok/helpers/getSiteConfig.ts';
 
 import { t } from '#utils/i18n.ts';
 import locales from '#utils/locales.json';
@@ -11,12 +12,18 @@ import { setState } from '#utils/astro-state.ts';
 const pathname = Astro.originPathname;
 const { language = locales[0] } = parseUrl(pathname);
 
+if (!Astro.locals.siteConfig) {
+	// Get site config - needed if 404 isn't triggered by [..slug].astro (api routes for example) :
+	const siteConfig = await getSiteConfig(language, Astro.locals.isPreviewMode);
+	Astro.locals.siteConfig = siteConfig.content;
+}
+
 setState('language', language);
 
 Astro.response.headers.set('Cache-Control', 'max-age=300');
 ---
 
-<BaseLayout>
+<BaseLayout language={language} story={{ name: t('pageNotFound') }}>
 	<section>
 		<h1>404</h1>
 		<p>{t('pageNotFound')}</p>
