@@ -1,27 +1,143 @@
 @use 'media-queries' as *;
 @use 'responsive' as *;
 
-@mixin tracking($tracking: 0) {
-	letter-spacing: $tracking;
-	$text-indent: $tracking;
+// Mixins :
+@mixin fluidLineHeight($valueMb: 1, $valueDk: 1) {
+	@include mq($until: desktop) {
+		line-height: $valueMb;
+	}
+
+	@include mq($from: desktop) {
+		line-height: $valueDk;
+	}
 }
 
-@mixin tracking-0025($font-size, $line-height: 1) {
-	font-size: $font-size;
-	line-height: $line-height;
+//// Roobert :
+@mixin roobert($weight: 400, $transform: none, $letter-spacing: normal) {
+	font-family: 'Roobert', sans-serif;
+	font-weight: $weight;
+	text-transform: $transform;
+	letter-spacing: $letter-spacing;
 
-	@include tracking($tracking: -0.025em);
+	@if not($weight == 400 or $weight == 500) {
+		font-weight: 400;
+	}
 }
 
-@mixin text-fluid-100($line-height: 0.9) {
-	@include tracking-0025(fluidFontSize(100px, 50px), $line-height);
+//// Romie :
+@mixin romie($weight: 400, $transform: none, $letter-spacing: normal) {
+	font-family: 'Romie', sans-serif;
+	font-weight: $weight;
+	text-transform: $transform;
+	letter-spacing: $letter-spacing;
+
+	@if not($weight == 400 or $weight == 500) {
+		font-weight: 400;
+	}
 }
 
-@mixin text-leading-20($line-height: 1.1) {
-	@include tracking-0025(pxToRem(20), $line-height);
+// Text-styles :
+//// Roobert :
+@mixin roobert-96 {
+	@include roobert(500, none, -0.02em);
+	@include fluidLineHeight(0.9, 1.1);
+
+	font-size: fluidFontSize(96px, 64px);
 }
 
-@mixin text-16($line-height: 1.4) {
-	font-size: pxToRem(16);
-	line-height: $line-height;
+@mixin roobert-48 {
+	@include roobert(500, none, -0.02em);
+
+	font-size: fluidFontSize(48px, 32px);
+	line-height: 1.1;
+}
+
+@mixin roobert-28 {
+	@include roobert(500);
+
+	font-size: fluidFontSize(28px, 24px);
+	line-height: 1.2;
+}
+
+@mixin roobert-20 {
+	@include roobert(500, uppercase);
+
+	font-size: fluidFontSize(20px, 18px);
+	line-height: 1;
+}
+
+@mixin roobert-18 {
+	@include roobert(400);
+
+	font-size: fluidFontSize(18px, 16px);
+	line-height: 1.1;
+}
+
+@mixin roobert-16 {
+	@include roobert(500, uppercase);
+
+	font-size: fluidFontSize(16px, 14px);
+	line-height: 1.1;
+}
+
+@mixin roobert-14 {
+	@include roobert(500, uppercase);
+
+	font-size: fluidFontSize(14px, 12px);
+	line-height: 1.1;
+}
+
+@mixin roobert-12 {
+	@include roobert(500, uppercase);
+
+	font-size: fluidFontSize(12px, 10px);
+	line-height: 1.1;
+}
+
+//// Romie :
+@mixin romie-96 {
+	@include romie(500, none, -0.02em);
+	@include fluidLineHeight(0.9, 1.1);
+
+	font-size: fluidFontSize(96px, 64px);
+}
+
+@mixin romie-96-italic {
+	@include romie-96;
+
+	text-style: italic;
+}
+
+@mixin romie-48 {
+	@include romie(500, none, -0.02em);
+
+	font-size: fluidFontSize(48px, 32px);
+	line-height: 1.1;
+}
+
+@mixin romie-48-italic {
+	@include romie-48;
+
+	text-style: italic;
+}
+
+@mixin romie-28 {
+	@include romie(500);
+
+	font-size: fluidFontSize(28px, 24px);
+	line-height: 1.2;
+}
+
+@mixin romie-28-italic {
+	@include romie-28;
+
+	text-style: italic;
+}
+
+@mixin romie-18 {
+	@include romie(500);
+
+	font-size: fluidFontSize(18px, 16px);
+	line-height: 1.1;
+	text-style: italic;
 }

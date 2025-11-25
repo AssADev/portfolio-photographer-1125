@@ -6,7 +6,7 @@
 $BASE_FONT_SIZE: 16;
 
 @function pxToRem($size) {
-	// unitless $size
+	// Unitless $size :
 	$size: math.div($size, ($size * 0 + 1));
 
 	@return math.div($size, $BASE_FONT_SIZE) * 1rem;
@@ -14,16 +14,11 @@ $BASE_FONT_SIZE: 16;
 
 $figma: (
 	small: 375px,
-	large: 1440px,
-	xxlarge: 1920px
+	large: 1440px
 );
 
 @function pxToVw($value, $bp: small) {
 	@return #{math.div($value, map.get($figma, $bp)) * 100}vw;
-}
-
-@function pxToVwLarge($value) {
-	@return pxToVw($value, large);
 }
 
 @function clampVw($value, $min: null, $max: null, $bp: small) {
@@ -38,10 +33,6 @@ $figma: (
 	@if $max {
 		@return min($max, pxToVw($value, $bp));
 	}
-}
-
-@function clampVwLarge($value, $min: null, $max: null) {
-	@return clampVw($value, $min, $max, large);
 }
 
 @function fluidFontSize($value, $min: 12px, $max: null, $bp: large) {
