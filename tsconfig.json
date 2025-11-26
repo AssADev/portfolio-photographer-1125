@@ -21,7 +21,12 @@
 			"#pages/*": ["src/pages/*"],
 			"#layouts/*": ["src/layouts/*"],
 			"#partials/*": ["src/partials/*"],
-			"#components/*": ["src/components/*"]
+			"#components/*": ["src/components/*"],
+			"#storyblok/*": ["src/storyblok/*"],
+			"#utils/*": ["src/utils/*"],
+			"#types/*": ["src/types/*"],
+			"#lib/*": ["src/lib/*"],
+			"#stores/*": ["src/stores/*"]
 		}
 	}
 }

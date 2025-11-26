@@ -101,7 +101,7 @@ useEventListener('scroll', () => {
 	border-radius: 4px;
 
 	span {
-		@include roobert-14;
+		@include roobert-14-uppercase;
 
 		color: $white;
 	}
@@ -119,7 +119,7 @@ useEventListener('scroll', () => {
 		padding-inline-end: 54px;
 
 		span {
-			@include roobert-14;
+			@include roobert-14-uppercase;
 
 			color: $eerieBlack;
 		}
@@ -136,7 +136,7 @@ useEventListener('scroll', () => {
 		aspect-ratio: 1/1;
 
 		span {
-			@include roobert-14;
+			@include roobert-14-uppercase;
 
 			color: $white;
 		}

@@ -13,6 +13,14 @@
 	}
 }
 
+@mixin hover-child-not-self($selector) {
+	@media (hover: hover) and (pointer: fine) {
+		&:hover #{$selector}:not(:hover) {
+			@content;
+		}
+	}
+}
+
 // Hide scrollbar :
 @mixin hide-scrollbar {
 	scrollbar-width: none;
@@ -32,6 +40,14 @@
 	body:is(.keyboard-focus, .a11y-active) &:focus-within {
 		@include outline($border-width: 2px);
 		@content;
+	}
+}
+
+@mixin a11y-focus($inset: -4px, $pseudo: 'before') {
+	&::#{$pseudo} {
+		position: absolute;
+		inset: $inset;
+		content: '';
 	}
 }
 
