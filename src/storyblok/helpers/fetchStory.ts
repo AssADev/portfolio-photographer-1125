@@ -1,7 +1,9 @@
 import { useStoryblokApi } from '@storyblok/astro';
 
-import { pageContentTypes } from './specialSlugs';
 import { AppError } from '#lib/AppError.ts';
+
+import resolvedRelations from './resolvedRelations';
+import { pageContentTypes } from './specialSlugs';
 
 export default async function fetchStory(slug: string, language: string, isPreviewMode: boolean) {
 	const storyblokApi = useStoryblokApi();
@@ -9,6 +11,7 @@ export default async function fetchStory(slug: string, language: string, isPrevi
 	const { data } = await storyblokApi.get(`cdn/stories/${slug}`, {
 		version: isPreviewMode ? 'draft' : 'published',
 		language,
+		resolve_relations: resolvedRelations,
 		resolve_links: 'story'
 	});
 

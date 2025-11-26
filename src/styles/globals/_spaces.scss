@@ -1,7 +1,7 @@
 @use '../tools' as *;
 
-$gutterMobile: fluidSize(60px, 20px);
-$gutterDesktop: fluidSize(72px, 20px);
+$gutterMobile: fluidSize(20px, 16px);
+$gutterDesktop: 20px;
 
 :root {
 	--gutter: #{$gutterMobile};

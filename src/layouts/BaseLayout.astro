@@ -52,7 +52,7 @@ setState('url', Astro.url);
 	</Head>
 	<body>
 		<div id="app">
-			<Header language={language} client:load />
+			<Header siteConfig={siteConfig} language={language} languageAlternates={languageAlternates} client:load />
 			<main>
 				<Lenis client:load root />
 				<slot />

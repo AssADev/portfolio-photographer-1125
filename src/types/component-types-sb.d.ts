@@ -133,14 +133,16 @@ export interface StoryblokServices {
 }
 
 export interface StoryblokSiteConfig {
+	menuDescription: string;
+	menuLinks?: StoryblokLabelLink[];
+	identity: string;
+	email: StoryblokEmail[];
+	socials: StoryblokLabelLink[];
 	titleTemplate: string;
 	defaultTitle: string;
 	defaultDescription: string;
 	defaultImage: StoryblokAsset;
 	favicon: StoryblokAsset;
-	identity: string;
-	email: StoryblokEmail[];
-	socials: StoryblokLabelLink[];
 	component: 'SiteConfig';
 	_uid: string;
 }
@@ -234,6 +236,8 @@ interface StoryblokMultilinkUrl {
 }
 
 interface StoryblokMultilink {
+	name?: string;
+	component?: string;
 	fieldtype: 'multilink';
 	id: string;
 	url: string;

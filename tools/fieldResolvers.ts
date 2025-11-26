@@ -1,5 +1,7 @@
 import { VideoRegex } from '#utils/assets.ts';
 
+import { localizeLink } from '#storyblok/helpers/localizeLink.ts';
+
 import type { ResolveData } from './resolveData';
 import { type TypeResolver, arrayToElementType } from './types';
 
@@ -25,6 +27,20 @@ export const fieldResolvers: Record<string, FieldResolver> = {
 		},
 		resolveTypes: {
 			changeFields: [{ name: 'seo', type: arrayToElementType }]
+		}
+	},
+	multilink: {
+		condition: ({ content }) => content.fieldtype === 'multilink',
+		resolveFields({ content, language }) {
+			// Process multilinks (localize links) :
+			localizeLink(content as any, language);
+		},
+		resolveTypes: {
+			interfaces: ['StoryblokMultilink'],
+			addFields: [
+				{ name: 'name', type: 'string', hasQuestionToken: true },
+				{ name: 'component', type: 'string', hasQuestionToken: true }
+			]
 		}
 	},
 	// Clearing rich text when empty :
@@ -60,5 +76,5 @@ export const fieldResolvers: Record<string, FieldResolver> = {
 				{ name: 'assetType', type: "'video' | null", hasQuestionToken: true }
 			]
 		}
-	},
+	}
 };

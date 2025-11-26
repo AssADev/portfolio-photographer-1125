@@ -48,5 +48,7 @@ const updateSiteConfig = async (language: string, preview = false) => {
 		logger.info(`Site config for ${language} updated`);
 	}
 
+	console.log(clone.story.content.menuLinks);
+
 	return clone.story;
 };

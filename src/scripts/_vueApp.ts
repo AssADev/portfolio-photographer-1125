@@ -1,24 +1,30 @@
 import gsap from 'gsap';
-// import { CustomEase } from 'gsap/CustomEase';
-// import { ScrollTrigger } from 'gsap/ScrollTrigger';
-// import { SplitText } from 'gsap/SplitText';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { SplitText } from 'gsap/SplitText';
 import LenisVue from 'lenis/vue';
 import type { App } from 'vue';
+
+import { getState } from '#utils/astro-state.ts';
+import { getLocale, t } from '#utils/i18n.ts';
 
 let gsapInitialized = false;
 
 export default (app: App) => {
+	app.config.globalProperties.$t = t;
+
 	app.use(LenisVue);
+	app.provide('language', getLocale());
+	app.provide('isPreviewMode', getState('isPreviewMode', false));
 
 	// Make sure to register GSAP only once for the whole app :
-	// if (!import.meta.env.SSR && !gsapInitialized) {
-	// 	gsap.registerPlugin(ScrollTrigger, CustomEase, SplitText);
-	// 	CustomEase.create('immg.zoomIn', '0.9, 0.0, 0.4, 1.0');
-	// 	CustomEase.create('immg.zoomOut', '0.4, 0.0, 0.1, 1.0');
-	// 	CustomEase.create('immg.posIn', '0.4, 0.0, 0.1, 1.0');
-	// 	CustomEase.create('immg.posOut', '0.9, 0.0, 0.4, 1.0');
-	// 	CustomEase.create('immg.expoOut', '0.14, 1.0, 0.34, 1.0');
-	// 	CustomEase.create('immg.expoIn', '0.66, 0.0, 0.86, 0.0');
-	// 	gsapInitialized = true;
-	// }
+	if (!import.meta.env.SSR && !gsapInitialized) {
+		gsap.registerPlugin(ScrollTrigger, SplitText);
+		gsapInitialized = true;
+	}
 };
+
+declare module 'vue' {
+	interface ComponentCustomProperties {
+		$t: typeof t;
+	}
+}

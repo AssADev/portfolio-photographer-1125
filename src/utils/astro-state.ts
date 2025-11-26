@@ -1,4 +1,4 @@
-const state = {
+const state: Record<string, unknown> = {
 	language: 'fr'
 };
 
@@ -10,5 +10,5 @@ export const getState = (key: string, valueIfMissing?: unknown) => {
 };
 
 export const setState = (key: string, value: unknown): void => {
-	state[key] = value as any;
+	state[key] = value;
 };

@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import locales from '#utils/locales.json';
 import localesRegions from '#utils/localesRegions.ts';
 
-import { HOME_SLUG } from './specialSlugs';
+import { HOME_SLUG } from '#storyblok/helpers/specialSlugs';
 
 export default function (base: string, story: Partial<ISbStoryData>, currentLocale: string) {
 	const localizedSlugs: { hrefLang: string; href: URL | string }[] = [];
