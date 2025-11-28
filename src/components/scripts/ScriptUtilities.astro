@@ -1,0 +1,74 @@
+<script>
+	import { isWebView } from '#utils/iosWebViewDetector.ts';
+	import { type TransitionBeforeSwapEvent, swapFunctions } from 'astro:transitions/client';
+
+	/* ----- Keyboard focus ----- */
+	document.addEventListener('keydown', (e) => {
+		if (e.key === 'Tab') document.body.classList.add('keyboard-focus');
+		document.addEventListener('mousemove', () => document.body.classList.remove('keyboard-focus'), {
+			once: true
+		});
+	});
+
+	/* ----- Custom swap ----- */
+	function customSwap(doc: Document) {
+		swapFunctions.deselectScripts(doc);
+
+		// Preserve custom CSS properties before swapping root attributes
+		const preservedLvh = document.documentElement.style.getPropertyValue('--lvh');
+		const preservedSvh = document.documentElement.style.getPropertyValue('--svh');
+
+		swapFunctions.swapRootAttributes(doc);
+
+		// Restore custom CSS properties after the swap
+		if (preservedLvh) document.documentElement.style.setProperty('--lvh', preservedLvh);
+		if (preservedSvh) document.documentElement.style.setProperty('--svh', preservedSvh);
+
+		const otStyle = document.head.querySelector<HTMLStyleElement>('#onetrust-style');
+
+		swapFunctions.swapHeadElements(doc);
+
+		if (otStyle) document.head.appendChild(otStyle);
+		const restoreFocusFunction = swapFunctions.saveFocus();
+
+		const oldApp = document.body.querySelector('#app')!;
+		const newApp = doc.body.querySelector('#app')!;
+
+		oldApp.replaceWith(newApp);
+
+		restoreFocusFunction();
+	}
+
+	const beforeSwap = (e: TransitionBeforeSwapEvent) => {
+		e.swap = () => customSwap(e.newDocument);
+	};
+
+	document.addEventListener('astro:before-swap', beforeSwap);
+
+	/* ----- Legacy viewport height ----- */
+	const WEB_VIEW_OFFSET = 115;
+	let svh = 0;
+	let lvh = 0;
+
+	if (isWebView) {
+		const savedHeight = sessionStorage.getItem('webview-lvh');
+		lvh = savedHeight ? parseInt(savedHeight) : window.innerHeight + WEB_VIEW_OFFSET;
+		document.documentElement.style.setProperty('--lvh', `${lvh * 0.01}px`);
+
+		// This is the only time we'll update the svh
+		const savedSvh = sessionStorage.getItem('webview-svh');
+		svh = savedSvh ? parseInt(savedSvh) : document.documentElement.clientHeight;
+		sessionStorage.setItem('webview-svh', svh.toString());
+		document.documentElement.style.setProperty('--svh', `${svh * 0.01}px`);
+
+		window.addEventListener('resize', () => {
+			const newHeight = window.innerHeight;
+			if (newHeight > lvh) {
+				lvh = newHeight;
+				sessionStorage.setItem('webview-lvh', lvh.toString());
+			}
+
+			document.documentElement.style.setProperty('--lvh', `${lvh * 0.01}px`);
+		});
+	}
+</script>

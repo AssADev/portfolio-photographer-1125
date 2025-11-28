@@ -1,24 +1,44 @@
 <script setup lang="ts">
+import { useVModel } from '@nanostores/vue';
 import gsap from 'gsap';
-import { computed, inject, ref, useTemplateRef } from 'vue';
+import { computed, inject, onMounted, ref, useTemplateRef, watch } from 'vue';
 
 import { getLinkAttributes } from '#utils/link.ts';
 import locales from '#utils/locales.json';
 import { nl2br } from '#utils/nl2br.ts';
 
-import { useRouter } from '#components/composables/useRouter.ts';
 import Icon from '#components/utils/Icon.vue';
 
 import type { LanguageAlternate } from '#types/seo.ts';
 
+import { useRouter } from '#composables/useRouter.ts';
+import { useTrap } from '#composables/useTrap.ts';
+import { $global } from '#stores/global.ts';
+
+// Props & Model :
 const { language, languageAlternates } = defineProps<{
 	language: string;
 	languageAlternates?: LanguageAlternate[];
 }>();
 
+const lockScroll = useVModel($global, 'lockScroll');
+const toggled = defineModel<boolean>('toggled', { default: false });
+
+// Injections :
 const siteConfig = inject<any>('siteConfig');
 
-// Variables :
+// Refs :
+const menuRef = useTemplateRef('menuRef');
+const socialsContainerRef = useTemplateRef('socialsContainerRef');
+const floatingIconRef = useTemplateRef('floatingIconRef');
+
+const isIconVisible = ref(false);
+let tl: gsap.core.Timeline | null = null;
+
+// Composables :
+const { location } = useRouter();
+
+// Computed :
 const menuItems = computed(() => {
 	return (
 		siteConfig?.menuLinks?.map((item: any) => ({
@@ -44,17 +64,12 @@ const menuSocials = computed(() => {
 	return socials as any[];
 });
 
-const socialsContainerRef = useTemplateRef('socialsContainerRef');
-const floatingIconRef = useTemplateRef('floatingIconRef');
+const activeMenuItems = computed(() => {
+	const activeItem = findActiveMenuItem(menuItems.value, location.value.pathname);
+	return menuItems.value.map((i: any) => ({ ...i, active: i === activeItem }));
+});
 
-const isIconVisible = ref(false);
-let tl: gsap.core.Timeline | null = null;
-
-/**
- * Updates current page and closes menu on route change
- */
-const { location } = useRouter();
-
+// Methods :
 /**
  * Finds the most specific (closest) matching menu item for the current path
  */
@@ -83,12 +98,6 @@ const findActiveMenuItem = (menuItems: any[], currentPath: string) => {
 	return bestMatch;
 };
 
-const activeMenuItems = computed(() => {
-	const activeItem = findActiveMenuItem(menuItems.value, location.value.pathname);
-	return menuItems.value.map((i: any) => ({ ...i, active: i === activeItem }));
-});
-
-// Floating icon for socials :
 const handleSocialHover = (e: MouseEvent) => {
 	const target = e.currentTarget as HTMLElement;
 
@@ -121,10 +130,67 @@ const handleSocialHover = (e: MouseEvent) => {
 const handleSocialLeave = () => {
 	isIconVisible.value = false;
 };
+
+// Animations :
+const openMenu = () => {
+	lockScroll.value = true;
+
+	tl?.kill();
+	tl = gsap.timeline();
+
+	gsap.set(menuRef.value, { visibility: 'visible' });
+
+	tl.to(menuRef.value, {
+		autoAlpha: 1,
+		y: 0,
+		duration: 0.6,
+		ease: 'expo.out'
+	});
+
+	const elements = menuRef.value?.querySelectorAll(
+		'.informations-container > *, .links-container > li, .socials-container, .languages-selector-container'
+	);
+
+	if (elements?.length) {
+		tl.fromTo(
+			elements,
+			{ y: 20, opacity: 0 },
+			{ y: 0, opacity: 1, duration: 0.4, stagger: 0.05, ease: 'power2.out' },
+			'<0.1'
+		);
+	}
+};
+
+const closeMenu = () => {
+	lockScroll.value = false;
+
+	tl?.kill();
+	tl = gsap.timeline();
+
+	tl.to(menuRef.value, {
+		autoAlpha: 0,
+		y: 20,
+		duration: 0.4,
+		ease: 'power2.out'
+	});
+};
+
+// Lifecycle & Watchers :
+onMounted(() => {
+	gsap.set(menuRef.value, { autoAlpha: 0, y: 20 });
+});
+
+watch(toggled, (isToggled) => {
+	if (isToggled) openMenu();
+	else closeMenu();
+});
+
+// Traps :
+useTrap(menuRef, { model: toggled, clickOutsideDeactivates: true, escapeDeactivates: true });
 </script>
 
 <template>
-	<nav class="menu">
+	<nav ref="menuRef" class="menu">
 		<div class="menu-container">
 			<div v-if="siteConfig?.identity || siteConfig?.menuDescription" class="informations-container">
 				<p v-if="siteConfig?.identity" class="title">{{ siteConfig.identity }}</p>
@@ -185,6 +251,9 @@ $border: 1px solid rgba($white, 0.08);
 	z-index: 25;
 	max-width: 365px;
 	width: 100%;
+	opacity: 0;
+	visibility: hidden;
+	transform: translate3d(0, 20px, 0);
 }
 
 .menu-container {
@@ -367,6 +436,7 @@ $border: 1px solid rgba($white, 0.08);
 
 		a {
 			@include a11y-focus;
+			@include roobert-12-uppercase;
 
 			position: relative;
 			opacity: 0.5;

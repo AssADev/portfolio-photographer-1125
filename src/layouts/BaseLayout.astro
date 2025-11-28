@@ -11,6 +11,8 @@ import Header from '#components/widgets/Header.vue';
 import SEO from '#components/widgets/Head/SEO.astro';
 import Head from '#components/widgets/Head/Head.astro';
 
+import ScriptUtilities from '#components/scripts/ScriptUtilities.astro';
+
 import { setState } from '#utils/astro-state.ts';
 import localesRegions from '#utils/localesRegions.ts';
 import getAlternatesForStory from '#storyblok/helpers/getAlternatesForStory.ts';
@@ -60,3 +62,5 @@ setState('url', Astro.url);
 		</div>
 	</body>
 </html>
+
+<ScriptUtilities />

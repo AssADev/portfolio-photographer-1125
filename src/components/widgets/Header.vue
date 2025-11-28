@@ -10,18 +10,21 @@ import type { LanguageAlternate } from '#types/seo.ts';
 
 import { $global } from '#stores/global.ts';
 
+// Props :
 const { siteConfig, language, languageAlternates } = defineProps<{
 	siteConfig: any;
 	language: string;
 	languageAlternates?: LanguageAlternate[];
 }>();
 
-// Variables :
+// Providers & Stores :
 provide('siteConfig', siteConfig);
 const globalStore = useStore($global);
 
+// Refs :
 const scrollHide = ref(false);
 const hidden = ref(false);
+const isMenuToggled = ref(false);
 
 // Methods :
 const toggleContact = () => {
@@ -29,7 +32,7 @@ const toggleContact = () => {
 };
 
 const toggleMenu = () => {
-	console.log('toggleMenu');
+	isMenuToggled.value = !isMenuToggled.value;
 };
 
 // Watchers :
@@ -58,10 +61,10 @@ useEventListener('scroll', () => {
 				<Button class="contact-cta" @click="toggleContact">
 					<span>{{ $t('contactLabel') }}</span>
 				</Button>
-				<Button class="menu-cta" @click="toggleMenu">
+				<Button class="menu-cta" @click="toggleMenu" :aria-label="$t(isMenuToggled ? 'closeMenu' : 'openMenu')">
 					<span>X</span>
 				</Button>
-				<Menu :language="language" :languageAlternates="languageAlternates" />
+				<Menu v-model:toggled="isMenuToggled" :language="language" :languageAlternates="languageAlternates" />
 			</div>
 		</div>
 	</header>
@@ -73,9 +76,9 @@ useEventListener('scroll', () => {
 	--padding-inline: 14px;
 
 	position: fixed;
+	z-index: 20;
 	bottom: 0;
 	left: 0;
-	z-index: 20;
 	width: 100%;
 	pointer-events: none;
 }
