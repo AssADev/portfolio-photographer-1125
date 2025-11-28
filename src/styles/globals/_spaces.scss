@@ -7,6 +7,7 @@ $gutterDesktop: 20px;
 	--gutter: #{$gutterMobile};
 	--max-ctn-w: 1920px;
 	--ctn-w: clamp(200px, calc(100vw - var(--gutter) * 2), var(--max-ctn-w));
+	--border-radius: 4px;
 
 	@include mq(desktop) {
 		--gutter: #{$gutterDesktop};

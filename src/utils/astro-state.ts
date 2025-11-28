@@ -3,9 +3,7 @@ const state: Record<string, unknown> = {
 };
 
 export const getState = (key: string, valueIfMissing?: unknown) => {
-	if (key in state) {
-		return state[key];
-	}
+	if (key in state) return state[key];
 	return valueIfMissing;
 };
 

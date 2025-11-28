@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, ref, useTemplateRef } from 'vue';
+import gsap from 'gsap';
+import { computed, inject, ref, useTemplateRef } from 'vue';
 
 import { getLinkAttributes } from '#utils/link.ts';
 import locales from '#utils/locales.json';
@@ -10,22 +11,44 @@ import Icon from '#components/utils/Icon.vue';
 
 import type { LanguageAlternate } from '#types/seo.ts';
 
-const { menu, language, languageAlternates } = defineProps<{
-	menu: any;
+const { language, languageAlternates } = defineProps<{
 	language: string;
 	languageAlternates?: LanguageAlternate[];
 }>();
 
+const siteConfig = inject<any>('siteConfig');
+
 // Variables :
-const menuItems = menu.links.map((item: any) => ({
-	link: item.link.url,
-	label: item.label || item.link.name || ''
-}));
+const menuItems = computed(() => {
+	return (
+		siteConfig?.menuLinks?.map((item: any) => ({
+			link: item.link.url,
+			label: item.label || item.link.name || ''
+		})) || []
+	);
+});
+
+const menuSocials = computed(() => {
+	const socials = siteConfig?.socials || [];
+	const email = siteConfig?.email;
+
+	if (email) {
+		return [
+			...socials,
+			{
+				link: { url: `mailto:${email}`, target: '_blank' },
+				label: email
+			}
+		] as any[];
+	}
+	return socials as any[];
+});
 
 const socialsContainerRef = useTemplateRef('socialsContainerRef');
 const floatingIconRef = useTemplateRef('floatingIconRef');
+
 const isIconVisible = ref(false);
-const iconTranslateY = ref(0);
+let tl: gsap.core.Timeline | null = null;
 
 /**
  * Updates current page and closes menu on route change
@@ -61,8 +84,8 @@ const findActiveMenuItem = (menuItems: any[], currentPath: string) => {
 };
 
 const activeMenuItems = computed(() => {
-	const activeItem = findActiveMenuItem(menuItems, location.value.pathname);
-	return menuItems.map((i: any) => ({ ...i, active: i === activeItem }));
+	const activeItem = findActiveMenuItem(menuItems.value, location.value.pathname);
+	return menuItems.value.map((i: any) => ({ ...i, active: i === activeItem }));
 });
 
 // Floating icon for socials :
@@ -79,8 +102,20 @@ const handleSocialHover = (e: MouseEvent) => {
 	const targetCenter = targetRect.top - containerRect.top + targetRect.height / 2;
 	const iconHalfHeight = iconRect.height / 2;
 
-	iconTranslateY.value = targetCenter - iconHalfHeight;
-	isIconVisible.value = true;
+	const newY = targetCenter - iconHalfHeight;
+
+	// Animation :
+	if (!isIconVisible.value) {
+		gsap.set(floatingIconRef.value, { y: newY });
+		isIconVisible.value = true;
+	} else {
+		gsap.to(floatingIconRef.value, {
+			y: newY,
+			duration: 0.4,
+			ease: 'power2.out',
+			overwrite: true
+		});
+	}
 };
 
 const handleSocialLeave = () => {
@@ -91,11 +126,15 @@ const handleSocialLeave = () => {
 <template>
 	<nav class="menu">
 		<div class="menu-container">
-			<div v-if="menu.identity || menu.description" class="informations-container">
-				<p v-if="menu.identity" class="title">{{ menu.identity }}</p>
-				<p v-if="menu.description" class="description" v-html="nl2br(menu.description)"></p>
+			<div v-if="siteConfig?.identity || siteConfig?.menuDescription" class="informations-container">
+				<p v-if="siteConfig?.identity" class="title">{{ siteConfig.identity }}</p>
+				<p
+					v-if="siteConfig?.menuDescription"
+					class="description"
+					v-html="nl2br(siteConfig.menuDescription)"
+				></p>
 			</div>
-			<ul v-if="menu.links" class="links-container">
+			<ul v-if="siteConfig?.menuLinks" class="links-container">
 				<li v-for="item in activeMenuItems" :key="item.label" :class="{ active: item.active }">
 					<a :href="item.link" role="menuitem" :aria-current="item.active ? 'page' : undefined">
 						<span>{{ item.label }}</span>
@@ -106,14 +145,9 @@ const handleSocialLeave = () => {
 				<div ref="floatingIconRef" class="floating-icon">
 					<Icon name="square-small" :class="{ visible: isIconVisible }" />
 				</div>
-				<li v-for="social in menu.socials" :key="social.name">
+				<li v-for="social in menuSocials" :key="social.label">
 					<a v-bind="getLinkAttributes(social.link)" @mouseenter="handleSocialHover">
 						<span>{{ social.label }}</span>
-					</a>
-				</li>
-				<li v-if="menu.email">
-					<a :href="`mailto:${menu.email}`" @mouseenter="handleSocialHover">
-						<span>{{ menu.email }}</span>
 					</a>
 				</li>
 			</ul>
@@ -158,7 +192,7 @@ $border: 1px solid rgba($white, 0.08);
 	height: fit-content;
 	color: $white;
 	background: $eerieBlack;
-	border-radius: 4px;
+	border-radius: var(--border-radius);
 	overflow: hidden;
 }
 
@@ -259,31 +293,36 @@ $border: 1px solid rgba($white, 0.08);
 	flex-direction: column;
 	gap: 8px;
 	padding: 32px var(--padding-inline) 16px;
+	pointer-events: none;
+
+	@include hover {
+		li {
+			width: 100%;
+		}
+	}
 
 	.floating-icon {
-		--translate-y: v-bind("iconTranslateY + 'px'");
-		transition: transform 0.4s $power2Out;
-
 		position: absolute;
 		left: var(--padding-inline);
 		top: 0;
 		pointer-events: none;
-		transform: translate3d(0, var(--translate-y), 0);
 
 		& > svg {
-			transition: transform 0.4s $power2InOut;
-			transform: scale3d(0, 0, 0) rotate(90deg);
+			position: absolute;
+			transition: transform 0.4s $power2Out;
+			transform: translate3d(0, -50%, 0) scale3d(0, 0, 0) rotate(90deg);
 			transform-origin: center center;
 
 			&.visible {
-				transform: scale3d(1, 1, 1) rotate(0deg);
-				transition: transform 0.6s $elasticOut 0.1s;
+				transform: translate3d(0, -50%, 0) scale3d(1, 1, 1) rotate(0deg);
+				transition: transform 0.4s $elasticOut 0.1s;
 			}
 		}
 	}
 
 	li {
 		width: fit-content;
+		pointer-events: all;
 
 		a {
 			@include a11y-focus;
@@ -320,6 +359,10 @@ $border: 1px solid rgba($white, 0.08);
 			a {
 				opacity: 1;
 			}
+		}
+
+		& > * {
+			display: flex;
 		}
 
 		a {

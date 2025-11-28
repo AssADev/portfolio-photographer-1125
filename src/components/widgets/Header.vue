@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useStore } from '@nanostores/vue';
 import { useEventListener } from '@vueuse/core';
-import { ref, watchEffect } from 'vue';
+import { provide, ref, watchEffect } from 'vue';
 
 import Button from '#components/utils/Button.vue';
 import Menu from '#components/widgets/Menu.vue';
@@ -17,18 +17,11 @@ const { siteConfig, language, languageAlternates } = defineProps<{
 }>();
 
 // Variables :
+provide('siteConfig', siteConfig);
 const globalStore = useStore($global);
 
 const scrollHide = ref(false);
 const hidden = ref(false);
-
-const menuConfig = {
-	identity: siteConfig.identity,
-	description: siteConfig.menuDescription,
-	links: siteConfig.menuLinks,
-	socials: siteConfig.socials,
-	email: siteConfig.email
-};
 
 // Methods :
 const toggleContact = () => {
@@ -68,7 +61,7 @@ useEventListener('scroll', () => {
 				<Button class="menu-cta" @click="toggleMenu">
 					<span>X</span>
 				</Button>
-				<Menu :menu="menuConfig" :language="language" :languageAlternates="languageAlternates" />
+				<Menu :language="language" :languageAlternates="languageAlternates" />
 			</div>
 		</div>
 	</header>
@@ -76,6 +69,9 @@ useEventListener('scroll', () => {
 
 <style scoped lang="scss">
 #header {
+	--header-height: 40px;
+	--padding-inline: 14px;
+
 	position: fixed;
 	bottom: 0;
 	left: 0;
@@ -88,17 +84,26 @@ useEventListener('scroll', () => {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	padding: var(--gutter);
+	height: var(--header-height);
+	margin: var(--gutter);
 
 	& > * {
 		pointer-events: auto;
 	}
 }
 
+a,
+button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+}
+
 .identity-cta {
-	background-color: $eerieBlack;
-	padding: 10px 14px;
-	border-radius: 4px;
+	background: $eerieBlack;
+	padding-inline: var(--padding-inline);
+	border-radius: var(--border-radius);
 
 	span {
 		@include roobert-14-uppercase;
@@ -111,11 +116,12 @@ useEventListener('scroll', () => {
 	position: relative;
 	display: flex;
 	align-items: center;
+	height: 100%;
 
 	.contact-cta {
-		background-color: $whiteChoco;
-		padding: 9px 14px;
-		border-radius: 4px;
+		background: $whiteChoco;
+		padding-inline: var(--padding-inline);
+		border-radius: var(--border-radius);
 		padding-inline-end: 54px;
 
 		span {
@@ -128,11 +134,8 @@ useEventListener('scroll', () => {
 	.menu-cta {
 		position: absolute;
 		right: 0;
-		background-color: $eerieBlack;
-		padding: 10px 14px;
-		border-radius: 4px;
-		width: 40px;
-		height: 40px;
+		background: $eerieBlack;
+		border-radius: var(--border-radius);
 		aspect-ratio: 1/1;
 
 		span {
