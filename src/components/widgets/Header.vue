@@ -4,6 +4,7 @@ import { useEventListener } from '@vueuse/core';
 import { provide, ref, watchEffect } from 'vue';
 
 import Button from '#components/utils/Button.vue';
+import ContactForms from '#components/widgets/ContactForms.vue';
 import Menu from '#components/widgets/Menu.vue';
 
 import type { LanguageAlternate } from '#types/seo.ts';
@@ -25,10 +26,11 @@ const globalStore = useStore($global);
 const scrollHide = ref(false);
 const hidden = ref(false);
 const isMenuToggled = ref(false);
+const isContactToggled = ref(false);
 
 // Methods :
 const toggleContact = () => {
-	console.log('toggleContact');
+	isContactToggled.value = !isContactToggled.value;
 };
 
 const toggleMenu = () => {
@@ -65,6 +67,7 @@ useEventListener('scroll', () => {
 					<span>X</span>
 				</Button>
 				<Menu v-model:toggled="isMenuToggled" :language="language" :languageAlternates="languageAlternates" />
+				<ContactForms v-model:toggled="isContactToggled" :language="language" />
 			</div>
 		</div>
 	</header>

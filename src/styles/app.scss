@@ -25,3 +25,8 @@ main {
 	z-index: 1;
 	background: $white;
 }
+
+// Picture :
+img.fill {
+	@include img-fill;
+}

@@ -4,16 +4,9 @@
 @forward 'responsive';
 @forward 'components';
 @forward 'spaces';
-@forward 'text-styles';
 @forward 'fonts';
 @forward 'lenis';
 @forward 'transitions';
-
-img.fill {
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-}
 
 // Supports :
 @supports (scrollbar-gutter: stable) {
