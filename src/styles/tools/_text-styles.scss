@@ -74,6 +74,13 @@
 }
 
 @mixin roobert-16 {
+	@include roobert(400);
+
+	font-size: fluidFontSize(16px, 14px);
+	line-height: 1.1;
+}
+
+@mixin roobert-16-uppercase {
 	@include roobert(500, uppercase);
 
 	font-size: fluidFontSize(16px, 14px);

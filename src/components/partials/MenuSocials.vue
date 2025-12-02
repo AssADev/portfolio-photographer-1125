@@ -85,7 +85,7 @@ const handleSocialLeave = () => {
 	position: relative;
 	display: flex;
 	flex-direction: column;
-	gap: 8px;
+	gap: 6px;
 	padding: 32px var(--menu-padding-inline) 16px;
 	pointer-events: none;
 

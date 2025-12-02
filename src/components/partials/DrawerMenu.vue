@@ -14,14 +14,17 @@ const { theme = 'dark' } = defineProps<{
 	theme?: 'dark' | 'light';
 }>();
 
-const [innerEl, outerEl] = useAnimateHeight();
-
-const lockScroll = useVModel($global, 'lockScroll');
 const toggled = defineModel<boolean>('toggled', { default: false });
 
 // Refs :
 const drawerRef = useTemplateRef('drawerRef');
 let tl: gsap.core.Timeline | null = null;
+
+// Composables :
+const [innerEl, outerEl] = useAnimateHeight();
+const lockScroll = useVModel($global, 'lockScroll');
+
+useTrap(drawerRef, { model: toggled, clickOutsideDeactivates: true, escapeDeactivates: true });
 
 // Animations :
 const openDrawer = () => {
@@ -52,15 +55,15 @@ const closeDrawer = () => {
 	});
 };
 
+// Lifecycle :
 onMounted(() => {
 	gsap.set(drawerRef.value, { autoAlpha: 0, y: 20 });
 });
 
+// Watchers :
 watch(toggled, (isToggled) => {
 	isToggled ? openDrawer() : closeDrawer();
 });
-
-useTrap(drawerRef, { model: toggled, clickOutsideDeactivates: true, escapeDeactivates: true });
 </script>
 
 <template>

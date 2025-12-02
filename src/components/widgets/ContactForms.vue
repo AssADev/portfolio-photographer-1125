@@ -2,10 +2,10 @@
 import { computed, inject, ref, watch } from 'vue';
 
 import { formatIndex } from '#utils/formatIndex.ts';
-import { t } from '#utils/i18n.ts';
 import { nl2br } from '#utils/nl2br.ts';
 
 import DrawerMenu from '#components/partials/DrawerMenu.vue';
+import Form from '#components/partials/Form.vue';
 
 // Injections :
 const siteConfig = inject<any>('siteConfig');
@@ -71,9 +71,7 @@ watch(
 		<div class="content-container">
 			<transition name="fade" mode="out-in">
 				<div v-if="selectedForm" class="form-detail">
-					<div class="form-container">
-						<pre>{{ selectedForm.content.id }} : {{ selectedForm.content.title }}</pre>
-					</div>
+					<Form :form="selectedForm" :language="language" />
 					<button @click="backToChoices">
 						{{ $t('backToChoices') }}
 					</button>
@@ -95,6 +93,8 @@ watch(
 </template>
 
 <style scoped lang="scss">
+@use 'sass:map';
+
 $border: 1px solid rgba($eerieBlack, 0.08);
 
 .text-container {
@@ -109,6 +109,31 @@ $border: 1px solid rgba($eerieBlack, 0.08);
 	gap: 24px;
 
 	li {
+		position: relative;
+
+		@include hover {
+			&::before {
+				opacity: 1;
+				transform: translate3d(0, 0, 0);
+				transition:
+					opacity 0.4s $power2Out,
+					transform 0.4s $power2Out;
+			}
+		}
+
+		&::before {
+			content: '';
+			position: absolute;
+			inset: 0;
+			opacity: 0;
+			background: map.get($gradients, 'menu-khaki');
+			transition:
+				opacity 0.4s $power2Out,
+				transform 0.4s $power2Out 0.3s;
+			transform: translate3d(-50%, 0, 0);
+			pointer-events: none;
+		}
+
 		button {
 			position: relative;
 			display: flex;
@@ -124,11 +149,11 @@ $border: 1px solid rgba($eerieBlack, 0.08);
 			gap: var(--menu-padding-inline);
 
 			.title {
-				@include roobert-14-uppercase;
+				@include roobert-16-uppercase;
 			}
 
 			.number {
-				@include roobert-14;
+				@include roobert-16-uppercase;
 
 				color: $khaki;
 			}
@@ -139,21 +164,6 @@ $border: 1px solid rgba($eerieBlack, 0.08);
 
 			color: $khaki;
 		}
-	}
-}
-
-.form-detail {
-	display: flex;
-	flex-direction: column;
-	gap: 20px;
-	padding: 20px var(--menu-padding-inline);
-}
-
-.form-container {
-	pre {
-		white-space: pre-wrap;
-		word-break: break-all;
-		font-size: 12px;
 	}
 }
 </style>

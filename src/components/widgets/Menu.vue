@@ -107,6 +107,8 @@ const findActiveMenuItem = (menuItems: any[], currentPath: string) => {
 </template>
 
 <style scoped lang="scss">
+@use 'sass:map';
+
 $border: 1px solid rgba($white, 0.08);
 
 .links-container {
@@ -162,7 +164,7 @@ $border: 1px solid rgba($white, 0.08);
 			position: absolute;
 			inset: 0;
 			opacity: 0;
-			background: linear-gradient(90deg, rgba($whiteChoco, 0.05) 0%, rgba($whiteChoco, 0) 100%);
+			background: map.get($gradients, 'menu-white');
 			transition:
 				opacity 0.4s $power2Out,
 				transform 0.4s $power2Out 0.3s;

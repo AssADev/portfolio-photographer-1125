@@ -10,8 +10,7 @@ export const is =
 	(val: any) =>
 		val === correct;
 
-export const required: ValidatorFn = (val: unknown, _p, ctx) =>
-	(val != null && val !== '') || t('formRuleRequired', { field: ctx.label || ctx.name });
+export const required: ValidatorFn = (val: unknown, _p, ctx) => (val != null && val !== '') || t('formRuleRequired');
 
 export const email: ValidatorFn = (val: unknown, p, ctx) => {
 	const r = required(val, p, ctx);
@@ -42,3 +41,20 @@ export const mapToProps = (label: string | undefined = undefined, { error = true
 	},
 	label
 });
+
+// Fields Configuration :
+const defaultFieldConfig: Record<string, { validation?: string; options?: any; autocomplete?: string }> = {
+	identity: { validation: 'required', options: { required: true }, autocomplete: 'name' },
+	email: { validation: 'email', options: { required: true }, autocomplete: 'email' },
+	location: { validation: 'required', options: { required: true }, autocomplete: 'home address-level2' },
+	message: { validation: 'required', options: { required: true }, autocomplete: 'off' }
+};
+
+export const getFieldConfig = (field: any) => {
+	const defaultConfig = defaultFieldConfig[field.name] || {};
+	return {
+		validation: field.validation || defaultConfig.validation,
+		options: { ...defaultConfig.options, ...field.options },
+		autocomplete: field.autocomplete || defaultConfig.autocomplete
+	};
+};
