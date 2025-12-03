@@ -20,16 +20,33 @@ export const email: ValidatorFn = (val: unknown, p, ctx) => {
 			/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
 				val.toLowerCase()
 			)) ||
-		t('formRuleEmail', { field: ctx.label || ctx.name })
+		t('formRuleEmail')
 	);
+};
+
+export const minDate: ValidatorFn = (val: unknown) => {
+	if (!val) return true;
+	const date = new Date(val as string);
+	const today = new Date();
+	today.setHours(0, 0, 0, 0);
+
+	// Check if it's a valid date :
+	if (isNaN(date.getTime())) return true;
+
+	if (date < today) return t('formRuleMinDate');
+	return true;
 };
 
 // Rules :
 defineRule('required', required);
 defineRule('email', email);
+defineRule('minDate', minDate);
 
 // Map to props :
-export const mapToProps = (label: string | undefined = undefined, { error = true, required = false } = {}) => ({
+export const mapToProps = (
+	label: string | undefined = undefined,
+	{ error = true, required = false, min = undefined }: any = {}
+) => ({
 	props: (state: { errors: string[] }) => {
 		const o: Record<string, any> = { label };
 		if (error) o.error = state.errors.join(', ');
@@ -37,6 +54,7 @@ export const mapToProps = (label: string | undefined = undefined, { error = true
 			o.ariaRequired = true;
 			o.required = true;
 		}
+		if (min) o.min = min;
 		return o;
 	},
 	label
@@ -47,7 +65,30 @@ const defaultFieldConfig: Record<string, { validation?: string; options?: any; a
 	identity: { validation: 'required', options: { required: true }, autocomplete: 'name' },
 	email: { validation: 'email', options: { required: true }, autocomplete: 'email' },
 	location: { validation: 'required', options: { required: true }, autocomplete: 'home address-level2' },
-	message: { validation: 'required', options: { required: true }, autocomplete: 'off' }
+	message: { validation: 'required', options: { required: true }, autocomplete: 'off' },
+	services: { validation: 'required', options: { required: true }, autocomplete: 'off' },
+	date: {
+		validation: 'required|minDate',
+		options: {
+			required: true,
+			min: (() => {
+				const d = new Date();
+				return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+			})()
+		},
+		autocomplete: 'off'
+	},
+	datetime: {
+		validation: 'required|minDate',
+		options: {
+			required: true,
+			min: (() => {
+				const d = new Date();
+				return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}T${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+			})()
+		},
+		autocomplete: 'off'
+	}
 };
 
 export const getFieldConfig = (field: any) => {

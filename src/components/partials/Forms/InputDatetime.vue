@@ -31,13 +31,13 @@ defineExpose({ focus, blur, clear });
 <template>
 	<Field v-bind="props" :value="model">
 		<template #default="slotProps">
-			<div class="date-wrapper">
+			<div class="datetime-wrapper">
 				<input
 					v-bind="{ ...$attrs, ...slotProps }"
 					ref="input"
 					v-model="model"
 					:aria-label="slotProps.ariaLabel"
-					type="date"
+					type="datetime-local"
 					:class="{ 'is-active': model || isFocused }"
 					@focus="focus"
 					@blur="blur"
@@ -49,7 +49,7 @@ defineExpose({ focus, blur, clear });
 </template>
 
 <style scoped lang="scss">
-.date-wrapper {
+.datetime-wrapper {
 	position: relative;
 	width: 100%;
 }

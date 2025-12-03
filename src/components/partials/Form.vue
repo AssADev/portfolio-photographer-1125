@@ -105,6 +105,7 @@ const onSubmit = async () => {
 					:placeholder="field.placeholder"
 					:index="index + 1"
 					:autocomplete="getFieldConfig(field).autocomplete"
+					:items="field.items"
 					v-model="fields[field.name].model.value"
 				/>
 				<Button type="submit" class="submit-cta">

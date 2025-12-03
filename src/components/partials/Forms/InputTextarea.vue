@@ -41,5 +41,6 @@ textarea {
 
 	resize: none;
 	height: 95px;
+	margin-block-start: 6px;
 }
 </style>
