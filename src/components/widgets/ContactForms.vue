@@ -22,6 +22,7 @@ const { titleContact, descriptionContact, formsContact } = siteConfig;
 
 // Refs :
 const selectedForm = ref<any | null>(null);
+const formStatus = ref<'idle' | 'success' | 'error'>('idle');
 
 // Computed :
 const forms = computed(() => {
@@ -29,20 +30,35 @@ const forms = computed(() => {
 });
 
 const currentTitle = computed(() => {
-	return selectedForm.value ? selectedForm.value.content.title : titleContact;
+	if (selectedForm.value) {
+		if (formStatus.value === 'success') return selectedForm.value.content.formSuccess[0].title;
+		if (formStatus.value === 'error') return selectedForm.value.content.formError[0].title;
+		return selectedForm.value.content.title;
+	}
+	return titleContact;
 });
 
 const currentDescription = computed(() => {
-	return selectedForm.value ? selectedForm.value.content.description : descriptionContact;
+	if (selectedForm.value) {
+		if (formStatus.value !== 'idle') return '';
+		return selectedForm.value.content.description;
+	}
+	return descriptionContact;
 });
 
 // Methods :
 const openForm = (form: any) => {
 	selectedForm.value = form;
+	formStatus.value = 'idle';
 };
 
 const backToChoices = () => {
 	selectedForm.value = null;
+	formStatus.value = 'idle';
+};
+
+const onFormStatusChange = (status: 'idle' | 'success' | 'error') => {
+	formStatus.value = status;
 };
 
 // Watchers :
@@ -64,14 +80,14 @@ watch(
 			<transition name="fade" mode="out-in">
 				<div :key="selectedForm ? selectedForm.content.id : 'default'" class="text-container">
 					<p class="title">{{ currentTitle }}</p>
-					<p class="description" v-html="nl2br(currentDescription)"></p>
+					<p v-if="currentDescription" class="description" v-html="nl2br(currentDescription)"></p>
 				</div>
 			</transition>
 		</template>
 		<div class="content-container">
 			<transition name="fade" mode="out-in">
 				<div v-if="selectedForm" class="form-detail">
-					<Form :form="selectedForm" :language="language" />
+					<Form :form="selectedForm" :language="language" @status="onFormStatusChange" />
 					<button @click="backToChoices">
 						{{ $t('backToChoices') }}
 					</button>

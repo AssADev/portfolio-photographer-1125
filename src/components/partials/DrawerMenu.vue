@@ -137,7 +137,7 @@ watch(toggled, (isToggled) => {
 	padding: 20px var(--menu-padding-inline) 16px;
 
 	:deep(.title) {
-		@include roobert-20;
+		@include roobert-20-uppercase;
 	}
 
 	:deep(.description) {

@@ -63,6 +63,13 @@ export default defineConfig({
 	// Define environment variable schema :
 	env: {
 		schema: {
+			// Clients :
+			PUBLIC_HCAPTCHA_SITE_KEY: envField.string({ context: 'client', access: 'public' }),
+			PUBLIC_WEB3FORMS_ACCESS_KEY: envField.string({ context: 'client', access: 'public' }),
+
+			SITE_URL: envField.string({ context: 'client', access: 'public' }),
+
+			// Servers :
 			PREVIEW_HOSTS: envField.string({
 				context: 'server',
 				access: 'public',
@@ -79,9 +86,7 @@ export default defineConfig({
 				access: 'public',
 				default: 'a2.storyblok.com',
 				optional: true
-			}),
-
-			SITE_URL: envField.string({ context: 'client', access: 'public' })
+			})
 		}
 	},
 

@@ -173,7 +173,7 @@ $border: 1px solid rgba($white, 0.08);
 		}
 
 		a {
-			@include roobert-20;
+			@include roobert-20-uppercase;
 
 			display: block;
 			width: 100%;
