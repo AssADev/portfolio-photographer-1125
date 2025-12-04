@@ -75,7 +75,7 @@ watch(
 </script>
 
 <template>
-	<DrawerMenu v-model:toggled="toggled" theme="light">
+	<DrawerMenu v-model:toggled="toggled" theme="light" :has-error="formStatus === 'error'">
 		<template #title>
 			<transition name="fade" mode="out-in">
 				<div :key="selectedForm ? selectedForm.content.id : 'default'" class="text-container">

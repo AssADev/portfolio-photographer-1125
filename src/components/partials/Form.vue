@@ -2,7 +2,7 @@
 import VueHcaptcha from '@hcaptcha/vue3-hcaptcha';
 import { PUBLIC_HCAPTCHA_SITE_KEY, PUBLIC_WEB3FORMS_ACCESS_KEY } from 'astro:env/client';
 import { useForm } from 'vee-validate';
-import { computed, ref, watch } from 'vue';
+import { computed, ref, useTemplateRef, watch } from 'vue';
 
 import { getFieldConfig, mapToProps } from '#utils/form.ts';
 import { formatIndex } from '#utils/formatIndex.ts';
@@ -10,7 +10,6 @@ import { sleep } from '#utils/sleep.ts';
 
 import Button from '#components/utils/Button.vue';
 
-import { useAnimateHeight } from '#composables/useAnimateHeight.ts';
 import { useDeferredLoading } from '#composables/useDeferredLoading.ts';
 
 // Dynamic imports (Inputs) :
@@ -24,8 +23,8 @@ const formInputs = Object.fromEntries(
 // Props & Model :
 const { form, language } = defineProps<{ form: any; language: string }>();
 
-// Composables :
-const [innerEl, outerEl] = useAnimateHeight();
+// Refs :
+const formEl = useTemplateRef('formEl');
 
 // Form :
 const { meta, errors, defineField, isSubmitting, handleSubmit } = useForm({
@@ -50,7 +49,7 @@ const emit = defineEmits<{
 	(e: 'status', value: 'idle' | 'success' | 'error'): void;
 }>();
 
-const submitError = ref(false);
+const submitError = ref(true);
 const submitSuccess = ref(false);
 const loading = useDeferredLoading(isSubmitting);
 
@@ -136,15 +135,15 @@ const onSubmit = async () => {
 	// When the form isn't valid focus the first invalid field :
 	if (!meta.value.valid) {
 		// @ts-expect-error
-		innerEl.value?.querySelector(`[name="${Object.keys(errors.value)[0]}"]`)?.focus();
+		formEl.value?.querySelector(`[name="${Object.keys(errors.value)[0]}"]`)?.focus();
 		return;
 	}
 };
 </script>
 
 <template>
-	<div ref="outerEl" class="form-container">
-		<div ref="innerEl" class="inner-form-container">
+	<div class="form-container">
+		<div class="inner-form-container">
 			<div v-if="submitSuccess" class="form-message success">
 				<p class="title" v-html="formSuccessSubtitle"></p>
 				<p class="description">{{ formSuccess.description }}</p>
@@ -152,21 +151,23 @@ const onSubmit = async () => {
 			<div v-else-if="submitError" class="form-message error">
 				<p class="title" v-html="formErrorSubtitle"></p>
 				<p class="description">{{ formError.description }}</p>
-				<Button @click="submitError = false">{{ $t('tryAgain') }}</Button>
+				<Button @click="submitError = false" theme="dot-khaki" :text="$t('tryAgain')" />
 			</div>
-			<form v-else @submit.prevent="onSubmit">
-				<component
-					v-for="(field, index) in form.content.inputs"
-					v-bind="fields[field.name].props.value"
-					:key="field.name"
-					:is="formInputs[field.component]"
-					:name="field.name"
-					:placeholder="field.placeholder"
-					:index="index + 1"
-					:autocomplete="getFieldConfig(field).autocomplete"
-					:items="field.items"
-					v-model="fields[field.name].model.value"
-				/>
+			<form ref="formEl" v-else @submit.prevent="onSubmit">
+				<div class="form-content-container">
+					<component
+						v-for="(field, index) in form.content.inputs"
+						v-bind="fields[field.name].props.value"
+						:key="field.name"
+						:is="formInputs[field.component]"
+						:name="field.name"
+						:placeholder="field.placeholder"
+						:index="index + 1"
+						:autocomplete="getFieldConfig(field).autocomplete"
+						:items="field.items"
+						v-model="fields[field.name].model.value"
+					/>
+				</div>
 
 				<Button type="submit" class="submit-cta">
 					<div class="inner-submit-cta">
@@ -201,6 +202,17 @@ const onSubmit = async () => {
 		color: $khaki;
 		margin-block-start: 8px;
 	}
+
+	.partials-button {
+		margin-block-start: 22px;
+	}
+}
+
+.form-content-container {
+	@include hide-scrollbar;
+
+	max-height: calc(100vh - 100px - 50px - 150px - var(--header-height));
+	overflow-y: auto;
 }
 
 .submit-cta {

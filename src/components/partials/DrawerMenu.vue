@@ -10,8 +10,9 @@ import { useTrap } from '#composables/useTrap.ts';
 import { $global } from '#stores/global.ts';
 
 // Props & Model :
-const { theme = 'dark' } = defineProps<{
+const { theme = 'dark', hasError = false } = defineProps<{
 	theme?: 'dark' | 'light';
+	hasError?: boolean;
 }>();
 
 const toggled = defineModel<boolean>('toggled', { default: false });
@@ -69,12 +70,14 @@ watch(toggled, (isToggled) => {
 <template>
 	<div ref="drawerRef" class="drawer-menu">
 		<div class="drawer-container" :class="theme">
-			<div v-if="$slots.title" class="drawer-title-container">
-				<slot name="title" />
-			</div>
-			<div ref="outerEl" class="drawer-content-container">
-				<div ref="innerEl" class="drawer-inner-container">
-					<slot />
+			<div ref="outerEl" class="drawer-body" :class="{ 'form-error': hasError }">
+				<div ref="innerEl" class="drawer-inner-body">
+					<div v-if="$slots.title" class="drawer-title-container">
+						<slot name="title" />
+					</div>
+					<div class="drawer-content-container" data-lenis-prevent>
+						<slot />
+					</div>
 				</div>
 			</div>
 			<MenuSocials />
@@ -83,6 +86,8 @@ watch(toggled, (isToggled) => {
 </template>
 
 <style scoped lang="scss">
+@use 'sass:map';
+
 .drawer-menu {
 	--menu-padding-inline: 14px;
 
@@ -91,7 +96,7 @@ watch(toggled, (isToggled) => {
 	right: var(--gutter);
 	z-index: 25;
 	max-width: 365px;
-	width: 100%;
+	width: calc(100% - var(--gutter) * 2);
 	opacity: 0;
 	visibility: hidden;
 	transform: translate3d(0, 20px, 0);
@@ -147,8 +152,36 @@ watch(toggled, (isToggled) => {
 	}
 }
 
-.drawer-content-container {
+.drawer-body {
+	position: relative;
 	overflow: hidden;
 	transition: height 0.4s $power2Out;
+
+	&.form-error {
+		&::before {
+			opacity: 1;
+			transform: translate3d(0, 0, 0);
+			transition:
+				opacity 0.4s $power2Out,
+				transform 0.4s $power2Out;
+		}
+	}
+
+	&::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		opacity: 0;
+		background: map.get($gradients, 'form-error-drawer-body');
+		transition:
+			opacity 0.4s $power2Out,
+			transform 0.4s $power2Out 0.3s;
+		transform: translate3d(0, -50%, 0);
+		pointer-events: none;
+	}
+
+	.drawer-inner-body {
+		position: relative;
+	}
 }
 </style>
