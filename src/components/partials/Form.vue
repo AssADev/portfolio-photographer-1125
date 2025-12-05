@@ -211,7 +211,7 @@ const onSubmit = async () => {
 .form-content-container {
 	@include hide-scrollbar;
 
-	max-height: calc(100vh - calc(100px * 2) - 50px - var(--header-height) - var(--gutter) * 2);
+	max-height: calc(100vh - calc(100px * 2) - 50px - (var(--header-height) * 2));
 	overflow-y: auto;
 
 	:deep(.field-container:last-child .field-wrapper) {

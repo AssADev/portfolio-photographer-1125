@@ -88,9 +88,6 @@ watch(
 			<transition name="fade" mode="out-in">
 				<div v-if="selectedForm" class="form-detail">
 					<Form :form="selectedForm" :language="language" @status="onFormStatusChange" />
-					<button @click="backToChoices">
-						{{ $t('backToChoices') }}
-					</button>
 				</div>
 				<ul v-else class="forms-container">
 					<li v-for="(form, index) in forms" :key="form.content.id">
@@ -105,6 +102,14 @@ watch(
 				</ul>
 			</transition>
 		</div>
+		<template #footer>
+			<button v-if="!selectedForm" @click="toggled = false">
+				<span>{{ $t('close') }}</span>
+			</button>
+			<button v-else @click="backToChoices">
+				<span>{{ $t('backToChoices') }}</span>
+			</button>
+		</template>
 	</DrawerMenu>
 </template>
 
@@ -179,6 +184,19 @@ $border: 1px solid rgba($eerieBlack, 0.08);
 			@include roobert-14;
 
 			color: $khaki;
+		}
+	}
+}
+
+:deep(.drawer-footer) {
+	button {
+		display: flex;
+		align-items: center;
+		width: 100%;
+		height: 100%;
+
+		span {
+			@include roobert-14-uppercase;
 		}
 	}
 }

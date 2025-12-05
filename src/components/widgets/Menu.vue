@@ -86,23 +86,26 @@ const findActiveMenuItem = (menuItems: any[], currentPath: string) => {
 				</a>
 			</li>
 		</ul>
-		<ul class="languages-selector-container">
-			<template v-for="(locale, index) in locales" :key="locale">
-				<li>
-					<span v-if="locale === language">{{ locale }}</span>
-					<a
-						v-else
-						:href="
-							languageAlternates?.find((alt) => alt.hrefLang.split('-')[0] === locale)?.href.toString() ||
-							`/${locale}`
-						"
-					>
-						<span>{{ locale }}</span>
-					</a>
-				</li>
-				<Icon v-if="index < locales.length - 1" name="square-small" />
-			</template>
-		</ul>
+		<template #footer>
+			<ul class="languages-selector-container">
+				<template v-for="(locale, index) in locales" :key="locale">
+					<li>
+						<span v-if="locale === language">{{ locale }}</span>
+						<a
+							v-else
+							:href="
+								languageAlternates
+									?.find((alt) => alt.hrefLang.split('-')[0] === locale)
+									?.href.toString() || `/${locale}`
+							"
+						>
+							<span>{{ locale }}</span>
+						</a>
+					</li>
+					<Icon v-if="index < locales.length - 1" name="square-small" />
+				</template>
+			</ul>
+		</template>
 	</DrawerMenu>
 </template>
 
@@ -189,8 +192,7 @@ $border: 1px solid rgba($white, 0.08);
 	display: flex;
 	align-items: center;
 	gap: 5px;
-	padding: 16px var(--menu-padding-inline);
-	border-top: $border;
+
 	li {
 		@include hover {
 			a {

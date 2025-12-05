@@ -81,6 +81,9 @@ watch(toggled, (isToggled) => {
 				</div>
 			</div>
 			<MenuSocials />
+			<div class="drawer-footer">
+				<slot name="footer" />
+			</div>
 		</div>
 	</div>
 </template>
@@ -119,6 +122,10 @@ watch(toggled, (isToggled) => {
 		.drawer-content-container {
 			border-bottom: 1px solid rgba($white, 0.08);
 		}
+
+		.drawer-footer {
+			border-top: 1px solid rgba($white, 0.08);
+		}
 	}
 
 	&.light {
@@ -131,6 +138,10 @@ watch(toggled, (isToggled) => {
 
 		.drawer-content-container {
 			border-bottom: 1px solid rgba($eerieBlack, 0.08);
+		}
+
+		.drawer-footer {
+			border-top: 1px solid rgba($eerieBlack, 0.08);
 		}
 	}
 }
@@ -183,5 +194,12 @@ watch(toggled, (isToggled) => {
 	.drawer-inner-body {
 		position: relative;
 	}
+}
+
+.drawer-footer {
+	display: flex;
+	align-items: center;
+	height: var(--header-height);
+	padding-inline: var(--menu-padding-inline);
 }
 </style>
