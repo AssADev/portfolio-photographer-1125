@@ -1,6 +1,6 @@
 import type { Arrayable, MaybeComputedElementRef } from '@vueuse/core';
 import { type UseFocusTrapOptions, useFocusTrap } from '@vueuse/integrations/useFocusTrap';
-import { type MaybeRefOrGetter, type Ref, nextTick, watch } from 'vue';
+import { type MaybeRefOrGetter, type Ref, nextTick, toValue, watch } from 'vue';
 
 /**
  * Helper to the @vueuse/integrations useFocusTrap that adds the `model` prop
@@ -9,7 +9,10 @@ import { type MaybeRefOrGetter, type Ref, nextTick, watch } from 'vue';
  */
 export const useTrap = (
 	target: Arrayable<MaybeRefOrGetter<string> | MaybeComputedElementRef>,
-	options: UseFocusTrapOptions & { model?: Ref<boolean> } = {}
+	options: Omit<UseFocusTrapOptions, 'clickOutsideDeactivates'> & {
+		model?: Ref<boolean>;
+		clickOutsideDeactivates?: MaybeRefOrGetter<boolean>;
+	} = {}
 ) => {
 	const moreOptions: UseFocusTrapOptions = {};
 	const { clickOutsideDeactivates, ...restOptions } = options;
@@ -26,7 +29,8 @@ export const useTrap = (
 	const trap = useFocusTrap(target, {
 		preventScroll: true,
 		allowOutsideClick: (event: { type: string }) => {
-			if (clickOutsideDeactivates) {
+			const shouldDeactivate = toValue(clickOutsideDeactivates);
+			if (shouldDeactivate) {
 				if (event.type === 'click') {
 					trap.deactivate();
 					if (options?.model) options.model.value = false;

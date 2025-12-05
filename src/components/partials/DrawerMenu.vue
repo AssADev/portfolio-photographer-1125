@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useVModel } from '@nanostores/vue';
 import gsap from 'gsap';
-import { onMounted, useTemplateRef, watch } from 'vue';
+import { onMounted, ref, useTemplateRef, watch } from 'vue';
 
 import MenuSocials from '#components/partials/MenuSocials.vue';
 
@@ -10,22 +10,28 @@ import { useTrap } from '#composables/useTrap.ts';
 import { $global } from '#stores/global.ts';
 
 // Props & Model :
-const { theme = 'dark', hasError = false } = defineProps<{
+const {
+	theme = 'dark',
+	hasError = false,
+	preventClickOutside = false
+} = defineProps<{
 	theme?: 'dark' | 'light';
 	hasError?: boolean;
+	preventClickOutside?: boolean;
 }>();
 
 const toggled = defineModel<boolean>('toggled', { default: false });
 
 // Refs :
-const drawerRef = useTemplateRef('drawerRef');
 let tl: gsap.core.Timeline | null = null;
+const drawerRef = useTemplateRef('drawerRef');
+const clickOutsideEnabled = ref(!preventClickOutside);
 
 // Composables :
 const [innerEl, outerEl] = useAnimateHeight();
 const lockScroll = useVModel($global, 'lockScroll');
 
-useTrap(drawerRef, { model: toggled, clickOutsideDeactivates: true, escapeDeactivates: true });
+useTrap(drawerRef, { model: toggled, clickOutsideDeactivates: clickOutsideEnabled, escapeDeactivates: true });
 
 // Animations :
 const openDrawer = () => {
@@ -62,6 +68,13 @@ onMounted(() => {
 });
 
 // Watchers :
+watch(
+	() => preventClickOutside,
+	(newValue) => {
+		clickOutsideEnabled.value = !newValue;
+	}
+);
+
 watch(toggled, (isToggled) => {
 	isToggled ? openDrawer() : closeDrawer();
 });
