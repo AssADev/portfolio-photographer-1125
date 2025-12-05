@@ -49,7 +49,7 @@ const emit = defineEmits<{
 	(e: 'status', value: 'idle' | 'success' | 'error'): void;
 }>();
 
-const submitError = ref(true);
+const submitError = ref(false);
 const submitSuccess = ref(false);
 const loading = useDeferredLoading(isSubmitting);
 
@@ -211,8 +211,12 @@ const onSubmit = async () => {
 .form-content-container {
 	@include hide-scrollbar;
 
-	max-height: calc(100vh - 100px - 50px - 150px - var(--header-height));
+	max-height: calc(100vh - calc(100px * 2) - 50px - var(--header-height) - var(--gutter) * 2);
 	overflow-y: auto;
+
+	:deep(.field-container:last-child .field-wrapper) {
+		border-bottom: none;
+	}
 }
 
 .submit-cta {
@@ -220,6 +224,7 @@ const onSubmit = async () => {
 
 	position: relative;
 	width: 100%;
+	border-top: 1px solid rgba($eerieBlack, 0.08);
 
 	@include hover {
 		&::before {
