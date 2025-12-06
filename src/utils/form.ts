@@ -37,10 +37,23 @@ export const minDate: ValidatorFn = (val: unknown) => {
 	return true;
 };
 
+export const url: ValidatorFn = (val: unknown, p, ctx) => {
+	if (!val || val === '') return true;
+
+	return (
+		(typeof val === 'string' &&
+			/^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/.test(
+				val.toLowerCase()
+			)) ||
+		t('formRuleUrl')
+	);
+};
+
 // Rules :
 defineRule('required', required);
 defineRule('email', email);
 defineRule('minDate', minDate);
+defineRule('url', url);
 
 // Map to props :
 export const mapToProps = (
@@ -65,6 +78,9 @@ const defaultFieldConfig: Record<string, { validation?: string; options?: any; a
 	identity: { validation: 'required', options: { required: true }, autocomplete: 'name' },
 	email: { validation: 'email', options: { required: true }, autocomplete: 'email' },
 	location: { validation: 'required', options: { required: true }, autocomplete: 'home address-level2' },
+	website: { validation: 'url', options: {}, autocomplete: 'off' },
+	quote: { validation: 'required', options: { required: true }, autocomplete: 'off' },
+	subject: { validation: 'required', options: { required: true }, autocomplete: 'off' },
 	message: { validation: 'required', options: { required: true }, autocomplete: 'off' },
 	services: { validation: 'required', options: { required: true }, autocomplete: 'off' },
 	date: {

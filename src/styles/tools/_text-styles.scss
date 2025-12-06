@@ -101,6 +101,14 @@
 	line-height: 1.1;
 }
 
+@mixin roobert-14-input {
+	@include roobert(400);
+
+	font-size: fluidFontSize(14px, 12px);
+	line-height: 1;
+}
+
+
 @mixin roobert-14-uppercase {
 	@include roobert(500, uppercase);
 

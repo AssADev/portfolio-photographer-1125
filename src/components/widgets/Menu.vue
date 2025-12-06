@@ -129,8 +129,8 @@ $border: 1px solid rgba($white, 0.08);
 		position: relative;
 		border-bottom: $border;
 
-		&:first-child {
-			border-top: $border;
+		&:last-child {
+			border-bottom: none;
 		}
 
 		@include hover {

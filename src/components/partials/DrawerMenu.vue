@@ -125,36 +125,40 @@ watch(toggled, (isToggled) => {
 	overflow: hidden;
 
 	&.dark {
+		$border: 1px solid rgba($white, 0.08);
+
 		color: $white;
 		background: $eerieBlack;
 
 		.drawer-title-container {
-			border-bottom: 1px solid rgba($white, 0.08);
+			border-bottom: $border;
 		}
 
-		.drawer-content-container {
-			border-bottom: 1px solid rgba($white, 0.08);
+		:deep(.menu-socials-container) {
+			border-top: $border;
 		}
 
 		.drawer-footer {
-			border-top: 1px solid rgba($white, 0.08);
+			border-top: $border;
 		}
 	}
 
 	&.light {
+		$border: 1px solid rgba($eerieBlack, 0.08);
+
 		color: $eerieBlack;
 		background: $whiteChoco;
 
 		.drawer-title-container {
-			border-bottom: 1px solid rgba($eerieBlack, 0.08);
+			border-bottom: $border;
 		}
 
-		.drawer-content-container {
-			border-bottom: 1px solid rgba($eerieBlack, 0.08);
+		:deep(.menu-socials-container) {
+			border-top: $border;
 		}
 
 		.drawer-footer {
-			border-top: 1px solid rgba($eerieBlack, 0.08);
+			border-top: $border;
 		}
 	}
 }
@@ -206,6 +210,7 @@ watch(toggled, (isToggled) => {
 
 	.drawer-inner-body {
 		position: relative;
+		max-height: calc(100vh - var(--header-height) - 94px);
 	}
 }
 

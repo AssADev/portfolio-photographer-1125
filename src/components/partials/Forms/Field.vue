@@ -112,7 +112,7 @@ const accessibleLabel = computed(() => label || placeholder || name);
 
 	:deep(input),
 	:deep(textarea) {
-		@include roobert-14;
+		@include roobert-14-input;
 
 		width: 100%;
 		min-height: 24px;
@@ -137,7 +137,7 @@ const accessibleLabel = computed(() => label || placeholder || name);
 	@include roobert-16;
 
 	display: block;
-	max-width: calc(100% - var(--menu-padding-inline) - 20px);
+	max-width: calc(100% - var(--menu-padding-inline) - 18px);
 
 	.field-empty:not(:focus-within) & {
 		pointer-events: none;

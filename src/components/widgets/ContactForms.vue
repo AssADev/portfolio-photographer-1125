@@ -132,10 +132,14 @@ $border: 1px solid rgba($eerieBlack, 0.08);
 .forms-container {
 	display: flex;
 	flex-direction: column;
-	gap: 24px;
 
 	li {
 		position: relative;
+		border-bottom: $border;
+
+		&:last-child {
+			border-bottom: none;
+		}
 
 		@include hover {
 			&::before {
