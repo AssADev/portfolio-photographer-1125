@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useVModel } from '@nanostores/vue';
+import { useResizeObserver } from '@vueuse/core';
 import gsap from 'gsap';
 import { onMounted, ref, useTemplateRef, watch } from 'vue';
 
@@ -29,8 +30,12 @@ const emit = defineEmits<{
 
 // Refs :
 let tl: gsap.core.Timeline | null = null;
-const drawerRef = useTemplateRef('drawerRef');
+
 const clickOutsideEnabled = ref(!preventClickOutside);
+
+const drawerRef = useTemplateRef('drawerRef');
+const titleContainerRef = useTemplateRef('titleContainerRef');
+const socialsRef = useTemplateRef('socialsRef');
 
 // Composables :
 const [innerEl, outerEl] = useAnimateHeight();
@@ -85,6 +90,17 @@ watch(
 watch(toggled, (isToggled) => {
 	isToggled ? openDrawer() : closeDrawer();
 });
+
+// Resize observers :
+useResizeObserver(titleContainerRef, () => {
+	const titleHeight = titleContainerRef.value?.offsetHeight || 0;
+	drawerRef.value!.style.setProperty('--drawer-title-height', `${titleHeight}px`);
+});
+
+useResizeObserver(socialsRef, () => {
+	const socialsHeight = socialsRef.value?.$el?.offsetHeight || 0;
+	drawerRef.value!.style.setProperty('--drawer-socials-height', `${socialsHeight}px`);
+});
 </script>
 
 <template>
@@ -92,7 +108,7 @@ watch(toggled, (isToggled) => {
 		<div class="drawer-container" :class="theme">
 			<div ref="outerEl" class="drawer-body" :class="{ 'form-error': hasError }">
 				<div ref="innerEl" class="drawer-inner-body">
-					<div v-if="$slots.title" class="drawer-title-container">
+					<div v-if="$slots.title" ref="titleContainerRef" class="drawer-title-container">
 						<slot name="title" />
 					</div>
 					<div class="drawer-content-container" data-lenis-prevent>
@@ -100,7 +116,7 @@ watch(toggled, (isToggled) => {
 					</div>
 				</div>
 			</div>
-			<MenuSocials />
+			<MenuSocials ref="socialsRef" />
 			<div class="drawer-footer">
 				<slot name="footer" />
 			</div>
@@ -217,7 +233,16 @@ watch(toggled, (isToggled) => {
 
 	.drawer-inner-body {
 		position: relative;
-		max-height: calc(100vh - var(--header-height) - 94px);
+		max-height: calc(100vh - var(--header-height) - var(--drawer-socials-height) - var(--gutter) * 2);
+	}
+
+	.drawer-content-container {
+		@include hide-scrollbar;
+
+		max-height: calc(
+			100vh - var(--header-height) - var(--drawer-socials-height) - var(--drawer-title-height) - var(--gutter) * 2
+		);
+		overflow-y: auto;
 	}
 }
 

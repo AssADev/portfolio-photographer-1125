@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import VueHcaptcha from '@hcaptcha/vue3-hcaptcha';
+import { useResizeObserver } from '@vueuse/core';
 import { PUBLIC_HCAPTCHA_SITE_KEY, PUBLIC_WEB3FORMS_ACCESS_KEY } from 'astro:env/client';
 import { useForm } from 'vee-validate';
 import { computed, ref, useTemplateRef, watch } from 'vue';
@@ -26,6 +27,8 @@ const { form, language } = defineProps<{ form: any; language: string }>();
 
 // Refs :
 const formEl = useTemplateRef('formEl');
+const submitCtaRef = useTemplateRef('submitCtaRef');
+const formContentContainerRef = useTemplateRef('formContentContainerRef');
 
 // Form :
 const { meta, errors, defineField, isSubmitting, handleSubmit } = useForm({
@@ -146,6 +149,12 @@ const onSubmit = async () => {
 		return;
 	}
 };
+
+// Resize observers :
+useResizeObserver(submitCtaRef, () => {
+	const submitCtaHeight = submitCtaRef.value?.$el?.offsetHeight || 0;
+	formContentContainerRef.value?.style.setProperty('--submit-cta-height', `${submitCtaHeight}px`);
+});
 </script>
 
 <template>
@@ -161,7 +170,7 @@ const onSubmit = async () => {
 				<Button @click="submitError = false" theme="dot-khaki" :text="$t('tryAgain')" />
 			</div>
 			<form ref="formEl" v-else @submit.prevent="onSubmit">
-				<div class="form-content-container">
+				<div ref="formContentContainerRef" class="form-content-container">
 					<component
 						v-for="(field, index) in form.content.inputs"
 						v-bind="fields[field.name].props.value"
@@ -176,7 +185,7 @@ const onSubmit = async () => {
 					/>
 				</div>
 
-				<Button type="submit" class="submit-cta" :disabled="loading">
+				<Button type="submit" class="submit-cta" ref="submitCtaRef" :disabled="loading">
 					<div class="inner-submit-cta">
 						<span>{{ loading ? $t('contactIsSending') : form.content.submitLabel }}</span>
 						<span class="total-wrapper">
@@ -218,7 +227,12 @@ const onSubmit = async () => {
 .form-content-container {
 	@include hide-scrollbar;
 
-	max-height: calc(100vh - calc(100px * 2) - 50px - (var(--header-height) * 2));
+	max-height: calc(
+		100vh - var(--drawer-socials-height) - var(--drawer-title-height) - var(--submit-cta-height) - var(
+				--header-height
+			) -
+			(var(--gutter) * 2)
+	);
 	overflow-y: auto;
 
 	:deep(.field-container:last-child .field-wrapper) {
