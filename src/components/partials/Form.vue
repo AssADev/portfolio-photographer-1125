@@ -93,10 +93,8 @@ const validFieldsCount = computed(() => {
 //// Submit :
 const onSubmit = async () => {
 	await handleSubmit(async (values) => {
-		// console.log(values);
-
 		try {
-			await sleep(2000);
+			await sleep(1000);
 
 			// Prepare form data for Web3Forms :
 			const web3FormData = new FormData();
@@ -118,7 +116,6 @@ const onSubmit = async () => {
 			});
 
 			const data = await response.json();
-			console.log(data);
 
 			if (data.success) {
 				submitSuccess.value = true;
@@ -169,9 +166,9 @@ const onSubmit = async () => {
 					/>
 				</div>
 
-				<Button type="submit" class="submit-cta">
+				<Button type="submit" class="submit-cta" :disabled="loading">
 					<div class="inner-submit-cta">
-						<span>{{ form.content.submitLabel }}</span>
+						<span>{{ loading ? $t('contactIsSending') : form.content.submitLabel }}</span>
 						<span class="total-wrapper">
 							{{ formatIndex(validFieldsCount) }} /{{ formatIndex(totalFields) }}
 						</span>

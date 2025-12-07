@@ -80,7 +80,7 @@ const defaultFieldConfig: Record<string, { validation?: string; options?: any; a
 	location: { validation: 'required', options: { required: true }, autocomplete: 'home address-level2' },
 	website: { validation: 'url', options: {}, autocomplete: 'off' },
 	quote: { validation: 'required', options: { required: true }, autocomplete: 'off' },
-	subject: { validation: 'required', options: { required: true }, autocomplete: 'off' },
+	request: { validation: 'required', options: { required: true }, autocomplete: 'off' },
 	message: { validation: 'required', options: { required: true }, autocomplete: 'off' },
 	services: { validation: 'required', options: { required: true }, autocomplete: 'off' },
 	date: {
