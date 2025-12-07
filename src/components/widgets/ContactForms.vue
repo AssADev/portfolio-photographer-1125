@@ -61,6 +61,12 @@ const onFormStatusChange = (status: 'idle' | 'success' | 'error') => {
 	formStatus.value = status;
 };
 
+const closeDrawer = () => {
+	toggled.value = false;
+	selectedForm.value = null;
+	formStatus.value = 'idle';
+};
+
 // Watchers :
 watch(
 	() => formId,
@@ -79,7 +85,8 @@ watch(
 		v-model:toggled="toggled"
 		theme="light"
 		:has-error="formStatus === 'error'"
-		:prevent-click-outside="!!selectedForm"
+		:prevent-click-outside="!!selectedForm && formStatus !== 'success'"
+		@close="closeDrawer"
 	>
 		<template #title>
 			<transition name="fade" mode="out-in">
@@ -108,7 +115,7 @@ watch(
 			</transition>
 		</div>
 		<template #footer>
-			<button v-if="!selectedForm" @click="toggled = false">
+			<button v-if="!selectedForm || formStatus === 'success'" @click="closeDrawer">
 				<span>{{ $t('close') }}</span>
 			</button>
 			<button v-else @click="backToChoices">

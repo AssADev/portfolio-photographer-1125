@@ -22,6 +22,11 @@ const {
 
 const toggled = defineModel<boolean>('toggled', { default: false });
 
+// Emits :
+const emit = defineEmits<{
+	(e: 'close'): void;
+}>();
+
 // Refs :
 let tl: gsap.core.Timeline | null = null;
 const drawerRef = useTemplateRef('drawerRef');
@@ -50,7 +55,9 @@ const openDrawer = () => {
 };
 
 const closeDrawer = () => {
+	emit('close');
 	lockScroll.value = false;
+
 	tl?.kill();
 	tl = gsap.timeline();
 

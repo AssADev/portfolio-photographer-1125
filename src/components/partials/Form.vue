@@ -5,6 +5,7 @@ import { useForm } from 'vee-validate';
 import { computed, ref, useTemplateRef, watch } from 'vue';
 
 import { getFieldConfig, mapToProps } from '#utils/form.ts';
+import { formatDateForSubmission } from '#utils/formatDate.ts';
 import { formatIndex } from '#utils/formatIndex.ts';
 import { sleep } from '#utils/sleep.ts';
 
@@ -105,8 +106,17 @@ const onSubmit = async () => {
 				`[${language.toUpperCase()}] Portfolio photographe : ${form.content.id.charAt(0).toUpperCase() + form.content.id.slice(1)}`
 			);
 
+			// Format form values :
 			Object.entries(values).forEach(([key, value]) => {
-				web3FormData.append(key, value as string);
+				const field = form.content.inputs.find((f: any) => f.name === key);
+				let formattedValue = value as string;
+
+				// Format date & datetime fields :
+				if (field?.component === 'InputDate' || field?.component === 'InputDatetime') {
+					formattedValue = formatDateForSubmission(value as string, field?.component === 'InputDatetime');
+				}
+
+				web3FormData.append(key, formattedValue);
 			});
 
 			// Submit to Web3Forms :
