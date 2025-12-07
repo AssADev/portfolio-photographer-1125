@@ -43,6 +43,11 @@ const activeMenuItems = computed(() => {
 	return menuItems.value.map((i: StoryblokLabelLink) => ({ ...i, active: i === activeItem }));
 });
 
+const orderedLocales = computed(() => {
+	// Place current language first, followed by other locales :
+	return [language, ...locales.filter((locale) => locale !== language)];
+});
+
 // Methods :
 /**
  * Finds the most specific (closest) matching menu item for the current path
@@ -88,7 +93,7 @@ const findActiveMenuItem = (menuItems: any[], currentPath: string) => {
 		</ul>
 		<template #footer>
 			<ul class="languages-selector-container">
-				<template v-for="(locale, index) in locales" :key="locale">
+				<template v-for="(locale, index) in orderedLocales" :key="locale">
 					<li>
 						<span v-if="locale === language">{{ locale }}</span>
 						<a
@@ -102,7 +107,7 @@ const findActiveMenuItem = (menuItems: any[], currentPath: string) => {
 							<span>{{ locale }}</span>
 						</a>
 					</li>
-					<Icon v-if="index < locales.length - 1" name="square-small" />
+					<Icon v-if="index < orderedLocales.length - 1" name="square-small" />
 				</template>
 			</ul>
 		</template>
