@@ -4,7 +4,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import path, { join } from 'node:path';
 import { argv, cwd, exit } from 'node:process';
 
-// Get command line arguments
+// Get command line arguments :
 const [, , componentName, componentType = 'modules'] = argv;
 
 if (!componentName) {
@@ -12,12 +12,12 @@ if (!componentName) {
 	exit(1);
 }
 
-// Define paths
+// Define paths :
 const rootDir = cwd();
 const vueComponentPath = join(rootDir, 'src/storyblok', componentType, `${componentName}.vue`);
 const astroComponentPath = join(rootDir, 'src/storyblok', componentType, `${componentName}.astro`);
 
-// Generate Vue component content
+// Generate Vue component content :
 const vueContent = `<script setup lang="ts">
 import type { Storyblok${componentName} } from '#types/component-types-sb.js';
 
@@ -39,7 +39,7 @@ div {
 </style>
 `;
 
-// Generate Astro component content
+// Generate Astro component content :
 const astroContent = `---
 import { storyblokEditable } from '#storyblok/helpers/storyblokEditable.ts';
 import ${componentName}Vue from '#storyblok/${componentType}/${componentName}.vue';
@@ -55,7 +55,7 @@ const { blok } = Astro.props;
 <${componentName}Vue {...storyblokEditable(blok, Astro.locals.isPreviewMode)} {...Astro.props} />
 `;
 
-// Create directories if they don't exist
+// Create directories if they don't exist :
 mkdirSync(path.dirname(vueComponentPath), { recursive: true });
 mkdirSync(path.dirname(astroComponentPath), { recursive: true });
 

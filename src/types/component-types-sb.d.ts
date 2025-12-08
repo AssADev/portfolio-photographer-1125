@@ -6,7 +6,54 @@ import type { Event, Product } from '#types/externals.ts';
 
 export interface StoryblokBiography {
 	SEO: StoryblokSEO[];
+	body?: (
+		| StoryblokBiographyCopyright
+		| StoryblokBiographyHero
+		| StoryblokBiographyStrangersPortraits
+		| StoryblokOtherServices
+		| StoryblokQuotes
+	)[];
 	component: 'Biography';
+	_uid: string;
+}
+
+export interface StoryblokBiographyCopyright {
+	pretitle: string;
+	title: StoryblokRichtext;
+	cursorProjects?: boolean;
+	component: 'BiographyCopyright';
+	_uid: string;
+}
+
+export interface StoryblokBiographyHero {
+	title: string;
+	description: string;
+	titleDescriptionAndCta?: StoryblokTitleDescriptionAndCta[];
+	picturePrimary: StoryblokAsset;
+	pictureSecondary: StoryblokAsset;
+	component: 'BiographyHero';
+	_uid: string;
+}
+
+export interface StoryblokBiographyStrangersPortraits {
+	title: StoryblokRichtext;
+	sections?: (StoryblokBiographyStrangersPortraitsExplanation | StoryblokBiographyStrangersPortraitsVideo)[];
+	component: 'BiographyStrangersPortraits';
+	_uid: string;
+}
+
+export interface StoryblokBiographyStrangersPortraitsExplanation {
+	title: StoryblokRichtext;
+	description: string;
+	component: 'BiographyStrangersPortraitsExplanation';
+	_uid: string;
+}
+
+export interface StoryblokBiographyStrangersPortraitsVideo {
+	link: Exclude<StoryblokMultilink, { linktype?: 'email' } | { linktype?: 'asset' }>;
+	thumbnail: StoryblokAsset;
+	video: StoryblokAsset;
+	component: 'BiographyStrangersPortraitsVideo';
 	_uid: string;
 }
 
@@ -34,6 +81,7 @@ export interface StoryblokForms {
 	formError?: StoryblokFormError[];
 	inputs?: (
 		| StoryblokInputDate
+		| StoryblokInputDatetime
 		| StoryblokInputEmail
 		| StoryblokInputRadios
 		| StoryblokInputRadiosItem
@@ -59,13 +107,23 @@ export interface StoryblokHome {
 }
 
 export interface StoryblokInputDate {
+	name: string;
 	label: string;
 	placeholder: string;
 	component: 'InputDate';
 	_uid: string;
 }
 
+export interface StoryblokInputDatetime {
+	name: string;
+	label: string;
+	placeholder: string;
+	component: 'InputDatetime';
+	_uid: string;
+}
+
 export interface StoryblokInputEmail {
+	name: string;
 	label: string;
 	placeholder: string;
 	component: 'InputEmail';
@@ -73,6 +131,7 @@ export interface StoryblokInputEmail {
 }
 
 export interface StoryblokInputRadios {
+	name: string;
 	label: string;
 	items?: StoryblokInputRadiosItem[];
 	component: 'InputRadios';
@@ -86,6 +145,7 @@ export interface StoryblokInputRadiosItem {
 }
 
 export interface StoryblokInputText {
+	name: string;
 	label: string;
 	placeholder: string;
 	component: 'InputText';
@@ -93,6 +153,7 @@ export interface StoryblokInputText {
 }
 
 export interface StoryblokInputTextarea {
+	name: string;
 	label: string;
 	placeholder: string;
 	component: 'InputTextarea';
@@ -120,6 +181,13 @@ export interface StoryblokMenu {
 	_uid: string;
 }
 
+export interface StoryblokOtherServices {
+	title: string;
+	services?: (ISbStoryData<StoryblokService> | string)[];
+	component: 'OtherServices';
+	_uid: string;
+}
+
 export interface StoryblokPicture {
 	media: StoryblokAsset;
 	component: 'Picture';
@@ -129,6 +197,19 @@ export interface StoryblokPicture {
 export interface StoryblokProject {
 	SEO: StoryblokSEO[];
 	component: 'Project';
+	_uid: string;
+}
+
+export interface StoryblokQuotes {
+	quotes?: StoryblokQuotesItem[];
+	cursorProjects?: boolean;
+	component: 'Quotes';
+	_uid: string;
+}
+
+export interface StoryblokQuotesItem {
+	content: StoryblokRichtext;
+	component: 'QuotesItem';
 	_uid: string;
 }
 
@@ -170,6 +251,14 @@ export interface StoryblokSiteConfig {
 	favicon: StoryblokAsset;
 	formsContact: (ISbStoryData<StoryblokForms> | string)[];
 	component: 'SiteConfig';
+	_uid: string;
+}
+
+export interface StoryblokTitleDescriptionAndCta {
+	title: StoryblokRichtext;
+	description: string;
+	cta?: StoryblokLabelLink[];
+	component: 'TitleDescriptionAndCta';
 	_uid: string;
 }
 

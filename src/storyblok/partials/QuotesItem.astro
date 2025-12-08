@@ -1,0 +1,13 @@
+---
+import { storyblokEditable } from '#storyblok/helpers/storyblokEditable.ts';
+import QuotesItemVue from '#storyblok/partials/QuotesItem.vue';
+import type { StoryblokQuotesItem } from '#types/component-types-sb.js';
+
+type Props = {
+	blok: StoryblokQuotesItem;
+};
+
+const { blok } = Astro.props;
+---
+
+<QuotesItemVue {...storyblokEditable(blok, Astro.locals.isPreviewMode)} {...Astro.props} />

@@ -1,0 +1,13 @@
+---
+import { storyblokEditable } from '#storyblok/helpers/storyblokEditable.ts';
+import BiographyStrangersPortraitsVue from '#storyblok/modules/biography/BiographyStrangersPortraits.vue';
+import type { StoryblokBiographyStrangersPortraits } from '#types/component-types-sb.js';
+
+type Props = {
+	blok: StoryblokBiographyStrangersPortraits;
+};
+
+const { blok } = Astro.props;
+---
+
+<BiographyStrangersPortraitsVue {...storyblokEditable(blok, Astro.locals.isPreviewMode)} {...Astro.props} />
