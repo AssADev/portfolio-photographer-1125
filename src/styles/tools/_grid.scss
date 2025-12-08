@@ -17,6 +17,22 @@ $gridBreakpoints: (
 	dk: (
 		width: $desktop,
 		columns: 32
+	),
+	mlg: (
+		width: $mlarge,
+		columns: 32
+	),
+	lg: (
+		width: $large,
+		columns: 32
+	),
+	xlg: (
+		width: $xlarge,
+		columns: 32
+	),
+	xxlg: (
+		width: $xxlarge,
+		columns: 32
 	)
 );
 

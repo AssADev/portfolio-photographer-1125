@@ -15,7 +15,7 @@ const { root, class: className } = defineProps<{ root?: boolean; class?: string 
 // Pass class only if root is false :
 const attrs = !root ? { class: className } : {};
 
-const global = useStore($global);
+const globalStore = useStore($global);
 const lenisRef = useTemplateRef<typeof VueLenis>('lenis');
 
 let restoreScroll: () => void;
@@ -23,7 +23,7 @@ let restoreScroll: () => void;
 if (root) {
 	// Only lock the root scroll :
 	watchEffect(() => {
-		if (global.value.lockScroll) {
+		if (globalStore.value.lockScroll) {
 			lenisRef.value?.lenis?.stop();
 			// Makes sure we really can't scroll on iOS :
 			if (isIOS) restoreScroll = preventScrollMobileSafari();

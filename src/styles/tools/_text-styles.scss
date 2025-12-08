@@ -40,7 +40,7 @@
 //// Roobert :
 @mixin roobert-96 {
 	@include roobert(500, none, -0.02em);
-	@include fluidLineHeight(0.9, 1.1);
+	@include fluidLineHeight(0.9, 0.95);
 
 	font-size: fluidFontSize(96px, 64px);
 }
@@ -108,7 +108,6 @@
 	line-height: 1;
 }
 
-
 @mixin roobert-14-uppercase {
 	@include roobert(500, uppercase);
 
@@ -133,7 +132,7 @@
 //// Romie :
 @mixin romie-96 {
 	@include romie(500, none, -0.02em);
-	@include fluidLineHeight(0.9, 1.1);
+	@include fluidLineHeight(0.9, 0.95);
 
 	font-size: fluidFontSize(96px, 64px);
 }

@@ -3,7 +3,10 @@ import { computed } from 'vue';
 
 import Icon from '#components/utils/Icon.vue';
 
-const { to, is, type, disabled, target, rel, theme } = defineProps<{
+import { $global } from '#stores/global.ts';
+
+// Props :
+const { to, is, type, disabled, target, rel, theme, link } = defineProps<{
 	is?: 'button' | 'a';
 	to?: string;
 	disabled?: boolean;
@@ -12,18 +15,32 @@ const { to, is, type, disabled, target, rel, theme } = defineProps<{
 	target?: string;
 	rel?: string;
 	theme?: 'dot-khaki' | 'dot-light' | 'dot-dark' | 'light' | 'dark';
+	link?: any;
 }>();
 
-const isAnchor = is === 'a' || !!to;
+const isFormLink = link?.story?.content?.component === 'Forms';
+const isAnchor = (is === 'a' || !!to || !!link) && !isFormLink;
+
+// Computed :
+const href = computed(() => (link ? `/${link.cached_url || link.url || ''}` : to));
 
 const attrs = computed(() => ({
-	href: isAnchor ? to : undefined,
+	href: isAnchor ? href.value : undefined,
 	type: !isAnchor ? type || 'button' : undefined,
 	disabled: (disabled && !isAnchor) || undefined,
 	'aria-disabled': disabled || undefined,
 	target: target,
 	rel: target === '_blank' ? rel || 'noopener noreferrer' : rel
 }));
+
+// Methods :
+const handleClick = (e: Event) => {
+	if (isFormLink) {
+		e.preventDefault();
+		$global.setKey('isContactToggled', true);
+		$global.setKey('contactFormId', link.story.content.id);
+	}
+};
 </script>
 
 <template>
@@ -31,6 +48,7 @@ const attrs = computed(() => ({
 		:is="isAnchor ? 'a' : 'button'"
 		v-bind="attrs"
 		:class="[{ 'partials-button': !!theme }, theme && `theme-${theme}`]"
+		@click="handleClick"
 	>
 		<div v-if="theme?.startsWith('dot')" class="dot-wrapper">
 			<Icon name="square-small" />

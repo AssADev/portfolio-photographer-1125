@@ -20,7 +20,7 @@ const resolvers = {
 </script>
 
 <template>
-	<div class="partials title-description-and-cta">
+	<div class="partials-title-description-and-cta">
 		<RichText v-if="data.title?.content" :doc="data.title" :resolvers="resolvers" />
 		<p v-if="data.description" v-html="nl2br(data.description)" />
 		<Button v-if="data.cta?.[0]" theme="dot-dark" :text="data.cta[0].label" :link="data.cta[0].link" />
@@ -28,7 +28,7 @@ const resolvers = {
 </template>
 
 <style lang="scss" scoped>
-.title-description-and-cta {
+.partials-title-description-and-cta {
 	& > :deep(.partials-rich-text) {
 		@include roobert-48;
 

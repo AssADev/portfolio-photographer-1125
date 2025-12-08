@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useStore } from '@nanostores/vue';
+import { useStore, useVModel } from '@nanostores/vue';
 import { useEventListener } from '@vueuse/core';
 import { provide, ref, watchEffect } from 'vue';
 
@@ -21,12 +21,13 @@ const { siteConfig, language, languageAlternates } = defineProps<{
 // Providers & Stores :
 provide('siteConfig', siteConfig);
 const globalStore = useStore($global);
+const contactFormId = useVModel($global, 'contactFormId');
+const isContactToggled = useVModel($global, 'isContactToggled');
 
 // Refs :
 const scrollHide = ref(false);
 const hidden = ref(false);
 const isMenuToggled = ref(false);
-const isContactToggled = ref(false);
 
 // Methods :
 const toggleContact = () => {
@@ -35,6 +36,11 @@ const toggleContact = () => {
 
 const toggleMenu = () => {
 	isMenuToggled.value = !isMenuToggled.value;
+};
+
+const onContactToggled = (val: boolean) => {
+	isContactToggled.value = val;
+	if (!val) contactFormId.value = undefined;
 };
 
 // Watchers :
@@ -67,7 +73,12 @@ useEventListener('scroll', () => {
 					<span>X</span>
 				</Button>
 				<Menu v-model:toggled="isMenuToggled" :language="language" :languageAlternates="languageAlternates" />
-				<ContactForms v-model:toggled="isContactToggled" :language="language" />
+				<ContactForms
+					:toggled="globalStore.isContactToggled"
+					@update:toggled="onContactToggled"
+					:language="language"
+					:formId="globalStore.contactFormId"
+				/>
 			</div>
 		</div>
 	</header>
