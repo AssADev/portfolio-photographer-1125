@@ -1,15 +1,25 @@
 <script setup lang="ts">
 import type { StoryblokBiographyHero } from '#types/component-types-sb.js';
 
-defineProps<{
+import TitleDescriptionAndCta from '#storyblok/partials/TitleDescriptionAndCta.vue';
+
+const { blok } = defineProps<{
 	blok: StoryblokBiographyHero;
 }>();
+
+// console.log(blok);
 </script>
 
-<template><div>BiographyHero</div></template>
+<template>
+	<section class="modules biography-hero">
+		<div class="container">
+			<TitleDescriptionAndCta v-if="blok.titleDescriptionAndCta?.[0]" :data="blok.titleDescriptionAndCta?.[0]" />
+		</div>
+	</section>
+</template>
 
 <style lang="scss" scoped>
-div {
+.biography-hero {
 	display: flex;
 	align-items: center;
 	justify-content: center;

@@ -97,6 +97,7 @@ const attrs = computed(() => ({
 			span {
 				@include roobert-14-uppercase;
 
+				text-wrap: nowrap;
 				transition: transform 0.4s $power2Out 0.1s;
 			}
 
