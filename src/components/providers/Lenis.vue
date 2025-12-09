@@ -34,8 +34,32 @@ if (root) {
 	});
 }
 
-const update = (time: number) => lenisRef.value?.lenis?.raf(time * 1000);
-onMounted(() => gsap.ticker.add(update));
+// Methods :
+const update = (time: number) => {
+	lenisRef.value?.lenis?.raf(time * 1000);
+
+	// Update global scroll offset and velocity :
+	if (lenisRef.value?.lenis) {
+		const scroll = lenisRef.value.lenis.scroll;
+		const velocity = lenisRef.value.lenis.velocity;
+
+		document.documentElement.style.setProperty('--scroll-offset', scroll.toFixed(2));
+		document.documentElement.style.setProperty('--scroll-velocity', velocity.toFixed(2));
+
+		// Update direction only if moving :
+		if (Math.abs(velocity) > 0.1) {
+			document.documentElement.style.setProperty('--scroll-direction', velocity > 0 ? 'normal' : 'reverse');
+		}
+	}
+};
+
+// Attach & Detach :
+onMounted(() => {
+	gsap.ticker.add(update);
+
+	document.documentElement.style.setProperty('--scroll-velocity', '0');
+});
+
 onUnmounted(() => gsap.ticker.remove(update));
 </script>
 

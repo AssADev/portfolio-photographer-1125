@@ -32,6 +32,7 @@
 		"@storyblok/astro": "^7.3.5",
 		"@storyblok/js": "^4.4.1",
 		"@storyblok/vue": "^9.4.1",
+		"@unpic/core": "^1.0.3",
 		"@unpic/vue": "^1.0.0",
 		"@vueuse/core": "^14.0.0",
 		"@vueuse/integrations": "^14.1.0",
