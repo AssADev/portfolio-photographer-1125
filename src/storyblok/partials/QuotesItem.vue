@@ -1,19 +1,28 @@
 <script setup lang="ts">
+import RichText from '#components/utils/RichText.vue';
+
 import type { StoryblokQuotesItem } from '#types/component-types-sb.js';
 
 defineProps<{
 	blok: StoryblokQuotesItem;
+	layout: string[];
 }>();
 </script>
 
-<template><div>QuotesItem</div></template>
+<template>
+	<div class="quotes-item-wrapper" :class="layout">
+		<RichText :doc="blok.content" />
+	</div>
+</template>
 
 <style lang="scss" scoped>
-div {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	height: 60vh;
-	border: 1px solid red;
+.quotes-item-wrapper {
+	@include roobert-28;
+
+	max-width: fluidSize(620px, 480px);
+
+	:deep(em) {
+		@include romie-28-italic;
+	}
 }
 </style>

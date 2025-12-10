@@ -27,7 +27,7 @@ watchEffect(() => {
 	animation?.cancel();
 
 	animation = innerRef.value?.animate([{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }], {
-		duration: 60000,
+		duration: 120000,
 		direction: lenis.value?.velocity! > 0 ? 'reverse' : 'normal',
 		fill: 'both',
 		iterations: Infinity

@@ -1,19 +1,85 @@
 <script setup lang="ts">
+import CircularStar from '#components/utils/CircularStar.vue';
+import Label from '#components/utils/Label.vue';
+import RichText from '#components/utils/RichText.vue';
+
 import type { StoryblokBiographyCopyright } from '#types/component-types-sb.js';
 
+// Props :
 defineProps<{
 	blok: StoryblokBiographyCopyright;
 }>();
 </script>
 
-<template><div>BiographyCopyright</div></template>
+<template>
+	<section class="modules biography-copyright">
+		<CircularStar />
+		<div class="container">
+			<Label v-if="blok.label" :label="blok.label" />
+			<RichText :doc="blok.title.content" />
+		</div>
+	</section>
+</template>
 
 <style lang="scss" scoped>
-div {
+.biography-copyright {
+	position: relative;
 	display: flex;
+	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	height: 60vh;
-	border: 1px solid red;
+	min-height: 100vh;
+	overflow: hidden;
+
+	&::before {
+		content: '';
+		position: absolute;
+		z-index: 1;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		height: 275px;
+		background: linear-gradient(180deg, rgba($white, 0) 0%, rgba($ivory, 1) 100%);
+	}
+
+	:deep(.partials-circular-star) {
+		position: absolute;
+		bottom: 0;
+		left: 50%;
+		transform: translate3d(-50%, 50%, 0);
+
+		@include mq($until: desktop) {
+			height: 100%;
+		}
+
+		@include mq(desktop) {
+			width: calc(100% - (var(--gutter) * 2));
+		}
+	}
+}
+
+.container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	max-width: fluidSize(780px, 540px);
+	text-align: center;
+
+	@include mq($until: tablet) {
+		gap: 8px;
+	}
+
+	@include mq(tablet) {
+		gap: 4px;
+	}
+
+	& > :deep(.partials-rich-text) {
+		@include roobert-48;
+
+		em {
+			@include romie-48-italic;
+		}
+	}
 }
 </style>

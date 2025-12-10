@@ -18,7 +18,7 @@ export interface StoryblokBiography {
 }
 
 export interface StoryblokBiographyCopyright {
-	pretitle: string;
+	label: string;
 	title: StoryblokRichtext;
 	cursorProjects?: boolean;
 	component: 'BiographyCopyright';

@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import CursorProjects from '#components/partials/CursorProjects.vue';
-import RichText from '#components/utils/RichText.vue';
 
 import type { StoryblokQuotes } from '#types/component-types-sb.js';
+
+import QuotesItem from '#storyblok/partials/QuotesItem.vue';
 
 // Props :
 defineProps<{
@@ -53,15 +54,14 @@ const layouts = [
 <template>
 	<section class="modules quotes">
 		<CursorProjects v-if="blok.cursorProjects" />
+
 		<div class="container-grid">
-			<div
+			<QuotesItem
 				v-for="(quote, index) in blok.quotes"
 				:key="quote._uid"
-				class="quote-wrapper"
-				:class="layouts[index % layouts.length]"
-			>
-				<RichText :doc="quote.content" />
-			</div>
+				:blok="quote"
+				:layout="layouts[index % layouts.length]"
+			/>
 		</div>
 	</section>
 </template>
@@ -72,17 +72,9 @@ const layouts = [
 	padding-block: fluidSize(160px, 120px) fluidSize(120px, 80px);
 }
 
-.quote-wrapper {
-	@include roobert-28;
-
-	max-width: fluidSize(620px, 480px);
-
+:deep(.quotes-item-wrapper) {
 	&:not(:first-child) {
 		margin-block-start: fluidSize(150px, 120px);
-	}
-
-	:deep(em) {
-		@include romie-28-italic;
 	}
 }
 </style>
