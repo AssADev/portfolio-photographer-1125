@@ -12,7 +12,7 @@ const { blok, email, socials } = defineProps<{
 	socials: StoryblokLabelLink[];
 }>();
 
-// console.log(blok);
+console.log(blok);
 </script>
 
 <template>
@@ -23,7 +23,11 @@ const { blok, email, socials } = defineProps<{
 			>
 				{{ blok.title }}
 			</h1>
-			<div class="picture-main-container col-start-1 col-end-13 col-start-dk-1 col-end-dk-18">
+		</div>
+		<div class="content-container">
+			<div
+				class="picture-primary-container col-start-1 col-end-13 col-start-tb-1 col-end-tb-13 col-start-dk-1 col-end-dk-18"
+			>
 				<CircularStar />
 				<div class="picture-wrapper">
 					<Image
@@ -43,7 +47,9 @@ const { blok, email, socials } = defineProps<{
 					</ul>
 				</div>
 			</div>
-			<div class="description-container col-start-1 col-end-11 col-start-dk-24 col-end-dk-33">
+			<div
+				class="picture-secondary-container col-start-1 col-end-11 col-start-tb-10 col-end-tb-16 col-start-dk-24 col-end-dk-33"
+			>
 				<p v-if="blok.description">{{ blok.description }}</p>
 				<div class="picture-wrapper">
 					<Image
@@ -56,7 +62,7 @@ const { blok, email, socials } = defineProps<{
 			<TitleDescriptionAndCta
 				v-if="blok.titleDescriptionAndCta?.[0]"
 				:data="blok.titleDescriptionAndCta?.[0]"
-				class="col-start-1 col-end-13 col-start-dk-18 col-end-dk-28 col-start-lg-21 col-end-lg-29 col-start-xxlg-22 col-end-xxlg-28"
+				class="col-start-1 col-end-13 col-start-tb-2 col-end-tb-9 col-start-dk-21 col-end-dk-31 col-start-mlg-22 col-end-mlg-30 col-start-xxlg-22 col-end-xxlg-28"
 			/>
 		</div>
 	</section>
@@ -78,87 +84,98 @@ const { blok, email, socials } = defineProps<{
 	z-index: 1;
 }
 
-.picture-main-container {
-	position: relative;
+.content-container {
+	@include container-grid;
+
 	margin-block-start: fluidSize(210px, 140px);
 
-	:deep(.partials-circular-star) {
-		position: absolute;
+	.picture-primary-container {
+		position: relative;
 
-		@include mq($until: tablet) {
-			top: 0;
-			left: 50%;
-			transform: translate3d(-50%, -50%, 0);
+		:deep(.partials-circular-star) {
+			position: absolute;
+
+			@include mq($until: tablet) {
+				top: 0;
+				left: 50%;
+				transform: translate3d(-50%, -50%, 0);
+				width: 100%;
+			}
+
+			@include mq(tablet) {
+				top: 0;
+				right: 0;
+				transform: translate3d(50%, -50%, 0);
+				width: fluidSize(460px, 380px);
+			}
+		}
+
+		.picture-wrapper {
+			position: relative;
+			width: 100%;
+			overflow: hidden;
+		}
+
+		.socials-container {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: fluidSize(28px, 20px);
+			margin-block-start: fluidSize(16px, 12px);
+
+			.socials-wrapper {
+				display: flex;
+				gap: fluidSize(16px, 12px);
+			}
+
+			li {
+				display: flex;
+			}
+
+			a {
+				@include roobert-12-uppercase;
+			}
+		}
+	}
+
+	.picture-secondary-container {
+		$gap: fluidSize(32px, 24px);
+
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: $gap;
+
+		@include mq($until: desktop) {
+			margin-block-start: fluidSize(120px, 100px);
+		}
+
+		& > p {
+			@include roobert-18;
+
+			@include mq($until: desktop) {
+				max-width: 320px;
+			}
+
+			@include mq(desktop) {
+				position: absolute;
+				top: 0;
+				left: 0;
+				transform: translate3d(0, calc(-100% - $gap), 0);
+			}
+		}
+
+		.picture-wrapper {
+			position: relative;
 			width: 100%;
 		}
+	}
 
-		@include mq(tablet) {
-			top: 0;
-			right: 0;
-			transform: translate3d(50%, -50%, 0);
-			width: fluidSize(460px, 380px);
+	:deep(.partials-title-description-and-cta) {
+		@include mq($until: desktop) {
+			max-width: 360px;
+			margin-block-start: fluidSize(100px, 80px);
 		}
-	}
-
-	.picture-wrapper {
-		position: relative;
-		width: 100%;
-	}
-
-	.socials-container {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: fluidSize(28px, 20px);
-		margin-block-start: fluidSize(20px, 16px);
-
-		.socials-wrapper {
-			display: flex;
-			gap: fluidSize(16px, 12px);
-		}
-
-		li {
-			display: flex;
-		}
-
-		a {
-			@include roobert-12-uppercase;
-		}
-	}
-}
-
-.description-container {
-	$gap: fluidSize(32px, 24px);
-
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	gap: $gap;
-
-	@include mq(tablet) {
-		margin-block-start: fluidSize(210px, 140px);
-	}
-
-	& > p {
-		@include roobert-18;
-
-		@include mq(tablet) {
-			position: absolute;
-			top: 0;
-			left: 0;
-			transform: translate3d(0, calc(-100% - $gap), 0);
-		}
-	}
-
-	.picture-wrapper {
-		position: relative;
-		width: 100%;
-	}
-}
-
-:deep(.partials-title-description-and-cta) {
-	@include mq($until: tablet) {
-		max-width: 360px;
 	}
 }
 </style>

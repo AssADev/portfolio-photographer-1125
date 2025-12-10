@@ -61,6 +61,7 @@ const openDrawer = () => {
 
 const closeDrawer = () => {
 	emit('close');
+	toggled.value = false;
 	lockScroll.value = false;
 
 	tl?.kill();
@@ -105,6 +106,7 @@ useResizeObserver(socialsRef, () => {
 
 <template>
 	<div ref="drawerRef" class="drawer-menu">
+		<div class="overlay" @click="!preventClickOutside && closeDrawer()" />
 		<div class="drawer-container" :class="theme">
 			<div ref="outerEl" class="drawer-body" :class="{ 'form-error': hasError }">
 				<div ref="innerEl" class="drawer-inner-body">
@@ -128,20 +130,31 @@ useResizeObserver(socialsRef, () => {
 @use 'sass:map';
 
 .drawer-menu {
+	--width: 365px;
 	--menu-padding-inline: 14px;
 
 	position: fixed;
 	bottom: var(--gutter);
 	right: var(--gutter);
 	z-index: 25;
-	max-width: 365px;
+	max-width: var(--width);
 	width: calc(100% - var(--gutter) * 2);
 	opacity: 0;
 	visibility: hidden;
 	transform: translate3d(0, 20px, 0);
 }
 
+.overlay {
+	position: absolute;
+	bottom: calc(var(--gutter) * -1);
+	right: calc(var(--gutter) * -1);
+	width: 100vw;
+	height: 100vh;
+	background: linear-gradient(125deg, transparent, rgba($whiteChoco, 0.125));
+}
+
 .drawer-container {
+	position: relative;
 	width: 100%;
 	height: fit-content;
 	border-radius: var(--border-radius);
