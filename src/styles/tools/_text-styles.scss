@@ -56,7 +56,7 @@
 	@include roobert(500);
 
 	font-size: fluidFontSize(28px, 24px);
-	line-height: 1.2;
+	line-height: 1.1;
 }
 
 @mixin roobert-20 {
@@ -160,7 +160,7 @@
 	@include romie(500);
 
 	font-size: fluidFontSize(28px, 24px);
-	line-height: 1.2;
+	line-height: 1.1;
 }
 
 @mixin romie-28-italic {
@@ -173,7 +173,7 @@
 	@include romie(500);
 
 	font-size: fluidFontSize(20px, 18px);
-	line-height: 1.2;
+	line-height: 1.1;
 }
 
 @mixin romie-20-italic {

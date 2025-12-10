@@ -145,12 +145,18 @@ useResizeObserver(socialsRef, () => {
 }
 
 .overlay {
+	--deg: 180deg;
+
 	position: absolute;
 	bottom: calc(var(--gutter) * -1);
 	right: calc(var(--gutter) * -1);
 	width: 100vw;
 	height: 100vh;
-	background: linear-gradient(125deg, transparent, rgba($whiteChoco, 0.125));
+	background: linear-gradient(var(--deg), transparent, rgba($whiteChoco, 0.125));
+
+	@include mq(tablet) {
+		--deg: 125deg;
+	}
 }
 
 .drawer-container {

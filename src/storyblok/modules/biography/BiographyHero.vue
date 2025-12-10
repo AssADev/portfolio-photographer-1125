@@ -6,13 +6,11 @@ import type { StoryblokBiographyHero, StoryblokLabelLink } from '#types/componen
 
 import TitleDescriptionAndCta from '#storyblok/partials/TitleDescriptionAndCta.vue';
 
-const { blok, email, socials } = defineProps<{
+const { email, socials } = defineProps<{
 	blok: StoryblokBiographyHero;
 	email: string;
 	socials: StoryblokLabelLink[];
 }>();
-
-console.log(blok);
 </script>
 
 <template>
@@ -62,7 +60,7 @@ console.log(blok);
 			<TitleDescriptionAndCta
 				v-if="blok.titleDescriptionAndCta?.[0]"
 				:data="blok.titleDescriptionAndCta?.[0]"
-				class="col-start-1 col-end-13 col-start-tb-2 col-end-tb-9 col-start-dk-21 col-end-dk-31 col-start-mlg-22 col-end-mlg-30 col-start-xxlg-22 col-end-xxlg-28"
+				class="col-start-2 col-end-13 col-start-tb-2 col-end-tb-9 col-start-dk-21 col-end-dk-31 col-start-mlg-22 col-end-mlg-30 col-start-xxlg-22 col-end-xxlg-28"
 			/>
 		</div>
 	</section>

@@ -14,8 +14,10 @@ $BASE_FONT_SIZE: 16;
 
 $figma: (
 	small: 375px,
+	tablet: 768px,
 	desktop: 1024px,
-	large: 1440px
+	large: 1440px,
+	xxlarge: 1920px
 );
 
 @function pxToVw($value, $bp: small) {
