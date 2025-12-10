@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import CursorProjects from '#components/partials/CursorProjects.vue';
 import RichText from '#components/utils/RichText.vue';
 
 import type { StoryblokQuotes } from '#types/component-types-sb.js';
@@ -51,6 +52,7 @@ const layouts = [
 
 <template>
 	<section class="modules quotes">
+		<CursorProjects v-if="blok.cursorProjects" />
 		<div class="container-grid">
 			<div
 				v-for="(quote, index) in blok.quotes"
@@ -66,9 +68,7 @@ const layouts = [
 
 <style lang="scss" scoped>
 .quotes {
-	display: flex;
-	align-items: center;
-	justify-content: center;
+	position: relative;
 	padding-block: fluidSize(160px, 120px) fluidSize(120px, 80px);
 }
 
