@@ -60,8 +60,6 @@ const handleClick = (e: Event) => {
 </template>
 
 <style lang="scss" scoped>
-@use 'sass:map';
-
 .partials-button {
 	position: relative;
 	display: inline-flex;

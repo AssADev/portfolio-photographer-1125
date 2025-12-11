@@ -31,8 +31,10 @@ $gradients: (
 	'menu-white': linear-gradient(90deg, rgba($white, 0.05) 0%, rgba($white, 0) 100%),
 	'form-error': linear-gradient(90deg, rgba($red, 0.1) 0%, rgba($red, 0) 100%),
 	'form-error-drawer-body': linear-gradient(180deg, rgba($red, 0.1) 0%, rgba($red, 0) 100%),
-	'white-ivory': linear-gradient(180deg, $white 0%, $ivory 100%),
-	'ivory-white': linear-gradient(180deg, $ivory 0%, $white 100%)
+	'white-ivory': linear-gradient(180deg, rgba($white, 1) 0%, rgba($ivory, 1) 100%),
+	'ivory-white': linear-gradient(180deg, rgba($ivory, 1) 0%, rgba($white, 1) 100%),
+	'white-ivory-transparent': linear-gradient(180deg, rgba($white, 0) 0%, rgba($ivory, 1) 100%),
+	'ivory-white-transparent': linear-gradient(180deg, rgba($ivory, 1) 0%, rgba($white, 0) 100%)
 );
 
 @mixin gradient($name: 'white-black') {

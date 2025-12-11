@@ -8,6 +8,11 @@ type Props = {
 };
 
 const { blok } = Astro.props;
+const { socials } = Astro.locals.siteConfig;
 ---
 
-<BiographyStrangersPortraitsVue {...storyblokEditable(blok, Astro.locals.isPreviewMode)} {...Astro.props} />
+<BiographyStrangersPortraitsVue
+	{...storyblokEditable(blok, Astro.locals.isPreviewMode)}
+	{...Astro.props}
+	socials={socials}
+/>

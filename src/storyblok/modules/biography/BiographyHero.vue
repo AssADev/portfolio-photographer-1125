@@ -36,7 +36,7 @@ const { email, socials } = defineProps<{
 				</div>
 				<div class="socials-container">
 					<a v-if="email" :href="`mailto:${email}`">{{ email }}</a>
-					<ul class="socials-wrapper">
+					<ul v-if="socials.length" class="socials-wrapper">
 						<li v-for="social in socials" :key="social._uid">
 							<a :href="social.link.url" target="_blank" rel="noopener noreferrer">
 								{{ social.label }}

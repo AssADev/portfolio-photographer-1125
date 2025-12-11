@@ -6,10 +6,11 @@ import type { ISbStoryData } from '@storyblok/astro';
 
 import Lenis from '#components/providers/Lenis.vue';
 
-import Header from '#components/widgets/Header.vue';
-
 import SEO from '#components/widgets/Head/SEO.astro';
 import Head from '#components/widgets/Head/Head.astro';
+
+import Header from '#components/widgets/Header.vue';
+import Cursor from '#components/widgets/Cursor.vue';
 
 import ScriptUtilities from '#components/scripts/ScriptUtilities.astro';
 
@@ -54,6 +55,7 @@ setState('url', Astro.url);
 	</Head>
 	<body>
 		<div id="app">
+			<Cursor client:load />
 			<Header siteConfig={siteConfig} language={language} languageAlternates={languageAlternates} client:load />
 			<main>
 				<Lenis client:load root />

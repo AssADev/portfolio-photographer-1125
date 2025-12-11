@@ -10,8 +10,17 @@ export interface StoryblokBiography {
 		| StoryblokBiographyCopyright
 		| StoryblokBiographyHero
 		| StoryblokBiographyStrangersPortraits
+		| StoryblokHomeHero
+		| StoryblokLinksHero
+		| StoryblokLinksMaterials
 		| StoryblokOtherServices
+		| StoryblokProjectTestimonial
 		| StoryblokQuotes
+		| StoryblokServiceFAQ
+		| StoryblokServicesHero
+		| StoryblokServicesListing
+		| StoryblokServiceTestimonials
+		| StoryblokSteps
 	)[];
 	component: 'Biography';
 	_uid: string;
@@ -106,6 +115,13 @@ export interface StoryblokHome {
 	_uid: string;
 }
 
+export interface StoryblokHomeHero {
+	title: StoryblokRichtext;
+	services?: (ISbStoryData<StoryblokProject> | string)[];
+	component: 'HomeHero';
+	_uid: string;
+}
+
 export interface StoryblokInputDate {
 	name: string;
 	label: string;
@@ -173,6 +189,51 @@ export interface StoryblokLinks {
 	_uid: string;
 }
 
+export interface StoryblokLinksHero {
+	title: StoryblokRichtext;
+	background: StoryblokAsset;
+	component: 'LinksHero';
+	_uid: string;
+}
+
+export interface StoryblokLinksMaterials {
+	title?: StoryblokRichtext;
+	description?: string;
+	materials?: (
+		| StoryblokLinksMaterialsItemProduct
+		| StoryblokLinksMaterialsItemTitle
+		| StoryblokLinksMaterialsItemEmpty
+	)[];
+	component: 'LinksMaterials';
+	_uid: string;
+}
+
+export interface StoryblokLinksMaterialsItemEmpty {
+	columnNumber?: string;
+	rowNumber?: string;
+	component: 'LinksMaterialsItemEmpty';
+	_uid: string;
+}
+
+export interface StoryblokLinksMaterialsItemProduct {
+	pretitle: string;
+	title: string;
+	link: Exclude<StoryblokMultilink, { linktype?: 'email' } | { linktype?: 'asset' }>;
+	picture: StoryblokAsset;
+	columnNumber?: string;
+	rowNumber?: string;
+	component: 'LinksMaterialsItemProduct';
+	_uid: string;
+}
+
+export interface StoryblokLinksMaterialsItemTitle {
+	title: string;
+	columnNumber?: string;
+	rowNumber?: string;
+	component: 'LinksMaterialsItemTitle';
+	_uid: string;
+}
+
 export interface StoryblokMenu {
 	title: string;
 	description: string;
@@ -200,9 +261,23 @@ export interface StoryblokProject {
 	_uid: string;
 }
 
+export interface StoryblokProjectCopy {
+	SEO: StoryblokSEO[];
+	component: 'Project_copy';
+	_uid: string;
+}
+
+export interface StoryblokProjectTestimonial {
+	author: string;
+	testimonial: StoryblokRichtext;
+	component: 'ProjectTestimonial';
+	_uid: string;
+}
+
 export interface StoryblokQuotes {
 	quotes?: StoryblokQuotesItem[];
 	cursorProjects?: boolean;
+	circularStar?: boolean;
 	component: 'Quotes';
 	_uid: string;
 }
@@ -230,9 +305,78 @@ export interface StoryblokService {
 	_uid: string;
 }
 
+export interface StoryblokServiceFAQ {
+	title: StoryblokRichtext;
+	description: string;
+	link: Exclude<StoryblokMultilink, { linktype?: 'email' } | { linktype?: 'asset' }>;
+	sections?: StoryblokServiceFAQSection[];
+	component: 'ServiceFAQ';
+	_uid: string;
+}
+
+export interface StoryblokServiceFAQSection {
+	title: string;
+	questions?: StoryblokServiceFAQSectionItem[];
+	component: 'ServiceFAQSection';
+	_uid: string;
+}
+
+export interface StoryblokServiceFAQSectionItem {
+	question: string;
+	answer: StoryblokRichtext;
+	component: 'ServiceFAQSectionItem';
+	_uid: string;
+}
+
 export interface StoryblokServices {
 	SEO: StoryblokSEO[];
 	component: 'Services';
+	_uid: string;
+}
+
+export interface StoryblokServicesHero {
+	title: StoryblokRichtext;
+	subtitle: string;
+	description: string;
+	highlightService?: (ISbStoryData<StoryblokProject> | string)[];
+	component: 'ServicesHero';
+	_uid: string;
+}
+
+export interface StoryblokServicesListing {
+	services?: StoryblokServicesListingItem[];
+	component: 'ServicesListing';
+	_uid: string;
+}
+
+export interface StoryblokServicesListingItem {
+	title?: string;
+	description: string;
+	service: (ISbStoryData<StoryblokService> | string)[];
+	component: 'ServicesListingItem';
+	_uid: string;
+}
+
+export interface StoryblokServiceTestimonials {
+	title: string;
+	description: string;
+	link?: Exclude<StoryblokMultilink, { linktype?: 'email' } | { linktype?: 'asset' }>;
+	testimonials?: StoryblokServiceTestimonialsItem[];
+	component: 'ServiceTestimonials';
+	_uid: string;
+}
+
+export interface StoryblokServiceTestimonialsItem {
+	author: string;
+	testimonial: StoryblokRichtext;
+	pictures?: StoryblokServiceTestimonialsItemPicture[];
+	component: 'ServiceTestimonialsItem';
+	_uid: string;
+}
+
+export interface StoryblokServiceTestimonialsItemPicture {
+	picture: StoryblokAsset;
+	component: 'ServiceTestimonialsItemPicture';
 	_uid: string;
 }
 
@@ -254,6 +398,21 @@ export interface StoryblokSiteConfig {
 	_uid: string;
 }
 
+export interface StoryblokSteps {
+	steps?: StoryblokStepsItem[];
+	circularStar?: boolean;
+	component: 'Steps';
+	_uid: string;
+}
+
+export interface StoryblokStepsItem {
+	title: string;
+	description: string;
+	link?: Exclude<StoryblokMultilink, { linktype?: 'email' } | { linktype?: 'asset' }>;
+	component: 'StepsItem';
+	_uid: string;
+}
+
 export interface StoryblokTitleDescriptionAndCta {
 	title: StoryblokRichtext;
 	description: string;
@@ -269,6 +428,7 @@ export type ContentType =
 	| StoryblokLinks
 	| StoryblokMenu
 	| StoryblokProject
+	| StoryblokProjectCopy
 	| StoryblokService
 	| StoryblokServices
 	| StoryblokSiteConfig;

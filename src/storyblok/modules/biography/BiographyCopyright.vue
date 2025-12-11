@@ -16,13 +16,15 @@ defineProps<{
 		<CircularStar />
 		<div class="container">
 			<Label v-if="blok.label" :label="blok.label" />
-			<RichText :doc="blok.title.content" />
+			<RichText :doc="blok.title" />
 		</div>
 	</section>
 </template>
 
 <style lang="scss" scoped>
 .biography-copyright {
+	@include pseudo-gradient('before', 'bottom', 'white-ivory-transparent', 1, fluidSize(360px, 280px));
+
 	position: relative;
 	display: flex;
 	flex-direction: column;
@@ -30,17 +32,6 @@ defineProps<{
 	justify-content: center;
 	min-height: 100vh;
 	overflow: hidden;
-
-	&::before {
-		content: '';
-		position: absolute;
-		z-index: 1;
-		bottom: 0;
-		left: 0;
-		width: 100%;
-		height: 275px;
-		background: linear-gradient(180deg, rgba($white, 0) 0%, rgba($ivory, 1) 100%);
-	}
 
 	:deep(.partials-circular-star) {
 		position: absolute;
