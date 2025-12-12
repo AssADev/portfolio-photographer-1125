@@ -44,8 +44,8 @@ defineProps<{
 <style lang="scss" scoped>
 .partials-biography-strangers-portraits-explanation {
 	position: relative;
-	width: fluidSize(680px, 340px);
-	height: 100%;
+	flex: 0 0 auto;
+	width: fluidSize(680px, 340px, null, desktop);
 	overflow: hidden;
 	border: 1px solid rgba($eerieBlack, 0.1);
 
@@ -72,6 +72,7 @@ defineProps<{
 	flex-direction: column;
 	justify-content: space-between;
 	gap: fluidSize(48px, 32px);
+	height: 100%;
 	padding: fluidSize(28px, var(--gutter));
 
 	@include mq(tablet) {

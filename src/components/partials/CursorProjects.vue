@@ -3,6 +3,8 @@ import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 import { nextTick, onMounted, onUnmounted, ref, shallowRef } from 'vue';
 
+import { isTouchDevice } from '#utils/device.ts';
+
 import CursorProjectsItem from '#components/partials/CursorProjectsItem.vue';
 
 // Types :
@@ -48,11 +50,15 @@ const pos = {
 let idCounter = 0;
 let lastSpawnTime = 0;
 let isHovering = false;
+let hasMouseMoved = false;
 let rect: DOMRect | null = null;
 
 // Methods :
 const updateMousePosition = () => {
-	if (!rect) return;
+	if (!rect || !hasMouseMoved) {
+		isHovering = false;
+		return;
+	}
 
 	relativeMouse.x = clientMouse.x - rect.left;
 	relativeMouse.y = clientMouse.y - rect.top;
@@ -72,6 +78,7 @@ const updateRect = () => {
 };
 
 const handleMouseMove = (e: MouseEvent) => {
+	hasMouseMoved = true;
 	clientMouse.x = e.clientX;
 	clientMouse.y = e.clientY;
 	updateMousePosition();
@@ -154,6 +161,8 @@ const tick = () => {
 
 // Lifecycle :
 onMounted(() => {
+	if (isTouchDevice()) return;
+
 	updateRect();
 
 	window.addEventListener('resize', updateRect);

@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import gsap from 'gsap';
+import ScrollTrigger from 'gsap/ScrollTrigger';
+import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
+
 import RichText from '#components/utils/RichText.vue';
 import StoryblokComponent from '#components/utils/StoryblokComponent.vue';
 
@@ -18,10 +22,51 @@ const SectionsComponents = {
 	BiographyStrangersPortraitsExplanation,
 	BiographyStrangersPortraitsVideo
 };
+
+// Refs :
+let ctx: gsap.Context;
+
+const elRef = useTemplateRef('elRef');
+const sectionsWrapper = useTemplateRef('sectionsWrapperRef');
+
+// Methods :
+const getScrollAmount = () => {
+	if (!sectionsWrapper.value || !elRef.value) return 0;
+	const totalWidth = sectionsWrapper.value.scrollWidth;
+	const containerWidth = elRef.value.offsetWidth;
+
+	return Math.max(0, totalWidth - containerWidth);
+};
+
+// Attach & Detach :
+onMounted(() => {
+	if (elRef.value) {
+		ctx = gsap.context(() => {
+			if (elRef.value && sectionsWrapper.value) {
+				gsap.to(sectionsWrapper.value, {
+					x: () => -getScrollAmount(),
+					ease: 'none',
+					scrollTrigger: {
+						trigger: elRef.value,
+						pin: true,
+						scrub: true,
+						start: 'bottom bottom',
+						end: () => `+=${getScrollAmount()}`,
+						invalidateOnRefresh: true
+					}
+				});
+			}
+		}, elRef.value);
+	}
+});
+
+onUnmounted(() => {
+	ctx?.revert();
+});
 </script>
 
 <template>
-	<section class="modules biography-strangers-portraits">
+	<section ref="elRef" class="modules biography-strangers-portraits">
 		<div class="container-grid">
 			<RichText
 				:doc="blok.title"
@@ -29,25 +74,24 @@ const SectionsComponents = {
 			/>
 		</div>
 		<div class="sections-container">
-			<StoryblokComponent
-				v-for="(section, index) in blok.sections"
-				:key="section._uid"
-				:components="SectionsComponents"
-				:blok="section"
-				:index="index"
-				:socials="socials"
-			/>
+			<div ref="sectionsWrapperRef" class="sections-wrapper">
+				<StoryblokComponent
+					v-for="(section, index) in blok.sections"
+					:key="section._uid"
+					:components="SectionsComponents"
+					:blok="section"
+					:index="index"
+					:socials="socials"
+				/>
+			</div>
 		</div>
 	</section>
 </template>
 
 <style lang="scss" scoped>
 .biography-strangers-portraits {
-	@include pseudo-gradient('before', 'top', 'white-ivory');
-	@include pseudo-gradient('after', 'bottom', 'ivory-white');
-
 	position: relative;
-	background: $ivory;
+	background: linear-gradient(180deg, $white 0%, $ivory 25%, $ivory 75%, $white 100%);
 	padding-block: fluidSize(160px, 120px) fluidSize(120px, 80px);
 }
 
@@ -67,5 +111,15 @@ const SectionsComponents = {
 .sections-container {
 	position: relative;
 	z-index: 1;
+	width: 100%;
+	max-width: 100%;
+	overflow: hidden;
+}
+
+.sections-wrapper {
+	display: flex;
+	gap: 10px;
+	padding-inline: var(--gutter);
+	width: fit-content; // Ensure wrapper takes full width of content
 }
 </style>

@@ -2,6 +2,8 @@
 import gsap from 'gsap';
 import { onMounted, onUnmounted, ref } from 'vue';
 
+import { isTouchDevice } from '#utils/device.ts';
+
 // Refs :
 const cursorEl = ref<HTMLDivElement | null>(null);
 
@@ -88,6 +90,8 @@ const handleMouseMove = (e: MouseEvent) => {
 
 // Attach & Detach :
 onMounted(() => {
+	if (isTouchDevice()) return;
+
 	window.addEventListener('mousemove', handleMouseMove);
 	gsap.ticker.add(tick);
 });
