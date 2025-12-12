@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import CursorProjects from '#components/partials/CursorProjects.vue';
 import CircularStar from '#components/utils/CircularStar.vue';
 import Label from '#components/utils/Label.vue';
 import RichText from '#components/utils/RichText.vue';
@@ -13,6 +14,7 @@ defineProps<{
 
 <template>
 	<section class="modules biography-copyright">
+		<CursorProjects v-if="blok.cursorProjects" :isAtBottom="true" />
 		<CircularStar />
 		<div class="container">
 			<Label v-if="blok.label" :label="blok.label" />
@@ -44,7 +46,7 @@ defineProps<{
 		}
 
 		@include mq(desktop) {
-			width: calc(100% - (var(--gutter) * 2));
+			width: var(--ctn-w);
 		}
 	}
 }

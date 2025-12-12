@@ -54,7 +54,6 @@ const layouts = [
 <template>
 	<section class="modules quotes">
 		<CursorProjects v-if="blok.cursorProjects" />
-
 		<div class="container-grid">
 			<QuotesItem
 				v-for="(quote, index) in blok.quotes"
