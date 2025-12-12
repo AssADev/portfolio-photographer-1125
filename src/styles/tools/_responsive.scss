@@ -17,7 +17,8 @@ $figma: (
 	tablet: 768px,
 	desktop: 1024px,
 	large: 1440px,
-	xxlarge: 1920px
+	xxlarge: 1920px,
+	widescreen: 2560px
 );
 
 @function pxToVw($value, $bp: small) {

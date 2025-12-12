@@ -33,6 +33,10 @@ $gridBreakpoints: (
 	xxlg: (
 		width: $xxlarge,
 		columns: 32
+	),
+	wd: (
+		width: $widescreen,
+		columns: 32
 	)
 );
 

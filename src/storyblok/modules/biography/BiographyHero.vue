@@ -161,6 +161,10 @@ const { email, socials } = defineProps<{
 				left: 0;
 				transform: translate3d(0, calc(-100% - $gap), 0);
 			}
+
+			@include mq(xxlarge) {
+				max-width: fluidSize(560px, 520px, null, widescreen);
+			}
 		}
 
 		.picture-wrapper {

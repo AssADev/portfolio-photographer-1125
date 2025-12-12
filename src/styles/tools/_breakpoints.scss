@@ -5,6 +5,7 @@ $mlarge: 1280px;
 $large: 1440px;
 $xlarge: 1680px;
 $xxlarge: 1920px;
+$widescreen: 2560px;
 
 $breakpoints: (
 	large-mobile: $large-mobile,
@@ -13,5 +14,6 @@ $breakpoints: (
 	mlarge: $mlarge,
 	large: $large,
 	xlarge: $xlarge,
-	xxlarge: $xxlarge
+	xxlarge: $xxlarge,
+	widescreen: $widescreen
 );
