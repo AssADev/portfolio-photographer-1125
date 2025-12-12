@@ -30,6 +30,7 @@ const config = {
 // State :
 const mouse = { x: 0, y: 0 };
 const lastMouse = { x: 0, y: 0 };
+const clientMouse = { x: 0, y: 0 };
 const relativeMouse = { x: 0, y: 0 };
 
 const items = shallowRef<ProjectItem[]>([]);
@@ -44,24 +45,18 @@ const pos = {
 	interval: 0
 };
 
-let rect: DOMRect | null = null;
-let lastSpawnTime = 0;
 let idCounter = 0;
+let lastSpawnTime = 0;
 let isHovering = false;
+let rect: DOMRect | null = null;
 
 // Methods :
-const updateRect = () => {
-	if (spawnerEl.value) rect = spawnerEl.value.getBoundingClientRect();
-};
-
-const handleMouseMove = (e: MouseEvent) => {
+const updateMousePosition = () => {
 	if (!rect) return;
 
-	// Calculate relative position :
-	relativeMouse.x = e.clientX - rect.left;
-	relativeMouse.y = e.clientY - rect.top;
+	relativeMouse.x = clientMouse.x - rect.left;
+	relativeMouse.y = clientMouse.y - rect.top;
 
-	// Check if inside bounds :
 	isHovering =
 		relativeMouse.x >= 0 && relativeMouse.x <= rect.width && relativeMouse.y >= 0 && relativeMouse.y <= rect.height;
 
@@ -69,6 +64,17 @@ const handleMouseMove = (e: MouseEvent) => {
 		mouse.x = relativeMouse.x;
 		mouse.y = relativeMouse.y;
 	}
+};
+
+const updateRect = () => {
+	if (spawnerEl.value) rect = spawnerEl.value.getBoundingClientRect();
+	updateMousePosition();
+};
+
+const handleMouseMove = (e: MouseEvent) => {
+	clientMouse.x = e.clientX;
+	clientMouse.y = e.clientY;
+	updateMousePosition();
 };
 
 const handleMouseLeave = () => {
@@ -164,13 +170,13 @@ onMounted(() => {
 			gsap.ticker.add(tick);
 		},
 		onEnterBack: () => {
-			gsap.ticker.remove(tick);
+			gsap.ticker.add(tick);
 		},
 		onLeave: () => {
 			gsap.ticker.remove(tick);
 		},
 		onLeaveBack: () => {
-			gsap.ticker.add(tick);
+			gsap.ticker.remove(tick);
 		}
 	});
 });
