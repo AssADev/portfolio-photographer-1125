@@ -26,6 +26,11 @@ main {
 	background: $white;
 }
 
+.modules {
+	position: relative;
+	overflow-x: clip;
+}
+
 // Picture :
 img.fill {
 	@include img-fill;

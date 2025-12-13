@@ -1,3 +1,5 @@
+import type { Component, Ref, ShallowRef } from 'vue';
+
 import type {
 	StoryblokBiography,
 	StoryblokHome,
@@ -20,3 +22,5 @@ export type PageContentTypes =
 	| StoryblokProject
 	| StoryblokService
 	| StoryblokServices;
+
+export type RefOrComponentRef = Ref<HTMLElement | undefined> | Readonly<ShallowRef<HTMLElement | Component | null>>;

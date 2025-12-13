@@ -68,7 +68,6 @@ const { email, socials } = defineProps<{
 
 <style lang="scss" scoped>
 .biography-hero {
-	overflow: hidden;
 	padding-block-end: fluidSize(100px, 60px);
 
 	@include mq($until: desktop) {

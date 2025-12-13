@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { computed, onMounted, onUnmounted, useTemplateRef } from 'vue';
+import { computed, useTemplateRef } from 'vue';
 
 import RichText from '#components/utils/RichText.vue';
 import StoryblokComponent from '#components/utils/StoryblokComponent.vue';
 
 import type { StoryblokBiographyStrangersPortraits, StoryblokLabelLink } from '#types/component-types-sb.js';
 
+import { useGSAP } from '#composables/useGSAP.ts';
 import BiographyStrangersPortraitsExplanation from '#storyblok/partials/biography/BiographyStrangersPortraitsExplanation.vue';
 import BiographyStrangersPortraitsVideo from '#storyblok/partials/biography/BiographyStrangersPortraitsVideo.vue';
 
@@ -52,31 +52,21 @@ const getScrollAmount = () => {
 	return Math.max(0, totalWidth - containerWidth);
 };
 
-// Attach & Detach :
-onMounted(() => {
-	if (elRef.value) {
-		ctx = gsap.context(() => {
-			if (elRef.value && sectionsWrapper.value) {
-				gsap.to(sectionsWrapper.value, {
-					x: () => -getScrollAmount(),
-					ease: 'none',
-					scrollTrigger: {
-						trigger: elRef.value,
-						pin: true,
-						scrub: true,
-						start: 'bottom bottom',
-						end: () => `+=${getScrollAmount()}`,
-						invalidateOnRefresh: true
-					}
-				});
-			}
-		}, elRef.value);
-	}
-});
-
-onUnmounted(() => {
-	ctx?.revert();
-});
+// Animation (Horizontal scroll) :
+useGSAP(() => {
+	gsap.to(sectionsWrapper.value, {
+		x: () => -getScrollAmount(),
+		ease: 'none',
+		scrollTrigger: {
+			trigger: elRef.value,
+			pin: true,
+			scrub: true,
+			start: 'bottom bottom',
+			end: () => `+=${getScrollAmount()}`,
+			invalidateOnRefresh: true
+		}
+	});
+}, elRef);
 </script>
 
 <template>
@@ -104,7 +94,6 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 .biography-strangers-portraits {
-	position: relative;
 	background: linear-gradient(180deg, $white 0%, $ivory 25%, $ivory 75%, $white 100%);
 	padding-block: fluidSize(160px, 120px) fluidSize(120px, 80px);
 }

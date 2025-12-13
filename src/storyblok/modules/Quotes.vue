@@ -67,7 +67,6 @@ const layouts = [
 
 <style lang="scss" scoped>
 .quotes {
-	position: relative;
 	padding-block: fluidSize(160px, 120px) fluidSize(120px, 80px);
 }
 

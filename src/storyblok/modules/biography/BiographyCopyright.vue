@@ -27,7 +27,6 @@ defineProps<{
 .biography-copyright {
 	@include pseudo-gradient('before', 'bottom', 'white-ivory-transparent', 1, fluidSize(360px, 280px));
 
-	position: relative;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
