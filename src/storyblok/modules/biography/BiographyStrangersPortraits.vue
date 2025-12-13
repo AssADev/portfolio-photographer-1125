@@ -1,20 +1,20 @@
 <script setup lang="ts">
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { onMounted, onUnmounted, provide, ref, shallowRef, useTemplateRef } from 'vue';
+import { computed, onMounted, onUnmounted, useTemplateRef } from 'vue';
 
 import RichText from '#components/utils/RichText.vue';
 import StoryblokComponent from '#components/utils/StoryblokComponent.vue';
 
-import type { StoryblokBiographyStrangersPortraits } from '#types/component-types-sb.js';
+import type { StoryblokBiographyStrangersPortraits, StoryblokLabelLink } from '#types/component-types-sb.js';
 
 import BiographyStrangersPortraitsExplanation from '#storyblok/partials/biography/BiographyStrangersPortraitsExplanation.vue';
 import BiographyStrangersPortraitsVideo from '#storyblok/partials/biography/BiographyStrangersPortraitsVideo.vue';
 
 // Props :
-defineProps<{
+const props = defineProps<{
 	blok: StoryblokBiographyStrangersPortraits;
-	socials: any[];
+	socials: StoryblokLabelLink[];
 }>();
 
 // Components :
@@ -28,6 +28,20 @@ let ctx: gsap.Context;
 
 const elRef = useTemplateRef('elRef');
 const sectionsWrapper = useTemplateRef('sectionsWrapperRef');
+
+// Computed :
+const explanationIndices = computed(() => {
+	let count = 0;
+	const indices: Record<string, number> = {};
+
+	props.blok.sections?.forEach((section) => {
+		if (section.component.toLowerCase().includes('explanation')) {
+			indices[section._uid] = count++;
+		}
+	});
+
+	return indices;
+});
 
 // Methods :
 const getScrollAmount = () => {
@@ -80,7 +94,7 @@ onUnmounted(() => {
 					:key="section._uid"
 					:components="SectionsComponents"
 					:blok="section"
-					:index="index"
+					:index="explanationIndices[section._uid] ?? index"
 					:socials="socials"
 				/>
 			</div>
