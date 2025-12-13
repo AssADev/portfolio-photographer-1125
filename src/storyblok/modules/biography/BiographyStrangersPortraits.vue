@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import gsap from 'gsap';
-import ScrollTrigger from 'gsap/ScrollTrigger';
-import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { onMounted, onUnmounted, provide, ref, shallowRef, useTemplateRef } from 'vue';
 
 import RichText from '#components/utils/RichText.vue';
 import StoryblokComponent from '#components/utils/StoryblokComponent.vue';
@@ -120,6 +120,7 @@ onUnmounted(() => {
 	display: flex;
 	gap: 10px;
 	padding-inline: var(--gutter);
-	width: fit-content; // Ensure wrapper takes full width of content
+	width: fit-content;
+	height: fluidSize(620px, 520px);
 }
 </style>

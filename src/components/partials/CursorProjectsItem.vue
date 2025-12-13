@@ -8,7 +8,7 @@ defineProps<{
 	rotation: number;
 }>();
 
-// Ref :
+// Refs :
 const el = ref<HTMLElement | null>(null);
 defineExpose({ el });
 

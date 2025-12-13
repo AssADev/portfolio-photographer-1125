@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import gsap from 'gsap';
-import ScrollTrigger from 'gsap/ScrollTrigger';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { nextTick, onMounted, onUnmounted, ref, shallowRef } from 'vue';
 
 import { isTouchDevice } from '#utils/device.ts';
@@ -175,18 +175,10 @@ onMounted(() => {
 		trigger: spawnerEl.value,
 		start: 'top bottom',
 		end: 'bottom top',
-		onEnter: () => {
-			gsap.ticker.add(tick);
-		},
-		onEnterBack: () => {
-			gsap.ticker.add(tick);
-		},
-		onLeave: () => {
-			gsap.ticker.remove(tick);
-		},
-		onLeaveBack: () => {
-			gsap.ticker.remove(tick);
-		}
+		onEnter: () => gsap.ticker.add(tick),
+		onEnterBack: () => gsap.ticker.add(tick),
+		onLeave: () => gsap.ticker.remove(tick),
+		onLeaveBack: () => gsap.ticker.remove(tick)
 	});
 });
 

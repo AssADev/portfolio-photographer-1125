@@ -71,7 +71,6 @@ defineProps<{
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
-	gap: fluidSize(48px, 32px);
 	height: 100%;
 	padding: fluidSize(28px, var(--gutter));
 
