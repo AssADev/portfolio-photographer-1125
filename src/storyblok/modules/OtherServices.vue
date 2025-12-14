@@ -11,6 +11,7 @@ import RichText from '#components/utils/RichText.vue';
 import type { StoryblokOtherServices, StoryblokService } from '#types/component-types-sb.js';
 
 import { useGSAP } from '#composables/useGSAP.ts';
+import vMagnetic from '#directives/vMagnetic.ts';
 
 // Props :
 defineProps<{
@@ -69,6 +70,7 @@ useGSAP(() => {
 				<a
 					v-for="service in services"
 					:key="service.uuid"
+					v-magnetic="{ strength: 0.35, range: 125 }"
 					:href="`/${getLocale()}/${service.full_slug}`"
 					class="service-wrapper"
 					:data-cursor-label="$t('learnMore')"
