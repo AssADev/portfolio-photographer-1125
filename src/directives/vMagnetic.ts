@@ -1,6 +1,8 @@
 import gsap from 'gsap';
 import type { Directive, DirectiveBinding } from 'vue';
 
+import { isTouchDevice } from '#utils/device.ts';
+
 type MagneticOptions = {
 	strength?: number;
 	range?: number;
@@ -8,6 +10,8 @@ type MagneticOptions = {
 
 const vMagnetic: Directive = {
 	mounted(el: HTMLElement, binding: DirectiveBinding<MagneticOptions>) {
+		if (isTouchDevice()) return;
+
 		// Props :
 		const strength = binding.value?.strength ?? 0.5;
 		const range = binding.value?.range ?? 100;

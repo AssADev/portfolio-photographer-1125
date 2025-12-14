@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import gsap from 'gsap';
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
 
 import { isTouchDevice } from '#utils/device.ts';
 
 // Refs :
-const cursorEl = ref<HTMLDivElement | null>(null);
-const cursorLabelRef = ref<HTMLDivElement | null>(null);
+const elRef = useTemplateRef('elRef');
+const cursorEl = useTemplateRef('cursorRef');
+const cursorLabelRef = useTemplateRef('cursorLabelRef');
 
 // State :
 const mouse = { x: 0, y: 0 };
@@ -52,6 +53,13 @@ const handleMouseMove = (e: MouseEvent) => {
 		target.x = e.clientX;
 		target.y = e.clientY;
 		firstMove = false;
+
+		gsap.to(elRef.value, {
+			opacity: 1,
+			display: 'block',
+			duration: 0.4,
+			ease: 'power2.out'
+		});
 	}
 };
 
@@ -203,8 +211,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-	<div class="cursor-container">
-		<div ref="cursorEl" class="cursor-wrapper">
+	<div ref="elRef" class="cursor-container">
+		<div ref="cursorRef" class="cursor-wrapper">
 			<div class="cursor-square"></div>
 			<div ref="cursorLabelRef" class="cursor-label"></div>
 		</div>
@@ -242,6 +250,8 @@ onUnmounted(() => {
 	z-index: 10;
 	inset: 0;
 	color: $white;
+	opacity: 0;
+	display: none;
 	pointer-events: none;
 	mix-blend-mode: difference;
 }
