@@ -19,6 +19,7 @@ export default (app: App) => {
 	// Make sure to register GSAP only once for the whole app :
 	if (!import.meta.env.SSR && !gsapInitialized) {
 		gsap.registerPlugin(ScrollTrigger, SplitText);
+		gsap.config({ force3D: true });
 		gsapInitialized = true;
 	}
 };

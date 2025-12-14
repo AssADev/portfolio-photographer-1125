@@ -6,21 +6,28 @@ import { isTouchDevice } from '#utils/device.ts';
 
 // Refs :
 const cursorEl = ref<HTMLDivElement | null>(null);
+const cursorLabelRef = ref<HTMLDivElement | null>(null);
 
 // State :
 const mouse = { x: 0, y: 0 };
-const state = { x: 0, y: 0, rotation: 0 };
-const target = { x: 0, y: 0, rotation: 0 };
+const state = { x: 0, y: 0, rotation: 0, maxRotation: 60 };
+const target = { x: 0, y: 0, rotation: 0, maxRotation: 60 };
 
 let firstMove = true;
+let cursorTargets: HTMLElement[] = [];
+let activeTarget: HTMLElement | null = null;
+let currentLabel: string | null = null;
+let hoverTween: gsap.core.Tween | null = null;
+const charsRefs = ref<HTMLSpanElement[]>([]);
 
 // Variables :
 const config = {
-	DRAG_RADIUS: 60, // Cursor only moves if mouse is further than this
-	LERP_POSITION: 0.06, // Slower, smoother follow
+	DRAG_RADIUS: 60,
+	LERP_POSITION: 0.06,
 	LERP_ROTATION: 0.08,
-	ROTATION_MULTIPLIER: 2.5, // Stronger rotation for velocity
-	MAX_ROTATION: 60
+	ROTATION_MULTIPLIER: 2.5,
+	DEFAULT_MAX_ROTATION: 60,
+	HOVER_MAX_ROTATION: 20
 };
 
 const pos = {
@@ -35,6 +42,19 @@ const pos = {
 };
 
 // Methods :
+const handleMouseMove = (e: MouseEvent) => {
+	mouse.x = e.clientX;
+	mouse.y = e.clientY;
+
+	if (firstMove) {
+		state.x = e.clientX;
+		state.y = e.clientY;
+		target.x = e.clientX;
+		target.y = e.clientY;
+		firstMove = false;
+	}
+};
+
 const tick = () => {
 	// 1. Calculate distance from current TARGET to MOUSE :
 	pos.dx = mouse.x - target.x;
@@ -55,6 +75,9 @@ const tick = () => {
 	state.x += (target.x - state.x) * config.LERP_POSITION;
 	state.y += (target.y - state.y) * config.LERP_POSITION;
 
+	//// Lerp Max Rotation :
+	state.maxRotation += (target.maxRotation - state.maxRotation) * config.LERP_ROTATION;
+
 	// 4. Rotation Logic (Velocity-based) :
 	//// Calculate actual velocity of the cursor :
 	pos.velocityX = state.x - pos.previousX;
@@ -63,7 +86,7 @@ const tick = () => {
 	target.rotation = -pos.velocityX * config.ROTATION_MULTIPLIER;
 
 	//// Clamp and Lerp Rotation :
-	target.rotation = Math.max(-config.MAX_ROTATION, Math.min(config.MAX_ROTATION, target.rotation));
+	target.rotation = Math.max(-state.maxRotation, Math.min(state.maxRotation, target.rotation));
 	state.rotation += (target.rotation - state.rotation) * config.LERP_ROTATION;
 
 	// 5. Render :
@@ -75,17 +98,81 @@ const tick = () => {
 	}
 };
 
-const handleMouseMove = (e: MouseEvent) => {
-	mouse.x = e.clientX;
-	mouse.y = e.clientY;
+// Utils :
+const splitText = (text: string) => {
+	if (!cursorLabelRef.value) return;
+	cursorLabelRef.value.innerHTML = '';
+	charsRefs.value = [];
 
-	if (firstMove) {
-		state.x = e.clientX;
-		state.y = e.clientY;
-		target.x = e.clientX;
-		target.y = e.clientY;
-		firstMove = false;
+	const chars = text.split('');
+	chars.forEach((char) => {
+		const charWrapper = document.createElement('span');
+		charWrapper.className = 'char-wrapper';
+
+		const charInner = document.createElement('span');
+		charInner.className = 'char';
+		charInner.textContent = char === ' ' ? '\u00A0' : char;
+		charInner.style.transform = 'translate3d(120%, 0, 0)';
+
+		charWrapper.appendChild(charInner);
+		cursorLabelRef.value?.appendChild(charWrapper);
+		charsRefs.value.push(charInner);
+	});
+};
+
+// Init :
+const initCursorTargets = () => {
+	cursorTargets = Array.from(document.querySelectorAll('[data-cursor-label]'));
+
+	cursorTargets.forEach((el) => {
+		el.addEventListener('mouseenter', (e) => {
+			if (el !== activeTarget) triggerHover(el);
+		});
+
+		el.addEventListener('mouseleave', (e) => {
+			if (activeTarget === el) triggerOut();
+		});
+	});
+};
+
+// Events :
+const triggerHover = (targetEl: HTMLElement) => {
+	activeTarget = targetEl;
+	target.maxRotation = config.HOVER_MAX_ROTATION;
+
+	const label = targetEl.getAttribute('data-cursor-label');
+
+	if (label) {
+		if (label !== currentLabel || charsRefs.value.length === 0) {
+			splitText(label);
+			currentLabel = label;
+		}
+
+		hoverTween?.kill();
+		hoverTween = gsap.to(charsRefs.value, {
+			x: '0%',
+			duration: 0.3,
+			stagger: 0.03,
+			ease: 'power2.out',
+			overwrite: true
+		});
 	}
+};
+
+const triggerOut = () => {
+	activeTarget = null;
+
+	hoverTween?.kill();
+	hoverTween = gsap.to(charsRefs.value, {
+		x: '120%',
+		duration: 0.3,
+		ease: 'power2.in',
+		stagger: -0.03,
+		overwrite: true,
+		onComplete: () => {
+			target.maxRotation = config.DEFAULT_MAX_ROTATION;
+		}
+	});
 };
 
 // Attach & Detach :
@@ -93,11 +180,24 @@ onMounted(() => {
 	if (isTouchDevice()) return;
 
 	window.addEventListener('mousemove', handleMouseMove);
+
+	// Data-Attributes (Cursor) :
+	initCursorTargets();
+
+	// Ticker :
 	gsap.ticker.add(tick);
 });
 
 onUnmounted(() => {
 	window.removeEventListener('mousemove', handleMouseMove);
+
+	// Data-Attributes (Cursor) :
+	cursorTargets.forEach((el) => {
+		el.removeEventListener('mouseenter', () => {});
+		el.removeEventListener('mouseleave', () => {});
+	});
+
+	// Ticker :
 	gsap.ticker.remove(tick);
 });
 </script>
@@ -105,36 +205,62 @@ onUnmounted(() => {
 <template>
 	<div class="cursor-container">
 		<div ref="cursorEl" class="cursor-wrapper">
-			<div class="cursor"></div>
+			<div class="cursor-square"></div>
+			<div ref="cursorLabelRef" class="cursor-label"></div>
 		</div>
 	</div>
 </template>
 
+<style lang="scss">
+.cursor-label {
+	@include roobert-12-uppercase;
+
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate3d(0, -50%, 0);
+	display: flex;
+	white-space: nowrap;
+	pointer-events: none;
+	margin-inline-start: calc((var(--cursor-square-size) / 2) + 6px);
+
+	.char-wrapper {
+		overflow: hidden;
+	}
+
+	.char {
+		display: inline-block;
+	}
+}
+</style>
+
 <style lang="scss" scoped>
 .cursor-container {
+	--cursor-square-size: 9px;
+
 	position: fixed;
 	z-index: 10;
 	inset: 0;
+	color: $white;
 	pointer-events: none;
+	mix-blend-mode: difference;
 }
 
 .cursor-wrapper {
 	position: fixed;
 	left: 0;
 	top: 0;
-	width: 24px;
-	height: 24px;
 	will-change: transform;
 }
 
-.cursor {
+.cursor-square {
 	position: absolute;
-	width: 100%;
-	height: 100%;
-	background-color: red;
-	border-radius: 4px;
 	top: 50%;
 	left: 50%;
 	transform: translate3d(-50%, -50%, 0);
+	width: var(--cursor-square-size);
+	height: var(--cursor-square-size);
+	background: $white;
+	border-radius: 2px;
 }
 </style>

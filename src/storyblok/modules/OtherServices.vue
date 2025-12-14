@@ -61,7 +61,11 @@ useGSAP(() => {
 		<div ref="containerRef" class="content-container">
 			<h2 ref="titleRef">{{ blok.title }}</h2>
 			<div ref="servicesContainerRef" class="services-container">
-				<div v-for="i in servicesTemp" :key="i" class="service-wrapper"></div>
+				<div v-for="i in servicesTemp" :key="i" class="service-wrapper" :data-cursor-label="$t('learnMore')">
+					<div class="label-wrapper">
+						<span>/Individuel</span>
+					</div>
+				</div>
 			</div>
 		</div>
 	</section>
@@ -69,8 +73,6 @@ useGSAP(() => {
 
 <style lang="scss" scoped>
 .other-services {
-	position: relative;
-	z-index: 1;
 	display: flex;
 	align-items: center;
 	min-height: fluidSize(810px, 540px);
@@ -98,7 +100,7 @@ useGSAP(() => {
 		position: absolute;
 		margin-top: -0.14em;
 		line-height: 1;
-		text-wrap: nowrap;
+		white-space: nowrap;
 		letter-spacing: -0.02em;
 		text-transform: uppercase;
 		font-size: clampVw(280px, $min: 140px, $max: 320px, $bp: large);
@@ -119,13 +121,21 @@ useGSAP(() => {
 }
 
 .service-wrapper {
+	position: relative;
 	width: 275px;
 	height: 335px;
 	aspect-ratio: 275 / 335;
-	background: grey;
+	background: red;
 	box-shadow: 30px 30px 60px rgba($eerieBlack, 0.15);
 	overflow: hidden;
 	flex-shrink: 0;
+
+	&::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(180deg, rgba($eerieBlack, 0) 75%, rgba($eerieBlack, 0.2) 100%);
+	}
 
 	&:nth-child(odd) {
 		align-self: flex-start;
@@ -133,6 +143,19 @@ useGSAP(() => {
 
 	&:nth-child(even) {
 		align-self: flex-end;
+	}
+
+	.label-wrapper {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		padding: 20px;
+		color: $white;
+
+		span {
+			@include roobert-14-uppercase;
+		}
 	}
 }
 </style>
