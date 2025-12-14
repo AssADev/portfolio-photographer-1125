@@ -6,6 +6,10 @@ import { isTouchDevice } from '#utils/device.ts';
 type MagneticOptions = {
 	strength?: number;
 	range?: number;
+	parallax?: {
+		target: string;
+		strength: number;
+	};
 };
 
 const vMagnetic: Directive = {
@@ -15,6 +19,7 @@ const vMagnetic: Directive = {
 		// Props :
 		const strength = binding.value?.strength ?? 0.5;
 		const range = binding.value?.range ?? 100;
+		const parallax = binding.value?.parallax;
 
 		// Variables :
 		const pos = {
@@ -34,10 +39,24 @@ const vMagnetic: Directive = {
 		let height = 0;
 		let isHovering = false;
 		let rect: DOMRect | null = null;
+		let parallaxTarget: HTMLElement | null = null;
 
 		// GSAP :
 		const xTo = gsap.quickTo(el, 'x', { duration: 1, ease: 'power3' });
 		const yTo = gsap.quickTo(el, 'y', { duration: 1, ease: 'power3' });
+
+		let xToParallax: gsap.QuickToFunc | null = null;
+		let yToParallax: gsap.QuickToFunc | null = null;
+
+		if (parallax?.target) {
+			parallaxTarget = el.querySelector(parallax.target);
+			parallaxTarget?.classList.add('parallax-target');
+
+			if (parallaxTarget) {
+				xToParallax = gsap.quickTo(parallaxTarget, 'x', { duration: 1, ease: 'power3' });
+				yToParallax = gsap.quickTo(parallaxTarget, 'y', { duration: 1, ease: 'power3' });
+			}
+		}
 
 		// Methods :
 		const onMouseMove = (e: MouseEvent) => {
@@ -55,6 +74,11 @@ const vMagnetic: Directive = {
 
 				xTo(pos.finalX);
 				yTo(pos.finalY);
+
+				if (xToParallax && yToParallax && parallax) {
+					xToParallax(distance.x * parallax.strength);
+					yToParallax(distance.y * parallax.strength);
+				}
 			} else {
 				onMouseLeave();
 			}
@@ -66,6 +90,11 @@ const vMagnetic: Directive = {
 
 			xTo(0);
 			yTo(0);
+
+			if (xToParallax && yToParallax) {
+				xToParallax(0);
+				yToParallax(0);
+			}
 
 			window.removeEventListener('mousemove', onMouseMove);
 		};

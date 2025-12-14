@@ -252,14 +252,15 @@ useResizeObserver(socialsRef, () => {
 
 	.drawer-inner-body {
 		position: relative;
-		max-height: calc(100vh - var(--header-height) - var(--drawer-socials-height) - var(--gutter) * 2);
+		max-height: calc(100svh - var(--header-height) - var(--drawer-socials-height) - var(--gutter) * 2);
 	}
 
 	.drawer-content-container {
 		@include hide-scrollbar;
 
 		max-height: calc(
-			100vh - var(--header-height) - var(--drawer-socials-height) - var(--drawer-title-height) - var(--gutter) * 2
+			100svh - var(--header-height) - var(--drawer-socials-height) - var(--drawer-title-height) - var(--gutter) *
+				2
 		);
 		overflow-y: auto;
 	}

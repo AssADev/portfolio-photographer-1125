@@ -70,17 +70,23 @@ useGSAP(() => {
 				<a
 					v-for="service in services"
 					:key="service.uuid"
-					v-magnetic="{ strength: 0.35, range: 125 }"
+					v-magnetic="{
+						strength: 0.35,
+						range: 125,
+						parallax: { target: '.cover-inner-wrapper', strength: 0.05 }
+					}"
 					:href="`/${getLocale()}/${service.full_slug}`"
 					class="service-wrapper"
 					:data-cursor-label="$t('learnMore')"
 				>
 					<div class="cover-wrapper">
-						<Image
-							:src="service.content.informations[0].cover"
-							:aspect-ratio="275 / 335"
-							:sizes="[{ desktop: '275px' }, '275px']"
-						/>
+						<div class="cover-inner-wrapper">
+							<Image
+								:src="service.content.informations[0].cover"
+								:aspect-ratio="275 / 335"
+								:sizes="[{ desktop: '275px' }, '275px']"
+							/>
+						</div>
 					</div>
 					<div class="label-wrapper">
 						<span class="service-name"> /<RichText :doc="service.content.informations[0].name" /> </span>
@@ -167,6 +173,12 @@ useGSAP(() => {
 
 	.cover-wrapper {
 		overflow: hidden;
+
+		.cover-inner-wrapper {
+			&.parallax-target {
+				transform: scale3d(1.075, 1.075, 1);
+			}
+		}
 
 		img {
 			@include img-fill;

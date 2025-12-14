@@ -42,7 +42,7 @@
 	@include roobert(500, none, -0.02em);
 	@include fluidLineHeight(0.9, 0.95);
 
-	font-size: fluidFontSize(96px, 64px);
+	font-size: fluidFontSize(96px, 58px);
 }
 
 @mixin roobert-48 {

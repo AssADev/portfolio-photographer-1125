@@ -228,7 +228,7 @@ useResizeObserver(submitCtaRef, () => {
 	@include hide-scrollbar;
 
 	max-height: calc(
-		100vh - var(--drawer-socials-height) - var(--drawer-title-height) - var(--submit-cta-height) - var(
+		100svh - var(--drawer-socials-height) - var(--drawer-title-height) - var(--submit-cta-height) - var(
 				--header-height
 			) -
 			(var(--gutter) * 2)
