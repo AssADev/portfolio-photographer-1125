@@ -24,10 +24,9 @@ const SectionsComponents = {
 };
 
 // Refs :
-let ctx: gsap.Context;
-
 const elRef = useTemplateRef('elRef');
-const sectionsWrapper = useTemplateRef('sectionsWrapperRef');
+const sectionsContainerRef = useTemplateRef('sectionsContainerRef');
+const sectionsWrapperRef = useTemplateRef('sectionsWrapperRef');
 
 // Computed :
 const explanationIndices = computed(() => {
@@ -45,23 +44,23 @@ const explanationIndices = computed(() => {
 
 // Methods :
 const getScrollAmount = () => {
-	if (!sectionsWrapper.value || !elRef.value) return 0;
-	const totalWidth = sectionsWrapper.value.scrollWidth;
-	const containerWidth = elRef.value.offsetWidth;
+	if (!sectionsWrapperRef.value || !sectionsContainerRef.value) return 0;
+	const totalWidth = sectionsWrapperRef.value.scrollWidth;
+	const containerWidth = sectionsContainerRef.value.offsetWidth;
 
 	return Math.max(0, totalWidth - containerWidth);
 };
 
 // Animation (Horizontal scroll) :
 useGSAP(() => {
-	gsap.to(sectionsWrapper.value, {
+	gsap.to(sectionsWrapperRef.value, {
 		x: () => -getScrollAmount(),
 		ease: 'none',
 		scrollTrigger: {
-			trigger: elRef.value,
+			trigger: sectionsContainerRef.value,
 			pin: true,
-			scrub: true,
-			start: 'bottom bottom',
+			scrub: 0.75,
+			start: 'center center',
 			end: () => `+=${getScrollAmount()}`,
 			invalidateOnRefresh: true
 		}
@@ -77,7 +76,7 @@ useGSAP(() => {
 				class="col-start-1 col-end-13 col-start-tb-1 col-end-tb-15 col-start-dk-1 col-end-dk-23 col-start-xlg-1 col-end-xlg-21 col-start-xxlg-1 col-end-xxlg-19"
 			/>
 		</div>
-		<div class="sections-container">
+		<div ref="sectionsContainerRef" class="sections-container">
 			<div ref="sectionsWrapperRef" class="sections-wrapper">
 				<StoryblokComponent
 					v-for="(section, index) in blok.sections"
@@ -124,6 +123,7 @@ useGSAP(() => {
 	gap: 10px;
 	padding-inline: var(--gutter);
 	width: fit-content;
-	height: fluidSize(620px, 520px);
+	height: fluidSize(680px, 520px);
+	max-height: calc(100svh - (var(--header-height) * 4));
 }
 </style>

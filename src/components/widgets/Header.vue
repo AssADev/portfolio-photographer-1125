@@ -86,7 +86,6 @@ useEventListener('scroll', () => {
 
 <style scoped lang="scss">
 #header {
-	--header-height: 40px;
 	--padding-inline: 14px;
 
 	position: fixed;

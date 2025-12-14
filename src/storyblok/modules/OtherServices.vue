@@ -29,36 +29,52 @@ const servicesContainerRef = useTemplateRef<HTMLElement>('servicesContainerRef')
 useGSAP(() => {
 	if (!servicesContainerRef.value || !containerRef.value || !sectionRef.value) return;
 
-	// Calculate widths :
-	const servicesWidth = servicesContainerRef.value.scrollWidth;
-	const containerWidth = containerRef.value.offsetWidth;
+	const getScrollAmount = () => {
+		const servicesWidth = servicesContainerRef.value!.scrollWidth;
+		const containerWidth = containerRef.value!.offsetWidth;
 
-	// Movement distance: from containerWidth (right) to -(servicesWidth - containerWidth) (left)
-	// Total travel = containerWidth + (servicesWidth - containerWidth) = servicesWidth.
-	// We want 1px scroll = 1px movement roughly.
-	// So duration should be at least servicesWidth.
-	// But let's add a minimum to ensure it doesn't feel instant for small content.
-	const scrollAmount = Math.max(servicesWidth, containerWidth) + 200;
+		// Get last item width :
+		const lastItem = servicesContainerRef.value!.lastElementChild as HTMLElement;
+		const lastItemWidth = lastItem?.offsetWidth || 0;
 
-	console.log(servicesWidth, containerWidth, scrollAmount);
+		// Start Position: Just outside the screen on the right (containerWidth)
+		const startX = containerWidth;
 
-	// Single Timeline for Pinning
+		// End Position: Last item centered
+		// Center of last item relative to services container = servicesWidth - (lastItemWidth / 2)
+		// We want this point to be at containerWidth / 2
+		// So: x + (servicesWidth - lastItemWidth / 2) = containerWidth / 2
+		// x = (containerWidth / 2) - servicesWidth + (lastItemWidth / 2)
+		const endX = containerWidth / 2 - servicesWidth + lastItemWidth / 2;
+
+		return {
+			startX,
+			endX,
+			distance: startX - endX
+		};
+	};
+
+	// ScrollTrigger :
 	const tl = gsap.timeline({
 		scrollTrigger: {
 			trigger: sectionRef.value,
 			pin: true,
 			start: 'center center',
-			end: () => `+=${scrollAmount}`,
+			end: () => `+=${getScrollAmount().distance}`,
+			markers: true,
 			scrub: 1,
 			invalidateOnRefresh: true
 		}
 	});
 
-	// Animate Services
-	tl.fromTo(servicesContainerRef.value, { x: () => containerWidth }, { x: () => -containerWidth, ease: 'none' }, 0);
+	tl.fromTo(titleRef.value, { x: '80%' }, { x: '-35%', ease: 'none' }, 0);
 
-	// Animate Title
-	tl.fromTo(titleRef.value, { x: '50vw' }, { x: '-50vw', ease: 'none' }, 0);
+	tl.fromTo(
+		servicesContainerRef.value,
+		{ x: () => getScrollAmount().startX },
+		{ x: () => getScrollAmount().endX, ease: 'none' },
+		0
+	);
 }, sectionRef);
 </script>
 
@@ -83,8 +99,8 @@ useGSAP(() => {
 						<div class="cover-inner-wrapper">
 							<Image
 								:src="service.content.informations[0].cover"
-								:aspect-ratio="275 / 335"
-								:sizes="[{ desktop: '275px' }, '275px']"
+								:aspect-ratio="360 / 440"
+								:sizes="[{ desktop: '360px' }, '230px']"
 							/>
 						</div>
 					</div>
@@ -98,10 +114,11 @@ useGSAP(() => {
 </template>
 
 <style lang="scss" scoped>
+$serviceHeight: fluidSize(440px, 280px, null, xxlarge);
+
 .other-services {
 	display: flex;
 	align-items: center;
-	min-height: fluidSize(810px, 540px);
 	background: linear-gradient(180deg, $white 0%, $ivory 25%, $ivory 75%, $white 100%);
 }
 
@@ -115,7 +132,7 @@ useGSAP(() => {
 	@include mq($until: tablet) {
 		@include lvh(50, height);
 
-		max-height: 465px;
+		max-height: 640px;
 	}
 
 	@include mq(tablet) {
@@ -142,15 +159,14 @@ useGSAP(() => {
 	top: 50%;
 	transform: translate3d(0, -50%, 0);
 	display: flex;
-	column-gap: 320px;
-	height: calc(335px * 2 + 5%);
+	column-gap: fluidSize(320px, 180px);
+	height: calc($serviceHeight * 2 + 5%);
 }
 
 .service-wrapper {
 	position: relative;
-	width: 275px;
-	height: 335px;
-	aspect-ratio: 275 / 335;
+	height: $serviceHeight;
+	aspect-ratio: 360 / 440;
 	background: $ivory;
 	box-shadow: 30px 30px 60px rgba($eerieBlack, 0.15);
 	overflow: hidden;
