@@ -2,12 +2,23 @@
 import { storyblokEditable } from '#storyblok/helpers/storyblokEditable.ts';
 import OtherServicesVue from '#storyblok/modules/OtherServices.vue';
 import type { StoryblokOtherServices } from '#types/component-types-sb.js';
+import { getServices } from '#storyblok/helpers/getServices.ts';
+
+import locales from '#utils/locales.json';
+import parseUrl from '#utils/parseUrl.ts';
 
 type Props = {
 	blok: StoryblokOtherServices;
 };
 
 const { blok } = Astro.props;
+const { language = locales[0] } = parseUrl(Astro.url.pathname);
+const services = await getServices(blok._uid, language, Astro.locals.isPreviewMode);
 ---
 
-<OtherServicesVue {...storyblokEditable(blok, Astro.locals.isPreviewMode)} {...Astro.props} client:visible />
+<OtherServicesVue
+	{...storyblokEditable(blok, Astro.locals.isPreviewMode)}
+	{...Astro.props}
+	services={services}
+	client:visible
+/>

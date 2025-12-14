@@ -1,14 +1,21 @@
 <script setup lang="ts">
+import type { ISbStoryData } from '@storyblok/js';
 import gsap from 'gsap';
 import { useTemplateRef } from 'vue';
 
-import type { StoryblokOtherServices } from '#types/component-types-sb.js';
+import { getLocale } from '#utils/i18n.ts';
+
+import Image from '#components/utils/Image.vue';
+import RichText from '#components/utils/RichText.vue';
+
+import type { StoryblokOtherServices, StoryblokService } from '#types/component-types-sb.js';
 
 import { useGSAP } from '#composables/useGSAP.ts';
 
 // Props :
 defineProps<{
 	blok: StoryblokOtherServices;
+	services: ISbStoryData<StoryblokService>[];
 }>();
 
 // Refs :
@@ -16,8 +23,6 @@ const sectionRef = useTemplateRef<HTMLElement>('sectionRef');
 const containerRef = useTemplateRef<HTMLElement>('containerRef');
 const titleRef = useTemplateRef<HTMLElement>('titleRef');
 const servicesContainerRef = useTemplateRef<HTMLElement>('servicesContainerRef');
-
-const servicesTemp = 4;
 
 // Animation (Horizontal scroll) :
 useGSAP(() => {
@@ -61,11 +66,24 @@ useGSAP(() => {
 		<div ref="containerRef" class="content-container">
 			<h2 ref="titleRef">{{ blok.title }}</h2>
 			<div ref="servicesContainerRef" class="services-container">
-				<div v-for="i in servicesTemp" :key="i" class="service-wrapper" :data-cursor-label="$t('learnMore')">
-					<div class="label-wrapper">
-						<span>/Individuel</span>
+				<a
+					v-for="service in services"
+					:key="service.uuid"
+					:href="`/${getLocale()}/${service.full_slug}`"
+					class="service-wrapper"
+					:data-cursor-label="$t('learnMore')"
+				>
+					<div class="cover-wrapper">
+						<Image
+							:src="service.content.informations[0].cover"
+							:aspect-ratio="275 / 335"
+							:sizes="[{ desktop: '275px' }, '275px']"
+						/>
 					</div>
-				</div>
+					<div class="label-wrapper">
+						<span class="service-name"> /<RichText :doc="service.content.informations[0].name" /> </span>
+					</div>
+				</a>
 			</div>
 		</div>
 	</section>
@@ -125,7 +143,7 @@ useGSAP(() => {
 	width: 275px;
 	height: 335px;
 	aspect-ratio: 275 / 335;
-	background: red;
+	background: $ivory;
 	box-shadow: 30px 30px 60px rgba($eerieBlack, 0.15);
 	overflow: hidden;
 	flex-shrink: 0;
@@ -145,6 +163,14 @@ useGSAP(() => {
 		align-self: flex-end;
 	}
 
+	.cover-wrapper {
+		overflow: hidden;
+
+		img {
+			@include img-fill;
+		}
+	}
+
 	.label-wrapper {
 		position: absolute;
 		bottom: 0;
@@ -155,6 +181,17 @@ useGSAP(() => {
 
 		span {
 			@include roobert-14-uppercase;
+
+			display: flex;
+			align-items: center;
+
+			:deep(.partials-rich-text) {
+				display: inline-flex;
+
+				p {
+					margin: 0;
+				}
+			}
 		}
 	}
 }

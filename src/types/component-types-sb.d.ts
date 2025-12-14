@@ -301,6 +301,7 @@ export interface StoryblokSEO {
 
 export interface StoryblokService {
 	SEO: StoryblokSEO[];
+	informations: StoryblokServiceInformations[];
 	component: 'Service';
 	_uid: string;
 }
@@ -325,6 +326,14 @@ export interface StoryblokServiceFAQSectionItem {
 	question: string;
 	answer: StoryblokRichtext;
 	component: 'ServiceFAQSectionItem';
+	_uid: string;
+}
+
+export interface StoryblokServiceInformations {
+	name: StoryblokRichtext;
+	summary: string;
+	cover: StoryblokAsset;
+	component: 'ServiceInformations';
 	_uid: string;
 }
 
