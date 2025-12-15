@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useStore } from '@nanostores/vue';
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { nextTick, onMounted, onUnmounted, ref, shallowRef } from 'vue';
 
 import { isTouchDevice } from '#utils/device.ts';
@@ -19,10 +18,10 @@ type ProjectItem = {
 	component?: InstanceType<typeof CursorProjectsItem> | null;
 };
 
-// Props :
-defineProps<{
-	isAtBottom?: boolean;
-}>();
+// Refs :
+const globalStore = useStore($global);
+const spawnerEl = ref<HTMLElement | null>(null);
+const items = shallowRef<ProjectItem[]>([]);
 
 // Config :
 const config = {
@@ -35,11 +34,6 @@ const config = {
 // State :
 const mouse = { x: 0, y: 0 };
 const lastMouse = { x: 0, y: 0 };
-const clientMouse = { x: 0, y: 0 };
-const relativeMouse = { x: 0, y: 0 };
-
-const items = shallowRef<ProjectItem[]>([]);
-const spawnerEl = ref<HTMLElement | null>(null);
 
 const pos = {
 	t: 0,
@@ -53,64 +47,40 @@ const pos = {
 let idCounter = 0;
 let lastSpawnTime = 0;
 let isHovering = false;
-let hasMouseMoved = false;
-let rect: DOMRect | null = null;
+let isWindowFocused = true;
 
 // Methods :
-const updateMousePosition = () => {
-	if (!rect || !hasMouseMoved) {
-		isHovering = false;
-		return;
-	}
-
-	relativeMouse.x = clientMouse.x - rect.left;
-	relativeMouse.y = clientMouse.y - rect.top;
-
-	isHovering =
-		relativeMouse.x >= 0 && relativeMouse.x <= rect.width && relativeMouse.y >= 0 && relativeMouse.y <= rect.height;
-
-	if (isHovering) {
-		mouse.x = relativeMouse.x;
-		mouse.y = relativeMouse.y;
-	}
-};
-
-const updateRect = () => {
-	if (spawnerEl.value) rect = spawnerEl.value.getBoundingClientRect();
-	updateMousePosition();
-};
-
 const handleMouseMove = (e: MouseEvent) => {
-	hasMouseMoved = true;
-	clientMouse.x = e.clientX;
-	clientMouse.y = e.clientY;
-	updateMousePosition();
-};
+	const target = e.target as HTMLElement;
+	isHovering = !!target.closest('[data-cursor-projects]');
+	mouse.x = e.clientX;
+	mouse.y = e.clientY;
 
-const handleMouseLeave = () => {
-	isHovering = false;
+	// Check if mouse is inside the window :
+	isWindowFocused = !(
+		e.clientX < 0 ||
+		e.clientX > window.innerWidth ||
+		e.clientY < 0 ||
+		e.clientY > window.innerHeight
+	);
 };
 
 const spawnItem = () => {
 	const id = idCounter++;
 	const rotation = Math.random() * config.maxRotation * 2 - config.maxRotation;
-
 	items.value = [
 		...items.value,
 		{
 			id,
 			x: mouse.x,
-			y: mouse.y,
+			y: mouse.y + window.scrollY,
 			rotation
 		}
 	];
-
 	nextTick(() => {
 		const el = items.value.find((i) => i.id === id)?.component?.el;
-
 		// Animation :
 		const tl = gsap.timeline();
-
 		if (el) {
 			tl.fromTo(
 				el,
@@ -139,16 +109,16 @@ const spawnItem = () => {
 	});
 };
 
-const globalStore = useStore($global);
-
 const tick = () => {
-	if (!isHovering || !rect || globalStore.value.isContactToggled || globalStore.value.isMenuToggled) return;
+	if (spawnerEl.value) gsap.set(spawnerEl.value, { y: -window.scrollY });
+	if (!isWindowFocused || !isHovering || globalStore.value.isContactToggled || globalStore.value.isMenuToggled) {
+		return;
+	}
 
 	// Calculate velocity :
 	pos.dx = mouse.x - lastMouse.x;
 	pos.dy = mouse.y - lastMouse.y;
 	pos.speed = Math.sqrt(pos.dx * pos.dx + pos.dy * pos.dy);
-
 	pos.now = performance.now();
 
 	// Linear interpolation for interval (0 -> Slow Interval, MAX -> Fast Interval) :
@@ -168,30 +138,14 @@ const tick = () => {
 onMounted(() => {
 	if (isTouchDevice()) return;
 
-	updateRect();
-
-	window.addEventListener('resize', updateRect);
-	window.addEventListener('scroll', updateRect, true);
 	window.addEventListener('mousemove', handleMouseMove);
-	document.addEventListener('mouseleave', handleMouseLeave);
 
 	// Ticker :
-	ScrollTrigger.create({
-		trigger: spawnerEl.value,
-		start: 'top bottom',
-		end: 'bottom top',
-		onEnter: () => gsap.ticker.add(tick),
-		onEnterBack: () => gsap.ticker.add(tick),
-		onLeave: () => gsap.ticker.remove(tick),
-		onLeaveBack: () => gsap.ticker.remove(tick)
-	});
+	gsap.ticker.add(tick);
 });
 
 onUnmounted(() => {
-	window.removeEventListener('resize', updateRect);
-	window.removeEventListener('scroll', updateRect, true);
 	window.removeEventListener('mousemove', handleMouseMove);
-	document.removeEventListener('mouseleave', handleMouseLeave);
 
 	// Ticker :
 	gsap.ticker.remove(tick);
@@ -200,7 +154,7 @@ onUnmounted(() => {
 
 <template>
 	<div class="cursor-projects-container">
-		<div ref="spawnerEl" class="cursor-projects-items-wrapper" :class="{ 'is-at-bottom': isAtBottom }">
+		<div ref="spawnerEl" class="cursor-projects-items-wrapper">
 			<CursorProjectsItem
 				v-for="item in items"
 				:key="item.id"
@@ -216,24 +170,16 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 .cursor-projects-container {
-	position: absolute;
-	z-index: 1;
+	position: fixed;
+	z-index: 10;
 	inset: 0;
 	overflow: hidden;
 	pointer-events: none;
 }
 
 .cursor-projects-items-wrapper {
-	$verticalOffset: fluidSize(160px, 120px);
-
 	position: absolute;
-	top: $verticalOffset;
-	left: 0;
-	width: 100%;
-	height: calc(100% - ($verticalOffset * 2));
-
-	&.is-at-bottom {
-		height: calc(100% - $verticalOffset);
-	}
+	inset: 0;
+	will-change: transform;
 }
 </style>

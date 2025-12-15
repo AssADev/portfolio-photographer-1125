@@ -247,7 +247,7 @@ onUnmounted(() => {
 	--cursor-square-size: 9px;
 
 	position: fixed;
-	z-index: 10;
+	z-index: 15;
 	inset: 0;
 	color: $white;
 	opacity: 0;

@@ -11,6 +11,7 @@ import Head from '#components/widgets/Head/Head.astro';
 
 import Header from '#components/widgets/Header.vue';
 import Cursor from '#components/widgets/Cursor.vue';
+import CursorProjects from '#components/widgets/CursorProjects.vue';
 
 import ScriptUtilities from '#components/scripts/ScriptUtilities.astro';
 
@@ -56,6 +57,7 @@ setState('url', Astro.url);
 	<body>
 		<div id="app">
 			<Cursor client:load />
+			<CursorProjects client:load />
 			<Header siteConfig={siteConfig} language={language} languageAlternates={languageAlternates} client:load />
 			<main>
 				<Lenis client:load root />

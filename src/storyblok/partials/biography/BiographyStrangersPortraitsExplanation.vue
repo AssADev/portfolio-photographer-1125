@@ -33,7 +33,7 @@ defineProps<{
 			<ul v-if="socials.length" class="socials-wrapper">
 				<li v-for="social in socials" :key="social._uid">
 					<a v-bind="getLinkAttributes(social.link)">
-						{{ social.label }}
+						<span>{{ social.label }}</span>
 					</a>
 				</li>
 			</ul>
@@ -122,22 +122,24 @@ defineProps<{
 
 	li {
 		a {
-			@include roobert-12-uppercase;
-
 			position: relative;
-			display: block;
+			display: flex;
 			padding: 8px 16px;
-			border: 1px solid rgba($eerieBlack, 0.2);
-			border-radius: 100px;
+			border: 1px solid rgba($eerieBlack, 0.25);
+			border-radius: 16px;
 			transition:
-				background 0.4s $power2Out,
 				color 0.4s $power2Out,
+				background 0.4s $power2Out,
 				border-color 0.4s $power2Out;
 
 			@include hover {
-				background: $eerieBlack;
 				color: $white;
+				background: $eerieBlack;
 				border-color: $eerieBlack;
+			}
+
+			span {
+				@include roobert-12-uppercase;
 			}
 		}
 	}

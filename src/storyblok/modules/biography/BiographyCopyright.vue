@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import CursorProjects from '#components/partials/CursorProjects.vue';
 import CircularStar from '#components/utils/CircularStar.vue';
 import Label from '#components/utils/Label.vue';
 import RichText from '#components/utils/RichText.vue';
@@ -13,8 +12,7 @@ defineProps<{
 </script>
 
 <template>
-	<section class="modules biography-copyright">
-		<CursorProjects v-if="blok.cursorProjects" :isAtBottom="true" />
+	<section class="modules biography-copyright" :data-cursor-projects="blok.cursorProjects || undefined">
 		<CircularStar />
 		<div class="container">
 			<Label v-if="blok.label" :label="blok.label" />

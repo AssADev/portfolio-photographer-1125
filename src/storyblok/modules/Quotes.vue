@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import CursorProjects from '#components/partials/CursorProjects.vue';
-
 import type { StoryblokQuotes } from '#types/component-types-sb.js';
 
 import QuotesItem from '#storyblok/partials/QuotesItem.vue';
@@ -52,8 +50,7 @@ const layouts = [
 </script>
 
 <template>
-	<section class="modules quotes">
-		<CursorProjects v-if="blok.cursorProjects" />
+	<section class="modules quotes" :data-cursor-projects="blok.cursorProjects || undefined">
 		<div class="container-grid">
 			<QuotesItem
 				v-for="(quote, index) in blok.quotes"
