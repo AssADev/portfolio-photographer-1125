@@ -65,6 +65,7 @@ onUnmounted(() => {
 <style scoped lang="scss">
 .partials-circular-star {
 	aspect-ratio: 1 / 1;
+	pointer-events: none;
 
 	.circular-star-scroll-wrapper {
 		width: 100%;

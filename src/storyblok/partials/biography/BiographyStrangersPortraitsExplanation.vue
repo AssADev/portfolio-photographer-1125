@@ -51,19 +51,31 @@ defineProps<{
 
 	&.even-theme {
 		background: $whiteChoco;
+
+		.socials-wrapper {
+			a {
+				background: rgba($whiteChoco, 0.8);
+			}
+		}
 	}
 
 	&.odd-theme {
 		background: $ivory;
+
+		.socials-wrapper {
+			a {
+				background: rgba($ivory, 0.8);
+			}
+		}
 	}
 }
 
 :deep(.partials-circular-star) {
 	position: absolute;
-	top: 0;
-	right: 0;
-	transform: translate3d(50%, -50%, 0);
-	width: 680px;
+	top: 50%;
+	left: 0;
+	transform: translate3d(-50%, -50%, 0);
+	height: 200%;
 }
 
 .inner-container {
