@@ -46,6 +46,7 @@ useTrap(drawerRef, { model: toggled, clickOutsideDeactivates: clickOutsideEnable
 // Animations :
 const openDrawer = () => {
 	lockScroll.value = true;
+
 	tl?.kill();
 	tl = gsap.timeline();
 

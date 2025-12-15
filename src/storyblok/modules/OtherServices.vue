@@ -3,14 +3,13 @@ import type { ISbStoryData } from '@storyblok/js';
 import gsap from 'gsap';
 import { useTemplateRef } from 'vue';
 
-import { getLocale } from '#utils/i18n.ts';
-
 import Image from '#components/utils/Image.vue';
 import RichText from '#components/utils/RichText.vue';
 
 import type { StoryblokOtherServices, StoryblokService } from '#types/component-types-sb.js';
 
 import { useGSAP } from '#composables/useGSAP.ts';
+import { useLinkAttrs } from '#composables/useLinkAttrs.ts';
 import vMagnetic from '#directives/vMagnetic.ts';
 
 // Props :
@@ -87,11 +86,11 @@ useGSAP(() => {
 					v-for="service in services"
 					:key="service.uuid"
 					v-magnetic="{
-						strength: 0.35,
+						strength: 0.4,
 						range: 125,
 						parallax: { target: '.cover-inner-wrapper', strength: 0.05 }
 					}"
-					:href="`/${getLocale()}/${service.full_slug}`"
+					:href="`/${service.full_slug}`"
 					class="service-wrapper"
 					:data-cursor-label="$t('learnMore')"
 				>
