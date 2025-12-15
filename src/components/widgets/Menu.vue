@@ -101,7 +101,7 @@ const findActiveMenuItem = (menuItems: any[], currentPath: string) => {
 							:href="
 								languageAlternates
 									?.find((alt) => alt.hrefLang.split('-')[0] === locale)
-									?.href.toString() || `/${locale}`
+									?.href.toString() || (locale === locales[0] ? '/' : `/${locale}`)
 							"
 						>
 							<span>{{ locale }}</span>

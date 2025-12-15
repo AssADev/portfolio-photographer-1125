@@ -38,7 +38,7 @@ export function localizeLink(link: StoryblokMultilink, language: string) {
 		const alt = translatedSlugs?.find((alt: any) => alt.lang === language);
 
 		if (locales[0] === language) {
-			link.url = [locales[0], trimmedPath].filter(Boolean).join('/');
+			link.url = trimmedPath;
 			link.name = link.story.name;
 		} else if (alt) {
 			link.url = [alt.lang, alt.path.replace(/^\/*|\/*$/g, '').replace(HOME_SLUG, '')].filter(Boolean).join('/');

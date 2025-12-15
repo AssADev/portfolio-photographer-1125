@@ -10,7 +10,7 @@
 	"scripts": {
 		"dev": "astro dev --host",
 		"build": "astro build",
-		"preview": "astro preview",
+		"preview": "node --env-file .env ./dist/server/entry.mjs",
 		"astro": "astro",
 		"eslint": "eslint './**/*.+(ts|mts|js|mjs|vue|astro)'",
 		"stylelint": "stylelint './src/**/*.+(css|scss|vue|astro)'",

@@ -52,7 +52,7 @@ export function webJoin(...segments: string[]) {
 }
 
 /**
- * Helper function to build a URL path from language and slug
+ * Helper function to build a URL path from language and slug :
  */
 export function buildUrlPath(lang: string, slug: string): string {
 	let processedSlug = slug;
@@ -62,7 +62,7 @@ export function buildUrlPath(lang: string, slug: string): string {
 }
 
 /**
- * Helper function to get all route paths from processed links
+ * Helper function to get all route paths from processed links :
  */
 export function getRoutePathsFromLinks(links: ProcessedLink[]): string[] {
 	const routeList: string[] = [];
@@ -76,7 +76,7 @@ export function getRoutePathsFromLinks(links: ProcessedLink[]): string[] {
 			locales.forEach((locale) => {
 				const normalized = link.trimmedPath.replace(/^\//, '');
 
-				// Extract the first path segment (e.g., "fr" in "fr/biography") :
+				// Extract the first path segment (e.g., "en" in "en/biography") :
 				const firstSegment = normalized.split('/')[0];
 
 				// If the path already starts with a locale :
@@ -85,12 +85,12 @@ export function getRoutePathsFromLinks(links: ProcessedLink[]): string[] {
 					if (firstSegment === locale) {
 						routeList.push(normalized);
 					} else {
-						// Generate the base route for other locales (e.g. "/en" when current path is "fr/biography") :
+						// Generate the base route for other locales (e.g. "/en" when current path is "en/biography") :
 						routeList.push(locale);
 					}
 				} else {
-					// Path has no locale prefix (Generate route for each locale) :
-					routeList.push(webJoin(locale, normalized));
+					// For default locale, we push the normalized path AS IS (no prefix) :
+					locale === locales[0] ? routeList.push(normalized) : routeList.push(webJoin(locale, normalized));
 				}
 			});
 
@@ -116,7 +116,7 @@ export interface SitemapEntry {
 }
 
 /**
- * Generates sitemap entries with alternate language links from Storyblok
+ * Generates sitemap entries with alternate language links from Storyblok :
  */
 export async function getSitemapEntries(): Promise<SitemapEntry[]> {
 	const links = await getStoryblokLinks();
@@ -128,7 +128,7 @@ export async function getSitemapEntries(): Promise<SitemapEntry[]> {
 			processedPaths.add(link.trimmedPath);
 
 			// Create the main entry for the default language :
-			const defaultUrl = webJoin(locales[0], link.trimmedPath);
+			const defaultUrl = link.trimmedPath;
 
 			const entry: SitemapEntry = {
 				url: defaultUrl

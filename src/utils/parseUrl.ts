@@ -8,7 +8,7 @@ export default function parseUrl(url?: string) {
 	const isKnownLang = locales.some((l) => l === urlToArray?.[0]);
 
 	// Setting current language based on above :
-	const currentLang = url && isKnownLang ? urlToArray![0] : undefined;
+	const currentLang = url && isKnownLang ? urlToArray![0] : locales[0];
 
 	// Removing language from the url and only keeping the slug :
 	const slug = url ? (isKnownLang ? urlToArray?.slice(1)?.join('/') || undefined : urlToArray?.join('/')) : undefined;

@@ -3,6 +3,8 @@ import { useStore, useVModel } from '@nanostores/vue';
 import { useEventListener } from '@vueuse/core';
 import { provide, ref, watchEffect } from 'vue';
 
+import locales from '#utils/locales.json';
+
 import Button from '#components/utils/Button.vue';
 import ContactForms from '#components/widgets/ContactForms.vue';
 import Menu from '#components/widgets/Menu.vue';
@@ -61,7 +63,7 @@ useEventListener('scroll', () => {
 		data-allow-mismatch="class"
 	>
 		<div class="header-container">
-			<Button :to="`/${language}`" class="identity-cta">
+			<Button :to="language === locales[0] ? '/' : `/${language}`" class="identity-cta">
 				<span>{{ siteConfig.identity }}</span>
 			</Button>
 

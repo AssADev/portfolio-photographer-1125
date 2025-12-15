@@ -14,9 +14,15 @@ export default function (base: string, story: Partial<ISbStoryData>, currentLoca
 	for (const locale of locales) {
 		if (locale === currentLocale) continue;
 
+		// If target locale is default, do not prefix with locale :
+		const href =
+			locale === locales[0]
+				? new URL(normalizedSlug, base).toString()
+				: new URL(join(locale, normalizedSlug), base).toString();
+
 		localizedSlugs.push({
 			hrefLang: localesRegions[locale],
-			href: new URL(join(locale, normalizedSlug), base).toString()
+			href
 		});
 	}
 
