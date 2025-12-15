@@ -63,6 +63,7 @@ onUnmounted(() => {
 		v-if="blok.thumbnail.filename && blok.video.filename"
 		is="a"
 		v-bind="getLinkAttributes(blok.link)"
+		:aria-label="$t('watchVideo')"
 		:data-cursor-label="$t('watchVideo')"
 		class="partials-biography-strangers-portraits-video"
 	>

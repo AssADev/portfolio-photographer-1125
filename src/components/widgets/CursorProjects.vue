@@ -25,9 +25,8 @@ const items = shallowRef<ProjectItem[]>([]);
 
 // Config :
 const config = {
-	maxSpeed: 15,
-	intervalFast: 15,
-	intervalSlow: 500,
+	spawnDistance: 35,
+	spawnTime: 500,
 	maxRotation: 18
 };
 
@@ -36,12 +35,11 @@ const mouse = { x: 0, y: 0 };
 const lastMouse = { x: 0, y: 0 };
 
 const pos = {
-	t: 0,
 	dx: 0,
 	dy: 0,
 	now: 0,
 	speed: 0,
-	interval: 0
+	accumulator: 0
 };
 
 let idCounter = 0;
@@ -120,14 +118,16 @@ const tick = () => {
 	pos.dy = mouse.y - lastMouse.y;
 	pos.speed = Math.sqrt(pos.dx * pos.dx + pos.dy * pos.dy);
 	pos.now = performance.now();
+	pos.accumulator += pos.speed;
 
-	// Linear interpolation for interval (0 -> Slow Interval, MAX -> Fast Interval) :
-	pos.t = Math.min(pos.speed / config.maxSpeed, 1);
-	pos.interval = config.intervalSlow - pos.t * (config.intervalSlow - config.intervalFast);
-
-	if (pos.now - lastSpawnTime > pos.interval) {
+	if (pos.accumulator > config.spawnDistance) {
+		spawnItem();
+		pos.accumulator = 0;
+		lastSpawnTime = pos.now;
+	} else if (pos.now - lastSpawnTime > config.spawnTime) {
 		spawnItem();
 		lastSpawnTime = pos.now;
+		pos.accumulator = 0;
 	}
 
 	lastMouse.x = mouse.x;
