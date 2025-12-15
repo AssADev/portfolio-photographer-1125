@@ -23,11 +23,11 @@ provide('siteConfig', siteConfig);
 const globalStore = useStore($global);
 const contactFormId = useVModel($global, 'contactFormId');
 const isContactToggled = useVModel($global, 'isContactToggled');
+const isMenuToggled = useVModel($global, 'isMenuToggled');
 
 // Refs :
 const scrollHide = ref(false);
 const hidden = ref(false);
-const isMenuToggled = ref(false);
 
 // Methods :
 const toggleContact = () => {

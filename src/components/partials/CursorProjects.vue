@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useStore } from '@nanostores/vue';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { nextTick, onMounted, onUnmounted, ref, shallowRef } from 'vue';
@@ -6,6 +7,8 @@ import { nextTick, onMounted, onUnmounted, ref, shallowRef } from 'vue';
 import { isTouchDevice } from '#utils/device.ts';
 
 import CursorProjectsItem from '#components/partials/CursorProjectsItem.vue';
+
+import { $global } from '#stores/global.ts';
 
 // Types :
 type ProjectItem = {
@@ -136,8 +139,10 @@ const spawnItem = () => {
 	});
 };
 
+const globalStore = useStore($global);
+
 const tick = () => {
-	if (!isHovering || !rect) return;
+	if (!isHovering || !rect || globalStore.value.isContactToggled || globalStore.value.isMenuToggled) return;
 
 	// Calculate velocity :
 	pos.dx = mouse.x - lastMouse.x;
