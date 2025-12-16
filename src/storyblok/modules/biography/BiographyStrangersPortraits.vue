@@ -67,11 +67,11 @@ useGSAP(() => {
 		}
 	});
 
-	// 1. Horizontal Scroll & Scale Up (Pinned)
+	// Horizontal Scroll & Scale Up (Circular Star) :
 	tl.to(sectionsWrapperRef.value, { x: () => -getScrollAmount(), ease: 'none' });
 	tl.to(circularStarRef.value?.$el, { scale: 1, ease: 'none' }, 0);
 
-	// 2. Move to Bottom (After Pin)
+	// Move to bottom (Circular Star) :
 	// We want the star to move from the center of sectionsContainer to the bottom of the Copyright module.
 	const copyrightEl = elRef.value?.querySelector('.modules.biography-copyright') as HTMLElement;
 
