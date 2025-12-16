@@ -118,7 +118,7 @@ $serviceHeight: fluidSize(440px, 280px, null, xxlarge);
 .other-services {
 	display: flex;
 	align-items: center;
-	background: linear-gradient(180deg, $white 0%, $ivory 25%, $ivory 75%, $white 100%);
+	background: linear-gradient(180deg, $white 0%, $ivory 40%, $ivory 60%, $white 100%);
 }
 
 .content-container {
