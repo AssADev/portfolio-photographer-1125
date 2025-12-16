@@ -13,7 +13,7 @@ defineProps<{
 
 <template>
 	<section class="modules biography-copyright" :data-cursor-projects="blok.cursorProjects || undefined">
-		<CircularStar />
+		<CircularStar v-if="blok.circularStar" />
 		<div class="container">
 			<Label v-if="blok.label" :label="blok.label" />
 			<RichText :doc="blok.title" />
@@ -25,11 +25,12 @@ defineProps<{
 .biography-copyright {
 	@include pseudo-gradient('before', 'bottom', 'white-ivory-transparent', 1, fluidSize(360px, 280px));
 
+	z-index: 1;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	min-height: 100vh;
+	height: 100vh;
 	overflow: hidden;
 
 	:deep(.partials-circular-star) {
@@ -39,7 +40,7 @@ defineProps<{
 		transform: translate3d(-50%, 50%, 0);
 
 		@include mq($until: desktop) {
-			height: 100%;
+			height: 125vh;
 		}
 
 		@include mq(desktop) {

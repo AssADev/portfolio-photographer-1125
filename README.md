@@ -27,3 +27,17 @@ My own photography portfolio, which I both **designed** and **developed** from s
     ```bash
     npx pnpm run dev
     ```
+
+## Storyblok
+
+### Login
+
+```bash
+npx pnpm storyblok login
+```
+
+### Types
+
+```bash
+npx pnpm sb-types
+```

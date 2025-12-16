@@ -2,12 +2,14 @@
 import gsap from 'gsap';
 import { computed, useTemplateRef } from 'vue';
 
+import CircularStar from '#components/utils/CircularStar.vue';
 import RichText from '#components/utils/RichText.vue';
 import StoryblokComponent from '#components/utils/StoryblokComponent.vue';
 
 import type { StoryblokBiographyStrangersPortraits, StoryblokLabelLink } from '#types/component-types-sb.js';
 
 import { useGSAP } from '#composables/useGSAP.ts';
+import BiographyCopyright from '#storyblok/modules/biography/BiographyCopyright.vue';
 import BiographyStrangersPortraitsExplanation from '#storyblok/partials/biography/BiographyStrangersPortraitsExplanation.vue';
 import BiographyStrangersPortraitsVideo from '#storyblok/partials/biography/BiographyStrangersPortraitsVideo.vue';
 
@@ -27,6 +29,7 @@ const SectionsComponents = {
 const elRef = useTemplateRef('elRef');
 const sectionsContainerRef = useTemplateRef('sectionsContainerRef');
 const sectionsWrapperRef = useTemplateRef('sectionsWrapperRef');
+const circularStarRef = useTemplateRef('circularStarRef');
 
 // Computed :
 const explanationIndices = computed(() => {
@@ -53,9 +56,7 @@ const getScrollAmount = () => {
 
 // Animation (Horizontal scroll) :
 useGSAP(() => {
-	gsap.to(sectionsWrapperRef.value, {
-		x: () => -getScrollAmount(),
-		ease: 'none',
+	const tl = gsap.timeline({
 		scrollTrigger: {
 			trigger: sectionsContainerRef.value,
 			pin: true,
@@ -65,6 +66,37 @@ useGSAP(() => {
 			invalidateOnRefresh: true
 		}
 	});
+
+	// 1. Horizontal Scroll & Scale Up (Pinned)
+	tl.to(sectionsWrapperRef.value, { x: () => -getScrollAmount(), ease: 'none' });
+	tl.to(circularStarRef.value?.$el, { scale: 1, ease: 'none' }, 0);
+
+	// 2. Move to Bottom (After Pin)
+	// We want the star to move from the center of sectionsContainer to the bottom of the Copyright module.
+	const copyrightEl = elRef.value?.querySelector('.modules.biography-copyright') as HTMLElement;
+
+	if (copyrightEl && circularStarRef.value?.$el && sectionsContainerRef.value) {
+		gsap.timeline({
+			scrollTrigger: {
+				trigger: copyrightEl,
+				start: 'top bottom',
+				end: 'bottom bottom',
+				scrub: true,
+				invalidateOnRefresh: true
+			}
+		}).to(circularStarRef.value.$el, {
+			y: () => {
+				if (!sectionsWrapperRef.value) return 0;
+
+				const halfContainerHeight = sectionsWrapperRef.value.offsetHeight / 2;
+				const copyrightHeight = copyrightEl.offsetHeight;
+
+				return halfContainerHeight + copyrightHeight;
+			},
+			yPercent: -50,
+			ease: 'none'
+		});
+	}
 }, elRef);
 </script>
 
@@ -77,6 +109,7 @@ useGSAP(() => {
 			/>
 		</div>
 		<div ref="sectionsContainerRef" class="sections-container">
+			<CircularStar ref="circularStarRef" />
 			<div ref="sectionsWrapperRef" class="sections-wrapper">
 				<StoryblokComponent
 					v-for="(section, index) in blok.sections"
@@ -88,20 +121,24 @@ useGSAP(() => {
 				/>
 			</div>
 		</div>
+
+		<BiographyCopyright v-if="blok.copyright?.[0]" :blok="blok.copyright[0]" />
 	</section>
 </template>
 
 <style lang="scss" scoped>
 .biography-strangers-portraits {
 	background: linear-gradient(180deg, $white 0%, $ivory 25%, $ivory 75%, $white 100%);
-	padding-block: fluidSize(160px, 120px) fluidSize(120px, 80px);
+	padding-block-start: fluidSize(160px, 120px);
+	overflow: hidden;
 }
 
 .container-grid {
 	:deep(.partials-rich-text) {
 		@include roobert-96;
 
-		z-index: 1;
+		position: relative;
+		z-index: 2;
 		margin-block-end: fluidSize(65px, 45px);
 
 		em {
@@ -115,7 +152,21 @@ useGSAP(() => {
 	z-index: 1;
 	width: 100%;
 	max-width: 100%;
-	overflow: hidden;
+
+	& > :deep(.partials-circular-star) {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate3d(-50%, -50%, 0) scale3d(0, 0, 1);
+
+		@include mq($until: desktop) {
+			height: 125vh;
+		}
+
+		@include mq(desktop) {
+			width: var(--ctn-w);
+		}
+	}
 }
 
 .sections-wrapper {

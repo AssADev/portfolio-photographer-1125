@@ -30,6 +30,7 @@ export interface StoryblokBiographyCopyright {
 	label: string;
 	title: StoryblokRichtext;
 	cursorProjects?: boolean;
+	circularStar?: boolean;
 	component: 'BiographyCopyright';
 	_uid: string;
 }
@@ -47,6 +48,7 @@ export interface StoryblokBiographyHero {
 export interface StoryblokBiographyStrangersPortraits {
 	title: StoryblokRichtext;
 	sections?: (StoryblokBiographyStrangersPortraitsExplanation | StoryblokBiographyStrangersPortraitsVideo)[];
+	copyright?: StoryblokBiographyCopyright[];
 	component: 'BiographyStrangersPortraits';
 	_uid: string;
 }
