@@ -77,6 +77,7 @@ export default defineConfig({
 			}),
 
 			STORYBLOK_TOKEN: envField.string({ context: 'server', access: 'secret' }),
+			STORYBLOK_OAUTH_TOKEN: envField.string({ context: 'server', access: 'secret' }),
 			STORYBLOK_SPACE_ID: envField.number({
 				context: 'server',
 				access: 'secret'

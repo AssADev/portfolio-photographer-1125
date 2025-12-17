@@ -7,6 +7,8 @@ import { isTouchDevice } from '#utils/device.ts';
 
 import CursorProjectsItem from '#components/partials/CursorProjectsItem.vue';
 
+import type { StoryblokAsset } from '#types/component-types-sb.js';
+
 import { $global } from '#stores/global.ts';
 
 // Types :
@@ -15,8 +17,14 @@ type ProjectItem = {
 	x: number;
 	y: number;
 	rotation: number;
+	image?: StoryblokAsset;
 	component?: InstanceType<typeof CursorProjectsItem> | null;
 };
+
+// Props :
+const { images } = defineProps<{
+	images: StoryblokAsset[];
+}>();
 
 // Refs :
 const globalStore = useStore($global);
@@ -26,7 +34,7 @@ const items = shallowRef<ProjectItem[]>([]);
 // Config :
 const config = {
 	spawnDistance: 35,
-	spawnTime: 500,
+	spawnTime: 800,
 	maxRotation: 18
 };
 
@@ -54,7 +62,6 @@ const handleMouseMove = (e: MouseEvent) => {
 	mouse.x = e.clientX;
 	mouse.y = e.clientY;
 
-	// Check if mouse is inside the window :
 	isWindowFocused = !(
 		e.clientX < 0 ||
 		e.clientX > window.innerWidth ||
@@ -63,22 +70,32 @@ const handleMouseMove = (e: MouseEvent) => {
 	);
 };
 
-const spawnItem = () => {
+const getRandomImage = (images: StoryblokAsset[]): StoryblokAsset | undefined => {
+	if (!Array.isArray(images) || images.length === 0) return undefined;
+	const randomIdx = Math.floor(Math.random() * images.length);
+	return images[randomIdx];
+};
+
+const spawnItem = (images: StoryblokAsset[]) => {
 	const id = idCounter++;
 	const rotation = Math.random() * config.maxRotation * 2 - config.maxRotation;
+	const randomImage = getRandomImage(images);
+
 	items.value = [
 		...items.value,
 		{
 			id,
 			x: mouse.x,
 			y: mouse.y + window.scrollY,
-			rotation
+			rotation,
+			image: randomImage
 		}
 	];
+
 	nextTick(() => {
 		const el = items.value.find((i) => i.id === id)?.component?.el;
-		// Animation :
 		const tl = gsap.timeline();
+
 		if (el) {
 			tl.fromTo(
 				el,
@@ -86,10 +103,11 @@ const spawnItem = () => {
 				{
 					scale: 1,
 					rotation: rotation,
-					duration: '1.25',
+					duration: 1.25,
 					ease: 'circ.out'
 				}
 			);
+
 			tl.to(
 				el,
 				{
@@ -109,11 +127,11 @@ const spawnItem = () => {
 
 const tick = () => {
 	if (spawnerEl.value) gsap.set(spawnerEl.value, { y: -window.scrollY });
+
 	if (!isWindowFocused || !isHovering || globalStore.value.isContactToggled || globalStore.value.isMenuToggled) {
 		return;
 	}
 
-	// Calculate velocity :
 	pos.dx = mouse.x - lastMouse.x;
 	pos.dy = mouse.y - lastMouse.y;
 	pos.speed = Math.sqrt(pos.dx * pos.dx + pos.dy * pos.dy);
@@ -121,11 +139,11 @@ const tick = () => {
 	pos.accumulator += pos.speed;
 
 	if (pos.accumulator > config.spawnDistance) {
-		spawnItem();
+		spawnItem(images);
 		pos.accumulator = 0;
 		lastSpawnTime = pos.now;
 	} else if (pos.now - lastSpawnTime > config.spawnTime) {
-		spawnItem();
+		spawnItem(images);
 		lastSpawnTime = pos.now;
 		pos.accumulator = 0;
 	}
@@ -134,20 +152,15 @@ const tick = () => {
 	lastMouse.y = mouse.y;
 };
 
-// Lifecycle :
 onMounted(() => {
 	if (isTouchDevice()) return;
 
 	window.addEventListener('mousemove', handleMouseMove);
-
-	// Ticker :
 	gsap.ticker.add(tick);
 });
 
 onUnmounted(() => {
 	window.removeEventListener('mousemove', handleMouseMove);
-
-	// Ticker :
 	gsap.ticker.remove(tick);
 });
 </script>
@@ -163,6 +176,7 @@ onUnmounted(() => {
 				:x="item.x"
 				:y="item.y"
 				:rotation="item.rotation"
+				:image="item.image"
 			/>
 		</div>
 	</div>

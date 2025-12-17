@@ -18,6 +18,7 @@ import ScriptUtilities from '#components/scripts/ScriptUtilities.astro';
 import { setState } from '#utils/astro-state.ts';
 import localesRegions from '#utils/localesRegions.ts';
 import getAlternatesForStory from '#storyblok/helpers/getAlternatesForStory.ts';
+import { fetchProjectImagesServer } from '#storyblok/helpers/getProjectImages.ts';
 
 type Props = {
 	language: string;
@@ -38,6 +39,10 @@ const seo = Array.isArray(seoRaw) ? seoRaw[0] : seoRaw;
 const lang = localesRegions[language];
 const languageAlternates = story ? getAlternatesForStory(Astro.site!.toString(), story, language) : undefined;
 
+// Get project images :
+const projectImages = await fetchProjectImagesServer();
+console.log(projectImages);
+
 // State :
 setState('language', language);
 setState('url', Astro.url);
@@ -57,7 +62,7 @@ setState('url', Astro.url);
 	<body>
 		<div id="app">
 			<Cursor client:load />
-			<CursorProjects client:load />
+			<CursorProjects client:load images={projectImages} />
 			<Header siteConfig={siteConfig} language={language} languageAlternates={languageAlternates} client:load />
 			<main>
 				<Lenis client:load root />

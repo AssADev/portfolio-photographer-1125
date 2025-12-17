@@ -1,19 +1,41 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+
+import Image from '#components/utils/Image.vue';
+
+import type { StoryblokAsset } from '#types/component-types-sb.js';
 
 // Props :
-defineProps<{
+const { image } = defineProps<{
 	x: number;
 	y: number;
 	rotation: number;
+	image?: StoryblokAsset;
 }>();
 
 // Refs :
 const el = ref<HTMLElement | null>(null);
 defineExpose({ el });
 
-// Make a random color :
-const color = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+// Computed :
+const enrichedImage = computed(() => {
+	if (!image) return null;
+	return {
+		...image,
+		short_filename: image.filename?.split('/').pop() || 'Image'
+	};
+});
+
+// Transform the S3 URL to a Storyblok URL :
+const transformedSrc = computed(() => {
+	if (!image?.filename) return null;
+
+	const url = image.filename;
+	if (url.includes('s3.amazonaws.com/a.storyblok.com')) {
+		return url.replace('https://s3.amazonaws.com/', 'https://');
+	}
+	return url;
+});
 </script>
 
 <template>
@@ -24,7 +46,15 @@ const color = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
 			transform: `translate3d(${x}px, ${y}px, 0) scale3d(0, 0, 1)`
 		}"
 	>
-		<div class="inner"></div>
+		<div class="inner">
+			<Image
+				v-if="transformedSrc"
+				:src="transformedSrc"
+				:aspect-ratio="1"
+				:alt="enrichedImage?.alt || enrichedImage?.short_filename"
+				:sizes="[{ xxlarge: '225px', desktop: '200px' }, '150px']"
+			/>
+		</div>
 	</div>
 </template>
 
@@ -37,10 +67,13 @@ const color = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
 }
 
 .inner {
-	width: 200px;
-	height: 200px;
-	background-color: v-bind(color);
+	width: fluidSize(225px, 150px, null, xxlarge);
+	height: fluidSize(225px, 150px, null, xxlarge);
 	overflow: hidden;
 	transform: translate3d(-50%, -50%, 0);
+
+	:deep(img) {
+		@include img-fill;
+	}
 }
 </style>
