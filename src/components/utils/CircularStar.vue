@@ -2,24 +2,30 @@
 import { useIntersectionObserver, useResizeObserver, useTemplateRefsList } from '@vueuse/core';
 import type Lenis from 'lenis';
 import { useLenis } from 'lenis/vue';
-import { onUnmounted, reactive, ref, useTemplateRef, watch, watchEffect } from 'vue';
+import { onUnmounted, ref, useTemplateRef, watchEffect } from 'vue';
+
+import { Motion } from '#utils/Motion.ts';
 
 import Icon from '#components/utils/Icon.vue';
+
+// Props :
+const { scrollSpeed } = defineProps<{ scrollSpeed?: number }>();
 
 // Refs
 let inView = false;
 let animation: Animation | undefined;
 
-const scrolling = ref(false);
-
 const containerRef = useTemplateRef('containerRef');
 const innerRef = useTemplateRef('innerRef');
 
-const lenis = useLenis();
+const lenis = scrollSpeed ? useLenis() : ref();
+
+const rate = new Motion(1);
+rate.on('change', (r: any) => animation?.updatePlaybackRate(r));
 
 // Methods :
 const onScroll = (instance: Lenis) => {
-	scrolling.value = !!instance.isScrolling && Math.abs(instance.velocity) > 10;
+	rate.set(instance.velocity * (scrollSpeed || 1) + instance.direction);
 };
 
 // Watchers :
@@ -28,7 +34,6 @@ watchEffect(() => {
 
 	animation = innerRef.value?.animate([{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }], {
 		duration: 120000,
-		direction: lenis.value?.velocity! > 0 ? 'reverse' : 'normal',
 		fill: 'both',
 		iterations: Infinity
 	});
@@ -40,16 +45,17 @@ useIntersectionObserver(containerRef, ([entry]) => {
 	if (entry.isIntersecting) {
 		inView = true;
 		animation?.play();
-		lenis.value?.on('scroll', onScroll);
+		scrollSpeed && lenis.value?.on('scroll', onScroll);
 	} else {
 		inView = false;
 		animation?.pause();
-		lenis.value?.off('scroll', onScroll);
+		scrollSpeed && lenis.value?.off('scroll', onScroll);
 	}
 });
 
 // Detach :
 onUnmounted(() => {
+	rate.clean();
 	lenis.value?.off('scroll', onScroll);
 });
 </script>

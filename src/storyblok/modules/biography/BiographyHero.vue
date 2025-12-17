@@ -26,7 +26,7 @@ const { email, socials } = defineProps<{
 			<div
 				class="picture-primary-container col-start-1 col-end-13 col-start-tb-1 col-end-tb-13 col-start-dk-1 col-end-dk-18"
 			>
-				<CircularStar />
+				<CircularStar :scroll-speed="1" />
 				<div class="picture-wrapper">
 					<Image
 						:src="blok.picturePrimary"

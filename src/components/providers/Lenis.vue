@@ -40,11 +40,7 @@ const update = (time: number) => {
 
 	// Update global scroll offset and velocity :
 	if (lenisRef.value?.lenis) {
-		const scroll = lenisRef.value.lenis.scroll;
 		const velocity = lenisRef.value.lenis.velocity;
-
-		document.documentElement.style.setProperty('--scroll-offset', scroll.toFixed(2));
-		document.documentElement.style.setProperty('--scroll-velocity', velocity.toFixed(2));
 
 		// Update direction only if moving :
 		if (Math.abs(velocity) > 0.1) {
@@ -56,8 +52,6 @@ const update = (time: number) => {
 // Attach & Detach :
 onMounted(() => {
 	gsap.ticker.add(update);
-
-	document.documentElement.style.setProperty('--scroll-velocity', '0');
 });
 
 onUnmounted(() => gsap.ticker.remove(update));

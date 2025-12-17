@@ -109,7 +109,7 @@ useGSAP(() => {
 			/>
 		</div>
 		<div ref="sectionsContainerRef" class="sections-container">
-			<CircularStar ref="circularStarRef" />
+			<CircularStar ref="circularStarRef" :scroll-speed="0.5" />
 			<div ref="sectionsWrapperRef" class="sections-wrapper">
 				<StoryblokComponent
 					v-for="(section, index) in blok.sections"
@@ -151,7 +151,10 @@ useGSAP(() => {
 	position: relative;
 	z-index: 1;
 	width: 100%;
-	max-width: 100%;
+
+	@include mq(widescreen) {
+		@include container;
+	}
 
 	& > :deep(.partials-circular-star) {
 		position: absolute;

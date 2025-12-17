@@ -13,7 +13,7 @@ defineProps<{
 
 <template>
 	<section class="modules biography-copyright" :data-cursor-projects="blok.cursorProjects || undefined">
-		<CircularStar v-if="blok.circularStar" />
+		<CircularStar v-if="blok.circularStar" :scroll-speed="0.5" />
 		<div class="container">
 			<Label v-if="blok.label" :label="blok.label" />
 			<RichText :doc="blok.title" />

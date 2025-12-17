@@ -21,7 +21,7 @@ const color = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
 		ref="el"
 		class="partials-cursor-projects-item"
 		:style="{
-			transform: `translate3d(${x}px, ${y}px, 0) scale(0)`
+			transform: `translate3d(${x}px, ${y}px, 0) scale3d(0, 0, 1)`
 		}"
 	>
 		<div class="inner"></div>
@@ -32,8 +32,8 @@ const color = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
 .partials-cursor-projects-item {
 	position: absolute;
 	transform-origin: 0% 0%;
+	transform: scale3d(0, 0, 1);
 	will-change: transform, opacity;
-	transform: scale(0); // Start hidden
 }
 
 .inner {
