@@ -2,8 +2,10 @@
 import { StoryblokRichText, type StoryblokRichTextNode } from '@storyblok/vue';
 import { type VNode, h } from 'vue';
 
+import { getLinkAttributes } from '#utils/link.ts';
 import { nl2br } from '#utils/nl2br.ts';
 
+import Icon from '#components/utils/Icon.vue';
 import Image from '#components/utils/Image.vue';
 import RichText from '#components/utils/RichText.vue';
 
@@ -21,36 +23,58 @@ const resolvers = {
 	paragraph: (node: StoryblokRichTextNode<VNode>) =>
 		h('h1', h(StoryblokRichText, { doc: { type: 'doc', content: node.content } }))
 };
+
+// Utils :
+const getIconFromSocial = (social: StoryblokLabelLink) => {
+	const { hostname } = new URL(social.link.url);
+	return hostname.replace('www.', '').split('.')[0];
+};
 </script>
 
 <template>
 	<section class="modules links-hero">
 		<div class="background-container">
-			<Image
-				source
-				media="tablet"
-				layout="fullWidth"
-				:aspect-ratio="375 / 810"
-				:src="blok.backgroundMobile"
-				:alt="blok.backgroundMobile.alt || 'Links Hero - Background (Mobile)'"
-				:sizes="{ tablet: '768px' }"
-			/>
-			<Image
-				unstyled
-				layout="fullWidth"
-				:aspect-ratio="1440 / 810"
-				:src="blok.backgroundDesktop"
-				:sizes="{ xxlarge: '1920px' }"
-				:alt="blok.backgroundDesktop.alt || 'Links Hero - Background (Desktop)'"
-			/>
+			<picture>
+				<Image
+					source
+					media="tablet"
+					layout="fullWidth"
+					:aspect-ratio="1440 / 810"
+					:src="blok.backgroundDesktop"
+					:alt="blok.backgroundDesktop.alt || 'Links Hero - Background (Desktop)'"
+					:sizes="{ xxlarge: '1920px' }"
+				/>
+				<Image
+					unstyled
+					layout="fullWidth"
+					:aspect-ratio="375 / 810"
+					:src="blok.backgroundMobile"
+					:alt="blok.backgroundMobile.alt || 'Links Hero - Background (Mobile)'"
+					:sizes="{ tablet: '768px' }"
+				/>
+			</picture>
 		</div>
 		<div class="container">
 			<p v-if="blok.description" class="description" v-html="nl2br(blok.description)" />
 			<div class="content-container">
 				<RichText :doc="blok.title" :resolvers="resolvers" />
-				<div class="socials-container">
-					<a v-if="email" :href="`mailto:${email}`">{{ email }}</a>
-				</div>
+				<ul class="socials-container">
+					<li v-if="email" class="small-item">
+						<a :href="`mailto:${email}`">
+							<Icon name="email" />
+						</a>
+					</li>
+					<li class="small-item">
+						<a href="/">
+							<Icon name="website" />
+						</a>
+					</li>
+					<li v-for="social in socials" :key="social._uid">
+						<a v-bind="getLinkAttributes(social.link)">
+							<Icon :name="getIconFromSocial(social)" />
+						</a>
+					</li>
+				</ul>
 			</div>
 		</div>
 	</section>
@@ -65,6 +89,10 @@ const resolvers = {
 .background-container {
 	position: absolute;
 	inset: 0;
+
+	img {
+		@include img-fill;
+	}
 }
 
 .container {
@@ -85,12 +113,63 @@ const resolvers = {
 }
 
 .content-container {
+	text-align: center;
+
 	& > :deep(.partials-rich-text) {
 		@include roobert-96;
+
+		margin-block-end: 20px;
 
 		em {
 			@include romie-96-italic;
 		}
+	}
+}
+
+.socials-container {
+	gap: 10px;
+	width: 100%;
+	color: $eerieBlack;
+
+	@include mq($until: tablet) {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+	}
+
+	@include mq(tablet) {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	li {
+		width: 100%;
+		height: 40px;
+
+		&:nth-child(odd):last-child {
+			@include mq($until: tablet) {
+				grid-column: span 2;
+			}
+		}
+
+		&.small-item {
+			@include mq(tablet) {
+				width: 40px;
+				flex: 0 0 auto;
+			}
+		}
+	}
+
+	a {
+		@include romie-12;
+
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 4px;
+		height: 100%;
+		background: $whiteChoco;
 	}
 }
 </style>

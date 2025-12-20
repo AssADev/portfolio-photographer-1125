@@ -33,7 +33,7 @@ const items = shallowRef<ProjectItem[]>([]);
 
 // Config :
 const config = {
-	spawnDistance: 35,
+	spawnDistance: 40,
 	spawnTime: 800,
 	maxRotation: 18
 };
@@ -41,6 +41,7 @@ const config = {
 // State :
 const mouse = { x: 0, y: 0 };
 const lastMouse = { x: 0, y: 0 };
+const scroll = { last: 0, current: 0 };
 
 const pos = {
 	dx: 0,
@@ -53,14 +54,21 @@ const pos = {
 let idCounter = 0;
 let lastSpawnTime = 0;
 let isHovering = false;
+let hasMouseMoved = false;
 let isWindowFocused = true;
+let currentElement: Element | null = null;
 
 // Methods :
+const updateHoverState = () => {
+	currentElement = document.elementFromPoint(mouse.x, mouse.y);
+	isHovering = !!currentElement?.closest('[data-cursor-projects]');
+};
+
 const handleMouseMove = (e: MouseEvent) => {
-	const target = e.target as HTMLElement;
-	isHovering = !!target.closest('[data-cursor-projects]');
 	mouse.x = e.clientX;
 	mouse.y = e.clientY;
+
+	if (!hasMouseMoved) hasMouseMoved = true;
 };
 
 const handleWindowBlur = () => {
@@ -133,12 +141,27 @@ const spawnItem = (images: StoryblokAsset[]) => {
 const tick = () => {
 	if (spawnerEl.value) gsap.set(spawnerEl.value, { y: -window.scrollY });
 
-	if (!isWindowFocused || !isHovering || globalStore.value.isContactToggled || globalStore.value.isMenuToggled) {
+	// Update hover state even if mouse hasn't moved
+	updateHoverState();
+
+	if (
+		!isWindowFocused ||
+		!isHovering ||
+		!hasMouseMoved ||
+		globalStore.value.isContactToggled ||
+		globalStore.value.isMenuToggled
+	) {
 		return;
 	}
 
+	// Calculate movement from mouse position :
 	pos.dx = mouse.x - lastMouse.x;
 	pos.dy = mouse.y - lastMouse.y;
+
+	// Add scroll movement to simulate relative motion :
+	scroll.current = window.scrollY - scroll.last;
+	pos.dy += scroll.current;
+
 	pos.speed = Math.sqrt(pos.dx * pos.dx + pos.dy * pos.dy);
 	pos.now = performance.now();
 	pos.accumulator += pos.speed;
@@ -155,16 +178,31 @@ const tick = () => {
 
 	lastMouse.x = mouse.x;
 	lastMouse.y = mouse.y;
+	scroll.last = window.scrollY;
 };
 
 onMounted(() => {
 	if (isTouchDevice()) return;
 
+	// Initialize mouse position
+	const initMousePosition = (e: MouseEvent) => {
+		mouse.x = e.clientX;
+		mouse.y = e.clientY;
+		lastMouse.x = e.clientX;
+		lastMouse.y = e.clientY;
+		hasMouseMoved = true;
+		window.removeEventListener('mousemove', initMousePosition);
+	};
+
+	window.addEventListener('mousemove', initMousePosition, { once: true });
 	window.addEventListener('mousemove', handleMouseMove);
 	window.addEventListener('blur', handleWindowBlur);
 	window.addEventListener('focus', handleWindowFocus);
 
 	document.addEventListener('visibilitychange', handleVisibilityChange);
+
+	// Initialize scroll position
+	scroll.last = window.scrollY;
 
 	// Ticker :
 	gsap.ticker.add(tick);

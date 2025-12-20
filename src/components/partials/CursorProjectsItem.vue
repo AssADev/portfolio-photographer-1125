@@ -67,8 +67,8 @@ const transformedSrc = computed(() => {
 }
 
 .inner {
-	width: fluidSize(225px, 150px, null, xxlarge);
-	height: fluidSize(225px, 150px, null, xxlarge);
+	width: fluidSize(275px, 175px, null, xxlarge);
+	height: fluidSize(275px, 175px, null, xxlarge);
 	overflow: hidden;
 	transform: translate3d(-50%, -50%, 0);
 
