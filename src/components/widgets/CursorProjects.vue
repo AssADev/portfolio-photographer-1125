@@ -61,13 +61,18 @@ const handleMouseMove = (e: MouseEvent) => {
 	isHovering = !!target.closest('[data-cursor-projects]');
 	mouse.x = e.clientX;
 	mouse.y = e.clientY;
+};
 
-	isWindowFocused = !(
-		e.clientX < 0 ||
-		e.clientX > window.innerWidth ||
-		e.clientY < 0 ||
-		e.clientY > window.innerHeight
-	);
+const handleWindowBlur = () => {
+	isWindowFocused = false;
+};
+
+const handleWindowFocus = () => {
+	isWindowFocused = true;
+};
+
+const handleVisibilityChange = () => {
+	isWindowFocused = !document.hidden;
 };
 
 const getRandomImage = (images: StoryblokAsset[]): StoryblokAsset | undefined => {
@@ -156,11 +161,23 @@ onMounted(() => {
 	if (isTouchDevice()) return;
 
 	window.addEventListener('mousemove', handleMouseMove);
+	window.addEventListener('blur', handleWindowBlur);
+	window.addEventListener('focus', handleWindowFocus);
+
+	document.addEventListener('visibilitychange', handleVisibilityChange);
+
+	// Ticker :
 	gsap.ticker.add(tick);
 });
 
 onUnmounted(() => {
 	window.removeEventListener('mousemove', handleMouseMove);
+	window.removeEventListener('blur', handleWindowBlur);
+	window.removeEventListener('focus', handleWindowFocus);
+
+	document.removeEventListener('visibilitychange', handleVisibilityChange);
+
+	// Ticker :
 	gsap.ticker.remove(tick);
 });
 </script>

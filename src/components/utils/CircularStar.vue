@@ -18,6 +18,7 @@ let animation: Animation | undefined;
 const containerRef = useTemplateRef('containerRef');
 const innerRef = useTemplateRef('innerRef');
 
+const numberOfRotations = 1000;
 const lenis = scrollSpeed ? useLenis() : ref();
 
 const rate = new Motion(1);
@@ -32,11 +33,22 @@ const onScroll = (instance: Lenis) => {
 watchEffect(() => {
 	animation?.cancel();
 
-	animation = innerRef.value?.animate([{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }], {
-		duration: 120000,
-		fill: 'both',
-		iterations: Infinity
-	});
+	animation = innerRef.value?.animate(
+		[
+			{ transform: `rotate(-${360 * numberOfRotations}deg)` },
+			{ transform: `rotate(${360 * numberOfRotations}deg)` }
+		],
+		{
+			duration: 120000 * numberOfRotations,
+			fill: 'both',
+			iterations: Infinity
+		}
+	);
+
+	// Commence au milieu de l'animation (position 0deg)
+	if (animation) {
+		animation.currentTime = (animation.effect?.getTiming().duration as number) / 2;
+	}
 
 	if (!inView) animation?.pause();
 });
