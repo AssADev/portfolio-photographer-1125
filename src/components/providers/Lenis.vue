@@ -37,16 +37,6 @@ if (root) {
 // Methods :
 const update = (time: number) => {
 	lenisRef.value?.lenis?.raf(time * 1000);
-
-	// Update global scroll offset and velocity :
-	if (lenisRef.value?.lenis) {
-		const velocity = lenisRef.value.lenis.velocity;
-
-		// Update direction only if moving :
-		if (Math.abs(velocity) > 0.1) {
-			document.documentElement.style.setProperty('--scroll-direction', velocity > 0 ? 'normal' : 'reverse');
-		}
-	}
 };
 
 // Attach & Detach :
