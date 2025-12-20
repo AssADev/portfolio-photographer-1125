@@ -177,7 +177,7 @@ useGSAP(() => {
 	gap: 10px;
 	padding-inline: var(--gutter);
 	width: fit-content;
-	height: fluidSize(680px, 520px);
+	height: fluidSize(680px, 540px);
 	max-height: calc(100svh - (var(--header-height) * 4));
 }
 </style>

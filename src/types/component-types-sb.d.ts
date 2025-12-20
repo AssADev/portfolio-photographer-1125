@@ -113,6 +113,22 @@ export interface StoryblokFormSuccess {
 
 export interface StoryblokHome {
 	SEO: StoryblokSEO[];
+	body?: (
+		| StoryblokBiographyCopyright
+		| StoryblokBiographyHero
+		| StoryblokBiographyStrangersPortraits
+		| StoryblokHomeHero
+		| StoryblokLinksHero
+		| StoryblokLinksMaterials
+		| StoryblokOtherServices
+		| StoryblokProjectTestimonial
+		| StoryblokQuotes
+		| StoryblokServiceFAQ
+		| StoryblokServicesHero
+		| StoryblokServicesListing
+		| StoryblokServiceTestimonials
+		| StoryblokSteps
+	)[];
 	component: 'Home';
 	_uid: string;
 }
@@ -187,13 +203,31 @@ export interface StoryblokLabelLink {
 
 export interface StoryblokLinks {
 	SEO: StoryblokSEO[];
+	body?: (
+		| StoryblokBiographyCopyright
+		| StoryblokBiographyHero
+		| StoryblokBiographyStrangersPortraits
+		| StoryblokHomeHero
+		| StoryblokLinksHero
+		| StoryblokLinksMaterials
+		| StoryblokOtherServices
+		| StoryblokProjectTestimonial
+		| StoryblokQuotes
+		| StoryblokServiceFAQ
+		| StoryblokServicesHero
+		| StoryblokServicesListing
+		| StoryblokServiceTestimonials
+		| StoryblokSteps
+	)[];
 	component: 'Links';
 	_uid: string;
 }
 
 export interface StoryblokLinksHero {
 	title: StoryblokRichtext;
-	background: StoryblokAsset;
+	description?: string;
+	backgroundMobile: StoryblokAsset;
+	backgroundDesktop: StoryblokAsset;
 	component: 'LinksHero';
 	_uid: string;
 }
@@ -245,7 +279,7 @@ export interface StoryblokMenu {
 }
 
 export interface StoryblokOtherServices {
-	title: string;
+	title?: string;
 	services?: (ISbStoryData<StoryblokService> | string)[];
 	component: 'OtherServices';
 	_uid: string;
@@ -259,6 +293,22 @@ export interface StoryblokPicture {
 
 export interface StoryblokProject {
 	SEO: StoryblokSEO[];
+	body?: (
+		| StoryblokBiographyCopyright
+		| StoryblokBiographyHero
+		| StoryblokBiographyStrangersPortraits
+		| StoryblokHomeHero
+		| StoryblokLinksHero
+		| StoryblokLinksMaterials
+		| StoryblokOtherServices
+		| StoryblokProjectTestimonial
+		| StoryblokQuotes
+		| StoryblokServiceFAQ
+		| StoryblokServicesHero
+		| StoryblokServicesListing
+		| StoryblokServiceTestimonials
+		| StoryblokSteps
+	)[];
 	component: 'Project';
 	_uid: string;
 }
@@ -304,6 +354,22 @@ export interface StoryblokSEO {
 export interface StoryblokService {
 	SEO: StoryblokSEO[];
 	informations: StoryblokServiceInformations[];
+	body?: (
+		| StoryblokBiographyCopyright
+		| StoryblokBiographyHero
+		| StoryblokBiographyStrangersPortraits
+		| StoryblokHomeHero
+		| StoryblokLinksHero
+		| StoryblokLinksMaterials
+		| StoryblokOtherServices
+		| StoryblokProjectTestimonial
+		| StoryblokQuotes
+		| StoryblokServiceFAQ
+		| StoryblokServicesHero
+		| StoryblokServicesListing
+		| StoryblokServiceTestimonials
+		| StoryblokSteps
+	)[];
 	component: 'Service';
 	_uid: string;
 }
@@ -341,6 +407,22 @@ export interface StoryblokServiceInformations {
 
 export interface StoryblokServices {
 	SEO: StoryblokSEO[];
+	body?: (
+		| StoryblokBiographyCopyright
+		| StoryblokBiographyHero
+		| StoryblokBiographyStrangersPortraits
+		| StoryblokHomeHero
+		| StoryblokLinksHero
+		| StoryblokLinksMaterials
+		| StoryblokOtherServices
+		| StoryblokProjectTestimonial
+		| StoryblokQuotes
+		| StoryblokServiceFAQ
+		| StoryblokServicesHero
+		| StoryblokServicesListing
+		| StoryblokServiceTestimonials
+		| StoryblokSteps
+	)[];
 	component: 'Services';
 	_uid: string;
 }

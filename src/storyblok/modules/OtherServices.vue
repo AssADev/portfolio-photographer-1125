@@ -9,7 +9,6 @@ import RichText from '#components/utils/RichText.vue';
 import type { StoryblokOtherServices, StoryblokService } from '#types/component-types-sb.js';
 
 import { useGSAP } from '#composables/useGSAP.ts';
-import { useLinkAttrs } from '#composables/useLinkAttrs.ts';
 import vMagnetic from '#directives/vMagnetic.ts';
 
 // Props :
@@ -80,7 +79,7 @@ useGSAP(() => {
 <template>
 	<section ref="sectionRef" class="modules other-services">
 		<div ref="containerRef" class="content-container">
-			<h2 ref="titleRef">{{ blok.title }}</h2>
+			<h2 ref="titleRef">{{ blok.title || $t('myServices') }}</h2>
 			<div ref="servicesContainerRef" class="services-container">
 				<a
 					v-for="service in services"

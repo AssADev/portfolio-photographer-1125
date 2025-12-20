@@ -21,6 +21,7 @@ const astroComponentPath = join(rootDir, 'src/storyblok', componentType, `${comp
 const vueContent = `<script setup lang="ts">
 import type { Storyblok${componentName} } from '#types/component-types-sb.js';
 
+// Props :
 defineProps<{
 	blok: Storyblok${componentName};
 }>();

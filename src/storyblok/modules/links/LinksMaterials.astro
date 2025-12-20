@@ -1,0 +1,14 @@
+---
+import { storyblokEditable } from '#storyblok/helpers/storyblokEditable.ts';
+import LinksMaterialsVue from '#storyblok/modules/links/LinksMaterials.vue';
+import type { StoryblokLinksMaterials } from '#types/component-types-sb.js';
+
+// Props :
+type Props = {
+	blok: StoryblokLinksMaterials;
+};
+
+const { blok } = Astro.props;
+---
+
+<LinksMaterialsVue {...storyblokEditable(blok, Astro.locals.isPreviewMode)} {...Astro.props} />

@@ -30,10 +30,6 @@ export type CommonImageProps<TOperations extends Operations = Operations> = {
 	 */
 	maskSrc?: boolean;
 	/**
-	 * If true, the image will not fade in when it's loaded.
-	 */
-	noFade?: boolean;
-	/**
 	 * If true, the rendered node will be a source to be used in a picture tag.
 	 */
 	source?: boolean;

@@ -3,6 +3,7 @@ import { Image as UnpicImage } from '@unpic/vue/base';
 
 import { type ImageBaseProps } from '#utils/image.ts';
 
+// Props :
 const { source, ...props } = defineProps<ImageBaseProps>();
 </script>
 

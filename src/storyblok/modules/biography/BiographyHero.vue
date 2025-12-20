@@ -6,7 +6,8 @@ import type { StoryblokBiographyHero, StoryblokLabelLink } from '#types/componen
 
 import TitleDescriptionAndCta from '#storyblok/partials/TitleDescriptionAndCta.vue';
 
-const { email, socials } = defineProps<{
+// Props :
+defineProps<{
 	blok: StoryblokBiographyHero;
 	email: string;
 	socials: StoryblokLabelLink[];

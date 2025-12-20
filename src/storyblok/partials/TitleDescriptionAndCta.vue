@@ -11,10 +11,12 @@ import type { StoryblokTitleDescriptionAndCta } from '#types/component-types-sb.
 
 import vMagnetic from '#directives/vMagnetic.ts';
 
+// Props :
 const { data } = defineProps<{
 	data: StoryblokTitleDescriptionAndCta;
 }>();
 
+// Resolvers (RichText) :
 const resolvers = {
 	paragraph: (node: StoryblokRichTextNode<VNode>) =>
 		h('h2', h(StoryblokRichText, { doc: { type: 'doc', content: node.content } }))

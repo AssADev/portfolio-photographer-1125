@@ -3,6 +3,7 @@ import RichText from '#components/utils/RichText.vue';
 
 import type { StoryblokQuotesItem } from '#types/component-types-sb.js';
 
+// Props :
 defineProps<{
 	blok: StoryblokQuotesItem;
 	layout: string[];

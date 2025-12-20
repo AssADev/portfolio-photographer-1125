@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import CircularStar from '#components/utils/CircularStar.vue';
+
 import type { StoryblokQuotes } from '#types/component-types-sb.js';
 
 import QuotesItem from '#storyblok/partials/QuotesItem.vue';
@@ -50,7 +52,12 @@ const layouts = [
 </script>
 
 <template>
-	<section class="modules quotes" :data-cursor-projects="blok.cursorProjects || undefined">
+	<section
+		class="modules quotes"
+		:class="{ 'with-circular-star': blok.circularStar }"
+		:data-cursor-projects="blok.cursorProjects || undefined"
+	>
+		<CircularStar v-if="blok.circularStar" :scroll-speed="0.5" />
 		<div class="container-grid">
 			<QuotesItem
 				v-for="(quote, index) in blok.quotes"
@@ -64,7 +71,35 @@ const layouts = [
 
 <style lang="scss" scoped>
 .quotes {
+	position: relative;
+	overflow-y: clip;
 	padding-block: fluidSize(160px, 120px) fluidSize(120px, 80px);
+
+	&.with-circular-star {
+		@include pseudo-gradient('before', 'top', 'ivory-white-transparent', 1, fluidSize(360px, 280px));
+
+		overflow-y: clip;
+
+		.container-grid {
+			z-index: 1;
+		}
+	}
+}
+
+:deep(.partials-circular-star) {
+	position: absolute;
+	top: 0;
+	left: 50%;
+
+	@include mq($until: desktop) {
+		transform: translate3d(-50%, -60%, 0);
+		height: 125vh;
+	}
+
+	@include mq(desktop) {
+		width: var(--ctn-w);
+		transform: translate3d(-50%, -50%, 0);
+	}
 }
 
 :deep(.quotes-item-wrapper) {

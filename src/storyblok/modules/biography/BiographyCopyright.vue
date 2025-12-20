@@ -32,20 +32,20 @@ defineProps<{
 	justify-content: center;
 	height: 100vh;
 	overflow: hidden;
+}
 
-	:deep(.partials-circular-star) {
-		position: absolute;
-		bottom: 0;
-		left: 50%;
-		transform: translate3d(-50%, 50%, 0);
+:deep(.partials-circular-star) {
+	position: absolute;
+	bottom: 0;
+	left: 50%;
+	transform: translate3d(-50%, 50%, 0);
 
-		@include mq($until: desktop) {
-			height: 125vh;
-		}
+	@include mq($until: desktop) {
+		height: 125vh;
+	}
 
-		@include mq(desktop) {
-			width: var(--ctn-w);
-		}
+	@include mq(desktop) {
+		width: var(--ctn-w);
 	}
 }
 

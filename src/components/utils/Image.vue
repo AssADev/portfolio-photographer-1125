@@ -6,9 +6,13 @@ import { type ImageProps, parseDimensionsFromUrl, parseImageData, transform } fr
 import ImageBase from './ImageBase.vue';
 import SourceBase from './SourceBase.vue';
 
+// Options :
 defineOptions({ inheritAttrs: false });
+
+// Props :
 const { source, alt, ...props } = defineProps<ImageProps>();
 
+// Computed :
 const attrs = useAttrs();
 const imageData = computed(() => {
 	const data = parseImageData({ ...attrs, ...props });

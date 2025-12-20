@@ -3,6 +3,7 @@ import { type SVGAttributes, computed, defineAsyncComponent, h } from 'vue';
 
 import { ICONS } from '#utils/icon.ts';
 
+// Props :
 const { name, mirrorX, mirrorY } = defineProps<
 	{
 		/** Name of the file in `src/assets/svg/` */
@@ -33,6 +34,7 @@ if (!AsyncIcon.value) {
 	console.log(`[icon] "${name}" not found in ICONS.`);
 }
 
+// Computed :
 const style = computed(() => {
 	if (!mirrorX && !mirrorY) return undefined;
 	const transform = [];
