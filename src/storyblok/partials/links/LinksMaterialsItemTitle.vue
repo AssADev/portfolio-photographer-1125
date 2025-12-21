@@ -8,13 +8,13 @@ defineProps<{
 </script>
 
 <template>
-	<div class="partials-links-materials-item-title" :class="{ [`position-${blok.position}`]: true }">
+	<div class="partials-links-materials-item item-title" :class="{ [`position-${blok.position}`]: true }">
 		<h3>{{ blok.title }}</h3>
 	</div>
 </template>
 
 <style lang="scss" scoped>
-.partials-links-materials-item-title {
+.partials-links-materials-item.item-title {
 	display: flex;
 	padding: fluidSize(20px, 14px);
 

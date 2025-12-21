@@ -98,7 +98,7 @@ export const fetchProjectImagesServer = async (): Promise<StoryblokAsset[]> => {
 		// Shuffle the assets :
 		const projectImages = assets.map((asset: any) => asset);
 
-		let shuffled = fisherYatesShuffle(projectImages);
+		const shuffled = fisherYatesShuffle(projectImages);
 		// shuffled = ensureNoAdjacentDuplicates(shuffled);
 
 		imagesCache = shuffled;

@@ -45,6 +45,11 @@ const MaterialsComponents = {
 					:key="material._uid"
 					:components="MaterialsComponents"
 					:blok="material"
+					:style="{
+						'grid-column': material.columnNumber ? `span ${material.columnNumber}` : undefined,
+						'grid-row': material.rowNumber ? `span ${material.rowNumber}` : undefined
+					}"
+					:class="[material.hide]"
 				/>
 			</div>
 		</div>
@@ -54,12 +59,19 @@ const MaterialsComponents = {
 <style lang="scss" scoped>
 .links-materials {
 	padding-block: fluidSize(120px, 80px) fluidSize(100px, 80px);
+	background: linear-gradient(
+		180deg,
+		rgba($white, 0) 0%,
+		rgba($ivory, 1) 40%,
+		rgba($ivory, 1) 60%,
+		rgba($white, 0) 100%
+	);
 }
 
 .title-container {
 	display: flex;
 	flex-direction: column;
-	gap: fluidSize(18px, 14px);
+	gap: fluidSize(12px, 10px);
 	max-width: fluidSize(540px, 360px);
 	margin-block-end: fluidSize(48px, 36px);
 
@@ -78,6 +90,7 @@ const MaterialsComponents = {
 
 .materials-container {
 	display: grid;
+	grid-auto-rows: fluidSize(520px, 250px, null, xxlarge);
 
 	@include mq($until: tablet) {
 		grid-template-columns: repeat(2, 1fr);
@@ -85,6 +98,15 @@ const MaterialsComponents = {
 
 	@include mq(tablet) {
 		grid-template-columns: repeat(4, 1fr);
+	}
+}
+
+:deep(.partials-links-materials-item) {
+	&.item-product,
+	&.item-title {
+		background: $white;
+		border: 1px solid $eerieBlack;
+		margin: -0.5px;
 	}
 }
 </style>

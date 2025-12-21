@@ -72,13 +72,10 @@ const layouts = [
 <style lang="scss" scoped>
 .quotes {
 	position: relative;
-	overflow-y: clip;
 	padding-block: fluidSize(160px, 120px) fluidSize(120px, 80px);
 
 	&.with-circular-star {
 		@include pseudo-gradient('before', 'top', 'ivory-white-transparent', 1, fluidSize(360px, 280px));
-
-		overflow-y: clip;
 
 		.container-grid {
 			z-index: 1;

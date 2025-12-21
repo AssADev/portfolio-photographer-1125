@@ -2,19 +2,28 @@
 import { getLinkAttributes } from '#utils/link.ts';
 
 import Button from '#components/utils/Button.vue';
+import CircularStar from '#components/utils/CircularStar.vue';
 import Icon from '#components/utils/Icon.vue';
 import Image from '#components/utils/Image.vue';
 
 import type { StoryblokLinksMaterialsItemProduct } from '#types/component-types-sb.js';
 
 // Props :
-defineProps<{
+const { blok } = defineProps<{
 	blok: StoryblokLinksMaterialsItemProduct;
 }>();
+
+// Variables :
+const columnNumber = Number(blok.columnNumber ?? 1);
 </script>
 
 <template>
-	<Button v-bind="getLinkAttributes(blok.link)" is="a" class="partials-links-materials-item-product">
+	<Button
+		v-bind="getLinkAttributes(blok.link)"
+		is="a"
+		class="partials-links-materials-item item-product"
+		:data-cursor-label="$t('viewProduct')"
+	>
 		<div class="informations-container">
 			<div class="pretitle-wrapper">
 				<Icon name="square-small" />
@@ -23,25 +32,54 @@ defineProps<{
 			<p>{{ blok.title }}</p>
 		</div>
 		<div class="picture-container">
-			<Image :src="blok.picture" :sizes="[{ desktop: '315px' }, '135px']" />
+			<CircularStar />
+			<div class="picture-wrapper">
+				<Image
+					objectFit="contain"
+					:src="blok.picture"
+					:sizes="[
+						{
+							xxlarge: `${590 * columnNumber}px`,
+							large: `${440 * columnNumber}px`,
+							desktop: `${315 * columnNumber}px`
+						},
+						`${135 * columnNumber}px`
+					]"
+				/>
+			</div>
 		</div>
 	</Button>
 </template>
 
 <style lang="scss" scoped>
-.partials-links-materials-item-product {
+.partials-links-materials-item.item-product {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: fluidSize(20px, 14px);
 	padding: fluidSize(20px, 14px);
+	transition: background 0.4s $power2Out;
 
 	@include hover {
 		background: $whiteChoco;
+
+		:deep(.partials-circular-star) {
+			opacity: 1;
+			transition: opacity 0.4s $power2Out 0.05s;
+		}
+
+		img {
+			transform: scale3d(1.0325, 1.0325, 1);
+		}
 	}
 }
 
 .informations-container {
+	position: relative;
+	z-index: 1;
 	display: flex;
 	flex-direction: column;
-	gap: fluidSize(10px, 8px);
-	margin-block-end: fluidSize(20px, 16px);
+	gap: fluidSize(6px, 4px);
 
 	& > p {
 		@include roobert-18;
@@ -60,10 +98,34 @@ defineProps<{
 }
 
 .picture-container {
-	display: flex;
-	align-items: center;
-	justify-content: center;
+	position: relative;
+	height: 100%;
 	border-radius: 2px;
 	background: $ivory;
+	overflow: hidden;
+
+	:deep(.partials-circular-star) {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate3d(-50%, -50%, 0);
+		width: 250%;
+		height: 250%;
+		opacity: 0;
+		transition: opacity 0.4s $power2Out;
+	}
+
+	.picture-wrapper {
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 100%;
+		padding: fluidSize(24px, 8px);
+
+		img {
+			transition: transform 0.6s $elasticOut;
+		}
+	}
 }
 </style>

@@ -247,6 +247,7 @@ export interface StoryblokLinksMaterials {
 export interface StoryblokLinksMaterialsItemEmpty {
 	columnNumber?: string;
 	rowNumber?: string;
+	hide?: 'hide-mobile' | 'hide-tablet';
 	component: 'LinksMaterialsItemEmpty';
 	_uid: string;
 }
@@ -258,6 +259,7 @@ export interface StoryblokLinksMaterialsItemProduct {
 	picture: StoryblokAsset;
 	columnNumber?: string;
 	rowNumber?: string;
+	hide?: '' | 'hide-mobile' | 'hide-tablet';
 	component: 'LinksMaterialsItemProduct';
 	_uid: string;
 }
@@ -267,6 +269,7 @@ export interface StoryblokLinksMaterialsItemTitle {
 	position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 	columnNumber?: string;
 	rowNumber?: string;
+	hide?: 'hide-mobile' | 'hide-tablet';
 	component: 'LinksMaterialsItemTitle';
 	_uid: string;
 }

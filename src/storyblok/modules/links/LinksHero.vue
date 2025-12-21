@@ -82,6 +82,7 @@ const getIconFromSocial = (social: StoryblokLabelLink) => {
 
 <style lang="scss" scoped>
 .links-hero {
+	z-index: 1;
 	height: 100vh;
 	overflow: hidden;
 }

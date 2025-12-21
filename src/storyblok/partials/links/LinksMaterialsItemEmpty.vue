@@ -8,10 +8,5 @@ defineProps<{
 </script>
 
 <template>
-	<div class="partials-links-materials-item-empty"></div>
+	<div class="partials-links-materials-item item-empty"></div>
 </template>
-
-<style lang="scss" scoped>
-.partials-links-materials-item-empty {
-}
-</style>
