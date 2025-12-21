@@ -264,6 +264,7 @@ export interface StoryblokLinksMaterialsItemProduct {
 
 export interface StoryblokLinksMaterialsItemTitle {
 	title: string;
+	position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 	columnNumber?: string;
 	rowNumber?: string;
 	component: 'LinksMaterialsItemTitle';
