@@ -109,8 +109,7 @@ const columnNumber = Number(blok.columnNumber ?? 1);
 		top: 50%;
 		left: 50%;
 		transform: translate3d(-50%, -50%, 0);
-		width: 250%;
-		height: 250%;
+		width: 150%;
 		opacity: 0;
 		transition: opacity 0.4s $power2Out;
 	}
