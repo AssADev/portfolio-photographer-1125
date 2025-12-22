@@ -9,8 +9,6 @@ import RichText from '#components/utils/RichText.vue';
 
 import type { StoryblokTitleDescriptionAndCta } from '#types/component-types-sb.js';
 
-import vMagnetic from '#directives/vMagnetic.ts';
-
 // Props :
 const { data } = defineProps<{
 	data: StoryblokTitleDescriptionAndCta;
@@ -27,13 +25,7 @@ const resolvers = {
 	<div class="partials-title-description-and-cta">
 		<RichText v-if="data.title?.content" :doc="data.title" :resolvers="resolvers" />
 		<p v-if="data.description" v-html="nl2br(data.description)" />
-		<Button
-			v-if="data.cta?.[0]"
-			v-magnetic="{ strength: 0.675, range: 25 }"
-			theme="dot-dark"
-			:text="data.cta[0].label"
-			:link="data.cta[0].link"
-		/>
+		<Button v-if="data.cta?.[0]" theme="dot-dark" :text="data.cta[0].label" :link="data.cta[0].link" />
 	</div>
 </template>
 

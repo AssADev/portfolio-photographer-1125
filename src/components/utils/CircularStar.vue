@@ -11,7 +11,7 @@ import Icon from '#components/utils/Icon.vue';
 // Props :
 const { scrollSpeed } = defineProps<{ scrollSpeed?: number }>();
 
-// Refs
+// Refs :
 let inView = false;
 let animation: Animation | undefined;
 

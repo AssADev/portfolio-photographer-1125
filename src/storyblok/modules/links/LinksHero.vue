@@ -42,7 +42,7 @@ const getIconFromSocial = (social: StoryblokLabelLink) => {
 					:aspect-ratio="1440 / 810"
 					:src="blok.backgroundDesktop"
 					:alt="blok.backgroundDesktop.alt || 'Links Hero - Background (Desktop)'"
-					:sizes="{ xxlarge: '1920px' }"
+					:sizes="{ widescreen: '2560px' }"
 				/>
 				<Image
 					unstyled

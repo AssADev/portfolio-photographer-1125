@@ -1,0 +1,24 @@
+---
+import { storyblokEditable } from '#storyblok/helpers/storyblokEditable.ts';
+import ProjectsMarqueeVue from '#storyblok/modules/ProjectsMarquee.vue';
+import type { StoryblokProjectsMarquee } from '#types/component-types-sb.js';
+import { getProjects } from '#storyblok/helpers/getProjects.ts';
+
+import locales from '#utils/locales.json';
+import parseUrl from '#utils/parseUrl.ts';
+
+type Props = {
+	blok: StoryblokProjectsMarquee;
+};
+
+const { blok } = Astro.props;
+const { language = locales[0] } = parseUrl(Astro.url.pathname);
+const projects = await getProjects(blok._uid, language, Astro.locals.isPreviewMode);
+---
+
+<ProjectsMarqueeVue
+	{...storyblokEditable(blok, Astro.locals.isPreviewMode)}
+	{...Astro.props}
+	projects={projects}
+	client:load
+/>

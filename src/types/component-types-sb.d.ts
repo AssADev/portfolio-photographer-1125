@@ -14,6 +14,7 @@ export interface StoryblokBiography {
 		| StoryblokLinksHero
 		| StoryblokLinksMaterials
 		| StoryblokOtherServices
+		| StoryblokProjectsMarquee
 		| StoryblokProjectTestimonial
 		| StoryblokQuotes
 		| StoryblokServiceFAQ
@@ -121,6 +122,7 @@ export interface StoryblokHome {
 		| StoryblokLinksHero
 		| StoryblokLinksMaterials
 		| StoryblokOtherServices
+		| StoryblokProjectsMarquee
 		| StoryblokProjectTestimonial
 		| StoryblokQuotes
 		| StoryblokServiceFAQ
@@ -211,6 +213,7 @@ export interface StoryblokLinks {
 		| StoryblokLinksHero
 		| StoryblokLinksMaterials
 		| StoryblokOtherServices
+		| StoryblokProjectsMarquee
 		| StoryblokProjectTestimonial
 		| StoryblokQuotes
 		| StoryblokServiceFAQ
@@ -297,6 +300,7 @@ export interface StoryblokPicture {
 
 export interface StoryblokProject {
 	SEO: StoryblokSEO[];
+	informations?: StoryblokProjectInformations[];
 	body?: (
 		| StoryblokBiographyCopyright
 		| StoryblokBiographyHero
@@ -305,6 +309,7 @@ export interface StoryblokProject {
 		| StoryblokLinksHero
 		| StoryblokLinksMaterials
 		| StoryblokOtherServices
+		| StoryblokProjectsMarquee
 		| StoryblokProjectTestimonial
 		| StoryblokQuotes
 		| StoryblokServiceFAQ
@@ -320,6 +325,24 @@ export interface StoryblokProject {
 export interface StoryblokProjectCopy {
 	SEO: StoryblokSEO[];
 	component: 'Project_copy';
+	_uid: string;
+}
+
+export interface StoryblokProjectInformations {
+	name: StoryblokRichtext;
+	cover: StoryblokAsset;
+	date: string;
+	location: string;
+	service: (ISbStoryData<StoryblokService> | string)[];
+	component: 'ProjectInformations';
+	_uid: string;
+}
+
+export interface StoryblokProjectsMarquee {
+	title: StoryblokRichtext;
+	description?: string;
+	link?: StoryblokLabelLink[];
+	component: 'ProjectsMarquee';
 	_uid: string;
 }
 
@@ -366,6 +389,7 @@ export interface StoryblokService {
 		| StoryblokLinksHero
 		| StoryblokLinksMaterials
 		| StoryblokOtherServices
+		| StoryblokProjectsMarquee
 		| StoryblokProjectTestimonial
 		| StoryblokQuotes
 		| StoryblokServiceFAQ
@@ -419,6 +443,7 @@ export interface StoryblokServices {
 		| StoryblokLinksHero
 		| StoryblokLinksMaterials
 		| StoryblokOtherServices
+		| StoryblokProjectsMarquee
 		| StoryblokProjectTestimonial
 		| StoryblokQuotes
 		| StoryblokServiceFAQ

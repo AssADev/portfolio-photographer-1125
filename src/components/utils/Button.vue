@@ -6,7 +6,7 @@ import Icon from '#components/utils/Icon.vue';
 import { $global } from '#stores/global.ts';
 
 // Props :
-const { to, is, type, disabled, target, rel, theme, link } = defineProps<{
+const { to, is, type, disabled, target, rel, theme, link, text } = defineProps<{
 	is?: 'button' | 'a';
 	to?: string;
 	disabled?: boolean;
@@ -65,6 +65,7 @@ const handleClick = (e: Event) => {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
+	width: fit-content;
 	overflow: hidden;
 
 	&:disabled {

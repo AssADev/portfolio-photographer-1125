@@ -6,7 +6,15 @@ export function mapSortBreakpoints<T extends Record<string, string>>(breakpoints
 		.sort(([, a], [, b]) => b - a) as [keyof T, number][];
 }
 
-export type BreakpointKey = 'large-mobile' | 'tablet' | 'desktop' | 'mlarge' | 'large' | 'xlarge' | 'xxlarge';
+export type BreakpointKey =
+	| 'large-mobile'
+	| 'tablet'
+	| 'desktop'
+	| 'mlarge'
+	| 'large'
+	| 'xlarge'
+	| 'xxlarge'
+	| 'widescreen';
 export type Breakpoints = Record<BreakpointKey, string>;
 
 export const breakpoints = bp as Breakpoints;
