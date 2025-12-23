@@ -44,19 +44,20 @@ const marqueePlaying = ref(true);
 			</div>
 		</div>
 
-		<Marquee
-			:speed="40"
-			scroll-speed
-			track-visible
-			pause-on-hover
-			:items="projects"
-			class="marquee-container"
-			v-model:playing="marqueePlaying"
-		>
-			<template #item="{ item }">
-				<MarqueeItem :project="item" />
-			</template>
-		</Marquee>
+		<div class="marquee-container">
+			<Marquee
+				:speed="40"
+				scroll-speed
+				track-visible
+				pause-on-hover
+				:items="projects"
+				v-model:playing="marqueePlaying"
+			>
+				<template #item="{ item }">
+					<MarqueeItem :project="item" />
+				</template>
+			</Marquee>
+		</div>
 	</section>
 </template>
 
@@ -128,6 +129,20 @@ const marqueePlaying = ref(true);
 
 	&::before {
 		transform: translate3d(0, -100%, 0);
+	}
+
+	:deep(.marquee-wrapper) {
+		@include mq(widescreen) {
+			@include container;
+
+			mask-image: linear-gradient(
+				90deg,
+				rgba($white, 0) 0%,
+				rgba($white, 1) calc(0% + 420px),
+				rgba($white, 1) calc(100% - 420px),
+				rgba($white, 0) 100%
+			);
+		}
 	}
 
 	:deep(.marquee-inner) {

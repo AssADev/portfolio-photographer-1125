@@ -336,7 +336,6 @@ onUnmounted(() => {
 	--tx: -50%;
 
 	position: relative;
-	// overflow: hidden;
 	width: 100%;
 }
 

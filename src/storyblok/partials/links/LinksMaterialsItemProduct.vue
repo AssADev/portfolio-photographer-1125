@@ -120,7 +120,7 @@ const columnNumber = Number(blok.columnNumber ?? 1);
 		align-items: center;
 		justify-content: center;
 		height: 100%;
-		padding: fluidSize(24px, 8px);
+		padding: fluidSize(24px, 18px);
 
 		img {
 			transition: transform 0.6s $elasticOut;
