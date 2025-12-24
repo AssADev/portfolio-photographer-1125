@@ -331,6 +331,7 @@ export interface StoryblokProjectCopy {
 export interface StoryblokProjectInformations {
 	name: StoryblokRichtext;
 	cover: StoryblokAsset;
+	coverSmall: StoryblokAsset;
 	date: string;
 	location: string;
 	service: (ISbStoryData<StoryblokService> | string)[];

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import gsap from 'gsap';
-import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
+import { nextTick, onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
 
 import { isTouchDevice } from '#utils/device.ts';
 
@@ -15,7 +15,6 @@ const state = { x: 0, y: 0, rotation: 0, maxRotation: 60 };
 const target = { x: 0, y: 0, rotation: 0, maxRotation: 60 };
 
 let firstMove = true;
-let cursorTargets: HTMLElement[] = [];
 let activeTarget: HTMLElement | null = null;
 let currentLabel: string | null = null;
 let hoverTween: gsap.core.Tween | null = null;
@@ -128,22 +127,16 @@ const splitText = (text: string) => {
 	});
 };
 
-// Init :
-const initCursorTargets = () => {
-	cursorTargets = Array.from(document.querySelectorAll('[data-cursor-label]'));
-
-	cursorTargets.forEach((el) => {
-		el.addEventListener('mouseenter', (e) => {
-			if (el !== activeTarget) triggerHover(el);
-		});
-
-		el.addEventListener('mouseleave', (e) => {
-			if (activeTarget === el) triggerOut();
-		});
-	});
+// Events :
+const handleMouseOver = (e: MouseEvent) => {
+	const targetEl = (e.target as HTMLElement).closest('[data-cursor-label]') as HTMLElement;
+	if (targetEl && targetEl !== activeTarget) {
+		triggerHover(targetEl);
+	} else if (!targetEl && activeTarget) {
+		triggerOut();
+	}
 };
 
-// Events :
 const triggerHover = (targetEl: HTMLElement) => {
 	activeTarget = targetEl;
 	target.maxRotation = config.HOVER_MAX_ROTATION;
@@ -188,9 +181,7 @@ onMounted(() => {
 	if (isTouchDevice()) return;
 
 	window.addEventListener('mousemove', handleMouseMove);
-
-	// Data-Attributes (Cursor) :
-	initCursorTargets();
+	window.addEventListener('mouseover', handleMouseOver);
 
 	// Ticker :
 	gsap.ticker.add(tick);
@@ -198,12 +189,7 @@ onMounted(() => {
 
 onUnmounted(() => {
 	window.removeEventListener('mousemove', handleMouseMove);
-
-	// Data-Attributes (Cursor) :
-	cursorTargets.forEach((el) => {
-		el.removeEventListener('mouseenter', () => {});
-		el.removeEventListener('mouseleave', () => {});
-	});
+	window.removeEventListener('mouseover', handleMouseOver);
 
 	// Ticker :
 	gsap.ticker.remove(tick);

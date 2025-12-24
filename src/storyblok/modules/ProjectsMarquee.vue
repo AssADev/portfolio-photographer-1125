@@ -120,11 +120,11 @@ const marqueePlaying = ref(true);
 .marquee-container {
 	@include pseudo-gradient('before', 'top', 'white-ivory-transparent', 1, fluidSize(200px, 160px));
 
-	--marquee-gap: 20px;
+	--marquee-gap: 10px;
 
 	position: relative;
 	z-index: 1;
-	padding-block-start: 20px;
+	padding-block-start: fluidSize(20px, 16px);
 	background: $ivory;
 
 	&::before {

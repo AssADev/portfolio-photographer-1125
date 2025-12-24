@@ -20,5 +20,5 @@ const projects = await getProjects(blok._uid, language, Astro.locals.isPreviewMo
 	{...storyblokEditable(blok, Astro.locals.isPreviewMode)}
 	{...Astro.props}
 	projects={projects}
-	client:load
+	client:visible
 />
