@@ -4,6 +4,8 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useTemplateRef } from 'vue';
 
+import { breakPointsNoUnits } from '#utils/breakpoints.ts';
+
 import Image from '#components/utils/Image.vue';
 import RichText from '#components/utils/RichText.vue';
 
@@ -46,6 +48,8 @@ useGSAP(() => {
 		// x = (containerWidth / 2) - servicesWidth + (lastItemWidth / 2)
 		const endX = containerWidth / 2 - servicesWidth + lastItemWidth / 2;
 
+		console.log(startX, endX, startX - endX);
+
 		return {
 			startX,
 			endX,
@@ -54,36 +58,51 @@ useGSAP(() => {
 	};
 
 	// ScrollTrigger :
-	//// Pin :
-	ScrollTrigger.create({
-		trigger: sectionRef.value,
-		pin: true,
-		start: 'center center',
-		end: () => `+=${getScrollAmount().distance}`,
-		scrub: 1,
-		markers: true,
-		invalidateOnRefresh: true
-	});
+	const mm = gsap.matchMedia();
+	const halfViewportHeight = window.innerHeight / 2;
 
-	//// Animation :
-	const tl = gsap.timeline({
-		scrollTrigger: {
-			trigger: sectionRef.value,
-			start: 'top-=50% center',
-			end: () => `+=${getScrollAmount().distance * 1.5}`,
-			scrub: 1,
-			markers: true,
-			invalidateOnRefresh: true
+	mm.add(
+		{
+			isDesktop: `(min-width: ${breakPointsNoUnits.desktop}px)`,
+			isMobile: `(max-width: ${breakPointsNoUnits.desktop - 1}px)`
+		},
+		(context) => {
+			const { conditions } = context;
+			const startTlPercent = conditions?.isMobile ? 'top' : 'top-=50%';
+
+			const startTitlePercent = conditions?.isMobile ? '65%' : '80%';
+			const endTitlePercent = conditions?.isMobile ? '-65%' : '-25%';
+
+			//// Pin :
+			ScrollTrigger.create({
+				trigger: sectionRef.value,
+				pin: true,
+				start: 'center center',
+				end: () => `+=${getScrollAmount().distance}`,
+				scrub: 1,
+				invalidateOnRefresh: true
+			});
+
+			//// Animation :
+			const tl = gsap.timeline({
+				scrollTrigger: {
+					trigger: sectionRef.value,
+					start: `${startTlPercent} center`,
+					end: () => `+=${getScrollAmount().distance * 1.5 + halfViewportHeight}`,
+					scrub: 1,
+					invalidateOnRefresh: true
+				}
+			});
+
+			tl.fromTo(titleRef.value, { x: startTitlePercent }, { x: endTitlePercent, ease: 'none' }, 0);
+
+			tl.fromTo(
+				servicesContainerRef.value,
+				{ x: () => (conditions?.isMobile ? Math.abs(getScrollAmount().endX) : getScrollAmount().startX) },
+				{ x: () => getScrollAmount().endX, ease: 'none' },
+				0
+			);
 		}
-	});
-
-	tl.fromTo(titleRef.value, { x: '80%' }, { x: '-35%', ease: 'none' }, 0);
-
-	tl.fromTo(
-		servicesContainerRef.value,
-		{ x: () => getScrollAmount().startX },
-		{ x: () => getScrollAmount().endX, ease: 'none' },
-		0
 	);
 }, sectionRef);
 </script>
@@ -136,6 +155,10 @@ $serviceHeight: fluidSize(440px, 280px, null, xxlarge);
 		rgba($ivory, 1) 60%,
 		rgba($white, 0) 100%
 	);
+
+	@include mq($until: desktop) {
+		padding-block: fluidSize(140px, 120px, null, desktop);
+	}
 }
 
 .content-container {
