@@ -1,11 +1,6 @@
 <script setup lang="ts">
-import { StoryblokRichText, type StoryblokRichTextNode } from '@storyblok/vue';
-import { type VNode, h } from 'vue';
-
-import { nl2br } from '#utils/nl2br.ts';
-
-import RichText from '#components/utils/RichText.vue';
 import StoryblokComponent from '#components/utils/StoryblokComponent.vue';
+import TitleDescription from '#components/utils/TitleDescription.vue';
 
 import type { StoryblokLinksMaterials } from '#types/component-types-sb.js';
 
@@ -18,12 +13,6 @@ defineProps<{
 	blok: StoryblokLinksMaterials;
 }>();
 
-// Resolvers (RichText) :
-const resolvers = {
-	paragraph: (node: StoryblokRichTextNode<VNode>) =>
-		h('h2', h(StoryblokRichText, { doc: { type: 'doc', content: node.content } }))
-};
-
 // Components :
 const MaterialsComponents = {
 	LinksMaterialsItemEmpty,
@@ -35,10 +24,7 @@ const MaterialsComponents = {
 <template>
 	<section class="modules links-materials">
 		<div class="container">
-			<div class="title-container">
-				<RichText v-if="blok.title" :doc="blok.title" :resolvers="resolvers" />
-				<p v-if="blok.description" v-html="nl2br(blok.description)" />
-			</div>
+			<TitleDescription :title="blok.title" :description="blok.description" />
 			<div class="materials-container">
 				<StoryblokComponent
 					v-for="material in blok.materials"
@@ -67,26 +53,6 @@ const MaterialsComponents = {
 		rgba($ivory, 1) 60%,
 		rgba($white, 0) 100%
 	);
-}
-
-.title-container {
-	display: flex;
-	flex-direction: column;
-	gap: fluidSize(12px, 10px);
-	max-width: fluidSize(540px, 360px);
-	margin-block-end: fluidSize(48px, 36px);
-
-	& > :deep(.partials-rich-text) {
-		@include roobert-48;
-
-		em {
-			@include romie-48-italic;
-		}
-	}
-
-	& > p {
-		@include roobert-18;
-	}
 }
 
 .materials-container {
