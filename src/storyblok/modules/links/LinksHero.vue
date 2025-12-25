@@ -2,6 +2,7 @@
 import { StoryblokRichText, type StoryblokRichTextNode } from '@storyblok/vue';
 import { type VNode, h } from 'vue';
 
+import { getLocale } from '#utils/i18n.ts';
 import { getLinkAttributes } from '#utils/link.ts';
 import { nl2br } from '#utils/nl2br.ts';
 
@@ -17,6 +18,10 @@ defineProps<{
 	email: string;
 	socials: StoryblokLabelLink[];
 }>();
+
+// Variables :
+const locale = getLocale();
+const homeUrl = locale === 'fr' ? '/' : `/${locale}/`;
 
 // Resolvers (RichText) :
 const resolvers = {
@@ -60,18 +65,18 @@ const getIconFromSocial = (social: StoryblokLabelLink) => {
 				<RichText :doc="blok.title" :resolvers="resolvers" />
 				<ul class="socials-container">
 					<li v-if="email" class="small-item">
-						<a :href="`mailto:${email}`">
+						<a :href="`mailto:${email}`" :data-cursor-label="$t('email')">
 							<Icon name="email" />
 						</a>
 					</li>
 					<li class="small-item">
-						<a href="/">
+						<a :href="homeUrl" :data-cursor-label="$t('website')">
 							<Icon name="website" />
 						</a>
 					</li>
 					<li v-for="social in socials" :key="social._uid">
 						<a v-bind="getLinkAttributes(social.link)">
-							<Icon :name="getIconFromSocial(social)" />
+							<span>{{ social.label }}</span>
 						</a>
 					</li>
 				</ul>
@@ -162,7 +167,7 @@ const getIconFromSocial = (social: StoryblokLabelLink) => {
 	}
 
 	a {
-		@include romie-12;
+		@include roobert-12-uppercase;
 
 		position: relative;
 		display: flex;
