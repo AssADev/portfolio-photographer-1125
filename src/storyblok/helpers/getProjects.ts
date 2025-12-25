@@ -6,6 +6,7 @@ import locales from '#utils/locales.json';
 import type { StoryblokProject } from '#types/component-types-sb.js';
 
 import logger from '#lib/logger.ts';
+import resolvedRelations from '#storyblok/helpers/resolvedRelations';
 
 export async function getProjects(pageId: string, language = locales[0], isPreviewMode: boolean) {
 	const storyblokApi = useStoryblokApi();
@@ -13,7 +14,8 @@ export async function getProjects(pageId: string, language = locales[0], isPrevi
 	const queryBaseParams: ISbStoriesParams = {
 		language,
 		version: isPreviewMode ? 'draft' : 'published',
-		content_type: 'Project'
+		content_type: 'Project',
+		resolve_relations: resolvedRelations
 	};
 
 	try {

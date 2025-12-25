@@ -11,13 +11,13 @@ const { doc, resolvers } = defineProps<{
 }>();
 
 // Refs :
-const element = useTemplateRef('element');
+const el = useTemplateRef('el');
 
-defineExpose({ element });
+defineExpose({ el });
 </script>
 
 <template>
-	<div ref="element" class="partials-rich-text">
+	<div ref="el" class="partials-rich-text">
 		<StoryblokRichText :doc :resolvers />
 	</div>
 </template>

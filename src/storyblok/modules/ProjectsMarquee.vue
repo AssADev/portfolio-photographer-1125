@@ -4,7 +4,7 @@ import { ref } from 'vue';
 
 import { getLinkAttributes } from '#utils/link.ts';
 
-import MarqueeItem from '#components/partials/MarqueeItem.vue';
+import ProjectsMarqueeItem from '#components/partials/ProjectsMarqueeItem.vue';
 import Button from '#components/utils/Button.vue';
 import CircularStar from '#components/utils/CircularStar.vue';
 import Marquee from '#components/utils/Marquee.vue';
@@ -24,7 +24,9 @@ const marqueePlaying = ref(true);
 
 <template>
 	<section class="modules projects-marquee">
-		<CircularStar :scroll-speed="0.5" />
+		<div class="circular-star-wrapper">
+			<CircularStar :scroll-speed="0.5" />
+		</div>
 		<div class="container-grid">
 			<RichText
 				:doc="blok.title"
@@ -47,14 +49,15 @@ const marqueePlaying = ref(true);
 		<div class="marquee-container">
 			<Marquee
 				:speed="40"
-				scroll-speed
 				track-visible
 				pause-on-hover
 				:items="projects"
+				:scroll-speed="0.35"
+				align-items="flex-end"
 				v-model:playing="marqueePlaying"
 			>
 				<template #item="{ item }">
-					<MarqueeItem :project="item" />
+					<ProjectsMarqueeItem :project="item" />
 				</template>
 			</Marquee>
 		</div>
@@ -66,18 +69,23 @@ const marqueePlaying = ref(true);
 	padding-block-start: fluidSize(100px, 80px);
 }
 
-:deep(.partials-circular-star) {
+.circular-star-wrapper {
 	position: absolute;
 	bottom: 0;
 	left: 50%;
-	transform: translate3d(-50%, 50%, 0);
+	transform: translate3d(-50%, 0, 0);
+	overflow: hidden;
 
-	@include mq($until: desktop) {
-		height: 125vh;
-	}
+	:deep(.partials-circular-star) {
+		transform: translate3d(0, 50%, 0);
 
-	@include mq(desktop) {
-		width: var(--ctn-w);
+		@include mq($until: desktop) {
+			height: 125vh;
+		}
+
+		@include mq(desktop) {
+			width: var(--ctn-w);
+		}
 	}
 }
 
@@ -120,7 +128,7 @@ const marqueePlaying = ref(true);
 .marquee-container {
 	@include pseudo-gradient('before', 'top', 'white-ivory-transparent', 1, fluidSize(200px, 160px));
 
-	--marquee-gap: 10px;
+	--marquee-gap: calc(var(--gutter) / 2);
 
 	position: relative;
 	z-index: 1;

@@ -18,7 +18,8 @@ const {
 	scrollSpeed,
 	initialDuplicateCount = 1,
 	noFill,
-	inert
+	inert,
+	alignItems = 'center'
 } = defineProps<{
 	items: T[];
 	/**
@@ -42,7 +43,7 @@ const {
 	/**
 	 * When true, the animation will play faster when the user is scrolling
 	 */
-	scrollSpeed?: boolean;
+	scrollSpeed?: number;
 	/**
 	 * Speed up on scroll
 	 */
@@ -58,6 +59,10 @@ const {
 	 * fill the container.
 	 */
 	noFill?: boolean;
+	/**
+	 * The alignment of the items.
+	 */
+	alignItems?: 'center' | 'flex-start' | 'flex-end';
 }>();
 
 // Model :
@@ -80,7 +85,6 @@ const lengthKey = 'width';
 const percentKey = 'xPercent';
 
 const hovering = ref(false);
-const scrolling = ref(false);
 
 // Variables :
 let gap = 0;
@@ -212,7 +216,8 @@ function updateAnimation() {
 }
 
 const onScroll = (instance: Lenis) => {
-	scrolling.value = !!instance.isScrolling && Math.abs(instance.velocity) > 10;
+	if (pauseOnHover && hovering.value) return;
+	rate.set(Math.abs(instance.velocity) * (scrollSpeed || 1) + 1);
 };
 
 const updateTicker = async () => {
@@ -264,8 +269,7 @@ watchEffect(() => {
 	if (!playing.value) rate.set(0);
 	else {
 		if (tl?.paused()) tl?.play();
-		if (scrolling.value) rate.set(3);
-		else if (pauseOnHover && hovering.value) rate.set(0.3);
+		if (pauseOnHover && hovering.value) rate.set(0.3);
 		else rate.set(1);
 	}
 });
@@ -343,7 +347,7 @@ onUnmounted(() => {
 	position: relative;
 	display: inline-flex;
 	gap: var(--marquee-gap, 0);
-	align-items: center;
+	align-items: v-bind('alignItems');
 	width: max-content;
 	height: 100%;
 }
@@ -353,8 +357,11 @@ onUnmounted(() => {
 	display: inline-flex;
 	flex-shrink: 0;
 	gap: var(--marquee-gap, 0);
-	align-items: center;
-	padding-inline-start: var(--marquee-gap, 0);
+	align-items: v-bind('alignItems');
+
+	&:first-of-type {
+		padding-inline-start: var(--marquee-gap, 0);
+	}
 }
 
 .li-marquee {
