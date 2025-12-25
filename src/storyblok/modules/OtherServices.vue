@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ISbStoryData } from '@storyblok/js';
 import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useTemplateRef } from 'vue';
 
 import Image from '#components/utils/Image.vue';
@@ -53,14 +54,25 @@ useGSAP(() => {
 	};
 
 	// ScrollTrigger :
+	//// Pin :
+	ScrollTrigger.create({
+		trigger: sectionRef.value,
+		pin: true,
+		start: 'center center',
+		end: () => `+=${getScrollAmount().distance}`,
+		scrub: 1,
+		markers: true,
+		invalidateOnRefresh: true
+	});
+
+	//// Animation :
 	const tl = gsap.timeline({
 		scrollTrigger: {
 			trigger: sectionRef.value,
-			pin: true,
-			start: 'center center',
-			end: () => `+=${getScrollAmount().distance}`,
-			markers: true,
+			start: 'top-=50% center',
+			end: () => `+=${getScrollAmount().distance * 1.5}`,
 			scrub: 1,
+			markers: true,
 			invalidateOnRefresh: true
 		}
 	});

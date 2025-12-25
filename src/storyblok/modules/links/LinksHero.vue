@@ -21,7 +21,7 @@ defineProps<{
 
 // Variables :
 const locale = getLocale();
-const homeUrl = locale === 'fr' ? '/' : `/${locale}/`;
+const homeUrl = locale === 'fr' ? '/' : `/${locale}`;
 
 // Resolvers (RichText) :
 const resolvers = {
