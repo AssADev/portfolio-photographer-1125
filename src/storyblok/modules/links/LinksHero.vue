@@ -12,6 +12,8 @@ import RichText from '#components/utils/RichText.vue';
 
 import type { StoryblokLabelLink, StoryblokLinksHero } from '#types/component-types-sb.js';
 
+import vParallax from '#directives/vParallax.ts';
+
 // Props :
 defineProps<{
 	blok: StoryblokLinksHero;
@@ -28,12 +30,6 @@ const resolvers = {
 	paragraph: (node: StoryblokRichTextNode<VNode>) =>
 		h('h1', h(StoryblokRichText, { doc: { type: 'doc', content: node.content } }))
 };
-
-// Utils :
-const getIconFromSocial = (social: StoryblokLabelLink) => {
-	const { hostname } = new URL(social.link.url);
-	return hostname.replace('www.', '').split('.')[0];
-};
 </script>
 
 <template>
@@ -41,6 +37,7 @@ const getIconFromSocial = (social: StoryblokLabelLink) => {
 		<div class="background-container">
 			<picture>
 				<Image
+					v-parallax="12"
 					source
 					media="tablet"
 					layout="fullWidth"
@@ -50,6 +47,7 @@ const getIconFromSocial = (social: StoryblokLabelLink) => {
 					:sizes="{ widescreen: '2560px' }"
 				/>
 				<Image
+					v-parallax="14"
 					unstyled
 					layout="fullWidth"
 					:aspect-ratio="375 / 810"

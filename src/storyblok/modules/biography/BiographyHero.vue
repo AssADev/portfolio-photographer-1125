@@ -4,6 +4,7 @@ import Image from '#components/utils/Image.vue';
 
 import type { StoryblokBiographyHero, StoryblokLabelLink } from '#types/component-types-sb.js';
 
+import vParallax from '#directives/vParallax.ts';
 import TitleDescriptionAndCta from '#storyblok/partials/TitleDescriptionAndCta.vue';
 
 // Props :
@@ -30,6 +31,7 @@ defineProps<{
 				<CircularStar :scroll-speed="1" />
 				<div class="picture-wrapper">
 					<Image
+						v-parallax="12"
 						:src="blok.picturePrimary"
 						:aspect-ratio="740 / 890"
 						:sizes="[{ desktop: '50vw', tablet: '80vw' }, '100vw']"
@@ -48,10 +50,12 @@ defineProps<{
 			</div>
 			<div
 				class="picture-secondary-container col-start-1 col-end-11 col-start-tb-10 col-end-tb-16 col-start-dk-24 col-end-dk-33"
+				v-parallax="{ scale: false, tablet: 10 }"
 			>
 				<p v-if="blok.description">{{ blok.description }}</p>
 				<div class="picture-wrapper">
 					<Image
+						v-parallax="{ scale: true, mobile: 8, tablet: 12, desktop: 6 }"
 						:src="blok.pictureSecondary"
 						:aspect-ratio="365 / 440"
 						:sizes="[{ tablet: '25vw' }, '75vw']"
@@ -60,6 +64,7 @@ defineProps<{
 			</div>
 			<TitleDescriptionAndCta
 				v-if="blok.titleDescriptionAndCta?.[0]"
+				v-parallax="{ scale: false, tablet: -55, desktop: -75 }"
 				:data="blok.titleDescriptionAndCta?.[0]"
 				class="col-start-2 col-end-13 col-start-tb-2 col-end-tb-9 col-start-dk-21 col-end-dk-31 col-start-mlg-22 col-end-mlg-30 col-start-xxlg-22 col-end-xxlg-28"
 			/>
@@ -106,12 +111,6 @@ defineProps<{
 				transform: translate3d(50%, -50%, 0);
 				width: fluidSize(460px, 380px);
 			}
-		}
-
-		.picture-wrapper {
-			position: relative;
-			width: 100%;
-			overflow: hidden;
 		}
 
 		.socials-container {
@@ -166,11 +165,12 @@ defineProps<{
 				max-width: fluidSize(560px, 520px, null, widescreen);
 			}
 		}
+	}
 
-		.picture-wrapper {
-			position: relative;
-			width: 100%;
-		}
+	.picture-wrapper {
+		position: relative;
+		width: 100%;
+		overflow: hidden;
 	}
 
 	:deep(.partials-title-description-and-cta) {
