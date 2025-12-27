@@ -341,6 +341,7 @@ onUnmounted(() => {
 
 	position: relative;
 	width: 100%;
+	overflow: hidden;
 }
 
 .marquee-inner {

@@ -71,7 +71,7 @@ const marqueePlaying = ref(true);
 
 .circular-star-wrapper {
 	position: absolute;
-	bottom: 0;
+	bottom: fluidSize(300px, 250px);
 	left: 50%;
 	transform: translate3d(-50%, 0, 0);
 	overflow: hidden;
@@ -132,6 +132,7 @@ const marqueePlaying = ref(true);
 
 	position: relative;
 	z-index: 1;
+	display: flex;
 	padding-block-start: fluidSize(20px, 16px);
 	background: $ivory;
 
