@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import LabelShuffle from '#components/partials/LabelShuffle.vue';
 import CircularStar from '#components/utils/CircularStar.vue';
 import Image from '#components/utils/Image.vue';
 
@@ -38,11 +39,13 @@ defineProps<{
 					/>
 				</div>
 				<div class="socials-container">
-					<a v-if="email" :href="`mailto:${email}`">{{ email }}</a>
+					<a v-if="email" :href="`mailto:${email}`">
+						<LabelShuffle :label="email" />
+					</a>
 					<ul v-if="socials.length" class="socials-wrapper">
 						<li v-for="social in socials" :key="social._uid">
 							<a :href="social.link.url" target="_blank" rel="noopener noreferrer">
-								{{ social.label }}
+								<LabelShuffle :label="social.label" />
 							</a>
 						</li>
 					</ul>
