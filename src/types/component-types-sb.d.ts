@@ -531,7 +531,7 @@ export interface StoryblokSteps {
 export interface StoryblokStepsItem {
 	title: string;
 	description: string;
-	link?: Exclude<StoryblokMultilink, { linktype?: 'email' } | { linktype?: 'asset' }>;
+	cta?: StoryblokLabelLink[];
 	component: 'StepsItem';
 	_uid: string;
 }

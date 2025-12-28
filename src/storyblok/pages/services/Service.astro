@@ -1,5 +1,15 @@
 ---
+import type { StoryblokService } from '#types/component-types-sb.js';
+import type { SbBlokData } from '@storyblok/astro';
+import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro';
+
+type Props = { blok: StoryblokService };
+
 const { blok } = Astro.props;
 ---
 
-<h1>Service (Single)</h1>
+{
+	blok.body?.map((blok, i) => {
+		return <StoryblokComponent blok={blok as SbBlokData} id={blok._uid} data-component-name={blok.component} />;
+	})
+}

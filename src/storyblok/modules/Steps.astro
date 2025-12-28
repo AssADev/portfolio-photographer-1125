@@ -1,0 +1,13 @@
+---
+import { storyblokEditable } from '#storyblok/helpers/storyblokEditable.ts';
+import StepsVue from '#storyblok/modules/Steps.vue';
+import type { StoryblokSteps } from '#types/component-types-sb.js';
+
+type Props = {
+	blok: StoryblokSteps;
+};
+
+const { blok } = Astro.props;
+---
+
+<StepsVue {...storyblokEditable(blok, Astro.locals.isPreviewMode)} {...Astro.props} client:visible />

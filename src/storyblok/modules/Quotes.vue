@@ -57,7 +57,9 @@ const layouts = [
 		:class="{ 'with-circular-star': blok.circularStar }"
 		:data-cursor-projects="blok.cursorProjects || undefined"
 	>
-		<CircularStar v-if="blok.circularStar" :scroll-speed="0.5" />
+		<div v-if="blok.circularStar" class="circular-star-wrapper">
+			<CircularStar :scroll-speed="0.5" />
+		</div>
 		<div class="container-grid">
 			<QuotesItem
 				v-for="(quote, index) in blok.quotes"
@@ -71,7 +73,6 @@ const layouts = [
 
 <style lang="scss" scoped>
 .quotes {
-	position: relative;
 	padding-block: fluidSize(160px, 120px) fluidSize(120px, 80px);
 
 	&.with-circular-star {
@@ -83,19 +84,23 @@ const layouts = [
 	}
 }
 
-:deep(.partials-circular-star) {
+.circular-star-wrapper {
 	position: absolute;
 	top: 0;
 	left: 50%;
+	transform: translate3d(-50%, 0, 0);
+	overflow: hidden;
 
-	@include mq($until: desktop) {
-		transform: translate3d(-50%, -60%, 0);
-		height: 125vh;
-	}
+	:deep(.partials-circular-star) {
+		transform: translate3d(0, -50%, 0);
 
-	@include mq(desktop) {
-		width: var(--ctn-w);
-		transform: translate3d(-50%, -50%, 0);
+		@include mq($until: desktop) {
+			height: 125vh;
+		}
+
+		@include mq(desktop) {
+			width: var(--ctn-w);
+		}
 	}
 }
 

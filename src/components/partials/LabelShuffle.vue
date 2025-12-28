@@ -13,9 +13,7 @@ const letterWidths = ref<number[]>([]);
 const letterRefs = ref<HTMLElement[]>([]);
 
 // Variables :
-// const LETTERS_POOL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>?/';
 const LETTERS_POOL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}<>?/';
-// const LETTERS_POOL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const SHUFFLE_DURATION = 200;
 const SHUFFLE_SPEED = 65;
 
@@ -49,14 +47,14 @@ const startShuffle = (indices: number[]) => {
 
 	activeIndices = indices;
 
-	// Immediate first shuffle
+	// Init shuffle :
 	indices.forEach((idx) => {
 		if (idx >= 0 && idx < displayedLetters.value.length) {
 			displayedLetters.value[idx] = getRandomChar();
 		}
 	});
 
-	// Start loop
+	// Start loop :
 	intervalId = setInterval(() => {
 		// Reset first to clean up non-active ones if we switched mid-stream?
 		// Actually simpler: reset whole string to original, then scramble active.
@@ -70,11 +68,11 @@ const startShuffle = (indices: number[]) => {
 		displayedLetters.value = nextState;
 	}, SHUFFLE_SPEED);
 
-	// Stop after duration
+	// Stop after duration :
 	timeoutId = setTimeout(() => {
 		if (intervalId) clearInterval(intervalId);
 		intervalId = null;
-		// Resolve to original
+		// Resolve to original :
 		displayedLetters.value = [...originalLetters.value];
 	}, SHUFFLE_DURATION);
 };
@@ -119,7 +117,6 @@ onMounted(() => {
 .partials-label-shuffle {
 	position: relative;
 	display: inline-flex;
-	// overflow: hidden;
 
 	@include hover {
 		&::before {
