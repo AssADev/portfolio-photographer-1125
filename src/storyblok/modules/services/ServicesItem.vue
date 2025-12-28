@@ -28,8 +28,18 @@ const serviceStartPrice = 80;
 
 <template>
 	<section class="modules services-item" :class="{ 'is-reversed': blok.isReversed }">
-		<div class="container">
-			<div class="primary-project-container">
+		<div class="projects-container">
+			<div
+				class="project-wrapper-primary"
+				:class="{
+					'col-start-dk-1 col-end-dk-23 col-start-mlg-1 col-end-mlg-25':
+						!blok.isReversed && Number(blok.projectsNumber) === 2,
+					'col-start-dk-1 col-end-dk-17': !blok.isReversed && Number(blok.projectsNumber) === 3,
+					'col-start-dk-11 col-end-dk-33 col-start-mlg-9 col-end-mlg-33':
+						blok.isReversed && Number(blok.projectsNumber) === 2,
+					' col-start-dk-17 col-end-dk-33': blok.isReversed && Number(blok.projectsNumber) === 3
+				}"
+			>
 				<a :href="service.full_slug" class="project-container">
 					<div class="content-container">
 						<p class="label">Lorem Ipsum</p>
@@ -44,12 +54,27 @@ const serviceStartPrice = 80;
 					</div>
 				</a>
 			</div>
-			<div v-if="Number(blok.projectsNumber) > 1" class="secondary-project-container">
+			<div
+				v-if="Number(blok.projectsNumber) > 1"
+				class="project-wrapper-secondary"
+				:class="{
+					'col-start-dk-23 col-end-dk-33 col-start-mlg-25 col-end-mlg-33':
+						!blok.isReversed && Number(blok.projectsNumber) === 2,
+					'col-start-dk-17 col-end-dk-33': !blok.isReversed && Number(blok.projectsNumber) === 3,
+					'col-start-dk-1 col-end-dk-11 col-start-mlg-1 col-end-mlg-9':
+						blok.isReversed && Number(blok.projectsNumber) === 2,
+					'col-start-dk-1 col-end-dk-17': blok.isReversed && Number(blok.projectsNumber) === 3
+				}"
+			>
 				<a
-					v-for="(n, index) in Number(blok.projectsNumber)"
+					v-for="(n, index) in Number(blok.projectsNumber) - 1"
 					:key="index"
 					:href="service.full_slug"
 					class="project-container"
+					:class="{
+						'col-start-1 col-end-9': !blok.isReversed,
+						'col-start-5 col-end-13': blok.isReversed
+					}"
 				>
 					<div class="content-container">
 						<p class="label">Lorem Ipsum</p>
@@ -70,40 +95,69 @@ const serviceStartPrice = 80;
 .services-item {
 	z-index: 1;
 	padding-block-end: fluidSize(100px, 80px);
+
+	&.is-reversed {
+		.project-wrapper-primary {
+			@include mq(desktop) {
+				order: 1;
+			}
+		}
+	}
 }
 
-.container {
-	display: flex;
-	gap: 10px;
+.projects-container {
 	border-top: 1px solid rgba($khaki, 0.4);
 	padding-block-start: fluidSize(60px, 40px);
 
-	@include mq($until: mlarge) {
-		flex-direction: column;
+	@include mq($until: desktop) {
+		@include container;
+
+		display: flex;
+		flex-direction: column-reverse;
+		gap: 10px;
+	}
+
+	@include mq(desktop) {
+		@include container-grid;
+
+		aspect-ratio: 1440 / 680;
 	}
 }
 
-.primary-project-container {
+.project-wrapper-primary {
 	width: 100%;
-
-	.project-container {
-		@include mq($until: tablet) {
-			aspect-ratio: 335 / 440;
-		}
-
-		@include mq(tablet) {
-			aspect-ratio: 1024 / 628;
-		}
-	}
-}
-
-.secondary-project-container {
-	display: flex;
-	align-items: flex-start;
-	gap: 10px;
+	height: 100%;
 
 	@include mq($until: tablet) {
+		aspect-ratio: 335 / 438;
+	}
+
+	@include mq($from: tablet, $until: desktop) {
+		aspect-ratio: 768 / 540;
+	}
+
+	.project-container {
+		height: 100%;
+	}
+}
+
+.project-wrapper-secondary {
+	@include mq($until: tablet) {
+		@include grid;
+
 		flex-direction: column;
+	}
+
+	@include mq(tablet) {
+		display: flex;
+		align-items: flex-start;
+		gap: 10px;
+	}
+
+	@include mq(desktop) {
+		position: sticky;
+		top: 0;
+		height: fit-content;
 	}
 
 	.project-container {
@@ -122,7 +176,7 @@ const serviceStartPrice = 80;
 	display: block;
 	overflow: hidden;
 	background: grey;
-	min-height: 250px;
+	width: 100%;
 }
 
 .content-container {
