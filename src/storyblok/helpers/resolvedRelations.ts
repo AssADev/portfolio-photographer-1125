@@ -1,1 +1,1 @@
-export default ['SiteConfig.formsContact', 'ProjectInformations.service'];
+export default ['SiteConfig.formsContact', 'ProjectInformations.service', 'ServicesItem.service'];
