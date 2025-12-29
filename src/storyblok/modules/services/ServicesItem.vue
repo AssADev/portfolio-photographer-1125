@@ -37,7 +37,7 @@ const serviceStartPrice = 80;
 					'col-start-dk-1 col-end-dk-17': !blok.isReversed && Number(blok.projectsNumber) === 3,
 					'col-start-dk-11 col-end-dk-33 col-start-mlg-9 col-end-mlg-33':
 						blok.isReversed && Number(blok.projectsNumber) === 2,
-					' col-start-dk-17 col-end-dk-33': blok.isReversed && Number(blok.projectsNumber) === 3
+					'col-start-dk-17 col-end-dk-33': blok.isReversed && Number(blok.projectsNumber) === 3
 				}"
 			>
 				<a :href="service.full_slug" class="project-container">
@@ -80,13 +80,46 @@ const serviceStartPrice = 80;
 						<p class="label">Lorem Ipsum</p>
 					</div>
 				</a>
+				<div
+					v-if="serviceInformations?.name && Number(blok.projectsNumber) === 3"
+					class="title-wrapper hide-mobile-tablet"
+					:class="{
+						reversed: blok.isReversed
+					}"
+				>
+					/<RichText :doc="serviceInformations?.name" />
+				</div>
 			</div>
 		</div>
-		<div class="container">
-			<div v-if="serviceInformations?.name" class="title-wrapper">
+		<div class="service-informations-container">
+			<div
+				v-if="serviceInformations?.name"
+				class="title-wrapper"
+				:class="{
+					'col-start-tb-1 col-end-tb-10 col-start-dk-1 col-end-dk-12':
+						!blok.isReversed && Number(blok.projectsNumber) === 2,
+					'col-start-tb-1 col-end-tb-10 col-start-dk-11 col-end-dk-23 col-start-mlg-9 col-end-mlg-21 col-start-xlg-9 col-end-xlg-20 col-start-xxlg-9 col-end-xxlg-19':
+						blok.isReversed && Number(blok.projectsNumber) === 2,
+					'col-start-tb-1 col-end-tb-10 hide-desktop': Number(blok.projectsNumber) === 3
+				}"
+			>
 				/<RichText :doc="serviceInformations?.name" />
 			</div>
-			<p v-if="serviceInformations?.summary" class="summary" v-html="nl2br(serviceInformations?.summary)"></p>
+			<p
+				v-if="serviceInformations?.summary"
+				class="summary"
+				:class="{
+					'col-start-tb-10 col-end-tb-16 col-start-dk-12 col-end-dk-21 col-start-mlg-12 col-end-mlg-19 col-start-xlg-13 col-end-xlg-20 col-start-xxlg-13 col-end-xxlg-19':
+						!blok.isReversed && Number(blok.projectsNumber) === 2,
+					'col-start-tb-10 col-end-tb-16 col-start-dk-1 col-end-dk-10':
+						!blok.isReversed && Number(blok.projectsNumber) === 3,
+					'col-start-tb-10 col-end-tb-16 col-start-dk-23 col-end-dk-33 col-start-mlg-22 col-end-mlg-30 col-start-xlg-22 col-end-xlg-29 col-start-xxlg-21 col-end-xxlg-28':
+						blok.isReversed && Number(blok.projectsNumber) === 2,
+					'col-start-tb-10 col-end-tb-16 col-start-dk-17 col-end-dk-27':
+						blok.isReversed && Number(blok.projectsNumber) === 3
+				}"
+				v-html="nl2br(serviceInformations?.summary)"
+			></p>
 		</div>
 	</section>
 </template>
@@ -100,6 +133,12 @@ const serviceStartPrice = 80;
 		.project-wrapper-primary {
 			@include mq(desktop) {
 				order: 1;
+			}
+		}
+
+		.project-wrapper-secondary {
+			@include mq($from: tablet, $until: desktop) {
+				justify-content: flex-end;
 			}
 		}
 	}
@@ -142,22 +181,24 @@ const serviceStartPrice = 80;
 }
 
 .project-wrapper-secondary {
+	position: relative;
+
 	@include mq($until: tablet) {
 		@include grid;
 
-		flex-direction: column;
+		row-gap: 10px;
 	}
 
 	@include mq(tablet) {
 		display: flex;
-		align-items: flex-start;
 		gap: 10px;
 	}
 
 	@include mq(desktop) {
 		position: sticky;
-		top: 0;
+		top: 20%;
 		height: fit-content;
+		align-items: flex-start;
 	}
 
 	.project-container {
@@ -168,6 +209,24 @@ const serviceStartPrice = 80;
 		@include mq(tablet) {
 			aspect-ratio: 366 / 272;
 		}
+
+		@include mq($from: tablet, $until: desktop) {
+			max-width: fluidSize(380px, 320px, null, desktop);
+		}
+	}
+
+	.title-wrapper {
+		position: absolute;
+		bottom: 0;
+		transform: translate3d(0, calc(100% + 2px), 0);
+
+		&:not(.reversed) {
+			left: 0;
+		}
+
+		&.reversed {
+			left: 50%;
+		}
 	}
 }
 
@@ -175,7 +234,7 @@ const serviceStartPrice = 80;
 	position: relative;
 	display: block;
 	overflow: hidden;
-	background: grey;
+	border: 1px solid red;
 	width: 100%;
 }
 
@@ -204,6 +263,22 @@ const serviceStartPrice = 80;
 	gap: 10px;
 }
 
+.service-informations-container {
+	margin-block-start: fluidSize(12px, 10px);
+
+	@include mq($until: tablet) {
+		@include container;
+
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+
+	@include mq(tablet) {
+		@include container-grid;
+	}
+}
+
 .title-wrapper {
 	@include roobert-48;
 
@@ -212,5 +287,11 @@ const serviceStartPrice = 80;
 
 .summary {
 	@include roobert-18;
+
+	max-width: fluidSize(460px, 320px, null, widescreen);
+
+	@include mq(tablet) {
+		margin-block-start: 2px;
+	}
 }
 </style>
