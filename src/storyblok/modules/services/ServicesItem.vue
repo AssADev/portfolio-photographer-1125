@@ -11,6 +11,7 @@ import RichText from '#components/utils/RichText.vue';
 import type { StoryblokProject, StoryblokService, StoryblokServicesItem } from '#types/component-types-sb.js';
 
 import vParallax from '#directives/vParallax.ts';
+import ServicesProject from '#storyblok/partials/services/ServicesProject.vue';
 
 // Props :
 const { blok } = defineProps<{
@@ -48,52 +49,43 @@ const serviceInformations = computed(() => {
 					'col-start-dk-17 col-end-dk-33': blok.isReversed && projects.length === 3
 				}"
 			>
-				<a :href="projects[0]!.full_slug" class="project-container" :data-cursor-label="$t('discoverProject')">
-					<div class="picture-wrapper">
-						<picture>
-							<Image
-								v-parallax="6"
-								source
-								media="tablet"
-								:aspect-ratio="projects.length === 3 ? 695 / 628 : 1024 / 628"
-								:src="projects[0].content.informations![0].cover"
-								:sizes="
-									projects.length === 3
-										? [{ desktop: '50vw' }, '100vw']
-										: [{ desktop: '80vw' }, '100vw']
-								"
-							/>
-							<Image
-								v-parallax="6"
-								unstyled
-								layout="fullWidth"
-								:aspect-ratio="335 / 438"
-								:src="projects[0].content.informations![0].cover"
-							/>
-						</picture>
-					</div>
-					<div class="content-container">
-						<div class="name-container">
-							<div class="dot-wrapper">
-								<Icon name="square-small" />
-								<RichText :doc="projects[0].content.informations![0].name" />
-								<Icon name="square-small" />
-							</div>
+				<ServicesProject
+					:url="projects[0]!.full_slug"
+					:label="projects[0].content.informations![0].name"
+					:cursor-label="$t('discoverProject')"
+				>
+					<template #image>
+						<Image
+							v-parallax="6"
+							source
+							media="tablet"
+							:aspect-ratio="projects.length === 3 ? 695 / 628 : 1024 / 628"
+							:src="projects[0].content.informations![0].cover"
+							:sizes="
+								projects.length === 3 ? [{ desktop: '50vw' }, '100vw'] : [{ desktop: '80vw' }, '100vw']
+							"
+						/>
+						<Image
+							v-parallax="6"
+							unstyled
+							layout="fullWidth"
+							:aspect-ratio="335 / 438"
+							:src="projects[0].content.informations![0].cover"
+						/>
+					</template>
+					<template #info>
+						<div class="informations-label">
+							<span>{{
+								numberOfProjects > 1
+									? $t('projectsNumber', { n: numberOfProjects })
+									: $t('projectNumber', { n: numberOfProjects })
+							}}</span>
 						</div>
-						<div class="informations-wrapper">
-							<div class="informations-label">
-								<span>{{
-									numberOfProjects > 1
-										? $t('projectsNumber', { n: numberOfProjects })
-										: $t('projectNumber', { n: numberOfProjects })
-								}}</span>
-							</div>
-							<div class="informations-label">
-								<span>{{ $t('serviceStartPrice', { price: serviceStartPrice }) }}</span>
-							</div>
+						<div class="informations-label">
+							<span>{{ $t('serviceStartPrice', { price: serviceStartPrice }) }}</span>
 						</div>
-					</div>
-				</a>
+					</template>
+				</ServicesProject>
 			</div>
 			<div
 				v-if="projects.length > 1"
@@ -107,50 +99,38 @@ const serviceInformations = computed(() => {
 					'col-start-dk-1 col-end-dk-17': blok.isReversed && projects.length === 3
 				}"
 			>
-				<a
+				<ServicesProject
 					v-for="(n, index) in projects.length - 1"
 					:key="index"
-					:href="projects[index + 1]!.full_slug"
-					class="project-container"
+					:url="projects[index + 1]!.full_slug"
+					:label="projects[index + 1].content.informations![0].name"
+					:cursor-label="$t('discoverProject')"
+					:hover-scale="1.0375"
 					:class="{
 						'col-start-1 col-end-9': !blok.isReversed,
 						'col-start-5 col-end-13': blok.isReversed
 					}"
-					:data-cursor-label="$t('discoverProject')"
 				>
-					<div class="picture-wrapper">
-						<picture>
-							<Image
-								v-parallax="4"
-								source
-								media="tablet"
-								:aspect-ratio="342 / 284"
-								:src="projects[index + 1].content.informations![0].cover"
-								:sizes="
-									projects.length === 3
-										? [{ desktop: '50vw' }, '100vw']
-										: [{ desktop: '80vw' }, '100vw']
-								"
-							/>
-							<Image
-								v-parallax="4"
-								unstyled
-								layout="fullWidth"
-								:aspect-ratio="220 / 328"
-								:src="projects[index + 1].content.informations![0].cover"
-							/>
-						</picture>
-					</div>
-					<div class="content-container">
-						<div class="name-container">
-							<div class="dot-wrapper">
-								<Icon name="square-small" />
-								<RichText :doc="projects[index + 1].content.informations![0].name" />
-								<Icon name="square-small" />
-							</div>
-						</div>
-					</div>
-				</a>
+					<template #image>
+						<Image
+							v-parallax="4"
+							source
+							media="tablet"
+							:aspect-ratio="342 / 284"
+							:src="projects[index + 1].content.informations![0].cover"
+							:sizes="
+								projects.length === 3 ? [{ desktop: '50vw' }, '100vw'] : [{ desktop: '80vw' }, '100vw']
+							"
+						/>
+						<Image
+							v-parallax="4"
+							unstyled
+							layout="fullWidth"
+							:aspect-ratio="220 / 328"
+							:src="projects[index + 1].content.informations![0].cover"
+						/>
+					</template>
+				</ServicesProject>
 				<a
 					v-if="projects.length === 3"
 					:href="service!.full_slug"
@@ -174,7 +154,7 @@ const serviceInformations = computed(() => {
 					'col-start-tb-1 col-end-tb-10 hide-desktop': projects.length === 3
 				}"
 			>
-				<RichText :doc="serviceInformations!.name" />
+				/<RichText :doc="serviceInformations!.name" />
 			</div>
 			<p
 				class="summary"
@@ -244,16 +224,6 @@ const serviceInformations = computed(() => {
 	@include mq($from: tablet, $until: desktop) {
 		aspect-ratio: 768 / 540;
 	}
-
-	.project-container {
-		height: 100%;
-
-		@include hover {
-			.picture-wrapper {
-				transform: scale3d(1.0175, 1.0175, 1);
-			}
-		}
-	}
 }
 
 .project-wrapper-secondary {
@@ -289,12 +259,6 @@ const serviceInformations = computed(() => {
 		@include mq($from: tablet, $until: desktop) {
 			max-width: fluidSize(380px, 320px, null, desktop);
 		}
-
-		@include hover {
-			.picture-wrapper {
-				transform: scale3d(1.0375, 1.0375, 1);
-			}
-		}
 	}
 
 	.title-wrapper {
@@ -309,123 +273,6 @@ const serviceInformations = computed(() => {
 		&.reversed {
 			left: 50%;
 		}
-	}
-}
-
-.project-container {
-	position: relative;
-	display: block;
-	overflow: hidden;
-	width: 100%;
-
-	@include hover {
-		.content-container .name-container {
-			:deep(.partials-rich-text) {
-				transform: translate3d(-10px, 0, 0);
-			}
-
-			svg {
-				&:first-of-type {
-					transform: translate3d(0, -50%, 0) scale3d(0, 0, 0) rotate(90deg);
-					transition: transform 0.4s $power2Out;
-				}
-
-				&:last-of-type {
-					transform: translate3d(0, -50%, 0) scale3d(1, 1, 1);
-					transition: transform 0.4s $elasticOut 0.2s;
-				}
-			}
-		}
-	}
-
-	.picture-wrapper {
-		width: 100%;
-		height: 100%;
-		transition: transform 0.6s $elasticOut;
-	}
-
-	img {
-		@include img-fill;
-	}
-}
-
-.content-container {
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	display: flex;
-	gap: 10px;
-	width: 100%;
-	padding: 20px;
-
-	@include mq($until: tablet) {
-		flex-direction: column;
-	}
-
-	@include mq(tablet) {
-		align-items: center;
-		justify-content: space-between;
-	}
-}
-
-.name-container {
-	position: relative;
-	border-radius: 3px;
-	color: $eerieBlack;
-	background: $whiteChoco;
-	padding: 5px 8px fluidSize(7px, 6px) 18px;
-	overflow: hidden;
-	width: fit-content;
-
-	.dot-wrapper {
-		display: flex;
-
-		:deep(.partials-rich-text) {
-			@include roobert-14-uppercase;
-
-			text-wrap: nowrap;
-			transition: transform 0.4s $power2Out 0.1s;
-		}
-
-		svg {
-			position: absolute;
-
-			&:first-of-type {
-				left: 8px;
-				top: 50%;
-				transform: translate3d(0, -50%, 0);
-				transition: transform 0.4s $elasticOut 0.2s;
-			}
-
-			&:last-of-type {
-				right: 8px;
-				top: 50%;
-				transform: translate3d(0, -50%, 0) scale3d(0, 0, 0) rotate(90deg);
-				transition: transform 0.4s $power2Out;
-			}
-		}
-	}
-}
-
-.informations-wrapper {
-	display: flex;
-	align-items: center;
-	gap: 10px;
-}
-
-.informations-label {
-	position: relative;
-	border-radius: 3px;
-	color: $white;
-	background: $eerieBlack;
-	padding: 5px 8px fluidSize(7px, 6px);
-	overflow: hidden;
-
-	span {
-		@include roobert-14-uppercase;
-
-		display: flex;
-		text-wrap: nowrap;
 	}
 }
 
