@@ -37,7 +37,7 @@ const resolvers = {
 		<div class="background-container">
 			<picture>
 				<Image
-					v-parallax="12"
+					v-parallax="{ startAtZero: true, value: 12 }"
 					source
 					media="tablet"
 					layout="fullWidth"
@@ -47,7 +47,7 @@ const resolvers = {
 					:sizes="{ widescreen: '2560px' }"
 				/>
 				<Image
-					v-parallax="14"
+					v-parallax="{ startAtZero: true, value: 14 }"
 					unstyled
 					layout="fullWidth"
 					:aspect-ratio="375 / 810"

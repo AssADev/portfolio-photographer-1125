@@ -82,11 +82,11 @@ const handleClick = (e: Event) => {
 
 	// Themes :
 	//// Dot :
-	@mixin dot-theme($bg-color, $text-color) {
+	@mixin dot-theme($text-color, $bg-color) {
 		position: relative;
 		border-radius: 3px;
-		background: $bg-color;
 		color: $text-color;
+		background: $bg-color;
 		padding: 5px 8px fluidSize(7px, 6px) 18px;
 		overflow: hidden;
 
@@ -139,15 +139,15 @@ const handleClick = (e: Event) => {
 	}
 
 	&.theme-dot-khaki {
-		@include dot-theme($khaki, $eerieBlack);
+		@include dot-theme($eerieBlack, $khaki);
 	}
 
 	&.theme-dot-light {
-		@include dot-theme($whiteChoco, $eerieBlack);
+		@include dot-theme($eerieBlack, $whiteChoco);
 	}
 
 	&.theme-dot-dark {
-		@include dot-theme($eerieBlack, $white);
+		@include dot-theme($white, $eerieBlack);
 	}
 }
 </style>

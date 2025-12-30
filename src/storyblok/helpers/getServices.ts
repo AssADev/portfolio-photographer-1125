@@ -7,6 +7,14 @@ import type { StoryblokService } from '#types/component-types-sb.js';
 
 import logger from '#lib/logger.ts';
 
+/**
+ * Fetches all services from Storyblok.
+ *
+ * @param pageId - The ID of the page to fetch services for.
+ * @param language - The language to fetch services in.
+ * @param isPreviewMode - Whether to fetch draft or published services.
+ * @returns An array of services.
+ */
 export async function getServices(pageId: string, language = locales[0], isPreviewMode: boolean) {
 	const storyblokApi = useStoryblokApi();
 

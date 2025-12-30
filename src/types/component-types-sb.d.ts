@@ -322,12 +322,6 @@ export interface StoryblokProject {
 	_uid: string;
 }
 
-export interface StoryblokProjectCopy {
-	SEO: StoryblokSEO[];
-	component: 'Project_copy';
-	_uid: string;
-}
-
 export interface StoryblokProjectInformations {
 	name: StoryblokRichtext;
 	cover: StoryblokAsset;
@@ -468,8 +462,8 @@ export interface StoryblokServicesHero {
 
 export interface StoryblokServicesItem {
 	service: (ISbStoryData<StoryblokService> | string)[];
+	projects: (ISbStoryData<StoryblokProject> | string)[];
 	isReversed?: boolean;
-	projectsNumber: string;
 	component: 'ServicesItem';
 	_uid: string;
 }
@@ -545,7 +539,6 @@ export type ContentType =
 	| StoryblokLinks
 	| StoryblokMenu
 	| StoryblokProject
-	| StoryblokProjectCopy
 	| StoryblokService
 	| StoryblokServices
 	| StoryblokSiteConfig;

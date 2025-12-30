@@ -8,6 +8,14 @@ import type { StoryblokProject } from '#types/component-types-sb.js';
 import logger from '#lib/logger.ts';
 import resolvedRelations from '#storyblok/helpers/resolvedRelations';
 
+/**
+ * Fetches all projects from Storyblok.
+ *
+ * @param pageId - The ID of the page to fetch projects for.
+ * @param language - The language to fetch projects in.
+ * @param isPreviewMode - Whether to fetch draft or published projects.
+ * @returns An array of projects.
+ */
 export async function getProjects(pageId: string, language = locales[0], isPreviewMode: boolean) {
 	const storyblokApi = useStoryblokApi();
 

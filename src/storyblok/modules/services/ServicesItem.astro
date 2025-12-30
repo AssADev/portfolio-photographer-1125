@@ -2,12 +2,27 @@
 import { storyblokEditable } from '#storyblok/helpers/storyblokEditable.ts';
 import ServicesItemVue from '#storyblok/modules/services/ServicesItem.vue';
 import type { StoryblokServicesItem } from '#types/component-types-sb.js';
+import { getProjectCountByTag } from '#storyblok/helpers/getProjectCountByTag.ts';
 
 type Props = {
 	blok: StoryblokServicesItem;
 };
 
 const { blok } = Astro.props;
+
+// Fetch the number of projects associated with the service tag :
+const service = blok.service?.[0];
+const numberOfProjects =
+	service && typeof service !== 'string' ? await getProjectCountByTag(service.name, Astro.locals.isPreviewMode) : 0;
+
+// Find the service start price :
+const serviceStartPrice = 80;
 ---
 
-<ServicesItemVue {...storyblokEditable(blok, Astro.locals.isPreviewMode)} {...Astro.props} client:visible />
+<ServicesItemVue
+	{...storyblokEditable(blok, Astro.locals.isPreviewMode)}
+	{...Astro.props}
+	numberOfProjects={numberOfProjects}
+	serviceStartPrice={serviceStartPrice}
+	client:visible
+/>

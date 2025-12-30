@@ -10,6 +10,7 @@ type ParallaxOptions = {
 	desktop?: number;
 	value?: number;
 	scale?: boolean;
+	startAtZero?: boolean;
 };
 
 const vParallax: Directive = {
@@ -52,7 +53,11 @@ const vParallax: Directive = {
 				const scale = scaleEnabled ? 1 + Math.abs(parallaxValue) / 100 : 1;
 
 				tl.clear();
-				tl.fromTo(el, { yPercent: 0, scale: scale }, { yPercent: parallaxValue, scale: scale, ease: 'none' });
+				tl.fromTo(
+					el,
+					{ yPercent: options.startAtZero ? 0 : -parallaxValue, scale: scale },
+					{ yPercent: parallaxValue, scale: scale, ease: 'none' }
+				);
 			}
 		);
 
