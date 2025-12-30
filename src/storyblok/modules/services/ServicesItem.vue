@@ -48,7 +48,7 @@ const serviceInformations = computed(() => {
 					'col-start-dk-17 col-end-dk-33': blok.isReversed && projects.length === 3
 				}"
 			>
-				<a :href="projects[0]?.full_slug" class="project-container" :data-cursor-label="$t('discoverProject')">
+				<a :href="projects[0]!.full_slug" class="project-container" :data-cursor-label="$t('discoverProject')">
 					<div class="picture-wrapper">
 						<picture>
 							<Image
@@ -110,7 +110,7 @@ const serviceInformations = computed(() => {
 				<a
 					v-for="(n, index) in projects.length - 1"
 					:key="index"
-					:href="projects[index + 1]?.full_slug"
+					:href="projects[index + 1]!.full_slug"
 					class="project-container"
 					:class="{
 						'col-start-1 col-end-9': !blok.isReversed,
@@ -152,20 +152,19 @@ const serviceInformations = computed(() => {
 					</div>
 				</a>
 				<a
-					v-if="serviceInformations?.name && projects.length === 3"
-					:href="service?.full_slug"
+					v-if="projects.length === 3"
+					:href="service!.full_slug"
 					class="title-wrapper hide-mobile-tablet"
 					:class="{
 						reversed: blok.isReversed
 					}"
 				>
-					/<RichText :doc="serviceInformations?.name" />
+					/<RichText :doc="serviceInformations!.name" />
 				</a>
 			</div>
 		</div>
-		<a :href="service?.full_slug" class="service-informations-container">
+		<a :href="service!.full_slug" class="service-informations-container">
 			<div
-				v-if="serviceInformations?.name"
 				class="title-wrapper"
 				:class="{
 					'col-start-tb-1 col-end-tb-10 col-start-dk-1 col-end-dk-12':
@@ -175,10 +174,9 @@ const serviceInformations = computed(() => {
 					'col-start-tb-1 col-end-tb-10 hide-desktop': projects.length === 3
 				}"
 			>
-				/<RichText :doc="serviceInformations?.name" />
+				<RichText :doc="serviceInformations!.name" />
 			</div>
 			<p
-				v-if="serviceInformations?.summary"
 				class="summary"
 				:class="{
 					'col-start-tb-10 col-end-tb-16 col-start-dk-12 col-end-dk-21 col-start-mlg-12 col-end-mlg-19 col-start-xlg-13 col-end-xlg-20 col-start-xxlg-13 col-end-xxlg-19':
@@ -190,7 +188,7 @@ const serviceInformations = computed(() => {
 					'col-start-tb-10 col-end-tb-16 col-start-dk-17 col-end-dk-27':
 						blok.isReversed && projects.length === 3
 				}"
-				v-html="nl2br(serviceInformations?.summary)"
+				v-html="nl2br(serviceInformations!.summary)"
 			></p>
 		</a>
 	</section>
@@ -320,10 +318,6 @@ const serviceInformations = computed(() => {
 	overflow: hidden;
 	width: 100%;
 
-	.picture-wrapper {
-		transition: transform 0.6s $elasticOut;
-	}
-
 	@include hover {
 		.content-container .name-container {
 			:deep(.partials-rich-text) {
@@ -342,6 +336,16 @@ const serviceInformations = computed(() => {
 				}
 			}
 		}
+	}
+
+	.picture-wrapper {
+		width: 100%;
+		height: 100%;
+		transition: transform 0.6s $elasticOut;
+	}
+
+	img {
+		@include img-fill;
 	}
 }
 

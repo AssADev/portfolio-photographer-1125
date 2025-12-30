@@ -42,18 +42,18 @@ const resolvers = {
 					media="tablet"
 					layout="fullWidth"
 					:aspect-ratio="1440 / 810"
+					:sizes="{ widescreen: '2560px' }"
 					:src="blok.backgroundDesktop"
 					:alt="blok.backgroundDesktop.alt || 'Links Hero - Background (Desktop)'"
-					:sizes="{ widescreen: '2560px' }"
 				/>
 				<Image
 					v-parallax="{ startAtZero: true, value: 14 }"
 					unstyled
 					layout="fullWidth"
 					:aspect-ratio="375 / 810"
+					:sizes="{ tablet: '768px' }"
 					:src="blok.backgroundMobile"
 					:alt="blok.backgroundMobile.alt || 'Links Hero - Background (Mobile)'"
-					:sizes="{ tablet: '768px' }"
 				/>
 			</picture>
 		</div>

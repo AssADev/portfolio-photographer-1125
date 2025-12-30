@@ -19,6 +19,7 @@ export interface StoryblokBiography {
 		| StoryblokQuotes
 		| StoryblokServiceFAQ
 		| StoryblokServicesHero
+		| StoryblokServicesHighlight
 		| StoryblokServicesItem
 		| StoryblokServiceTestimonials
 		| StoryblokSteps
@@ -127,6 +128,7 @@ export interface StoryblokHome {
 		| StoryblokQuotes
 		| StoryblokServiceFAQ
 		| StoryblokServicesHero
+		| StoryblokServicesHighlight
 		| StoryblokServicesItem
 		| StoryblokServiceTestimonials
 		| StoryblokSteps
@@ -218,6 +220,7 @@ export interface StoryblokLinks {
 		| StoryblokQuotes
 		| StoryblokServiceFAQ
 		| StoryblokServicesHero
+		| StoryblokServicesHighlight
 		| StoryblokServicesItem
 		| StoryblokServiceTestimonials
 		| StoryblokSteps
@@ -314,6 +317,7 @@ export interface StoryblokProject {
 		| StoryblokQuotes
 		| StoryblokServiceFAQ
 		| StoryblokServicesHero
+		| StoryblokServicesHighlight
 		| StoryblokServicesItem
 		| StoryblokServiceTestimonials
 		| StoryblokSteps
@@ -389,6 +393,7 @@ export interface StoryblokService {
 		| StoryblokQuotes
 		| StoryblokServiceFAQ
 		| StoryblokServicesHero
+		| StoryblokServicesHighlight
 		| StoryblokServicesItem
 		| StoryblokServiceTestimonials
 		| StoryblokSteps
@@ -443,6 +448,7 @@ export interface StoryblokServices {
 		| StoryblokQuotes
 		| StoryblokServiceFAQ
 		| StoryblokServicesHero
+		| StoryblokServicesHighlight
 		| StoryblokServicesItem
 		| StoryblokServiceTestimonials
 		| StoryblokSteps
@@ -455,8 +461,14 @@ export interface StoryblokServicesHero {
 	title: StoryblokRichtext;
 	subtitle: string;
 	description: string;
-	highlightService?: (ISbStoryData<StoryblokProject> | string)[];
 	component: 'ServicesHero';
+	_uid: string;
+}
+
+export interface StoryblokServicesHighlight {
+	service: (ISbStoryData<StoryblokService> | string)[];
+	project: (ISbStoryData<StoryblokProject> | string)[];
+	component: 'ServicesHighlight';
 	_uid: string;
 }
 
