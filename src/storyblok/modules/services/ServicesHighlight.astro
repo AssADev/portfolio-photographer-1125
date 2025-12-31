@@ -16,7 +16,7 @@ const numberOfProjects =
 	service && typeof service !== 'string' ? await getProjectCountByTag(service.name, Astro.locals.isPreviewMode) : 0;
 
 // Find the service start price :
-const serviceStartPrice = 80;
+const serviceStartPrice = service && typeof service !== 'string' ? Number(service.content.offers?.[0].price || 0) : 0;
 ---
 
 <ServicesHighlightVue

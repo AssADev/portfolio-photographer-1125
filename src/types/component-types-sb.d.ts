@@ -18,6 +18,7 @@ export interface StoryblokBiography {
 		| StoryblokProjectTestimonial
 		| StoryblokQuotes
 		| StoryblokServiceFAQ
+		| StoryblokServiceOffers
 		| StoryblokServicesHero
 		| StoryblokServicesHighlight
 		| StoryblokServicesItem
@@ -127,6 +128,7 @@ export interface StoryblokHome {
 		| StoryblokProjectTestimonial
 		| StoryblokQuotes
 		| StoryblokServiceFAQ
+		| StoryblokServiceOffers
 		| StoryblokServicesHero
 		| StoryblokServicesHighlight
 		| StoryblokServicesItem
@@ -219,6 +221,7 @@ export interface StoryblokLinks {
 		| StoryblokProjectTestimonial
 		| StoryblokQuotes
 		| StoryblokServiceFAQ
+		| StoryblokServiceOffers
 		| StoryblokServicesHero
 		| StoryblokServicesHighlight
 		| StoryblokServicesItem
@@ -316,6 +319,7 @@ export interface StoryblokProject {
 		| StoryblokProjectTestimonial
 		| StoryblokQuotes
 		| StoryblokServiceFAQ
+		| StoryblokServiceOffers
 		| StoryblokServicesHero
 		| StoryblokServicesHighlight
 		| StoryblokServicesItem
@@ -380,6 +384,7 @@ export interface StoryblokSEO {
 export interface StoryblokService {
 	SEO: StoryblokSEO[];
 	informations: StoryblokServiceInformations[];
+	offers?: StoryblokServiceOffer[];
 	body?: (
 		| StoryblokBiographyCopyright
 		| StoryblokBiographyHero
@@ -392,6 +397,7 @@ export interface StoryblokService {
 		| StoryblokProjectTestimonial
 		| StoryblokQuotes
 		| StoryblokServiceFAQ
+		| StoryblokServiceOffers
 		| StoryblokServicesHero
 		| StoryblokServicesHighlight
 		| StoryblokServicesItem
@@ -433,6 +439,23 @@ export interface StoryblokServiceInformations {
 	_uid: string;
 }
 
+export interface StoryblokServiceOffer {
+	title: string;
+	description: string;
+	price: string;
+	duration: string;
+	isPopular?: boolean;
+	component: 'ServiceOffer';
+	_uid: string;
+}
+
+export interface StoryblokServiceOffers {
+	title: StoryblokRichtext;
+	description: string;
+	component: 'ServiceOffers';
+	_uid: string;
+}
+
 export interface StoryblokServices {
 	SEO: StoryblokSEO[];
 	body?: (
@@ -447,6 +470,7 @@ export interface StoryblokServices {
 		| StoryblokProjectTestimonial
 		| StoryblokQuotes
 		| StoryblokServiceFAQ
+		| StoryblokServiceOffers
 		| StoryblokServicesHero
 		| StoryblokServicesHighlight
 		| StoryblokServicesItem
