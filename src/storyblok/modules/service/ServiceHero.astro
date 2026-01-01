@@ -1,0 +1,13 @@
+---
+import { storyblokEditable } from '#storyblok/helpers/storyblokEditable.ts';
+import ServiceHeroVue from '#storyblok/modules/service/ServiceHero.vue';
+import type { StoryblokServiceInformations } from '#types/component-types-sb.js';
+
+type Props = {
+	blok: StoryblokServiceInformations;
+};
+
+const { blok } = Astro.props;
+---
+
+<ServiceHeroVue {...storyblokEditable(blok, Astro.locals.isPreviewMode)} {...Astro.props} />
