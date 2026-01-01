@@ -30,7 +30,7 @@ const marqueePlaying = ref(true);
 		<div class="container-grid">
 			<RichText
 				:doc="blok.title"
-				class="col-start-1 col-end-13 col-start-tb-1 col-end-tb-12 col-start-dk-22 col-end-dk-33 col-start-xxlg-26 col-end-xxlg-33"
+				class="col-start-1 col-end-13 col-start-tb-1 col-end-tb-12 col-start-dk-20 col-end-dk-33 col-start-xxlg-24 col-end-xxlg-33"
 			/>
 			<div
 				class="description-wrapper col-start-1 col-end-13 col-start-tb-1 col-end-tb-11 col-start-dk-1 col-end-dk-14 col-start-mlg-1 col-end-mlg-12 col-start-xxlg-1 col-end-xxlg-9"
@@ -40,7 +40,7 @@ const marqueePlaying = ref(true);
 					v-if="blok.link?.[0]"
 					v-bind="getLinkAttributes(blok.link[0])"
 					theme="dot-dark"
-					:text="blok.link[0].label"
+					:text="blok.link[0].label ? blok.link[0].label : $t('bookYourPhotoSession')"
 					:link="blok.link[0].link"
 				/>
 			</div>

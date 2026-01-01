@@ -71,7 +71,7 @@ useGSAP(() => {
 			const startTlPercent = conditions?.isMobile ? 'top' : 'top-=50%';
 
 			const startTitlePercent = conditions?.isMobile ? '65%' : '80%';
-			const endTitlePercent = conditions?.isMobile ? '-65%' : '-25%';
+			const endTitlePercent = conditions?.isMobile ? '-65%' : '-40%';
 
 			//// Pin :
 			ScrollTrigger.create({
@@ -111,7 +111,7 @@ useGSAP(() => {
 	<section ref="sectionRef" class="modules other-services">
 		<div ref="containerRef" class="content-container">
 			<h2 ref="titleRef">{{ blok.title || $t('myServices') }}</h2>
-			<div ref="servicesContainerRef" class="services-container">
+			<div ref="servicesContainerRef" class="services-container" :class="{ 'is-odd': services.length % 2 === 0 }">
 				<a
 					v-for="service in services"
 					:key="service.uuid"
@@ -146,6 +146,7 @@ useGSAP(() => {
 $serviceHeight: fluidSize(440px, 280px, null, xxlarge);
 
 .other-services {
+	z-index: 1;
 	display: flex;
 	align-items: center;
 	background: linear-gradient(
@@ -200,6 +201,30 @@ $serviceHeight: fluidSize(440px, 280px, null, xxlarge);
 	display: flex;
 	column-gap: fluidSize(320px, 180px);
 	height: calc($serviceHeight * 2 + 5%);
+
+	&.is-odd {
+		.service-wrapper {
+			&:nth-child(odd) {
+				align-self: flex-start;
+			}
+
+			&:nth-child(even) {
+				align-self: flex-end;
+			}
+		}
+	}
+
+	&:not(.is-odd) {
+		.service-wrapper {
+			&:nth-child(odd) {
+				align-self: flex-end;
+			}
+
+			&:nth-child(even) {
+				align-self: flex-start;
+			}
+		}
+	}
 }
 
 .service-wrapper {
@@ -216,14 +241,6 @@ $serviceHeight: fluidSize(440px, 280px, null, xxlarge);
 		position: absolute;
 		inset: 0;
 		background: linear-gradient(180deg, rgba($eerieBlack, 0) 75%, rgba($eerieBlack, 0.2) 100%);
-	}
-
-	&:nth-child(odd) {
-		align-self: flex-start;
-	}
-
-	&:nth-child(even) {
-		align-self: flex-end;
 	}
 
 	.cover-wrapper {

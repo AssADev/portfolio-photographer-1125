@@ -15,7 +15,7 @@ const { blok } = Astro.props;
 const { language = locales[0] } = parseUrl(Astro.url.pathname);
 
 // Fetch the services :
-const services = await getServices(blok._uid, language, Astro.locals.isPreviewMode);
+const services = await getServices(blok.services, language, Astro.locals.isPreviewMode);
 ---
 
 <OtherServicesVue

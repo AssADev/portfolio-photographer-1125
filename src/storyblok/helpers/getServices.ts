@@ -10,12 +10,16 @@ import logger from '#lib/logger.ts';
 /**
  * Fetches all services from Storyblok.
  *
- * @param pageId - The ID of the page to fetch services for.
+ * @param excludedServices - The services (or UUIDs) to exclude.
  * @param language - The language to fetch services in.
  * @param isPreviewMode - Whether to fetch draft or published services.
  * @returns An array of services.
  */
-export async function getServices(pageId: string, language = locales[0], isPreviewMode: boolean) {
+export async function getServices(
+	excludedServices: (ISbStoryData<StoryblokService> | string)[] | undefined,
+	language = locales[0],
+	isPreviewMode: boolean
+) {
 	const storyblokApi = useStoryblokApi();
 
 	const queryBaseParams: ISbStoriesParams = {
@@ -29,7 +33,13 @@ export async function getServices(pageId: string, language = locales[0], isPrevi
 
 		const allServices: ISbStoryData<StoryblokService>[] = pageSpecificResponse.data.stories || [];
 
-		return allServices;
+		if (!excludedServices || excludedServices.length === 0) {
+			return allServices;
+		}
+
+		const excludedUuids = excludedServices.map((s) => (typeof s === 'string' ? s : s.uuid));
+
+		return allServices.filter((s) => !excludedUuids.includes(s.uuid));
 	} catch (error) {
 		logger.error('Error fetching services', error);
 		return [];

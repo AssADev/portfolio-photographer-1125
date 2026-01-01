@@ -201,7 +201,7 @@ export interface StoryblokInputTextarea {
 }
 
 export interface StoryblokLabelLink {
-	label: string;
+	label?: string;
 	link: Exclude<StoryblokMultilink, { linktype?: 'email' } | { linktype?: 'asset' }>;
 	component: 'LabelLink';
 	_uid: string;
