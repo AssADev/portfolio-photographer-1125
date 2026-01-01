@@ -411,7 +411,7 @@ export interface StoryblokService {
 export interface StoryblokServiceFAQ {
 	title: StoryblokRichtext;
 	description: string;
-	link: Exclude<StoryblokMultilink, { linktype?: 'email' } | { linktype?: 'asset' }>;
+	link?: StoryblokLabelLink[];
 	sections?: StoryblokServiceFAQSection[];
 	component: 'ServiceFAQ';
 	_uid: string;

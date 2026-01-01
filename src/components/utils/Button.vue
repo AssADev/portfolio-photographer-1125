@@ -14,7 +14,7 @@ const { to, is, type, disabled, target, rel, theme, link, text } = defineProps<{
 	text?: string;
 	target?: string;
 	rel?: string;
-	theme?: 'dot-khaki' | 'dot-light' | 'dot-dark' | 'light' | 'dark';
+	theme?: 'dot-khaki' | 'dot-white' | 'dot-light' | 'dot-dark' | 'light' | 'dark';
 	link?: any;
 }>();
 
@@ -140,6 +140,10 @@ const handleClick = (e: Event) => {
 
 	&.theme-dot-khaki {
 		@include dot-theme($eerieBlack, $khaki);
+	}
+
+	&.theme-dot-white {
+		@include dot-theme($eerieBlack, $white);
 	}
 
 	&.theme-dot-light {
