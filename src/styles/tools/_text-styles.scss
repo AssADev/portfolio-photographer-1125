@@ -19,7 +19,7 @@
 	text-transform: $transform;
 	letter-spacing: $letter-spacing;
 
-	@if not($weight == 400 or $weight == 500) {
+	@if not($weight == 300 or $weight == 400 or $weight == 500) {
 		font-weight: 400;
 	}
 }
@@ -52,6 +52,14 @@
 	font-size: fluidFontSize(96px, 48px);
 }
 
+// TODO : Add Roobert in "Light" :
+@mixin roobert-56 {
+	@include roobert(300, none, -0.02em);
+
+	font-size: fluidFontSize(56px, 48px);
+	line-height: 1.1;
+}
+
 @mixin roobert-48 {
 	@include roobert(500, none, -0.02em);
 
@@ -68,6 +76,13 @@
 
 @mixin roobert-28 {
 	@include roobert(500);
+
+	font-size: fluidFontSize(28px, 24px);
+	line-height: 1.1;
+}
+
+@mixin roobert-28-light {
+	@include roobert(300);
 
 	font-size: fluidFontSize(28px, 24px);
 	line-height: 1.1;

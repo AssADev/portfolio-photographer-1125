@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { StoryblokRichText, type StoryblokRichTextNode } from '@storyblok/vue';
-import { type VNode, h } from 'vue';
-
+import { getRichTextResolvers } from '#utils/getRichTextResolvers.ts';
 import { getLocale } from '#utils/i18n.ts';
 import { getLinkAttributes } from '#utils/link.ts';
 import { nl2br } from '#utils/nl2br.ts';
@@ -26,10 +24,7 @@ const locale = getLocale();
 const homeUrl = locale === 'fr' ? '/' : `/${locale}`;
 
 // Resolvers (RichText) :
-const resolvers = {
-	paragraph: (node: StoryblokRichTextNode<VNode>) =>
-		h('h1', h(StoryblokRichText, { doc: { type: 'doc', content: node.content } }))
-};
+const resolvers = getRichTextResolvers('h1');
 </script>
 
 <template>

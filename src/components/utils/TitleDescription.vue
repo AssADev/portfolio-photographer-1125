@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { StoryblokRichText, type StoryblokRichTextNode } from '@storyblok/vue';
-import { type VNode, h } from 'vue';
-
+import { getRichTextResolvers } from '#utils/getRichTextResolvers.ts';
 import { nl2br } from '#utils/nl2br.ts';
 
 import RichText from '#components/utils/RichText.vue';
@@ -15,10 +13,7 @@ defineProps<{
 }>();
 
 // Resolvers (RichText) :
-const resolvers = {
-	paragraph: (node: StoryblokRichTextNode<VNode>) =>
-		h('h2', h(StoryblokRichText, { doc: { type: 'doc', content: node.content } }))
-};
+const resolvers = getRichTextResolvers('h2');
 </script>
 
 <template>

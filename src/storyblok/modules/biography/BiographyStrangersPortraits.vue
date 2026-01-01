@@ -139,7 +139,7 @@ useGSAP(() => {
 
 		position: relative;
 		z-index: 2;
-		margin-block-end: fluidSize(65px, 45px);
+		margin-block-end: fluidSize(65px, 48px);
 
 		em {
 			@include romie-96-italic;

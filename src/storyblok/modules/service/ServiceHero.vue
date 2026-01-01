@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { StoryblokRichText, type StoryblokRichTextNode } from '@storyblok/vue';
-import { type VNode, h } from 'vue';
-
+import { getRichTextResolvers } from '#utils/getRichTextResolvers.ts';
 import { nl2br } from '#utils/nl2br.ts';
 
 import RichText from '#components/utils/RichText.vue';
@@ -14,10 +12,7 @@ defineProps<{
 }>();
 
 // Resolvers (RichText) :
-const resolvers = {
-	paragraph: (node: StoryblokRichTextNode<VNode>) =>
-		h('h1', h(StoryblokRichText, { doc: { type: 'doc', content: node.content } }))
-};
+const resolvers = getRichTextResolvers('h1');
 </script>
 
 <template>
@@ -31,7 +26,7 @@ const resolvers = {
 		<div class="container">
 			<div class="title-wrapper">
 				<RichText :doc="blok.name" :resolvers="resolvers" />
-				<div class="label">/{{ $t('service') }}</div>
+				<p>/{{ $t('service') }}</p>
 			</div>
 		</div>
 	</section>
@@ -48,7 +43,7 @@ const resolvers = {
 	align-items: flex-end;
 	gap: 2px;
 
-	.label {
+	& > p {
 		@include roobert-12-uppercase;
 
 		margin-block-start: fluidSize(8px, 6px, null, tablet);
@@ -68,6 +63,6 @@ const resolvers = {
 	@include roobert-14;
 
 	max-width: fluidSize(420px, 380px);
-	margin-block-end: fluidSize(60px, 45px);
+	margin-block-end: fluidSize(60px, 48px);
 }
 </style>
