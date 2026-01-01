@@ -29,7 +29,10 @@ const resolvers = {
 			></p>
 		</div>
 		<div class="container">
-			<RichText :doc="blok.name" :resolvers="resolvers" />
+			<div class="title-wrapper">
+				<RichText :doc="blok.name" :resolvers="resolvers" />
+				<div class="label">/{{ $t('service') }}</div>
+			</div>
 		</div>
 	</section>
 </template>
@@ -37,6 +40,20 @@ const resolvers = {
 <style lang="scss" scoped>
 .service-hero {
 	padding-block: fluidSize(120px, 100px) fluidSize(60px, 40px);
+}
+
+.title-wrapper {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	gap: 2px;
+
+	.label {
+		@include roobert-12-uppercase;
+
+		margin-block-start: fluidSize(8px, 6px, null, tablet);
+		color: $khaki;
+	}
 }
 
 :deep(.partials-rich-text) {
