@@ -119,6 +119,7 @@ defineProps<{
 
 .duration-wrapper {
 	color: $grey;
+	margin-block-end: 4px;
 
 	span {
 		@include roobert-28-light;
