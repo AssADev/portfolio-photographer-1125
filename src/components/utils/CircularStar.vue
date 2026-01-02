@@ -26,7 +26,7 @@ rate.on('change', (r: any) => animation?.updatePlaybackRate(r));
 
 // Methods :
 const onScroll = (instance: Lenis) => {
-	rate.set(instance.velocity * (scrollSpeed || 1) + instance.direction);
+	rate.set(instance.velocity * (scrollSpeed || 1) + instance.direction * Math.sign(scrollSpeed || 1));
 };
 
 // Watchers :

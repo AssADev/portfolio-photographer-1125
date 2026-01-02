@@ -15,7 +15,7 @@ defineProps<{
 
 <template>
 	<div class="partials-service-offer" :class="{ 'is-popular': blok.isPopular }">
-		<CircularStar v-if="blok.isPopular" :scroll-speed="1" />
+		<CircularStar v-if="blok.isPopular" :scroll-speed="-1" />
 		<div class="header-container">
 			<div class="title-wrapper">
 				<h3>{{ blok.title }}</h3>
