@@ -45,7 +45,7 @@ defineProps<{
 					<ul v-if="socials.length" class="socials-wrapper">
 						<li v-for="social in socials" :key="social._uid">
 							<a :href="social.link.url" target="_blank" rel="noopener noreferrer">
-								<LabelShuffle :label="social.label" />
+								<LabelShuffle :label="social.label!" />
 							</a>
 						</li>
 					</ul>
@@ -112,7 +112,7 @@ defineProps<{
 				top: 0;
 				right: 0;
 				transform: translate3d(50%, -50%, 0);
-				width: fluidSize(460px, 380px);
+				width: fluidSize(640px, 380px, null, widescreen);
 			}
 		}
 

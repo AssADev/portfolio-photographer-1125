@@ -93,14 +93,25 @@ const layouts = [
 	pointer-events: none;
 
 	:deep(.partials-circular-star) {
-		transform: translate3d(0, -50%, 0);
-
 		@include mq($until: desktop) {
 			height: 125vh;
 		}
 
+		@include mq($until: large) {
+			transform: translate3d(0, -50%, 0);
+		}
+
 		@include mq(desktop) {
 			width: var(--ctn-w);
+			transform: translate3d(0, -50%, 0);
+		}
+
+		@include mq(large) {
+			transform: translate3d(0, -57.5%, 0);
+		}
+
+		@include mq(xlarge) {
+			transform: translate3d(0, -60%, 0);
 		}
 	}
 }

@@ -78,14 +78,22 @@ const marqueePlaying = ref(true);
 	pointer-events: none;
 
 	:deep(.partials-circular-star) {
-		transform: translate3d(0, 50%, 0);
-
 		@include mq($until: desktop) {
 			height: 125vh;
+			transform: translate3d(0, 50%, 0);
 		}
 
 		@include mq(desktop) {
 			width: var(--ctn-w);
+			transform: translate3d(0, 60%, 0);
+		}
+
+		@include mq(large) {
+			transform: translate3d(0, 67.5%, 0);
+		}
+
+		@include mq(xlarge) {
+			transform: translate3d(0, 75%, 0);
 		}
 	}
 }
