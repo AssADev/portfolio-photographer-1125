@@ -75,6 +75,7 @@ const marqueePlaying = ref(true);
 	left: 50%;
 	transform: translate3d(-50%, 0, 0);
 	overflow: hidden;
+	pointer-events: none;
 
 	:deep(.partials-circular-star) {
 		transform: translate3d(0, 50%, 0);

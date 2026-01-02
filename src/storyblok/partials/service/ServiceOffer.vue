@@ -55,6 +55,7 @@ defineProps<{
 .partials-service-offer {
 	position: relative;
 	overflow: hidden;
+	width: 100%;
 	border: 1px solid rgba($eerieBlack, 0.1);
 
 	&.is-popular {

@@ -14,9 +14,14 @@ defineProps<{
 // Refs :
 const isToggled = ref(false);
 
+// Variables :
+const transitionDuration = 0.6;
+
 // Watchers :
 watch(isToggled, () => {
-	ScrollTrigger.refresh();
+	setTimeout(() => {
+		ScrollTrigger.refresh();
+	}, transitionDuration * 1000);
 });
 </script>
 
@@ -44,7 +49,7 @@ watch(isToggled, () => {
 	&.toggle {
 		.question-answer-container {
 			grid-template-rows: 1fr;
-			transition: grid-template-rows 0.6s $power2Out;
+			transition: grid-template-rows v-bind("transitionDuration + 's'") $power2Out;
 		}
 	}
 }
@@ -60,7 +65,7 @@ watch(isToggled, () => {
 .question-answer-container {
 	display: grid;
 	grid-template-rows: 0fr;
-	transition: grid-template-rows 0.6s $power2InOut;
+	transition: grid-template-rows v-bind("transitionDuration + 's'") $power2InOut;
 	overflow: hidden;
 }
 
