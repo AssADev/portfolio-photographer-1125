@@ -174,7 +174,7 @@ useGSAP(() => {
 
 .sections-wrapper {
 	display: flex;
-	gap: 10px;
+	gap: $gap;
 	padding-inline: var(--gutter);
 	width: fit-content;
 	height: fluidSize(680px, 540px);

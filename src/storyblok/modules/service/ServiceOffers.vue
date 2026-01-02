@@ -59,7 +59,7 @@ const resolvers = getRichTextResolvers('h2');
 
 .offers-container {
 	display: flex;
-	gap: 10px;
+	gap: $gap;
 	margin-block-start: fluidSize(60px, 48px);
 
 	@include mq($until: desktop) {

@@ -492,7 +492,7 @@ export interface StoryblokServiceTestimonials {
 }
 
 export interface StoryblokServiceTestimonialsItem {
-	author: string;
+	author: StoryblokRichtext;
 	testimonial: StoryblokRichtext;
 	pictures?: StoryblokServiceTestimonialsItemPicture[];
 	component: 'ServiceTestimonialsItem';

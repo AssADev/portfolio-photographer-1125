@@ -14,9 +14,10 @@ const letterRefs = ref<HTMLElement[]>([]);
 
 // Variables :
 const LETTERS_POOL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}<>?/';
-const SHUFFLE_DURATION = 200;
-const SHUFFLE_SPEED = 65;
+const SHUFFLE_MAX_ITERATIONS = 5;
+const SHUFFLE_SPEED = 70;
 
+let iterationCount = 0;
 let activeIndices: number[] = [];
 let intervalId: ReturnType<typeof setInterval> | null = null;
 let timeoutId: ReturnType<typeof setTimeout> | null = null;
@@ -42,9 +43,6 @@ const resetLetters = () => {
 };
 
 const startShuffle = (indices: number[]) => {
-	if (intervalId) clearInterval(intervalId);
-	if (timeoutId) clearTimeout(timeoutId);
-
 	activeIndices = indices;
 
 	// Init shuffle :
@@ -54,10 +52,21 @@ const startShuffle = (indices: number[]) => {
 		}
 	});
 
+	// If already shuffling, we just updated the indices for the next tick
+	if (intervalId) return;
+
+	iterationCount = 0;
+
 	// Start loop :
 	intervalId = setInterval(() => {
-		// Reset first to clean up non-active ones if we switched mid-stream?
-		// Actually simpler: reset whole string to original, then scramble active.
+		iterationCount++;
+		console.log(iterationCount);
+
+		if (iterationCount >= SHUFFLE_MAX_ITERATIONS) {
+			resetLetters();
+			return;
+		}
+
 		// Use a temporary array to build next state
 		const nextState = [...originalLetters.value];
 		activeIndices.forEach((idx) => {
@@ -67,14 +76,6 @@ const startShuffle = (indices: number[]) => {
 		});
 		displayedLetters.value = nextState;
 	}, SHUFFLE_SPEED);
-
-	// Stop after duration :
-	timeoutId = setTimeout(() => {
-		if (intervalId) clearInterval(intervalId);
-		intervalId = null;
-		// Resolve to original :
-		displayedLetters.value = [...originalLetters.value];
-	}, SHUFFLE_DURATION);
 };
 
 const onLetterEnter = (index: number) => {
@@ -83,9 +84,7 @@ const onLetterEnter = (index: number) => {
 };
 
 const onWrapperLeave = () => {
-	// "Shuffle one last time then reset"
-	// We can just trigger a final shuffle on the currently active indices (or a logical set)
-	if (!intervalId && activeIndices.length === 0) return;
+	resetLetters();
 };
 
 // Attach :
@@ -117,8 +116,11 @@ onMounted(() => {
 .partials-label-shuffle {
 	position: relative;
 	display: inline-flex;
+	transition: color 0.3s $power2InOut;
 
 	@include hover {
+		color: $white;
+
 		&::before {
 			transform: scale3d(1, 1, 1);
 			transform-origin: left center;
@@ -148,8 +150,6 @@ onMounted(() => {
 
 .letter {
 	display: inline-block;
-	color: $white;
-	mix-blend-mode: difference;
 	will-change: contents;
 }
 </style>

@@ -203,7 +203,7 @@ const serviceInformations = computed(() => {
 
 		display: flex;
 		flex-direction: column-reverse;
-		gap: 10px;
+		gap: $gap;
 	}
 
 	@include mq(desktop) {
@@ -232,12 +232,12 @@ const serviceInformations = computed(() => {
 	@include mq($until: tablet) {
 		@include grid;
 
-		row-gap: 10px;
+		row-gap: $gap;
 	}
 
 	@include mq(tablet) {
 		display: flex;
-		gap: 10px;
+		gap: $gap;
 	}
 
 	@include mq(desktop) {

@@ -118,7 +118,7 @@ watch(
 						<button @click="openForm(form)">
 							<div class="title-wrapper">
 								<p class="title">{{ form.content.title }}</p>
-								<span class="number">/{{ formatIndex(index + 1) }}</span>
+								<span class="number">/{{ formatIndex(Number(index) + 1) }}</span>
 							</div>
 							<p class="description" v-html="nl2br(form.content.description)"></p>
 						</button>
@@ -134,7 +134,7 @@ watch(
 						<button @click="openForm(form)">
 							<div class="title-wrapper">
 								<p class="title">{{ form.content.title }}</p>
-								<span class="number">/{{ formatIndex(index + 1) }}</span>
+								<span class="number">/{{ formatIndex(Number(index) + 1) }}</span>
 							</div>
 							<p class="description" v-html="nl2br(form.content.description)"></p>
 						</button>

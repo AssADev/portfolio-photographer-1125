@@ -126,7 +126,7 @@ const resolvers = getRichTextResolvers('h1');
 }
 
 .socials-container {
-	gap: 10px;
+	gap: $gap;
 	width: 100%;
 	color: $eerieBlack;
 

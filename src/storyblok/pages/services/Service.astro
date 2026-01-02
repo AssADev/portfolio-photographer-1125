@@ -6,7 +6,8 @@ import type {
 	StoryblokServiceFAQ,
 	StoryblokOtherServices,
 	StoryblokProjectsMarquee,
-	StoryblokSteps
+	StoryblokSteps,
+	StoryblokServiceTestimonials
 } from '#types/component-types-sb.js';
 import ServiceHero from '#storyblok/modules/service/ServiceHero.astro';
 import ServiceOffers from '#storyblok/modules/service/ServiceOffers.astro';
@@ -14,6 +15,7 @@ import OtherServices from '#storyblok/modules/OtherServices.astro';
 import ProjectsMarquee from '#storyblok/modules/ProjectsMarquee.astro';
 import Steps from '#storyblok/modules/Steps.astro';
 import ServiceFAQ from '#storyblok/modules/service/ServiceFAQ.astro';
+import ServiceTestimonials from '#storyblok/modules/service/ServiceTestimonials.astro';
 
 type Props = { blok: StoryblokService };
 
@@ -24,6 +26,8 @@ const { faqTitle, faqDescription, faqLink, faqSections } = Astro.locals.siteConf
 <ServiceHero blok={blok.informations[0] as StoryblokServiceInformations} />
 
 <Steps blok={blok.moduleSteps[0] as StoryblokSteps} />
+
+<ServiceTestimonials blok={blok.moduleTestimonials[0] as StoryblokServiceTestimonials} />
 
 <ServiceOffers blok={blok.moduleOffers[0] as StoryblokServiceOffers} offers={blok.offers ?? []} />
 
