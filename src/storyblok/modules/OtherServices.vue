@@ -48,8 +48,6 @@ useGSAP(() => {
 		// x = (containerWidth / 2) - servicesWidth + (lastItemWidth / 2)
 		const endX = containerWidth / 2 - servicesWidth + lastItemWidth / 2;
 
-		console.log(startX, endX, startX - endX);
-
 		return {
 			startX,
 			endX,
