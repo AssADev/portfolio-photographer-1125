@@ -21,7 +21,12 @@ defineProps<{
 			<h2 v-if="blok.title">{{ blok.title }}</h2>
 		</div>
 		<p v-if="blok.description" v-html="nl2br(blok.description)" />
-		<Button v-if="blok.cta?.[0]" theme="dot-dark" :text="blok.cta[0].label" :link="blok.cta[0].link" />
+		<Button
+			v-if="blok.cta?.[0]"
+			theme="dot-dark"
+			:text="blok.cta[0].label || $t('bookYourPhotoSession')"
+			:link="blok.cta[0].link"
+		/>
 	</div>
 </template>
 

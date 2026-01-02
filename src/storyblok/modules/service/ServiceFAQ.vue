@@ -6,13 +6,22 @@ import { nl2br } from '#utils/nl2br.ts';
 import Button from '#components/utils/Button.vue';
 import RichText from '#components/utils/RichText.vue';
 
-import type { StoryblokServiceFAQ } from '#types/component-types-sb.js';
+import type {
+	StoryblokLabelLink,
+	StoryblokRichtext,
+	StoryblokServiceFAQ,
+	StoryblokServiceFAQSection
+} from '#types/component-types-sb.js';
 
 import ServiceFAQSection from '#storyblok/partials/service/ServiceFAQSection.vue';
 
 // Props :
 defineProps<{
 	blok: StoryblokServiceFAQ;
+	title: StoryblokRichtext;
+	description: string;
+	link?: StoryblokLabelLink[];
+	sections?: StoryblokServiceFAQSection[];
 }>();
 
 // Resolvers (RichText) :
@@ -25,23 +34,24 @@ const resolvers = getRichTextResolvers('h2');
 			<div
 				class="title-wrapper col-start-1 col-end-13 col-start-tb-1 col-end-tb-6 col-start-dk-1 col-end-dk-10 col-start-lg-1 col-end-lg-8"
 			>
-				<RichText :doc="blok.title" :resolvers="resolvers" />
+				<RichText :doc="title" :resolvers="resolvers" />
 			</div>
 			<div
 				class="description-wrapper col-start-1 col-end-13 col-start-tb-10 col-end-tb-16 col-start-dk-22 col-end-dk-32 col-start-lg-23 col-end-lg-32 col-start-xxlg-24 col-end-xxlg-31"
 			>
-				<p v-html="nl2br(blok.description)" />
+				<p v-html="nl2br(description)" />
 				<Button
-					v-if="blok.link?.[0]"
-					v-bind="getLinkAttributes(blok.link[0])"
+					v-if="link?.[0]"
+					v-bind="getLinkAttributes(link[0])"
 					theme="dot-white"
-					:text="blok.link[0].label"
-					:link="blok.link[0].link"
+					:text="link[0].label"
+					:link="link[0].link"
 				/>
 			</div>
 		</div>
 		<div class="sections-container">
 			<ServiceFAQSection v-for="section in blok.sections" :key="section._uid" :blok="section" />
+			<ServiceFAQSection v-for="section in sections" :key="section._uid" :blok="section" />
 		</div>
 	</section>
 </template>

@@ -283,14 +283,6 @@ export interface StoryblokLinksMaterialsItemTitle {
 	_uid: string;
 }
 
-export interface StoryblokMenu {
-	title: string;
-	description: string;
-	navLinks?: StoryblokLabelLink[];
-	component: 'Menu';
-	_uid: string;
-}
-
 export interface StoryblokOtherServices {
 	title?: string;
 	services?: (ISbStoryData<StoryblokService> | string)[];
@@ -382,36 +374,20 @@ export interface StoryblokSEO {
 }
 
 export interface StoryblokService {
+	moduleSteps: StoryblokSteps[];
+	moduleTestimonials: StoryblokServiceTestimonials[];
+	moduleOffers: StoryblokServiceOffers[];
+	moduleFAQ: StoryblokServiceFAQ[];
+	moduleOtherServices: StoryblokOtherServices[];
+	moduleProjectsMarquee: StoryblokProjectsMarquee[];
 	SEO: StoryblokSEO[];
 	informations: StoryblokServiceInformations[];
 	offers?: StoryblokServiceOffer[];
-	body?: (
-		| StoryblokBiographyCopyright
-		| StoryblokBiographyHero
-		| StoryblokBiographyStrangersPortraits
-		| StoryblokHomeHero
-		| StoryblokLinksHero
-		| StoryblokLinksMaterials
-		| StoryblokOtherServices
-		| StoryblokProjectsMarquee
-		| StoryblokProjectTestimonial
-		| StoryblokQuotes
-		| StoryblokServiceFAQ
-		| StoryblokServiceOffers
-		| StoryblokServicesHero
-		| StoryblokServicesHighlight
-		| StoryblokServicesItem
-		| StoryblokServiceTestimonials
-		| StoryblokSteps
-	)[];
 	component: 'Service';
 	_uid: string;
 }
 
 export interface StoryblokServiceFAQ {
-	title: StoryblokRichtext;
-	description: string;
-	link?: StoryblokLabelLink[];
 	sections?: StoryblokServiceFAQSection[];
 	component: 'ServiceFAQ';
 	_uid: string;
@@ -509,7 +485,7 @@ export interface StoryblokServicesItem {
 export interface StoryblokServiceTestimonials {
 	title: string;
 	description: string;
-	link?: Exclude<StoryblokMultilink, { linktype?: 'email' } | { linktype?: 'asset' }>;
+	link?: StoryblokLabelLink[];
 	testimonials?: StoryblokServiceTestimonialsItem[];
 	component: 'ServiceTestimonials';
 	_uid: string;
@@ -530,11 +506,15 @@ export interface StoryblokServiceTestimonialsItemPicture {
 }
 
 export interface StoryblokSiteConfig {
-	titleContact: string;
-	descriptionContact: string;
+	faqTitle: StoryblokRichtext;
+	faqDescription: string;
+	faqLink?: StoryblokLabelLink[];
+	faqSections?: StoryblokServiceFAQSection[];
 	identity: string;
 	email: string;
 	socials: StoryblokLabelLink[];
+	titleContact: string;
+	descriptionContact: string;
 	menuDescription: string;
 	menuLinks?: StoryblokLabelLink[];
 	titleTemplate: string;
@@ -575,7 +555,6 @@ export type ContentType =
 	| StoryblokForms
 	| StoryblokHome
 	| StoryblokLinks
-	| StoryblokMenu
 	| StoryblokProject
 	| StoryblokService
 	| StoryblokServices

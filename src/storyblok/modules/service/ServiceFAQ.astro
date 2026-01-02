@@ -1,13 +1,30 @@
 ---
 import { storyblokEditable } from '#storyblok/helpers/storyblokEditable.ts';
 import ServiceFAQVue from '#storyblok/modules/service/ServiceFAQ.vue';
-import type { StoryblokServiceFAQ } from '#types/component-types-sb.js';
+import type {
+	StoryblokServiceFAQ,
+	StoryblokRichtext,
+	StoryblokLabelLink,
+	StoryblokServiceFAQSection
+} from '#types/component-types-sb.js';
 
 type Props = {
 	blok: StoryblokServiceFAQ;
+	faqTitle: StoryblokRichtext;
+	faqDescription: string;
+	faqLink?: StoryblokLabelLink[];
+	faqSections?: StoryblokServiceFAQSection[];
 };
 
-const { blok } = Astro.props;
+const { blok, faqTitle, faqDescription, faqLink, faqSections } = Astro.props;
 ---
 
-<ServiceFAQVue {...storyblokEditable(blok, Astro.locals.isPreviewMode)} {...Astro.props} client:visible />
+<ServiceFAQVue
+	{...storyblokEditable(blok, Astro.locals.isPreviewMode)}
+	{...Astro.props}
+	title={faqTitle}
+	description={faqDescription}
+	link={faqLink}
+	sections={faqSections}
+	client:visible
+/>

@@ -40,7 +40,7 @@ const marqueePlaying = ref(true);
 					v-if="blok.link?.[0]"
 					v-bind="getLinkAttributes(blok.link[0])"
 					theme="dot-dark"
-					:text="blok.link[0].label ? blok.link[0].label : $t('bookYourPhotoSession')"
+					:text="blok.link[0].label || $t('bookYourPhotoSession')"
 					:link="blok.link[0].link"
 				/>
 			</div>

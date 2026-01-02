@@ -2,32 +2,39 @@
 import type {
 	StoryblokService,
 	StoryblokServiceInformations,
-	StoryblokServiceOffers
+	StoryblokServiceOffers,
+	StoryblokServiceFAQ,
+	StoryblokOtherServices,
+	StoryblokProjectsMarquee,
+	StoryblokSteps
 } from '#types/component-types-sb.js';
-import type { SbBlokData } from '@storyblok/astro';
-import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro';
 import ServiceHero from '#storyblok/modules/service/ServiceHero.astro';
 import ServiceOffers from '#storyblok/modules/service/ServiceOffers.astro';
+import OtherServices from '#storyblok/modules/OtherServices.astro';
+import ProjectsMarquee from '#storyblok/modules/ProjectsMarquee.astro';
+import Steps from '#storyblok/modules/Steps.astro';
+import ServiceFAQ from '#storyblok/modules/service/ServiceFAQ.astro';
 
 type Props = { blok: StoryblokService };
 
 const { blok } = Astro.props;
+const { faqTitle, faqDescription, faqLink, faqSections } = Astro.locals.siteConfig;
 ---
 
 <ServiceHero blok={blok.informations[0] as StoryblokServiceInformations} />
 
-{
-	blok.body?.map((bodyBlok) => {
-		if (bodyBlok.component === 'ServiceOffers') {
-			return <ServiceOffers blok={bodyBlok as StoryblokServiceOffers} offers={blok.offers ?? []} />;
-		} else {
-			return (
-				<StoryblokComponent
-					blok={bodyBlok as SbBlokData}
-					id={bodyBlok._uid}
-					data-component-name={bodyBlok.component}
-				/>
-			);
-		}
-	})
-}
+<Steps blok={blok.moduleSteps[0] as StoryblokSteps} />
+
+<ServiceOffers blok={blok.moduleOffers[0] as StoryblokServiceOffers} offers={blok.offers ?? []} />
+
+<ServiceFAQ
+	blok={blok.moduleFAQ[0] as StoryblokServiceFAQ}
+	faqTitle={faqTitle}
+	faqDescription={faqDescription}
+	faqLink={faqLink}
+	faqSections={faqSections}
+/>
+
+<OtherServices blok={blok.moduleOtherServices[0] as StoryblokOtherServices} />
+
+<ProjectsMarquee blok={blok.moduleProjectsMarquee[0] as StoryblokProjectsMarquee} />
