@@ -40,6 +40,10 @@ button,
 a,
 button {
 	cursor: pointer;
+
+	&:disabled {
+		pointer-events: none;
+	}
 }
 
 /* Remove list styles (bullets/numbers) */

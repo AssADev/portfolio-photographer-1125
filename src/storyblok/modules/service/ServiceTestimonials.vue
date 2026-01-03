@@ -22,6 +22,8 @@ const { blok } = defineProps<{
 }>();
 
 // Refs :
+const canPrev = ref(false);
+const canNext = ref(false);
 const currentSlide = ref(0);
 const isGrabbing = ref(false);
 
@@ -33,6 +35,9 @@ const [emblaRef, emblaApi] = emblaCarouselVue({
 // Methods :
 const updateCurrentSlide = () => {
 	if (!emblaApi.value) return;
+
+	canPrev.value = emblaApi.value.canScrollPrev();
+	canNext.value = emblaApi.value.canScrollNext();
 	currentSlide.value = emblaApi.value.selectedScrollSnap();
 };
 
@@ -100,11 +105,11 @@ onMounted(() => {
 						<span>{{ formatIndex(blok.testimonials?.length ?? 0) }}</span>
 					</div>
 					<div class="ctas-wrapper">
-						<Button @click="emblaApi.scrollPrev()" :disabled="!emblaApi.canScrollPrev()">
-							<LabelShuffle :label="$t('previous')" />
+						<Button @click="emblaApi.scrollPrev()" :disabled="!canPrev">
+							<LabelShuffle :label="$t('previous')" :is-active="canPrev" />
 						</Button>
-						<Button @click="emblaApi.scrollNext()" :disabled="!emblaApi.canScrollNext()">
-							<LabelShuffle :label="$t('next')" />
+						<Button @click="emblaApi.scrollNext()" :disabled="!canNext">
+							<LabelShuffle :label="$t('next')" :is-active="canNext" />
 						</Button>
 					</div>
 				</div>

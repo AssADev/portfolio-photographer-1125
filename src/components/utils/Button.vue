@@ -68,10 +68,6 @@ const handleClick = (e: Event) => {
 	width: fit-content;
 	overflow: hidden;
 
-	&:disabled {
-		pointer-events: none;
-	}
-
 	& > :deep(span) {
 		position: relative;
 	}

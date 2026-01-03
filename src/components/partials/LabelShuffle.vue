@@ -1,16 +1,24 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import gsap from 'gsap';
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 
 // Props :
-const props = defineProps<{
-	label: string;
-}>();
+const props = withDefaults(
+	defineProps<{
+		label: string;
+		isActive?: boolean;
+	}>(),
+	{
+		isActive: true
+	}
+);
 
 // Refs :
 const originalLetters = computed(() => props.label.split(''));
 const displayedLetters = ref<string[]>([]);
 const letterWidths = ref<number[]>([]);
 const letterRefs = ref<HTMLElement[]>([]);
+const innerRefs = ref<HTMLElement[]>([]);
 
 // Variables :
 const LETTERS_POOL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}<>?/';
@@ -43,6 +51,7 @@ const resetLetters = () => {
 };
 
 const startShuffle = (indices: number[]) => {
+	if (!props.isActive) return;
 	activeIndices = indices;
 
 	// Init shuffle :
@@ -52,61 +61,102 @@ const startShuffle = (indices: number[]) => {
 		}
 	});
 
-	// If already shuffling, we just updated the indices for the next tick
 	if (intervalId) return;
 
 	iterationCount = 0;
 
-	// Start loop :
 	intervalId = setInterval(() => {
 		iterationCount++;
-		console.log(iterationCount);
 
 		if (iterationCount >= SHUFFLE_MAX_ITERATIONS) {
 			resetLetters();
 			return;
 		}
 
-		// Use a temporary array to build next state
 		const nextState = [...originalLetters.value];
 		activeIndices.forEach((idx) => {
-			if (idx >= 0 && idx < nextState.length) {
-				nextState[idx] = getRandomChar();
-			}
+			if (idx >= 0 && idx < nextState.length) nextState[idx] = getRandomChar();
 		});
+
 		displayedLetters.value = nextState;
 	}, SHUFFLE_SPEED);
 };
 
 const onLetterEnter = (index: number) => {
+	if (!props.isActive) return;
 	const neighbors = [index - 1, index, index + 1].filter((i) => i >= 0 && i < originalLetters.value.length);
 	startShuffle(neighbors);
 };
 
-const onWrapperLeave = () => {
-	resetLetters();
+const animateIn = () => {
+	gsap.killTweensOf(innerRefs.value);
+	gsap.to(innerRefs.value, {
+		x: '0%',
+		duration: 0.4,
+		stagger: 0.03,
+		ease: 'power2.out',
+		overwrite: true
+	});
 };
 
-// Attach :
+const animateOut = () => {
+	gsap.killTweensOf(innerRefs.value);
+	gsap.to(innerRefs.value, {
+		x: '120%',
+		duration: 0.4,
+		stagger: -0.03,
+		ease: 'power2.in',
+		overwrite: true
+	});
+};
+
+// Watchers :
+watch(
+	() => props.isActive,
+	(val) => {
+		if (val) animateIn();
+		else animateOut();
+	}
+);
+
+watch(
+	() => props.label,
+	() => {
+		displayedLetters.value = [...originalLetters.value];
+		nextTick(() => {
+			measureWidths();
+		});
+	}
+);
+
+// Attach & Detach :
 onMounted(() => {
+	if (!props.isActive) gsap.set(innerRefs.value, { x: '120%' });
+
+	// Events :
 	document.fonts.ready.then(() => {
 		measureWidths();
 	});
+
+	window.addEventListener('resize', measureWidths);
+});
+
+onUnmounted(() => {
+	window.removeEventListener('resize', measureWidths);
 });
 </script>
 
 <template>
-	<div class="partials-label-shuffle" @mouseleave="onWrapperLeave">
+	<div class="partials-label-shuffle" :class="{ 'is-disabled': !isActive }" @mouseleave="resetLetters">
 		<span
-			v-for="(letter, index) in displayedLetters"
+			v-for="(letter, index) in originalLetters"
 			:key="index"
 			ref="letterRefs"
 			class="letter-wrapper"
-			@mouseenter="onLetterEnter(index)"
 			:style="{ width: letterWidths[index] ? `${letterWidths[index]}px` : 'auto' }"
 		>
-			<span class="letter">
-				{{ letter }}
+			<span ref="innerRefs" class="letter" @mouseenter="onLetterEnter(index)">
+				{{ displayedLetters[index] === ' ' ? '\u00A0' : displayedLetters[index] }}
 			</span>
 		</span>
 	</div>
@@ -118,12 +168,14 @@ onMounted(() => {
 	display: inline-flex;
 	transition: color 0.3s $power2InOut;
 
-	@include hover {
-		color: $white;
+	&:not(.is-disabled) {
+		@include hover {
+			color: $white;
 
-		&::before {
-			transform: scale3d(1, 1, 1);
-			transform-origin: left center;
+			&::before {
+				transform: scale3d(1, 1, 1);
+				transform-origin: left center;
+			}
 		}
 	}
 
@@ -146,10 +198,11 @@ onMounted(() => {
 	justify-content: center;
 	white-space: pre;
 	text-align: center;
+	overflow: hidden;
 }
 
 .letter {
 	display: inline-block;
-	will-change: contents;
+	will-change: transform;
 }
 </style>
