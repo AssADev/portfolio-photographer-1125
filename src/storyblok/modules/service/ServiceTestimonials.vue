@@ -16,7 +16,7 @@ import type { StoryblokServiceTestimonials } from '#types/component-types-sb.js'
 import ServiceTestimonialsItem from '#storyblok/partials/service/ServiceTestimonialsItem.vue';
 
 // Props :
-defineProps<{
+const { blok } = defineProps<{
 	blok: StoryblokServiceTestimonials;
 }>();
 
@@ -24,7 +24,10 @@ defineProps<{
 const currentSlide = ref(0);
 const isGrabbing = ref(false);
 
-const [emblaRef, emblaApi] = emblaCarouselVue({ loop: false });
+const [emblaRef, emblaApi] = emblaCarouselVue({
+	active: (blok.testimonials?.length ?? 0) > 1 ? true : false,
+	loop: false
+});
 
 // Methods :
 const updateCurrentSlide = () => {
@@ -60,7 +63,7 @@ onMounted(() => {
 		<div class="container-grid">
 			<h2 class="col-start-1 col-end-13 col-start-tb-1 col-end-tb-4">{{ blok.title }}</h2>
 			<div
-				class="description-wrapper col-start-1 col-end-13 col-start-tb-4 col-end-tb-13 col-start-dk-5 col-end-dk-14 col-start-lg-6 col-end-lg-14"
+				class="description-wrapper col-start-1 col-end-13 col-start-tb-4 col-end-tb-13 col-start-dk-5 col-end-dk-16 col-start-lg-6 col-end-lg-15 col-start-xxlg-6 col-end-xxlg-14 col-start-wd-6 col-end-wd-13"
 			>
 				<p v-html="nl2br(blok.description)" />
 				<Button
@@ -72,12 +75,15 @@ onMounted(() => {
 				/>
 			</div>
 			<div
-				class="testimonials-container col-start-1 col-end-13 col-start-tb-4 col-end-tb-15 col-start-dk-5 col-end-dk-26 col-start-lg-6 col-end-lg-25 col-start-xxlg-6 col-end-xxlg-23"
+				class="testimonials-container col-start-1 col-end-13 col-start-tb-4 col-end-tb-15 col-start-dk-5 col-end-dk-26 col-start-lg-6 col-end-lg-26 col-start-xxlg-6 col-end-xxlg-23"
 			>
 				<div class="slideshow-container" ref="emblaRef">
 					<div
 						class="slideshow-wrapper"
-						:class="{ 'can-grab': emblaApi && blok.testimonials.length > 1, 'is-grabbing': isGrabbing }"
+						:class="{
+							'can-grab': emblaApi && (blok.testimonials?.length ?? 0) > 1,
+							'is-grabbing': isGrabbing
+						}"
 					>
 						<ServiceTestimonialsItem
 							v-for="testimonial in blok.testimonials"
@@ -86,11 +92,11 @@ onMounted(() => {
 						/>
 					</div>
 				</div>
-				<div v-if="blok.testimonials.length > 1 && emblaApi" class="slideshow-navigation">
+				<div v-if="(blok.testimonials?.length ?? 0) > 1 && emblaApi" class="slideshow-navigation">
 					<div class="indicator-wrapper">
 						<span>{{ formatIndex(currentSlide + 1) }}</span>
 						<Icon name="square-small" />
-						<span>{{ formatIndex(blok.testimonials.length) }}</span>
+						<span>{{ formatIndex(blok.testimonials?.length ?? 0) }}</span>
 					</div>
 					<div class="ctas-wrapper">
 						<Button @click="emblaApi.scrollPrev()" :disabled="!emblaApi.canScrollPrev()">
