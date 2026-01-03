@@ -1,0 +1,14 @@
+---
+import { storyblokEditable } from '#storyblok/helpers/storyblokEditable.ts';
+import ServiceOffersComparisonVue from '#storyblok/modules/service/ServiceOffersComparison.vue';
+import type { StoryblokServiceOffer, StoryblokServiceOffersComparison } from '#types/component-types-sb.js';
+
+type Props = {
+	blok: StoryblokServiceOffersComparison;
+	offers: StoryblokServiceOffer[];
+};
+
+const { blok, offers } = Astro.props;
+---
+
+<ServiceOffersComparisonVue {...storyblokEditable(blok, Astro.locals.isPreviewMode)} {...Astro.props} offers={offers} />

@@ -19,6 +19,7 @@ export interface StoryblokBiography {
 		| StoryblokQuotes
 		| StoryblokServiceFAQ
 		| StoryblokServiceOffers
+		| StoryblokServiceOffersComparison
 		| StoryblokServicesHero
 		| StoryblokServicesHighlight
 		| StoryblokServicesItem
@@ -129,6 +130,7 @@ export interface StoryblokHome {
 		| StoryblokQuotes
 		| StoryblokServiceFAQ
 		| StoryblokServiceOffers
+		| StoryblokServiceOffersComparison
 		| StoryblokServicesHero
 		| StoryblokServicesHighlight
 		| StoryblokServicesItem
@@ -222,6 +224,7 @@ export interface StoryblokLinks {
 		| StoryblokQuotes
 		| StoryblokServiceFAQ
 		| StoryblokServiceOffers
+		| StoryblokServiceOffersComparison
 		| StoryblokServicesHero
 		| StoryblokServicesHighlight
 		| StoryblokServicesItem
@@ -312,6 +315,7 @@ export interface StoryblokProject {
 		| StoryblokQuotes
 		| StoryblokServiceFAQ
 		| StoryblokServiceOffers
+		| StoryblokServiceOffersComparison
 		| StoryblokServicesHero
 		| StoryblokServicesHighlight
 		| StoryblokServicesItem
@@ -377,6 +381,7 @@ export interface StoryblokService {
 	moduleSteps: StoryblokSteps[];
 	moduleTestimonials: StoryblokServiceTestimonials[];
 	moduleOffers: StoryblokServiceOffers[];
+	moduleOffersComparison: StoryblokServiceOffersComparison[];
 	moduleFAQ: StoryblokServiceFAQ[];
 	moduleOtherServices: StoryblokOtherServices[];
 	moduleProjectsMarquee: StoryblokProjectsMarquee[];
@@ -434,6 +439,13 @@ export interface StoryblokServiceOffers {
 	_uid: string;
 }
 
+export interface StoryblokServiceOffersComparison {
+	title: StoryblokRichtext;
+	brochure: StoryblokAsset;
+	component: 'ServiceOffersComparison';
+	_uid: string;
+}
+
 export interface StoryblokServices {
 	SEO: StoryblokSEO[];
 	body?: (
@@ -449,6 +461,7 @@ export interface StoryblokServices {
 		| StoryblokQuotes
 		| StoryblokServiceFAQ
 		| StoryblokServiceOffers
+		| StoryblokServiceOffersComparison
 		| StoryblokServicesHero
 		| StoryblokServicesHighlight
 		| StoryblokServicesItem
