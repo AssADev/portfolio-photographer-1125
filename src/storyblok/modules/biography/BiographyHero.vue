@@ -67,7 +67,7 @@ defineProps<{
 			</div>
 			<TitleDescriptionAndCta
 				v-if="blok.titleDescriptionAndCta?.[0]"
-				v-parallax="{ scale: false, tablet: -55, desktop: -75 }"
+				v-parallax="{ scale: false, startAtZero: true, tablet: -55, desktop: -125 }"
 				:data="blok.titleDescriptionAndCta?.[0]"
 				class="col-start-2 col-end-13 col-start-tb-2 col-end-tb-9 col-start-dk-21 col-end-dk-31 col-start-mlg-22 col-end-mlg-30 col-start-xxlg-22 col-end-xxlg-28"
 			/>

@@ -506,13 +506,14 @@ export interface StoryblokServiceTestimonialsItemPicture {
 }
 
 export interface StoryblokSiteConfig {
+	serviceBookingFormLink: StoryblokLabelLink[];
+	identity: string;
+	email: string;
+	socials: StoryblokLabelLink[];
 	faqTitle: StoryblokRichtext;
 	faqDescription: string;
 	faqLink?: StoryblokLabelLink[];
 	faqSections?: StoryblokServiceFAQSection[];
-	identity: string;
-	email: string;
-	socials: StoryblokLabelLink[];
 	titleContact: string;
 	descriptionContact: string;
 	menuDescription: string;

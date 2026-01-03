@@ -9,11 +9,13 @@ type Props = {
 };
 
 const { blok, offers } = Astro.props;
+const { serviceBookingFormLink } = Astro.locals.siteConfig;
 ---
 
 <ServiceOffersVue
 	{...storyblokEditable(blok, Astro.locals.isPreviewMode)}
 	{...Astro.props}
 	offers={offers}
+	serviceBookingFormLink={serviceBookingFormLink}
 	client:visible
 />

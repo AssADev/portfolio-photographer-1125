@@ -1,15 +1,17 @@
 <script setup lang="ts">
+import { getLinkAttributes } from '#utils/link.ts';
 import { nl2br } from '#utils/nl2br.ts';
 
 import Button from '#components/utils/Button.vue';
 import CircularStar from '#components/utils/CircularStar.vue';
 import Icon from '#components/utils/Icon.vue';
 
-import type { StoryblokServiceOffer } from '#types/component-types-sb.js';
+import type { StoryblokLabelLink, StoryblokServiceOffer } from '#types/component-types-sb.js';
 
 // Props :
 defineProps<{
 	blok: StoryblokServiceOffer;
+	serviceBookingFormLink: StoryblokLabelLink[];
 }>();
 </script>
 
@@ -45,8 +47,12 @@ defineProps<{
 				<span>{{ $t('offersBlackAndWhitePhotos', { n: blok.numberOfBlackAndWhitePhotos }) }}</span>
 			</li>
 		</ul>
-		<div class="link-container">
-			<Button :text="$t('bookYourPhotoSession')" />
+		<div v-if="serviceBookingFormLink?.[0]" class="link-container">
+			<Button
+				v-bind="getLinkAttributes(serviceBookingFormLink[0])"
+				:text="serviceBookingFormLink[0].label || $t('bookYourPhotoSession')"
+				:link="serviceBookingFormLink[0].link"
+			/>
 		</div>
 	</div>
 </template>
@@ -54,16 +60,34 @@ defineProps<{
 <style lang="scss" scoped>
 .partials-service-offer {
 	position: relative;
+	display: flex;
+	flex-direction: column;
 	overflow: hidden;
 	width: 100%;
 	border: 1px solid rgba($eerieBlack, 0.1);
 
 	&.is-popular {
 		background: $whiteChoco;
+
+		.link-container {
+			button {
+				@include hover {
+					background: $whiteChoco;
+				}
+			}
+		}
 	}
 
 	&:not(.is-popular) {
 		background: $ivory;
+
+		.link-container {
+			button {
+				@include hover {
+					background: $ivory;
+				}
+			}
+		}
 	}
 }
 
@@ -79,7 +103,9 @@ defineProps<{
 	position: relative;
 	display: flex;
 	flex-direction: column;
+	justify-content: space-between;
 	gap: fluidSize(50px, 40px);
+	height: 100%;
 	padding: fluidSize(22px, 18px) fluidSize(20px, 18px) fluidSize(26px, 20px);
 }
 
@@ -148,6 +174,35 @@ defineProps<{
 }
 
 .link-container {
+	position: relative;
 	padding: fluidSize(20px, 18px);
+
+	button {
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		border-radius: 4px;
+		background: $eerieBlack;
+		padding-block: fluidSize(12px, 10px);
+		border: 1px solid rgba($eerieBlack, 0.1);
+		transition: background 0.4s $power2Out;
+		overflow: hidden;
+
+		@include hover {
+			:deep(span) {
+				color: $eerieBlack;
+			}
+		}
+
+		:deep(span) {
+			@include roobert-16-uppercase;
+
+			position: relative;
+			color: $white;
+			transition: color 0.4s $power2Out;
+		}
+	}
 }
 </style>

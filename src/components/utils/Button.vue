@@ -18,7 +18,7 @@ const { to, is, type, disabled, target, rel, theme, link, text } = defineProps<{
 	link?: any;
 }>();
 
-const isFormLink = link?.story?.content?.component === 'Forms';
+const isFormLink = link?.component === 'Forms' || link?.story?.content?.component === 'Forms';
 const isAnchor = (is === 'a' || !!to || !!link) && !isFormLink;
 
 // Computed :
@@ -55,7 +55,9 @@ const handleClick = (e: Event) => {
 			<span>{{ text }}</span>
 			<Icon name="square-small" />
 		</div>
-		<slot v-else>{{ text }}</slot>
+		<slot v-else>
+			<span>{{ text }}</span>
+		</slot>
 	</component>
 </template>
 

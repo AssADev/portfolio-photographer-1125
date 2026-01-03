@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { getRichTextResolvers } from '#utils/getRichTextResolvers.ts';
+import { getLinkAttributes } from '#utils/link.ts';
 import { nl2br } from '#utils/nl2br.ts';
 
 import Button from '#components/utils/Button.vue';
@@ -20,7 +21,13 @@ const resolvers = getRichTextResolvers('h2');
 	<div class="partials-title-description-and-cta">
 		<RichText v-if="data.title?.content" :doc="data.title" :resolvers="resolvers" />
 		<p v-if="data.description" v-html="nl2br(data.description)" />
-		<Button v-if="data.cta?.[0]" theme="dot-dark" :text="data.cta[0].label" :link="data.cta[0].link" />
+		<Button
+			v-if="data.cta?.[0]"
+			v-bind="getLinkAttributes(data.cta[0])"
+			theme="dot-dark"
+			:text="data.cta[0].label"
+			:link="data.cta[0].link"
+		/>
 	</div>
 </template>
 

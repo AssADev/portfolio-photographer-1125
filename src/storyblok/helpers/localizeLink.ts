@@ -4,7 +4,7 @@ import type { StoryblokMultilink } from '#types/component-types-sb.js';
 
 import { HOME_SLUG } from '#storyblok/helpers/specialSlugs';
 
-export const removeLinkFields = ['id', 'prep', 'story', 'cached_url'] as const;
+export const removeLinkFields = ['prep'] as const;
 
 /**
  * Localizes a Storyblok multilink based on the specified language.
