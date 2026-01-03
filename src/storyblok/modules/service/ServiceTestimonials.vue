@@ -9,6 +9,7 @@ import { nl2br } from '#utils/nl2br.ts';
 
 import LabelShuffle from '#components/partials/LabelShuffle.vue';
 import Button from '#components/utils/Button.vue';
+import CounterShuffle from '#components/utils/CounterShuffle.vue';
 import Icon from '#components/utils/Icon.vue';
 
 import type { StoryblokServiceTestimonials } from '#types/component-types-sb.js';
@@ -94,7 +95,7 @@ onMounted(() => {
 				</div>
 				<div v-if="(blok.testimonials?.length ?? 0) > 1 && emblaApi" class="slideshow-navigation">
 					<div class="indicator-wrapper">
-						<span>{{ formatIndex(currentSlide + 1) }}</span>
+						<CounterShuffle :value="currentSlide + 1" />
 						<Icon name="square-small" />
 						<span>{{ formatIndex(blok.testimonials?.length ?? 0) }}</span>
 					</div>
@@ -175,10 +176,11 @@ onMounted(() => {
 	gap: fluidSize(8px, 6px);
 
 	svg {
-		margin-block-start: fluidSize(4px, 2px, null, widescreen);
+		margin-block-start: fluidSize(3px, 2px, null, widescreen);
 	}
 
-	span {
+	span,
+	:deep(.counter-shuffle) {
 		@include roobert-14-uppercase;
 	}
 }
