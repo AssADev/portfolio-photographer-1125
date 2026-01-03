@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 
 import { getRichTextResolvers } from '#utils/getRichTextResolvers.ts';
+import { t } from '#utils/i18n.ts';
 
 import Button from '#components/utils/Button.vue';
 import RichText from '#components/utils/RichText.vue';
@@ -30,6 +31,7 @@ interface ComparisonRow {
 	field?: keyof StoryblokServiceOffer;
 	suffix?: string;
 	suffixKey?: string;
+	suffixKeySingular?: string;
 	staticValue?: string;
 	isFullWidth?: boolean;
 }
@@ -40,7 +42,12 @@ const comparisonConfig = computed<ComparisonSection[]>(() => [
 		showOfferTitles: true,
 		rows: [
 			{ labelKey: 'offersComparisonOffersPrice', field: 'price', suffix: '€' },
-			{ labelKey: 'offersComparisonOffersDuration', field: 'duration', suffixKey: 'hours' },
+			{
+				labelKey: 'offersComparisonOffersDuration',
+				field: 'duration',
+				suffixKey: 'offersComparisonHours',
+				suffixKeySingular: 'offersComparisonHour'
+			},
 			{ labelKey: 'offersComparisonOffersNumberOfEditedPhotos', field: 'numberOfEditedPhotos' },
 			{ labelKey: 'offersComparisonOffersNumberOfBlackAndWhitePhotos', field: 'numberOfBlackAndWhitePhotos' }
 		]
@@ -63,6 +70,14 @@ const comparisonConfig = computed<ComparisonSection[]>(() => [
 		]
 	}
 ]);
+
+// Methods :
+const getFormattedSuffix = (row: ComparisonRow, value: any) => {
+	if (!row.suffixKey) return '';
+
+	const key = row.suffixKeySingular && String(value) === '1' ? row.suffixKeySingular : row.suffixKey;
+	return ` ${t(key)}`;
+};
 </script>
 
 <template>
@@ -83,7 +98,7 @@ const comparisonConfig = computed<ComparisonSection[]>(() => [
 				<div v-for="section in comparisonConfig" :key="section.titleKey" class="section-container">
 					<div class="header-container">
 						<div
-							class="header-wrapper col-start-1 col-end-13 col-start-tb-1 col-end-tb-7 col-start-dk-1 col-end-dk-12"
+							class="header-wrapper col-start-1 col-end-13 col-start-tb-1 col-end-tb-7 col-start-dk-1 col-end-dk-14"
 						>
 							<div class="title">{{ $t(section.titleKey) }}</div>
 							<p v-if="section.descriptionKey" class="description">{{ $t(section.descriptionKey) }}</p>
@@ -91,7 +106,7 @@ const comparisonConfig = computed<ComparisonSection[]>(() => [
 
 						<ul
 							v-if="section.showOfferTitles"
-							class="offers-wrapper hide-mobile-tablet col-start-1 col-end-13 col-start-tb-7 col-end-tb-17 col-start-dk-14 col-end-dk-33 col-start-mlg-12 col-end-mlg-33"
+							class="offers-wrapper hide-mobile-tablet col-start-1 col-end-13 col-start-tb-7 col-end-tb-17 col-start-dk-14 col-end-dk-33 col-start-mlg-14 col-end-mlg-33"
 						>
 							<li v-for="offer in offers" :key="offer._uid">
 								<span>{{ offer.title }}</span>
@@ -105,7 +120,7 @@ const comparisonConfig = computed<ComparisonSection[]>(() => [
 							:class="
 								row.isFullWidth
 									? 'col-start-1 col-end-13 col-start-tb-1 col-end-tb-17 col-start-dk-1 col-end-dk-33'
-									: 'col-start-1 col-end-13 col-start-tb-1 col-end-tb-7 col-start-dk-1 col-end-dk-12'
+									: 'col-start-1 col-end-13 col-start-tb-1 col-end-tb-7 col-start-dk-1 col-end-dk-14'
 							"
 						>
 							<div class="title">{{ $t(row.labelKey) }}</div>
@@ -113,14 +128,14 @@ const comparisonConfig = computed<ComparisonSection[]>(() => [
 
 						<ul
 							v-if="!row.isFullWidth"
-							class="offers-wrapper col-start-1 col-end-13 col-start-tb-7 col-end-tb-17 col-start-dk-14 col-end-dk-33 col-start-mlg-12 col-end-mlg-33"
+							class="offers-wrapper col-start-1 col-end-13 col-start-tb-7 col-end-tb-17 col-start-dk-14 col-end-dk-33 col-start-mlg-14 col-end-mlg-33"
 						>
 							<li v-for="offer in offers" :key="offer._uid">
 								<span class="hide-desktop">{{ offer.title }}</span>
 								<span>
 									<template v-if="row.field">
 										{{ offer[row.field] }}{{ row.suffix
-										}}{{ row.suffixKey ? ' ' + $t(row.suffixKey) : '' }}
+										}}{{ getFormattedSuffix(row, offer[row.field]) }}
 									</template>
 									<template v-else-if="row.staticValue">
 										{{ row.staticValue }}
@@ -137,7 +152,7 @@ const comparisonConfig = computed<ComparisonSection[]>(() => [
 
 <style lang="scss" scoped>
 .service-offers-comparison {
-	padding-block: fluidSize(80px, 56px);
+	padding-block: fluidSize(80px, 56px) fluidSize(48px, 36px);
 }
 
 .title-container {
@@ -186,6 +201,7 @@ const comparisonConfig = computed<ComparisonSection[]>(() => [
 		@include roobert-14;
 
 		color: $khaki;
+		max-width: fluidSize(480px, 420px);
 	}
 }
 

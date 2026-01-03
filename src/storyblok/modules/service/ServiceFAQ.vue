@@ -59,7 +59,7 @@ const resolvers = getRichTextResolvers('h2');
 <style lang="scss" scoped>
 .service-faq {
 	color: $white;
-	background: $eerieBlack;
+	background: $smokyBlack;
 	padding-block-start: fluidSize(60px, 48px);
 }
 
