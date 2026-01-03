@@ -20,6 +20,8 @@ export interface StoryblokBiography {
 		| StoryblokServiceFAQ
 		| StoryblokServiceOffers
 		| StoryblokServiceOffersComparison
+		| StoryblokServiceProjectsExample
+		| StoryblokServiceProjectsHighlight
 		| StoryblokServicesHero
 		| StoryblokServicesHighlight
 		| StoryblokServicesItem
@@ -131,6 +133,8 @@ export interface StoryblokHome {
 		| StoryblokServiceFAQ
 		| StoryblokServiceOffers
 		| StoryblokServiceOffersComparison
+		| StoryblokServiceProjectsExample
+		| StoryblokServiceProjectsHighlight
 		| StoryblokServicesHero
 		| StoryblokServicesHighlight
 		| StoryblokServicesItem
@@ -225,6 +229,8 @@ export interface StoryblokLinks {
 		| StoryblokServiceFAQ
 		| StoryblokServiceOffers
 		| StoryblokServiceOffersComparison
+		| StoryblokServiceProjectsExample
+		| StoryblokServiceProjectsHighlight
 		| StoryblokServicesHero
 		| StoryblokServicesHighlight
 		| StoryblokServicesItem
@@ -316,6 +322,8 @@ export interface StoryblokProject {
 		| StoryblokServiceFAQ
 		| StoryblokServiceOffers
 		| StoryblokServiceOffersComparison
+		| StoryblokServiceProjectsExample
+		| StoryblokServiceProjectsHighlight
 		| StoryblokServicesHero
 		| StoryblokServicesHighlight
 		| StoryblokServicesItem
@@ -378,8 +386,10 @@ export interface StoryblokSEO {
 }
 
 export interface StoryblokService {
+	moduleProjectsHighlight: StoryblokServiceProjectsHighlight[];
 	moduleSteps: StoryblokSteps[];
 	moduleTestimonials: StoryblokServiceTestimonials[];
+	moduleProjectsExample: StoryblokServiceProjectsExample[];
 	moduleOffers: StoryblokServiceOffers[];
 	moduleOffersComparison: StoryblokServiceOffersComparison[];
 	moduleFAQ: StoryblokServiceFAQ[];
@@ -446,6 +456,19 @@ export interface StoryblokServiceOffersComparison {
 	_uid: string;
 }
 
+export interface StoryblokServiceProjectsExample {
+	description?: string;
+	projects: (ISbStoryData<StoryblokProject> | string)[];
+	component: 'ServiceProjectsExample';
+	_uid: string;
+}
+
+export interface StoryblokServiceProjectsHighlight {
+	projects: (ISbStoryData<StoryblokProject> | string)[];
+	component: 'ServiceProjectsHighlight';
+	_uid: string;
+}
+
 export interface StoryblokServices {
 	SEO: StoryblokSEO[];
 	body?: (
@@ -462,6 +485,8 @@ export interface StoryblokServices {
 		| StoryblokServiceFAQ
 		| StoryblokServiceOffers
 		| StoryblokServiceOffersComparison
+		| StoryblokServiceProjectsExample
+		| StoryblokServiceProjectsHighlight
 		| StoryblokServicesHero
 		| StoryblokServicesHighlight
 		| StoryblokServicesItem

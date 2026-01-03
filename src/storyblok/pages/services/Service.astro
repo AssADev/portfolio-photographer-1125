@@ -8,7 +8,9 @@ import type {
 	StoryblokProjectsMarquee,
 	StoryblokSteps,
 	StoryblokServiceTestimonials,
-	StoryblokServiceOffersComparison
+	StoryblokServiceOffersComparison,
+	StoryblokServiceProjectsHighlight,
+	StoryblokServiceProjectsExample
 } from '#types/component-types-sb.js';
 import ServiceHero from '#storyblok/modules/service/ServiceHero.astro';
 import ServiceOffers from '#storyblok/modules/service/ServiceOffers.astro';
@@ -17,7 +19,9 @@ import ProjectsMarquee from '#storyblok/modules/ProjectsMarquee.astro';
 import Steps from '#storyblok/modules/Steps.astro';
 import ServiceFAQ from '#storyblok/modules/service/ServiceFAQ.astro';
 import ServiceTestimonials from '#storyblok/modules/service/ServiceTestimonials.astro';
-import ServiceOffersComparison from '#storyblok/modules/service/ServiceOffersComparison.vue';
+import ServiceOffersComparison from '#storyblok/modules/service/ServiceOffersComparison.astro';
+import ServiceProjectsHighlight from '#storyblok/modules/service/ServiceProjectsHighlight.astro';
+import ServiceProjectsExample from '#storyblok/modules/service/ServiceProjectsExample.astro';
 
 type Props = { blok: StoryblokService };
 
@@ -27,9 +31,13 @@ const { faqTitle, faqDescription, faqLink, faqSections } = Astro.locals.siteConf
 
 <ServiceHero blok={blok.informations[0] as StoryblokServiceInformations} />
 
+<ServiceProjectsHighlight blok={blok.moduleProjectsHighlight[0] as StoryblokServiceProjectsHighlight} />
+
 <Steps blok={blok.moduleSteps[0] as StoryblokSteps} />
 
 <ServiceTestimonials blok={blok.moduleTestimonials[0] as StoryblokServiceTestimonials} />
+
+<ServiceProjectsExample blok={blok.moduleProjectsExample[0] as StoryblokServiceProjectsExample} />
 
 <ServiceOffers blok={blok.moduleOffers[0] as StoryblokServiceOffers} offers={blok.offers ?? []} />
 

@@ -2,6 +2,7 @@
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ref, watch } from 'vue';
 
+import Button from '#components/utils/Button.vue';
 import RichText from '#components/utils/RichText.vue';
 
 import type { StoryblokServiceFAQSectionItem } from '#types/component-types-sb.js';
@@ -27,10 +28,10 @@ watch(isToggled, () => {
 
 <template>
 	<div class="partials-service-faq-section-item" :class="{ toggle: isToggled }">
-		<button class="question-header" @click="isToggled = !isToggled">
+		<Button class="question-header" @click="isToggled = !isToggled">
 			<span>{{ blok.question }}</span>
-		</button>
-		<div class="question-answer-container">
+		</Button>
+		<div class="question-answer-container" :inert="!isToggled">
 			<div class="question-answer-wrapper">
 				<div class="question-answer">
 					<RichText :doc="blok.answer" />

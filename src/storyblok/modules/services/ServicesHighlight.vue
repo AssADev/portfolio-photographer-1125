@@ -2,9 +2,7 @@
 import type { ISbStoryData } from '@storyblok/vue';
 import { computed } from 'vue';
 
-import Icon from '#components/utils/Icon.vue';
 import Image from '#components/utils/Image.vue';
-import RichText from '#components/utils/RichText.vue';
 
 import type { StoryblokProject, StoryblokService, StoryblokServicesHighlight } from '#types/component-types-sb.js';
 
