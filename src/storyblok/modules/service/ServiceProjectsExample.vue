@@ -6,7 +6,7 @@ import { nl2br } from '#utils/nl2br.ts';
 
 import Button from '#components/utils/Button.vue';
 import Image from '#components/utils/Image.vue';
-import RichText from '#components/utils/RichText.vue';
+import LabelName from '#components/utils/LabelName.vue';
 
 import type { StoryblokProject, StoryblokServiceProjectsExample } from '#types/component-types-sb.js';
 
@@ -68,9 +68,9 @@ const projects = computed(() => {
 							/>
 						</div>
 					</div>
-					<RichText
+					<LabelName
 						v-if="projects[index].content.informations?.[0]?.name"
-						:doc="projects[index].content.informations[0].name"
+						:name="projects[index].content.informations[0].name"
 					/>
 				</Button>
 			</div>
@@ -110,19 +110,11 @@ const projects = computed(() => {
 }
 
 .project-container {
+	position: relative;
+
 	@include hover {
 		.picture-wrapper {
 			transform: scale3d(1.025, 1.025, 1);
-		}
-	}
-
-	& > :deep(.partials-rich-text) {
-		@include roobert-28;
-
-		margin-block-start: fluidSize(8px, 6px);
-
-		em {
-			@include romie-28-italic;
 		}
 	}
 }

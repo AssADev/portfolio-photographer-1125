@@ -28,54 +28,51 @@ const service = computed(() => {
 
 <template>
 	<section class="modules services-highlight">
-		<div class="container">
-			<ServicesProject
-				:url="service!.full_slug"
-				:label="service!.content.informations![0].name"
-				:cursor-label="$t('discoverService')"
-				:hover-scale="1.0125"
-			>
-				<template #image>
-					<Image
-						v-parallax="6"
-						source
-						media="tablet"
-						layout="fullWidth"
-						:aspect-ratio="1440 / 810"
-						:sizes="{ widescreen: '2560px' }"
-						:src="project!.content.informations![0].cover"
-					/>
-					<Image
-						v-parallax="6"
-						unstyled
-						layout="fullWidth"
-						:aspect-ratio="375 / 810"
-						:sizes="{ tablet: '768px' }"
-						:src="project!.content.informations![0].cover"
-					/>
-				</template>
-				<template #info>
-					<div class="informations-label">
-						<span>{{
-							numberOfProjects > 1
-								? $t('projectsNumber', { n: numberOfProjects })
-								: $t('projectNumber', { n: numberOfProjects })
-						}}</span>
-					</div>
-					<div class="informations-label">
-						<span>{{ $t('serviceStartPrice', { price: serviceStartPrice }) }}</span>
-					</div>
-				</template>
-			</ServicesProject>
-		</div>
+		<ServicesProject
+			:url="service!.full_slug"
+			:label="service!.content.informations![0].name"
+			:cursor-label="$t('discoverService')"
+			:hover-scale="1.0125"
+		>
+			<template #image>
+				<Image
+					v-parallax="6"
+					source
+					media="tablet"
+					layout="fullWidth"
+					:aspect-ratio="1440 / 810"
+					:sizes="{ widescreen: '2560px' }"
+					:src="project!.content.informations![0].cover"
+				/>
+				<Image
+					v-parallax="6"
+					unstyled
+					layout="fullWidth"
+					:aspect-ratio="375 / 810"
+					:sizes="{ tablet: '768px' }"
+					:src="project!.content.informations![0].cover"
+				/>
+			</template>
+			<template #info>
+				<div class="informations-label">
+					<span>{{
+						numberOfProjects > 1
+							? $t('projectsNumber', { n: numberOfProjects })
+							: $t('projectNumber', { n: numberOfProjects })
+					}}</span>
+				</div>
+				<div class="informations-label">
+					<span>{{ $t('serviceStartPrice', { price: serviceStartPrice }) }}</span>
+				</div>
+			</template>
+		</ServicesProject>
 	</section>
 </template>
 
 <style lang="scss" scoped>
 .services-highlight {
-	height: 100vh;
+	height: var(--full-height-without-header);
 	overflow: hidden;
-	height: calc(100vh - (var(--gutter) * 3) - var(--header-height));
 }
 
 .container {

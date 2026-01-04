@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import Icon from '#components/utils/Icon.vue';
-import RichText from '#components/utils/RichText.vue';
+import LabelName from '#components/utils/LabelName.vue';
 
 import type { StoryblokRichtext } from '#types/component-types-sb.js';
 
@@ -26,13 +25,7 @@ defineProps<{
 			</picture>
 		</d≈iv>
 		<div class="content-container">
-			<div class="name-container">
-				<div class="dot-wrapper">
-					<Icon name="square-small" />
-					<RichText :doc="label" />
-					<Icon name="square-small" />
-				</div>
-			</div>
+			<LabelName :name="label" />
 			<div v-if="$slots.info" class="informations-wrapper">
 				<slot name="info" />
 			</div>
@@ -51,24 +44,6 @@ defineProps<{
 	@include hover {
 		.picture-wrapper {
 			transform: scale3d(var(--hover-scale), var(--hover-scale), 1);
-		}
-
-		.content-container .name-container {
-			:deep(.partials-rich-text) {
-				transform: translate3d(-10px, 0, 0);
-			}
-
-			svg {
-				&:first-of-type {
-					transform: translate3d(0, -50%, 0) scale3d(0, 0, 0) rotate(90deg);
-					transition: transform 0.4s $power2Out;
-				}
-
-				&:last-of-type {
-					transform: translate3d(0, -50%, 0) scale3d(1, 1, 1);
-					transition: transform 0.4s $elasticOut 0.2s;
-				}
-			}
 		}
 	}
 
@@ -100,44 +75,11 @@ defineProps<{
 		align-items: center;
 		justify-content: space-between;
 	}
-}
 
-.name-container {
-	position: relative;
-	border-radius: 3px;
-	color: $eerieBlack;
-	background: $whiteChoco;
-	padding: 5px 8px fluidSize(7px, 6px) 18px;
-	overflow: hidden;
-	width: fit-content;
-
-	.dot-wrapper {
-		display: flex;
-
-		:deep(.partials-rich-text) {
-			@include roobert-14-uppercase;
-
-			text-wrap: nowrap;
-			transition: transform 0.4s $power2Out 0.1s;
-		}
-
-		svg {
-			position: absolute;
-
-			&:first-of-type {
-				left: 8px;
-				top: 50%;
-				transform: translate3d(0, -50%, 0);
-				transition: transform 0.4s $elasticOut 0.2s;
-			}
-
-			&:last-of-type {
-				right: 8px;
-				top: 50%;
-				transform: translate3d(0, -50%, 0) scale3d(0, 0, 0) rotate(90deg);
-				transition: transform 0.4s $power2Out;
-			}
-		}
+	& > :deep(.partials-label-name) {
+		position: relative;
+		bottom: auto;
+		left: auto;
 	}
 }
 

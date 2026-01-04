@@ -4,9 +4,8 @@ import emblaCarouselVue from 'embla-carousel-vue';
 import gsap from 'gsap';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 
-import Icon from '#components/utils/Icon.vue';
 import Image from '#components/utils/Image.vue';
-import RichText from '#components/utils/RichText.vue';
+import LabelName from '#components/utils/LabelName.vue';
 
 import type { StoryblokProject, StoryblokServiceProjectsHighlight } from '#types/component-types-sb.js';
 
@@ -187,13 +186,10 @@ onUnmounted(() => {
 							:src="project.content.informations![0].cover"
 						/>
 					</div>
-					<div v-if="project.content.informations?.[0]?.name" class="name-container">
-						<div class="dot-wrapper">
-							<Icon name="square-small" />
-							<RichText :doc="project.content.informations[0].name" />
-							<Icon name="square-small" />
-						</div>
-					</div>
+					<LabelName
+						v-if="project.content.informations?.[0]?.name"
+						:name="project.content.informations[0].name"
+					/>
 				</a>
 			</div>
 			<div class="slideshow-navigation">
@@ -214,7 +210,7 @@ onUnmounted(() => {
 <style lang="scss" scoped>
 .service-projects-highlight {
 	z-index: 1;
-	height: calc(100vh - var(--header-height) - var(--gutter) * 2);
+	height: var(--full-height-without-header);
 	overflow: hidden;
 }
 
@@ -247,24 +243,10 @@ onUnmounted(() => {
 		.picture-wrapper {
 			transform: scale3d(1.025, 1.025, 1);
 		}
+	}
 
-		.name-container {
-			:deep(.partials-rich-text) {
-				transform: translate3d(-10px, 0, 0);
-			}
-
-			svg {
-				&:first-of-type {
-					transform: translate3d(0, -50%, 0) scale3d(0, 0, 0) rotate(90deg);
-					transition: transform 0.4s $power2Out;
-				}
-
-				&:last-of-type {
-					transform: translate3d(0, -50%, 0) scale3d(1, 1, 1);
-					transition: transform 0.4s $elasticOut 0.2s;
-				}
-			}
-		}
+	& > :deep(.partials-label-name) {
+		bottom: calc(var(--gutter) * 2);
 	}
 }
 
@@ -275,47 +257,6 @@ onUnmounted(() => {
 
 	img {
 		@include img-fill;
-	}
-}
-
-.name-container {
-	position: absolute;
-	bottom: calc(var(--gutter) * 2);
-	left: var(--gutter);
-	border-radius: 3px;
-	color: $eerieBlack;
-	background: $whiteChoco;
-	padding: 5px 8px fluidSize(7px, 6px) 18px;
-	overflow: hidden;
-	width: fit-content;
-
-	.dot-wrapper {
-		display: flex;
-
-		:deep(.partials-rich-text) {
-			@include roobert-14-uppercase;
-
-			text-wrap: nowrap;
-			transition: transform 0.4s $power2Out 0.1s;
-		}
-
-		svg {
-			position: absolute;
-
-			&:first-of-type {
-				left: 8px;
-				top: 50%;
-				transform: translate3d(0, -50%, 0);
-				transition: transform 0.4s $elasticOut 0.2s;
-			}
-
-			&:last-of-type {
-				right: 8px;
-				top: 50%;
-				transform: translate3d(0, -50%, 0) scale3d(0, 0, 0) rotate(90deg);
-				transition: transform 0.4s $power2Out;
-			}
-		}
 	}
 }
 
