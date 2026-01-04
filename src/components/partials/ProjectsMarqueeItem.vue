@@ -25,7 +25,10 @@ const serviceRef = useTemplateRef('serviceRef');
 let tl: gsap.core.Timeline;
 
 const informations = computed(() => project.content.informations?.[0]);
-const service = computed(() => project.content.informations?.[0].service?.[0].content.informations?.[0]);
+const service = computed(() => {
+	const s = project.content.informations?.[0].service?.[0];
+	return s && typeof s !== 'string' ? s.content.informations?.[0] : null;
+});
 
 const aspectRatio = computed(() => {
 	const src = informations.value?.cover;
@@ -128,7 +131,7 @@ useGSAP(() => {
 		</div>
 		<div class="content-container">
 			<RichText ref="titleRef" class="title" :doc="informations.name" />
-			<RichText ref="serviceRef" class="service" :doc="service.name" />
+			<RichText ref="serviceRef" class="service" :doc="service!.name" />
 		</div>
 	</a>
 </template>

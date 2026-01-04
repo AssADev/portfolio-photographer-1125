@@ -118,7 +118,7 @@ useGSAP(() => {
 						range: 125,
 						parallax: { target: '.cover-inner-wrapper', strength: 0.05 }
 					}"
-					:href="`/${service.full_slug}`"
+					:href="service.full_slug"
 					class="service-wrapper"
 					:data-cursor-label="$t('learnMore')"
 				>

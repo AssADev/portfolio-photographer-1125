@@ -9,7 +9,10 @@ import { HOME_SLUG } from '#storyblok/helpers/specialSlugs';
 export default function (base: string, story: Partial<ISbStoryData>, currentLocale: string) {
 	const localizedSlugs: { hrefLang: string; href: URL | string }[] = [];
 	const normalizedSlug =
-		story.full_slug?.replace(new RegExp(`^${currentLocale}\/?`), '').replace(HOME_SLUG, '') || '';
+		story.full_slug
+			?.replace(/^\//, '')
+			.replace(new RegExp(`^${currentLocale}\/?`), '')
+			.replace(HOME_SLUG, '') || '';
 
 	for (const locale of locales) {
 		if (locale === currentLocale) continue;

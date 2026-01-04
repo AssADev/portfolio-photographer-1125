@@ -2,6 +2,7 @@ import { useStoryblokApi } from '@storyblok/astro';
 
 import { AppError } from '#lib/AppError.ts';
 
+import normalizeStory from './normalizeStory';
 import resolvedRelations from './resolvedRelations';
 import { pageContentTypes } from './specialSlugs';
 
@@ -19,5 +20,5 @@ export default async function fetchStory(slug: string, language: string, isPrevi
 		throw AppError.notFound(slug, language);
 	}
 
-	return data?.story;
+	return normalizeStory(data?.story);
 }

@@ -8,6 +8,7 @@ import type { StoryblokSiteConfig } from '#types/component-types-sb.js';
 
 import logger from '#lib/logger.ts';
 
+import normalizeStory from './normalizeStory';
 import processContent from './processContent';
 import resolvedRelations from './resolvedRelations';
 import { configPrefix } from './specialSlugs';
@@ -48,5 +49,5 @@ const updateSiteConfig = async (language: string, preview = false) => {
 		logger.info(`Site config for ${language} updated`);
 	}
 
-	return clone.story;
+	return normalizeStory(clone.story);
 };
