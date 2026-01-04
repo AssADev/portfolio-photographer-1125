@@ -66,7 +66,7 @@ const marqueePlaying = ref(true);
 
 <style lang="scss" scoped>
 .projects-marquee {
-	padding-block-start: fluidSize(100px, 80px);
+	padding-block-start: fluidSize(128px, 96px);
 }
 
 .circular-star-wrapper {

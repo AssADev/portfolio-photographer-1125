@@ -241,6 +241,7 @@ onUnmounted(() => {
 	min-width: 0;
 	flex: 0 0 100%;
 	overflow: hidden;
+	cursor: inherit;
 
 	@include hover {
 		.picture-wrapper {
