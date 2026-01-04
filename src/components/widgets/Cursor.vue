@@ -15,10 +15,17 @@ const state = { x: 0, y: 0, rotation: 0, maxRotation: 60 };
 const target = { x: 0, y: 0, rotation: 0, maxRotation: 60 };
 
 let firstMove = true;
+let hoverTween: gsap.core.Tween | null = null;
 let activeTarget: HTMLElement | null = null;
 let currentLabel: string | null = null;
-let hoverTween: gsap.core.Tween | null = null;
+let activeSnapTarget: HTMLElement | null = null;
 const charsRefs = ref<HTMLSpanElement[]>([]);
+
+const snapState = {
+	w: 9,
+	h: 9,
+	radius: 2
+};
 
 // Variables :
 const config = {
@@ -27,7 +34,11 @@ const config = {
 	LERP_ROTATION: 0.08,
 	ROTATION_MULTIPLIER: 2.5,
 	DEFAULT_MAX_ROTATION: 60,
-	HOVER_MAX_ROTATION: 20
+	HOVER_MAX_ROTATION: 20,
+	DEFAULT_SIZE: 9,
+	DEFAULT_RADIUS: 2,
+	SNAP_RADIUS: 3,
+	LERP_SNAP: 0.1
 };
 
 const pos = {
@@ -63,21 +74,41 @@ const handleMouseMove = (e: MouseEvent) => {
 };
 
 const tick = () => {
-	// 1. Calculate distance from current TARGET to MOUSE :
+	// 1. Snapping Logic (Pre-calc) :
+	if (activeSnapTarget) {
+		const rect = activeSnapTarget.getBoundingClientRect();
+		const padX = 8;
+		const padY = 4;
+
+		target.x = rect.left + rect.width / 2;
+		target.y = rect.top + rect.height / 2;
+		target.maxRotation = 0;
+
+		snapState.w += (rect.width + padX - snapState.w) * config.LERP_SNAP;
+		snapState.h += (rect.height + padY - snapState.h) * config.LERP_SNAP;
+		snapState.radius += (config.SNAP_RADIUS - snapState.radius) * config.LERP_SNAP;
+	} else {
+		snapState.w += (config.DEFAULT_SIZE - snapState.w) * config.LERP_SNAP;
+		snapState.h += (config.DEFAULT_SIZE - snapState.h) * config.LERP_SNAP;
+		snapState.radius += (config.DEFAULT_RADIUS - snapState.radius) * config.LERP_SNAP;
+	}
+
+	// 2. Calculate distance from current TARGET to MOUSE :
 	pos.dx = mouse.x - target.x;
 	pos.dy = mouse.y - target.y;
 	pos.dist = Math.sqrt(pos.dx * pos.dx + pos.dy * pos.dy);
 
-	// 2. Drag / Tether Logic :
+	// 3. Drag / Tether Logic :
 	//// Only update target if mouse is outside the drag radius :
-	if (pos.dist > config.DRAG_RADIUS) {
+	if (!activeSnapTarget && pos.dist > config.DRAG_RADIUS) {
 		pos.angle = Math.atan2(pos.dy, pos.dx);
+
 		//// Target becomes the point on the radius circle closest to the mouse, effectively "dragging" the cursor :
 		target.x = mouse.x - Math.cos(pos.angle) * config.DRAG_RADIUS;
 		target.y = mouse.y - Math.sin(pos.angle) * config.DRAG_RADIUS;
 	}
 
-	// 3. Lerp Position :
+	// 4. Lerp Position :
 	pos.previousX = state.x;
 	state.x += (target.x - state.x) * config.LERP_POSITION;
 	state.y += (target.y - state.y) * config.LERP_POSITION;
@@ -85,7 +116,7 @@ const tick = () => {
 	//// Lerp Max Rotation :
 	state.maxRotation += (target.maxRotation - state.maxRotation) * config.LERP_ROTATION;
 
-	// 4. Rotation Logic (Velocity-based) :
+	// 5. Rotation Logic (Velocity-based) :
 	//// Calculate actual velocity of the cursor :
 	pos.velocityX = state.x - pos.previousX;
 
@@ -96,8 +127,15 @@ const tick = () => {
 	target.rotation = Math.max(-state.maxRotation, Math.min(state.maxRotation, target.rotation));
 	state.rotation += (target.rotation - state.rotation) * config.LERP_ROTATION;
 
-	// 5. Render :
+	// 6. Render :
 	if (cursorEl.value) {
+		const square = cursorEl.value.querySelector('.cursor-square') as HTMLElement;
+		if (square) {
+			square.style.setProperty('--cursor-w', `${snapState.w}px`);
+			square.style.setProperty('--cursor-h', `${snapState.h}px`);
+			square.style.borderRadius = `${snapState.radius}px`;
+		}
+
 		pos.finalX = state.x;
 		pos.finalY = state.y;
 
@@ -129,11 +167,25 @@ const splitText = (text: string) => {
 
 // Events :
 const handleMouseOver = (e: MouseEvent) => {
-	const targetEl = (e.target as HTMLElement).closest('[data-cursor-label]') as HTMLElement;
+	const eventTarget = e.target as HTMLElement;
+	const targetEl = eventTarget.closest('[data-cursor-label]') as HTMLElement;
+	const snapEl = eventTarget.closest('[data-cursor-snap]') as HTMLElement;
+
 	if (targetEl && targetEl !== activeTarget) {
 		triggerHover(targetEl);
 	} else if (!targetEl && activeTarget) {
 		triggerOut();
+	}
+
+	if (snapEl && snapEl !== activeSnapTarget) {
+		activeSnapTarget = snapEl;
+	} else if (!snapEl && activeSnapTarget) {
+		activeSnapTarget = null;
+
+		// When leaving, position the target at the bottom-right of the mouse :
+		const releaseAngle = Math.PI / 4; // 45 degrees
+		target.x = mouse.x + Math.cos(releaseAngle) * (config.DRAG_RADIUS / 2);
+		target.y = mouse.y + Math.sin(releaseAngle) * config.DRAG_RADIUS;
 	}
 };
 
@@ -254,8 +306,8 @@ onUnmounted(() => {
 	top: 50%;
 	left: 50%;
 	transform: translate3d(-50%, -50%, 0);
-	width: var(--cursor-square-size);
-	height: var(--cursor-square-size);
+	width: var(--cursor-w, var(--cursor-square-size));
+	height: var(--cursor-h, var(--cursor-square-size));
 	background: $white;
 	border-radius: 2px;
 }

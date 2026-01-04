@@ -147,7 +147,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-	<div class="partials-label-shuffle" :class="{ 'is-disabled': !isActive }" @mouseleave="resetLetters">
+	<div class="partials-label-shuffle" @mouseleave="resetLetters" data-cursor-snap>
 		<span
 			v-for="(letter, index) in originalLetters"
 			:key="index"
@@ -167,28 +167,6 @@ onUnmounted(() => {
 	position: relative;
 	display: inline-flex;
 	transition: color 0.3s $power2InOut;
-
-	&:not(.is-disabled) {
-		@include hover {
-			color: $white;
-
-			&::before {
-				transform: scale3d(1, 1, 1);
-				transform-origin: left center;
-			}
-		}
-	}
-
-	&::before {
-		content: '';
-		position: absolute;
-		inset: -2px -4px;
-		background: $eerieBlack;
-		border-radius: 3px;
-		transform: scale3d(0, 1, 1);
-		transform-origin: right center;
-		transition: transform 0.3s $power2InOut;
-	}
 }
 
 .letter-wrapper {
