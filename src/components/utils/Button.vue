@@ -55,9 +55,10 @@ const handleClick = (e: Event) => {
 			<span>{{ text }}</span>
 			<Icon name="square-small" />
 		</div>
-		<slot v-else>
+		<slot v-else-if="text">
 			<span>{{ text }}</span>
 		</slot>
+		<slot v-else></slot>
 	</component>
 </template>
 

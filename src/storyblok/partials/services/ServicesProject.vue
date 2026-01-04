@@ -2,10 +2,12 @@
 import Icon from '#components/utils/Icon.vue';
 import RichText from '#components/utils/RichText.vue';
 
+import type { StoryblokRichtext } from '#types/component-types-sb.js';
+
 // Props :
 defineProps<{
 	url: string;
-	label: any;
+	label: StoryblokRichtext;
 	cursorLabel?: string;
 	hoverScale?: number;
 }>();
@@ -18,11 +20,11 @@ defineProps<{
 		:data-cursor-label="cursorLabel || $t('discoverProject')"
 		:style="{ '--hover-scale': hoverScale || 1.0175 }"
 	>
-		<div class="picture-wrapper">
+		<d≈iv class="picture-wrapper">
 			<picture>
 				<slot name="image" />
 			</picture>
-		</div>
+		</d≈iv>
 		<div class="content-container">
 			<div class="name-container">
 				<div class="dot-wrapper">

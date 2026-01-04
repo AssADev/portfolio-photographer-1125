@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import emblaCarouselVue from 'embla-carousel-vue';
-import { ref } from 'vue';
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 
 import { formatIndex } from '#utils/formatIndex.ts';
 import { getLinkAttributes } from '#utils/link.ts';
@@ -28,8 +27,7 @@ const currentSlide = ref(0);
 const isGrabbing = ref(false);
 
 const [emblaRef, emblaApi] = emblaCarouselVue({
-	active: (blok.testimonials?.length ?? 0) > 1 ? true : false,
-	loop: false
+	active: (blok.testimonials?.length ?? 0) > 1 ? true : false
 });
 
 // Methods :
@@ -120,7 +118,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .service-testimonials {
-	padding-block: fluidSize(100px, 80px);
+	padding-block: fluidSize(120px, 80px);
 }
 
 .container-grid {

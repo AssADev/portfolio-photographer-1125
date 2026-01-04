@@ -1,26 +1,359 @@
 <script setup lang="ts">
-import Image from '#components/utils/Image.vue';
+import type { ISbStoryData } from '@storyblok/js';
+import emblaCarouselVue from 'embla-carousel-vue';
+import gsap from 'gsap';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 
-import type { StoryblokServiceProjectsHighlight } from '#types/component-types-sb.js';
+import Icon from '#components/utils/Icon.vue';
+import Image from '#components/utils/Image.vue';
+import RichText from '#components/utils/RichText.vue';
+
+import type { StoryblokProject, StoryblokServiceProjectsHighlight } from '#types/component-types-sb.js';
+
+import vParallax from '#directives/vParallax.ts';
 
 // Props :
-defineProps<{
+const { blok } = defineProps<{
 	blok: StoryblokServiceProjectsHighlight;
 }>();
+
+// Refs :
+const currentSlide = ref(0);
+const isGrabbing = ref(false);
+const progressBars = ref<HTMLElement[]>([]);
+const currentAnim = ref<gsap.core.Tween | null>(null);
+
+const [emblaRef, emblaApi] = emblaCarouselVue({
+	active: (blok.projects?.length ?? 0) > 1 ? true : false,
+	loop: true
+});
+
+// Variables :
+const autoplayDelay = 8;
+
+// Computed :
+const projects = computed(() => {
+	return blok.projects.filter((project): project is ISbStoryData<StoryblokProject> => {
+		return typeof project !== 'string';
+	});
+});
+
+// Methods :
+const killAutoplay = () => {
+	if (currentAnim.value) {
+		currentAnim.value.kill();
+		currentAnim.value = null;
+	}
+};
+
+const startAutoplay = (index: number) => {
+	killAutoplay();
+	if (isGrabbing.value) return;
+
+	const bar = progressBars.value[index];
+	if (!bar) return;
+
+	bar.classList.add('active');
+	gsap.set(bar, { '--progress-scale': 0 });
+
+	currentAnim.value = gsap.to(bar, {
+		'--progress-scale': 1,
+		duration: autoplayDelay,
+		ease: 'none',
+		onComplete: () => {
+			if (emblaApi.value) emblaApi.value.scrollNext();
+		}
+	});
+};
+
+const updateCurrentSlide = () => {
+	if (!emblaApi.value) return;
+
+	const currentIndex = emblaApi.value.selectedScrollSnap();
+	const previousIndex = emblaApi.value.previousScrollSnap();
+
+	if (previousIndex !== currentIndex) {
+		killAutoplay();
+
+		const prevBar = progressBars.value[previousIndex];
+		if (prevBar) {
+			gsap.killTweensOf(prevBar);
+
+			const tl = gsap.timeline();
+
+			// If the progress is already at 1, skip the animation :
+			if (prevBar.style.getPropertyValue('--progress-scale') !== '1') {
+				tl.to(prevBar, {
+					'--progress-scale': 1,
+					duration: 0.4,
+					ease: 'power2.out'
+				});
+			}
+			tl.call(() => {
+				prevBar.classList.remove('active');
+			});
+			tl.to(prevBar, {
+				'--progress-scale': 0,
+				duration: 0.4,
+				ease: 'power2.in'
+			});
+		}
+	}
+
+	currentSlide.value = currentIndex;
+
+	if (isGrabbing.value) {
+		const currentBar = progressBars.value[currentIndex];
+		if (currentBar) {
+			currentBar.classList.add('active');
+			gsap.set(currentBar, { '--progress-scale': 0 });
+		}
+	} else {
+		startAutoplay(currentIndex);
+	}
+};
+
+const onPointerDown = () => {
+	isGrabbing.value = true;
+	if (currentAnim.value) currentAnim.value.pause();
+};
+
+const onPointerUp = () => {
+	isGrabbing.value = false;
+	if (currentAnim.value) {
+		currentAnim.value.play();
+	} else if (emblaApi.value) {
+		startAutoplay(emblaApi.value.selectedScrollSnap());
+	}
+};
+
+const goToSlide = (index: number) => {
+	if (!emblaApi.value || index === emblaApi.value.selectedScrollSnap()) return;
+	emblaApi.value.scrollTo(index);
+};
+
+// Attach & Detach :
+onMounted(() => {
+	if (!emblaApi.value || (projects.value?.length ?? 0) <= 1) return;
+
+	// Events :
+	emblaApi.value.on('select', updateCurrentSlide);
+	emblaApi.value.on('reInit', updateCurrentSlide);
+	emblaApi.value.on('pointerDown', onPointerDown);
+	emblaApi.value.on('pointerUp', onPointerUp);
+
+	// Init :
+	startAutoplay(emblaApi.value.selectedScrollSnap());
+});
+
+onUnmounted(() => {
+	killAutoplay();
+});
 </script>
 
 <template>
 	<section class="modules service-projects-highlight">
-		<div class="container"></div>
+		<div class="slideshow-container" ref="emblaRef">
+			<div
+				class="slideshow-wrapper"
+				:class="{
+					'can-grab': emblaApi && (projects?.length ?? 0) > 1,
+					'is-grabbing': isGrabbing
+				}"
+			>
+				<a
+					v-for="(project, index) in projects"
+					:key="index"
+					:href="project.full_slug"
+					class="project-slide"
+					:data-cursor-label="$t('discoverProject')"
+				>
+					<div class="picture-wrapper">
+						<Image
+							v-parallax="{ value: 12 }"
+							source
+							media="tablet"
+							layout="fullWidth"
+							:aspect-ratio="1440 / 810"
+							:sizes="{ widescreen: '2560px' }"
+							:src="project.content.informations![0].cover"
+						/>
+						<Image
+							v-parallax="{ value: 14 }"
+							unstyled
+							layout="fullWidth"
+							:aspect-ratio="375 / 810"
+							:sizes="{ tablet: '768px' }"
+							:src="project.content.informations![0].cover"
+						/>
+					</div>
+					<div v-if="project.content.informations?.[0]?.name" class="name-container">
+						<div class="dot-wrapper">
+							<Icon name="square-small" />
+							<RichText :doc="project.content.informations[0].name" />
+							<Icon name="square-small" />
+						</div>
+					</div>
+				</a>
+			</div>
+			<div class="slideshow-navigation">
+				<button
+					v-for="(project, index) in projects"
+					:key="index"
+					:ref="(el) => (progressBars[index] = el as HTMLElement)"
+					class="progress-bar"
+					@click="goToSlide(index)"
+					:disabled="currentSlide === index"
+					:aria-disabled="currentSlide === index"
+				/>
+			</div>
+		</div>
 	</section>
 </template>
 
 <style lang="scss" scoped>
 .service-projects-highlight {
+	z-index: 1;
+	height: calc(100vh - var(--header-height) - var(--gutter) * 2);
+	overflow: hidden;
+}
+
+.slideshow-container {
+	position: relative;
+	height: 100%;
+}
+
+.slideshow-wrapper {
+	display: flex;
+	height: 100%;
+
+	&.can-grab {
+		cursor: grab;
+	}
+
+	&.is-grabbing {
+		cursor: grabbing;
+	}
+}
+
+.project-slide {
+	position: relative;
+	min-width: 0;
+	flex: 0 0 100%;
+	overflow: hidden;
+
+	@include hover {
+		.picture-wrapper {
+			transform: scale3d(1.025, 1.025, 1);
+		}
+
+		.name-container {
+			:deep(.partials-rich-text) {
+				transform: translate3d(-10px, 0, 0);
+			}
+
+			svg {
+				&:first-of-type {
+					transform: translate3d(0, -50%, 0) scale3d(0, 0, 0) rotate(90deg);
+					transition: transform 0.4s $power2Out;
+				}
+
+				&:last-of-type {
+					transform: translate3d(0, -50%, 0) scale3d(1, 1, 1);
+					transition: transform 0.4s $elasticOut 0.2s;
+				}
+			}
+		}
+	}
+}
+
+.picture-wrapper {
+	position: absolute;
+	inset: 0;
+	transition: transform 0.6s $elasticOut;
+
+	img {
+		@include img-fill;
+	}
+}
+
+.name-container {
+	position: absolute;
+	bottom: calc(var(--gutter) * 2);
+	left: var(--gutter);
+	border-radius: 3px;
+	color: $eerieBlack;
+	background: $whiteChoco;
+	padding: 5px 8px fluidSize(7px, 6px) 18px;
+	overflow: hidden;
+	width: fit-content;
+
+	.dot-wrapper {
+		display: flex;
+
+		:deep(.partials-rich-text) {
+			@include roobert-14-uppercase;
+
+			text-wrap: nowrap;
+			transition: transform 0.4s $power2Out 0.1s;
+		}
+
+		svg {
+			position: absolute;
+
+			&:first-of-type {
+				left: 8px;
+				top: 50%;
+				transform: translate3d(0, -50%, 0);
+				transition: transform 0.4s $elasticOut 0.2s;
+			}
+
+			&:last-of-type {
+				right: 8px;
+				top: 50%;
+				transform: translate3d(0, -50%, 0) scale3d(0, 0, 0) rotate(90deg);
+				transition: transform 0.4s $power2Out;
+			}
+		}
+	}
+}
+
+.slideshow-navigation {
+	position: absolute;
+	bottom: var(--gutter);
+	left: var(--gutter);
 	display: flex;
 	align-items: center;
-	justify-content: center;
-	height: 60vh;
-	border: 1px solid red;
+	gap: $gap;
+	width: calc(100% - (var(--gutter) * 2));
+}
+
+.progress-bar {
+	@include a11y-focus(-10px);
+
+	position: relative;
+	width: 100%;
+	height: 2px;
+	background: rgba($white, 0.4);
+	transition: background 0.4s $power2Out;
+
+	@include hover {
+		background: rgba($whiteChoco, 0.65);
+	}
+
+	&::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: $white;
+		transform-origin: right center;
+		transform: scale3d(var(--progress-scale, 0), 1, 1);
+	}
+
+	&.active {
+		&::after {
+			transform-origin: left center;
+		}
+	}
 }
 </style>

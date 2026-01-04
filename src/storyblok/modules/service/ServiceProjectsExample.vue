@@ -13,7 +13,7 @@ import type { StoryblokProject, StoryblokServiceProjectsExample } from '#types/c
 import vParallax from '#directives/vParallax.ts';
 
 // Props :
-const props = defineProps<{
+const { blok } = defineProps<{
 	blok: StoryblokServiceProjectsExample;
 }>();
 
@@ -33,7 +33,7 @@ const PROJECT_LAYOUTS = [
 
 // Computed :
 const projects = computed(() => {
-	return props.blok.projects.filter((project): project is ISbStoryData<StoryblokProject> => {
+	return blok.projects.filter((project): project is ISbStoryData<StoryblokProject> => {
 		return typeof project !== 'string';
 	});
 });
