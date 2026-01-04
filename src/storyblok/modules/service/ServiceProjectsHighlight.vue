@@ -2,7 +2,8 @@
 import type { ISbStoryData } from '@storyblok/js';
 import emblaCarouselVue from 'embla-carousel-vue';
 import gsap from 'gsap';
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
 
 import Image from '#components/utils/Image.vue';
 import LabelName from '#components/utils/LabelName.vue';
@@ -17,6 +18,9 @@ const { blok } = defineProps<{
 }>();
 
 // Refs :
+const sectionRef = useTemplateRef<HTMLElement | null>('sectionRef');
+
+const isVisible = ref(false);
 const currentSlide = ref(0);
 const isGrabbing = ref(false);
 const progressBars = ref<HTMLElement[]>([]);
@@ -59,6 +63,7 @@ const startAutoplay = (index: number) => {
 		'--progress-scale': 1,
 		duration: autoplayDelay,
 		ease: 'none',
+		paused: !isVisible.value,
 		onComplete: () => {
 			if (emblaApi.value) emblaApi.value.scrollNext();
 		}
@@ -120,7 +125,7 @@ const onPointerDown = () => {
 const onPointerUp = () => {
 	isGrabbing.value = false;
 	if (currentAnim.value) {
-		currentAnim.value.play();
+		if (isVisible.value) currentAnim.value.play();
 	} else if (emblaApi.value) {
 		startAutoplay(emblaApi.value.selectedScrollSnap());
 	}
@@ -142,7 +147,21 @@ onMounted(() => {
 	emblaApi.value.on('pointerUp', onPointerUp);
 
 	// Init :
-	startAutoplay(emblaApi.value.selectedScrollSnap());
+	ScrollTrigger.create({
+		trigger: sectionRef.value,
+		onToggle: (self) => {
+			isVisible.value = self.isActive;
+			if (self.isActive) {
+				if (currentAnim.value) {
+					currentAnim.value.play();
+				} else if (emblaApi.value) {
+					startAutoplay(emblaApi.value.selectedScrollSnap());
+				}
+			} else {
+				currentAnim.value?.pause();
+			}
+		}
+	});
 });
 
 onUnmounted(() => {
@@ -151,7 +170,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-	<section class="modules service-projects-highlight">
+	<section class="modules service-projects-highlight" ref="sectionRef">
 		<div class="slideshow-container" ref="emblaRef">
 			<div
 				class="slideshow-wrapper"
