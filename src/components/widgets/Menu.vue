@@ -55,26 +55,10 @@ const orderedLocales = computed(() => {
 const findActiveMenuItem = (menuItems: any[], currentPath: string) => {
 	const normalizedCurrentPath = currentPath.replace(/\/$/, '');
 
-	let bestMatch = null;
-	let bestMatchLength = -1;
-
-	for (const item of menuItems) {
+	return menuItems.find((item) => {
 		const normalizedMenuLink = item.link.replace(/\/$/, '');
-
-		// Exact match (highest priority) :
-		if (normalizedMenuLink === normalizedCurrentPath) return item;
-
-		// Parent folder match (check if current path starts with menu link + slash) :
-		if (normalizedMenuLink && normalizedCurrentPath.startsWith(normalizedMenuLink + '/')) {
-			// Keep track of the longest matching path (most specific) :
-			if (normalizedMenuLink.length > bestMatchLength) {
-				bestMatch = item;
-				bestMatchLength = normalizedMenuLink.length;
-			}
-		}
-	}
-
-	return bestMatch;
+		return normalizedMenuLink === normalizedCurrentPath;
+	});
 };
 </script>
 

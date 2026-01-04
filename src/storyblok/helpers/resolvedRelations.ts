@@ -4,5 +4,7 @@ export default [
 	'ServicesHighlight.project',
 	'ServicesHighlight.service',
 	'ServicesItem.service',
-	'ServicesItem.projects'
+	'ServicesItem.projects',
+	'ServiceProjectsHighlight.projects',
+	'ServiceProjectsExample.projects'
 ];

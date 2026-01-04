@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import Image from '#components/utils/Image.vue';
+
 import type { StoryblokServiceProjectsHighlight } from '#types/component-types-sb.js';
 
 // Props :
