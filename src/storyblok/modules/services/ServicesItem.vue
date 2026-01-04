@@ -177,7 +177,7 @@ const serviceInformations = computed(() => {
 <style lang="scss" scoped>
 .services-item {
 	z-index: 1;
-	padding-block-end: fluidSize(100px, 80px);
+	padding-block-end: fluidSize(128px, 96px);
 
 	&.is-reversed {
 		.project-wrapper-primary {
