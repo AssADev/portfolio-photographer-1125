@@ -245,6 +245,17 @@ onUnmounted(() => {
 		}
 	}
 
+	&::before {
+		content: '';
+		position: absolute;
+		z-index: 1;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		height: fluidSize(125px, 100px);
+		background: linear-gradient(180deg, rgba($black, 0), rgba($black, 0.4));
+	}
+
 	& > :deep(.partials-label-name) {
 		bottom: calc(var(--gutter) * 2);
 	}
