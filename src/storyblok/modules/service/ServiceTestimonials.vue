@@ -118,7 +118,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .service-testimonials {
-	padding-block: fluidSize(120px, 80px);
+	padding-block: fluidSize(128px, 96px);
 }
 
 .container-grid {
