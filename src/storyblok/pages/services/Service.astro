@@ -22,12 +22,20 @@ import ServiceTestimonials from '#storyblok/modules/service/ServiceTestimonials.
 import ServiceOffersComparison from '#storyblok/modules/service/ServiceOffersComparison.astro';
 import ServiceProjectsHighlight from '#storyblok/modules/service/ServiceProjectsHighlight.astro';
 import ServiceProjectsExample from '#storyblok/modules/service/ServiceProjectsExample.astro';
+import ServiceBreadcrumb from '#storyblok/partials/service/ServiceBreadcrumb.vue';
 
 type Props = { blok: StoryblokService };
 
 const { blok } = Astro.props;
 const { faqTitle, faqDescription, faqLink, faqSections } = Astro.locals.siteConfig;
 ---
+
+<ServiceBreadcrumb
+	client:load
+	hasTestimonials={!!blok.moduleTestimonials?.length}
+	hasOffers={!!blok.moduleOffers?.length}
+	hasFAQ={!!blok.moduleFAQ?.length}
+/>
 
 {blok.informations?.length && <ServiceHero blok={blok.informations[0] as StoryblokServiceInformations} />}
 

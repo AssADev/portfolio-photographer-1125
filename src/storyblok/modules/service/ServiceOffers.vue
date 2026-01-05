@@ -20,7 +20,7 @@ const resolvers = getRichTextResolvers('h2');
 </script>
 
 <template>
-	<section class="modules service-offers">
+	<section id="service-offers" class="modules service-offers">
 		<div class="container">
 			<div class="title-wrapper">
 				<RichText :doc="blok.title" :resolvers="resolvers" />

@@ -9,6 +9,7 @@ $gutterDesktop: 20px;
 	--ctn-w: clamp(200px, calc(100vw - var(--gutter) * 2), var(--max-ctn-w));
 	--border-radius: 4px;
 	--header-height: 40px;
+	--header-padding-inline: 14px;
 	--full-height-without-header: calc(100vh - (var(--gutter) * 2) - var(--header-height));
 
 	@include mq(desktop) {

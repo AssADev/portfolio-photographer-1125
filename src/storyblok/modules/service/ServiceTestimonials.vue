@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import emblaCarouselVue from 'embla-carousel-vue';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 import { formatIndex } from '#utils/formatIndex.ts';
 import { getLinkAttributes } from '#utils/link.ts';
@@ -29,6 +29,9 @@ const isGrabbing = ref(false);
 const [emblaRef, emblaApi] = emblaCarouselVue({
 	active: (blok.testimonials?.length ?? 0) > 1 ? true : false
 });
+
+// Computed :
+const testimonials = computed(() => blok.testimonials);
 
 // Methods :
 const updateCurrentSlide = () => {
@@ -63,7 +66,7 @@ onMounted(() => {
 </script>
 
 <template>
-	<section v-if="blok.testimonials?.length" class="modules service-testimonials">
+	<section v-if="testimonials?.length" id="service-testimonials" class="modules service-testimonials">
 		<div class="container-grid">
 			<h2 class="col-start-1 col-end-13 col-start-tb-1 col-end-tb-4">{{ blok.title }}</h2>
 			<div
@@ -85,12 +88,12 @@ onMounted(() => {
 					<div
 						class="slideshow-wrapper"
 						:class="{
-							'can-grab': emblaApi && (blok.testimonials?.length ?? 0) > 1,
+							'can-grab': emblaApi && testimonials.length > 1,
 							'is-grabbing': isGrabbing
 						}"
 					>
 						<ServiceTestimonialsItem
-							v-for="testimonial in blok.testimonials"
+							v-for="testimonial in testimonials"
 							:key="testimonial._uid"
 							:blok="testimonial"
 						/>
@@ -118,7 +121,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .service-testimonials {
-	padding-block: fluidSize(128px, 96px);
+	padding-block: fluidSize(112px, 72px) fluidSize(128px, 96px);
 }
 
 .container-grid {
@@ -143,9 +146,6 @@ onMounted(() => {
 
 .testimonials-container {
 	margin-block-start: fluidSize(120px, 80px);
-}
-
-.slideshow-container {
 }
 
 .slideshow-wrapper {

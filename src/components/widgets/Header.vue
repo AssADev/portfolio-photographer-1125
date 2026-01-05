@@ -88,8 +88,6 @@ useEventListener('scroll', () => {
 
 <style scoped lang="scss">
 #header {
-	--padding-inline: 14px;
-
 	position: fixed;
 	z-index: 20;
 	bottom: 0;
@@ -120,7 +118,7 @@ button {
 
 .identity-cta {
 	background: $eerieBlack;
-	padding-inline: var(--padding-inline);
+	padding-inline: var(--header-padding-inline);
 	border-radius: var(--border-radius);
 
 	span {
@@ -138,8 +136,8 @@ button {
 
 	.contact-cta {
 		background: $whiteChoco;
-		padding-inline: var(--padding-inline);
 		border-radius: var(--border-radius);
+		padding-inline: var(--header-padding-inline);
 		padding-inline-end: 54px;
 
 		span {

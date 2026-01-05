@@ -29,35 +29,41 @@ const resolvers = getRichTextResolvers('h2');
 </script>
 
 <template>
-	<section class="modules service-faq">
-		<div class="container-grid">
-			<div
-				class="title-wrapper col-start-1 col-end-13 col-start-tb-1 col-end-tb-6 col-start-dk-1 col-end-dk-10 col-start-lg-1 col-end-lg-8"
-			>
-				<RichText :doc="title" :resolvers="resolvers" />
+	<section id="service-faq" class="modules service-faq">
+		<div class="inner-container">
+			<div class="container-grid">
+				<div
+					class="title-wrapper col-start-1 col-end-13 col-start-tb-1 col-end-tb-6 col-start-dk-1 col-end-dk-10 col-start-lg-1 col-end-lg-8"
+				>
+					<RichText :doc="title" :resolvers="resolvers" />
+				</div>
+				<div
+					class="description-wrapper col-start-1 col-end-13 col-start-tb-10 col-end-tb-16 col-start-dk-22 col-end-dk-32 col-start-lg-23 col-end-lg-32 col-start-xxlg-24 col-end-xxlg-31"
+				>
+					<p v-html="nl2br(description)" />
+					<Button
+						v-if="link?.[0]"
+						v-bind="getLinkAttributes(link[0])"
+						theme="dot-white"
+						:text="link[0].label"
+						:link="link[0].link"
+					/>
+				</div>
 			</div>
-			<div
-				class="description-wrapper col-start-1 col-end-13 col-start-tb-10 col-end-tb-16 col-start-dk-22 col-end-dk-32 col-start-lg-23 col-end-lg-32 col-start-xxlg-24 col-end-xxlg-31"
-			>
-				<p v-html="nl2br(description)" />
-				<Button
-					v-if="link?.[0]"
-					v-bind="getLinkAttributes(link[0])"
-					theme="dot-white"
-					:text="link[0].label"
-					:link="link[0].link"
-				/>
+			<div class="sections-container">
+				<ServiceFAQSection v-for="section in blok.sections" :key="section._uid" :blok="section" />
+				<ServiceFAQSection v-for="section in sections" :key="section._uid" :blok="section" />
 			</div>
-		</div>
-		<div class="sections-container">
-			<ServiceFAQSection v-for="section in blok.sections" :key="section._uid" :blok="section" />
-			<ServiceFAQSection v-for="section in sections" :key="section._uid" :blok="section" />
 		</div>
 	</section>
 </template>
 
 <style lang="scss" scoped>
 .service-faq {
+	padding-block-start: fluidSize(20px, 12px);
+}
+
+.inner-container {
 	color: $white;
 	background: $smokyBlack;
 	padding-block-start: fluidSize(60px, 48px);
