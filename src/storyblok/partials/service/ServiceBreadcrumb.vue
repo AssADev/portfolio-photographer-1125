@@ -44,7 +44,7 @@ const getTargetId = (id: string) => `${PREFIX}${id}`;
 
 const scrollTo = (id: string) => {
 	if (!lenis.value) return;
-	lenis.value.scrollTo(`#${getTargetId(id)}`, { offset: -60 });
+	lenis.value.scrollTo(`#${getTargetId(id)}`, { offset: -60, duration: 1.25 });
 };
 
 // ScrollTrigger :
