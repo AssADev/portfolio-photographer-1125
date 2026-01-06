@@ -28,3 +28,22 @@ export const formatDateForSubmission = (dateString: string, includeTime: boolean
 
 	return formatted;
 };
+
+/**
+ * Format a date string to "Month Year" format
+ * @param dateString - ISO date string (YYYY-MM-DD or YYYY-MM-DDTHH:mm)
+ * @param locale - The locale to use (e.g., 'fr', 'en')
+ * @returns Formatted date string (e.g., "Décembre 2025" or "December 2025")
+ */
+export const formatDateMonthYear = (dateString: string, locale: string = 'fr'): string => {
+	if (!dateString) return dateString;
+
+	const date = new Date(dateString);
+	if (isNaN(date.getTime())) return dateString;
+
+	const month = date.toLocaleDateString(locale, { month: 'long' });
+	const year = date.getFullYear();
+
+	const formattedMonth = month.charAt(0).toUpperCase() + month.slice(1);
+	return `${formattedMonth} ${year}`;
+};

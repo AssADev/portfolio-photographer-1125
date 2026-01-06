@@ -1,15 +1,39 @@
 ---
-import type { StoryblokProject } from '#types/component-types-sb.js';
+import type { StoryblokProject, StoryblokProjectInformations } from '#types/component-types-sb.js';
 import type { SbBlokData } from '@storyblok/astro';
 import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro';
+import ProjectHero from '#storyblok/modules/project/ProjectHero.astro';
 
 type Props = { blok: StoryblokProject };
 
 const { blok } = Astro.props;
 ---
 
-{
-	blok.body?.map((blok, i) => {
-		return <StoryblokComponent blok={blok as SbBlokData} id={blok._uid} data-component-name={blok.component} />;
-	})
-}
+{blok.informations?.length && <ProjectHero blok={blok.informations[0] as StoryblokProjectInformations} />}
+
+<div class="modules-container">
+	{
+		blok.body?.map((blok, i) => {
+			return <StoryblokComponent blok={blok as SbBlokData} id={blok._uid} data-component-name={blok.component} />;
+		})
+	}
+</div>
+
+<style lang="scss" scoped>
+	.modules-container {
+		// @include pseudo-gradient('before', 'top', 'white-white-transparent', 1, fluidSize(540px, 320px));
+		@include pseudo-gradient('before', 'top', 'white-white-transparent', 1, fluidSize(240px, 160px));
+
+		position: relative;
+		background: $white;
+		// margin-block-start: calc(100vh + fluidSize(540px, 320px));
+		// padding-block-start: fluidSize(240px, 160px);
+
+		margin-block-start: calc(100vh + fluidSize(240px, 160px));
+		padding-block-start: fluidSize(240px, 160px);
+
+		&::before {
+			transform: translate3d(0, calc(-100% + 2px), 0);
+		}
+	}
+</style>
