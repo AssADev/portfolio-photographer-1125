@@ -272,6 +272,9 @@ onMounted(() => {
 	}
 
 	a {
+		@include a11y-focus(-6px);
+
+		position: relative;
 		pointer-events: auto;
 	}
 

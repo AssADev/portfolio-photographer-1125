@@ -164,6 +164,8 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 .partials-label-shuffle {
+	@include a11y-focus;
+
 	position: relative;
 	display: inline-flex;
 	transition: color 0.3s $power2InOut;

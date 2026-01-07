@@ -345,6 +345,21 @@ export interface StoryblokProjectInformations {
 	_uid: string;
 }
 
+export interface StoryblokProjectItemPicture {
+	picture: StoryblokAsset;
+	component: 'ProjectItemPicture';
+	_uid: string;
+}
+
+export interface StoryblokProjectItemVideo {
+	link_tiktok?: Exclude<StoryblokMultilink, { linktype?: 'email' } | { linktype?: 'asset' }>;
+	link_instagram?: Exclude<StoryblokMultilink, { linktype?: 'email' } | { linktype?: 'asset' }>;
+	thumbnail: StoryblokAsset;
+	video: StoryblokAsset;
+	component: 'ProjectItemVideo';
+	_uid: string;
+}
+
 export interface StoryblokProjectsMarquee {
 	title: StoryblokRichtext;
 	description?: string;
