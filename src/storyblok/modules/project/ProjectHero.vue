@@ -133,6 +133,10 @@ onMounted(() => {
 .inner-container {
 	height: 100%;
 	overflow: hidden;
+
+	& > .container {
+		min-height: fluidSize(810px, 780px);
+	}
 }
 
 .circular-star-wrapper {
