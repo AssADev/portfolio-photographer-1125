@@ -9,10 +9,12 @@ import Button from '#components/utils/Button.vue';
 import type { StoryblokLabelLink, StoryblokProjectItemVideo } from '#types/component-types-sb.js';
 
 // Props :
-defineProps<{
+const props = defineProps<{
 	blok: StoryblokProjectItemVideo;
 	socials: StoryblokLabelLink[];
 }>();
+
+const { blok, socials } = props;
 
 // Refs :
 const videoRef = useTemplateRef<HTMLVideoElement>('videoRef');
@@ -50,6 +52,12 @@ const createObserver = () => {
 	observer.observe(videoRef.value);
 };
 
+const getSocialLink = (label?: string) => {
+	if (!label) return null;
+	const key = `link_${label.toLowerCase()}` as keyof typeof blok;
+	return blok[key] as any;
+};
+
 // Attach :
 onMounted(() => {
 	createObserver();
@@ -80,11 +88,13 @@ onUnmounted(() => {
 			></video>
 		</Button>
 		<ul v-if="socials.length" class="socials-container">
-			<li v-for="social in socials" :key="social._uid">
-				<a :href="social.link.url" target="_blank" rel="noopener noreferrer">
-					<LabelShuffle :label="social.label!" />
-				</a>
-			</li>
+			<template v-for="social in socials" :key="social._uid">
+				<li v-if="social.label && getSocialLink(social.label)">
+					<a v-bind="getLinkAttributes(getSocialLink(social.label))">
+						<LabelShuffle :label="social.label" />
+					</a>
+				</li>
+			</template>
 		</ul>
 	</div>
 </template>
@@ -95,10 +105,9 @@ onUnmounted(() => {
 }
 
 .video-container {
-	width: 100%;
+	display: block;
 	aspect-ratio: 350 / 620;
 	overflow: hidden;
-	border: 1px solid rgba($eerieBlack, 0.1);
 }
 
 video {
@@ -111,7 +120,8 @@ video {
 	right: calc(fluidSize(6px, 4px) * -1);
 	display: flex;
 	flex-direction: column;
-	gap: fluidSize(12px, 10px);
+	gap: fluidSize(8px, 6px);
+	transform: translate3d(100%, 0, 0);
 
 	li {
 		display: flex;

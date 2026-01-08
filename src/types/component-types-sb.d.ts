@@ -14,6 +14,7 @@ export interface StoryblokBiography {
 		| StoryblokLinksHero
 		| StoryblokLinksMaterials
 		| StoryblokOtherServices
+		| StoryblokProjectLayout
 		| StoryblokProjectsMarquee
 		| StoryblokProjectTestimonial
 		| StoryblokQuotes
@@ -127,6 +128,7 @@ export interface StoryblokHome {
 		| StoryblokLinksHero
 		| StoryblokLinksMaterials
 		| StoryblokOtherServices
+		| StoryblokProjectLayout
 		| StoryblokProjectsMarquee
 		| StoryblokProjectTestimonial
 		| StoryblokQuotes
@@ -223,6 +225,7 @@ export interface StoryblokLinks {
 		| StoryblokLinksHero
 		| StoryblokLinksMaterials
 		| StoryblokOtherServices
+		| StoryblokProjectLayout
 		| StoryblokProjectsMarquee
 		| StoryblokProjectTestimonial
 		| StoryblokQuotes
@@ -316,6 +319,7 @@ export interface StoryblokProject {
 		| StoryblokLinksHero
 		| StoryblokLinksMaterials
 		| StoryblokOtherServices
+		| StoryblokProjectLayout
 		| StoryblokProjectsMarquee
 		| StoryblokProjectTestimonial
 		| StoryblokQuotes
@@ -357,6 +361,13 @@ export interface StoryblokProjectItemVideo {
 	thumbnail: StoryblokAsset;
 	video: StoryblokAsset;
 	component: 'ProjectItemVideo';
+	_uid: string;
+}
+
+export interface StoryblokProjectLayout {
+	items?: (StoryblokProjectItemPicture | StoryblokProjectItemVideo)[];
+	isReversed?: boolean;
+	component: 'ProjectLayout';
 	_uid: string;
 }
 
@@ -494,6 +505,7 @@ export interface StoryblokServices {
 		| StoryblokLinksHero
 		| StoryblokLinksMaterials
 		| StoryblokOtherServices
+		| StoryblokProjectLayout
 		| StoryblokProjectsMarquee
 		| StoryblokProjectTestimonial
 		| StoryblokQuotes

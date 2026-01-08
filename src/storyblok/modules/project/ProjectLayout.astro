@@ -1,0 +1,19 @@
+---
+import { storyblokEditable } from '#storyblok/helpers/storyblokEditable.ts';
+import ProjectLayoutVue from '#storyblok/modules/project/ProjectLayout.vue';
+import type { StoryblokProjectLayout } from '#types/component-types-sb.js';
+
+type Props = {
+	blok: StoryblokProjectLayout;
+};
+
+const { blok } = Astro.props;
+const { socials } = Astro.locals.siteConfig;
+---
+
+<ProjectLayoutVue
+	{...storyblokEditable(blok, Astro.locals.isPreviewMode)}
+	{...Astro.props}
+	socials={socials}
+	client:visible
+/>

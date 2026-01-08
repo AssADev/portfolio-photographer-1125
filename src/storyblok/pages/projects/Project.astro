@@ -21,14 +21,10 @@ const { blok } = Astro.props;
 
 <style lang="scss" scoped>
 	.modules-container {
-		// @include pseudo-gradient('before', 'top', 'white-white-transparent', 1, fluidSize(540px, 320px));
 		@include pseudo-gradient('before', 'top', 'white-white-transparent', 1, fluidSize(240px, 160px));
 
 		position: relative;
 		background: $white;
-		// margin-block-start: calc(100vh + fluidSize(540px, 320px));
-		// padding-block-start: fluidSize(240px, 160px);
-
 		margin-block-start: calc(100vh + fluidSize(240px, 160px));
 		padding-block-start: fluidSize(240px, 160px);
 

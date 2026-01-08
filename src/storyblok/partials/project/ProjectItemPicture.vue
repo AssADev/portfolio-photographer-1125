@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import Button from '#components/utils/Button.vue';
+import Image from '#components/utils/Image.vue';
+
 import type { StoryblokProjectItemPicture } from '#types/component-types-sb.js';
 
 // Props :
@@ -7,14 +10,13 @@ defineProps<{
 }>();
 </script>
 
-<template><div>ProjectItemPicture</div></template>
+<template>
+	<Button class="partials-project-item-picture" :data-cursor-label="$t('scaleUp')">
+		<Image :src="blok.picture" object-fit="contain" />
+	</Button>
+</template>
 
 <style lang="scss" scoped>
-div {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	height: 60vh;
-	border: 1px solid red;
+.partials-project-item-picture {
 }
 </style>
