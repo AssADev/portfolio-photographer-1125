@@ -365,7 +365,19 @@ export interface StoryblokProjectItemVideo {
 }
 
 export interface StoryblokProjectLayout {
-	items?: (StoryblokProjectItemPicture | StoryblokProjectItemVideo)[];
+	items: (StoryblokProjectItemPicture | StoryblokProjectItemVideo)[];
+	layout:
+		| ''
+		| 'layout-one'
+		| 'layout-two'
+		| 'layout-three'
+		| 'layout-four'
+		| 'layout-five'
+		| 'layout-six'
+		| 'layout-seven'
+		| 'layout-eight'
+		| 'layout-nine'
+		| 'layout-ten';
 	isReversed?: boolean;
 	component: 'ProjectLayout';
 	_uid: string;

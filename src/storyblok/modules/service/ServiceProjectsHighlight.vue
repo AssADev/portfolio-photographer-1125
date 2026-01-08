@@ -18,7 +18,7 @@ const { blok } = defineProps<{
 }>();
 
 // Refs :
-const sectionRef = useTemplateRef<HTMLElement | null>('sectionRef');
+const sectionRef = useTemplateRef('sectionRef');
 
 const isVisible = ref(false);
 const currentSlide = ref(0);

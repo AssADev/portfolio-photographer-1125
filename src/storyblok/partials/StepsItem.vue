@@ -10,12 +10,11 @@ import type { StoryblokStepsItem } from '#types/component-types-sb.js';
 defineProps<{
 	blok: StoryblokStepsItem;
 	index: number;
-	layout: string[];
 }>();
 </script>
 
 <template>
-	<div class="steps-item-wrapper" :class="layout">
+	<div class="steps-item-wrapper">
 		<div class="title-wrapper">
 			<span class="number">/{{ formatIndex(index + 1) }}</span>
 			<h2 v-if="blok.title">{{ blok.title }}</h2>

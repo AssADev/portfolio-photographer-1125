@@ -21,10 +21,10 @@ defineProps<{
 }>();
 
 // Refs :
-const sectionRef = useTemplateRef<HTMLElement>('sectionRef');
-const containerRef = useTemplateRef<HTMLElement>('containerRef');
-const titleRef = useTemplateRef<HTMLElement>('titleRef');
-const servicesContainerRef = useTemplateRef<HTMLElement>('servicesContainerRef');
+const sectionRef = useTemplateRef('sectionRef');
+const containerRef = useTemplateRef('containerRef');
+const titleRef = useTemplateRef('titleRef');
+const servicesContainerRef = useTemplateRef('servicesContainerRef');
 
 // Animation (Horizontal scroll) :
 useGSAP(() => {

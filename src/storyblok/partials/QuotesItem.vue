@@ -6,12 +6,11 @@ import type { StoryblokQuotesItem } from '#types/component-types-sb.js';
 // Props :
 defineProps<{
 	blok: StoryblokQuotesItem;
-	layout: string[];
 }>();
 </script>
 
 <template>
-	<div class="quotes-item-wrapper" :class="layout">
+	<div class="quotes-item-wrapper">
 		<RichText :doc="blok.content" />
 	</div>
 </template>

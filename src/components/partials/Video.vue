@@ -15,7 +15,7 @@ defineProps<{
 }>();
 
 // Refs :
-const videoRef = useTemplateRef<HTMLVideoElement>('videoRef');
+const videoRef = useTemplateRef('videoRef');
 
 // Variables :
 let observer: IntersectionObserver | null = null;

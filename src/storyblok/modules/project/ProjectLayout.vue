@@ -1,35 +1,34 @@
 <script setup lang="ts">
-import StoryblokComponent from '#components/utils/StoryblokComponent.vue';
+import { computed } from 'vue';
+
+import { PROJECT_LAYOUT_CONFIGS } from '#utils/projectLayouts.ts';
 
 import type { StoryblokLabelLink, StoryblokProjectLayout } from '#types/component-types-sb.js';
 
-import ProjectItemPicture from '#storyblok/partials/project/ProjectItemPicture.vue';
-import ProjectItemVideo from '#storyblok/partials/project/ProjectItemVideo.vue';
+import ProjectLayoutBase from '#storyblok/partials/project/layouts/ProjectLayoutBase.vue';
 
 // Props :
-defineProps<{
+const props = defineProps<{
 	blok: StoryblokProjectLayout;
 	socials: StoryblokLabelLink[];
 }>();
 
-// Components :
-const ItemsComponents = {
-	ProjectItemPicture,
-	ProjectItemVideo
-};
+// Config :
+const currentConfig = computed(() => {
+	const layout = props.blok.layout;
+	return layout ? PROJECT_LAYOUT_CONFIGS[layout] : null;
+});
 </script>
 
 <template>
 	<section class="modules project-layout">
-		<div class="container-grid">
-			<StoryblokComponent
-				v-for="material in blok.items"
-				:key="material._uid"
-				:components="ItemsComponents"
-				:blok="material"
-				:socials="socials"
-			/>
-		</div>
+		<ProjectLayoutBase
+			v-if="currentConfig"
+			:blok="blok"
+			:socials="socials"
+			:layouts="currentConfig"
+			:layout-name="blok.layout"
+		/>
 	</section>
 </template>
 

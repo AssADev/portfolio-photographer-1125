@@ -63,11 +63,10 @@ const pictures = computed(() => {
 onMounted(() => {
 	ScrollTrigger.create({
 		trigger: sectionRef.value,
-		markers: true,
 		start: 'bottom bottom',
 		end: 'bottom top',
 		onUpdate: (self) => {
-			sectionRef.value.style.opacity = 1 - self.progress;
+			sectionRef.value!.style.opacity = Number(1 - self.progress).toFixed(2);
 		}
 	});
 });

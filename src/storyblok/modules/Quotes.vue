@@ -65,7 +65,7 @@ const layouts = [
 				v-for="(quote, index) in blok.quotes"
 				:key="quote._uid"
 				:blok="quote"
-				:layout="layouts[index % layouts.length]"
+				:class="layouts[index % layouts.length]"
 			/>
 		</div>
 	</section>

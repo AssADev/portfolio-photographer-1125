@@ -68,7 +68,7 @@ const layouts = [
 				:key="step._uid"
 				:blok="step"
 				:index="index"
-				:layout="layouts[index % layouts.length]"
+				:class="layouts[index % layouts.length]"
 			/>
 		</div>
 	</section>
