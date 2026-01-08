@@ -8,16 +8,13 @@ import type { StoryblokLabelLink, StoryblokProjectLayout } from '#types/componen
 import ProjectLayoutBase from '#storyblok/partials/project/layouts/ProjectLayoutBase.vue';
 
 // Props :
-const props = defineProps<{
+const { blok } = defineProps<{
 	blok: StoryblokProjectLayout;
 	socials: StoryblokLabelLink[];
 }>();
 
 // Config :
-const currentConfig = computed(() => {
-	const layout = props.blok.layout;
-	return layout ? PROJECT_LAYOUT_CONFIGS[layout] : null;
-});
+const currentConfig = computed(() => PROJECT_LAYOUT_CONFIGS[blok.layout]);
 </script>
 
 <template>
