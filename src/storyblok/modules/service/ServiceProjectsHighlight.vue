@@ -193,7 +193,7 @@ onUnmounted(() => {
 							media="tablet"
 							layout="fullWidth"
 							:aspect-ratio="1440 / 810"
-							:sizes="{ widescreen: '2560px' }"
+							:sizes="[{ widescreen: '2560px' }, '100vw']"
 							:src="project.content.informations![0].cover"
 						/>
 						<Image
@@ -201,7 +201,7 @@ onUnmounted(() => {
 							unstyled
 							layout="fullWidth"
 							:aspect-ratio="375 / 810"
-							:sizes="{ tablet: '768px' }"
+							:sizes="[{ tablet: '768px' }, '100vw']"
 							:src="project.content.informations![0].cover"
 						/>
 					</div>

@@ -6,7 +6,6 @@ html {
 	font-family: Roobert, sans-serif;
 	font-weight: 500;
 	scrollbar-width: thin;
-	background: $white;
 
 	&.no-scrollbar {
 		@include hide-scrollbar;

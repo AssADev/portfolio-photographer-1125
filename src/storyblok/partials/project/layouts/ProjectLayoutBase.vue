@@ -27,11 +27,9 @@ const limitedItems = computed(() => blok.items.slice(0, layouts.length));
 </script>
 
 <template>
-	<div :class="['partials-project-layout-base', layoutName]">
-		<div class="container-grid">
+	<div :class="['partials-project-layout-base', layoutName, { 'is-reversed': blok.isReversed }]">
+		<div v-for="(item, index) in limitedItems" :key="item._uid" class="container-grid">
 			<StoryblokComponent
-				v-for="(item, index) in limitedItems"
-				:key="item._uid"
 				:components="ItemsComponents"
 				:blok="item"
 				:socials="socials"
@@ -43,12 +41,18 @@ const limitedItems = computed(() => blok.items.slice(0, layouts.length));
 
 <style lang="scss" scoped>
 .partials-project-layout-base {
-	padding-block: fluidSize(75px, 50px);
+	&.is-reversed {
+		.container-grid {
+			direction: rtl;
 
-	&.layout-one {
+			> :deep(*) {
+				direction: ltr;
+			}
+		}
 	}
+}
 
-	&.layout-two {
-	}
+.container-grid {
+	margin-block: fluidSize(200px, 150px);
 }
 </style>

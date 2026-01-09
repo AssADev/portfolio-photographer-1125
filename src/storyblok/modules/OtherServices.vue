@@ -114,9 +114,8 @@ useGSAP(() => {
 					v-for="service in services"
 					:key="service.uuid"
 					v-magnetic="{
-						strength: 0.4,
-						range: 125,
-						parallax: { target: '.cover-inner-wrapper', strength: 0.05 }
+						strength: 0.2,
+						parallax: { target: '.cover-inner-wrapper', strength: 0.0325 }
 					}"
 					:href="service.full_slug"
 					class="service-wrapper"

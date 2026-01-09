@@ -12,74 +12,94 @@ type MagneticOptions = {
 	};
 };
 
+/**
+ * Global tracker to ensure only one element is magnetic at a time.
+ */
+let currentMagneticEl: HTMLElement | null = null;
+
 const vMagnetic: Directive = {
 	mounted(el: HTMLElement, binding: DirectiveBinding<MagneticOptions>) {
 		if (isTouchDevice()) return;
 
-		// Props :
+		// Props
 		const strength = binding.value?.strength ?? 0.5;
 		const range = binding.value?.range ?? 100;
 		const parallax = binding.value?.parallax;
 
-		// Variables :
-		const pos = {
-			x: 0,
-			y: 0,
-			finalX: 0,
-			finalY: 0
-		};
-
-		const distance = {
-			value: 0,
-			x: 0,
-			y: 0
-		};
-
-		let width = 0;
-		let height = 0;
+		// State
 		let isHovering = false;
-		let rect: DOMRect | null = null;
 		let parallaxTarget: HTMLElement | null = null;
 
-		// GSAP :
-		const xTo = gsap.quickTo(el, 'x', { duration: 1, ease: 'power3' });
-		const yTo = gsap.quickTo(el, 'y', { duration: 1, ease: 'power3' });
+		// GSAP setters
+		const xTo = gsap.quickTo(el, 'x', { duration: 1, ease: 'power1' });
+		const yTo = gsap.quickTo(el, 'y', { duration: 1, ease: 'power1' });
 
 		let xToParallax: gsap.QuickToFunc | null = null;
 		let yToParallax: gsap.QuickToFunc | null = null;
 
 		if (parallax?.target) {
 			parallaxTarget = el.querySelector(parallax.target);
-			parallaxTarget?.classList.add('parallax-target');
-
 			if (parallaxTarget) {
-				xToParallax = gsap.quickTo(parallaxTarget, 'x', { duration: 1, ease: 'power3' });
-				yToParallax = gsap.quickTo(parallaxTarget, 'y', { duration: 1, ease: 'power3' });
+				parallaxTarget.classList.add('parallax-target');
+				xToParallax = gsap.quickTo(parallaxTarget, 'x', { duration: 1, ease: 'power1' });
+				yToParallax = gsap.quickTo(parallaxTarget, 'y', { duration: 1, ease: 'power1' });
 			}
 		}
 
-		// Methods :
+		/**
+		 * Calculate if the mouse is within the "magnetic zone"
+		 */
 		const onMouseMove = (e: MouseEvent) => {
-			if (!rect) return;
+			// If another element stole the focus, we shut down :
+			if (currentMagneticEl !== el) {
+				if (isHovering) onMouseLeave();
+				return;
+			}
 
-			distance.x = e.clientX - pos.x;
-			distance.y = e.clientY - pos.y;
+			const rect = el.getBoundingClientRect();
 
-			distance.value = Math.sqrt(distance.x * distance.x + distance.y * distance.y);
+			// Get current translates and find ORIGINAL position :
+			const curX = (gsap.getProperty(el, 'x') as number) || 0;
+			const curY = (gsap.getProperty(el, 'y') as number) || 0;
 
-			// Check the distance :
-			if (distance.value < Math.max(width, height) / 2 + range) {
-				pos.finalX = distance.x * strength;
-				pos.finalY = distance.y * strength;
+			const origLeft = rect.left - curX;
+			const origTop = rect.top - curY;
+			const origCenterX = origLeft + rect.width / 2;
+			const origCenterY = origTop + rect.height / 2;
 
-				xTo(pos.finalX);
-				yTo(pos.finalY);
+			/**
+			 * DEACTIVATION CHECK :
+			 * We want to stop if the mouse is no longer over the element.
+			 * We check both the ORIGINAL bounds and the CURRENT (moving) bounds
+			 * to ensure a smooth handoff, with a tiny 10px buffer to avoid jitter.
+			 */
+			const buffer = 10;
+			const isOverOriginal =
+				e.clientX >= origLeft - buffer &&
+				e.clientX <= origLeft + rect.width + buffer &&
+				e.clientY >= origTop - buffer &&
+				e.clientY <= origTop + rect.height + buffer;
+
+			const isOverCurrent =
+				e.clientX >= rect.left - buffer &&
+				e.clientX <= rect.left + rect.width + buffer &&
+				e.clientY >= rect.top - buffer &&
+				e.clientY <= rect.top + rect.height + buffer;
+
+			if (isOverOriginal || isOverCurrent) {
+				// Linear attraction logic :
+				const deltaX = e.clientX - origCenterX;
+				const deltaY = e.clientY - origCenterY;
+
+				xTo(deltaX * strength);
+				yTo(deltaY * strength);
 
 				if (xToParallax && yToParallax && parallax) {
-					xToParallax(distance.x * parallax.strength);
-					yToParallax(distance.y * parallax.strength);
+					xToParallax(deltaX * parallax.strength);
+					yToParallax(deltaY * parallax.strength);
 				}
 			} else {
+				// Mouse is truly gone
 				onMouseLeave();
 			}
 		};
@@ -87,6 +107,10 @@ const vMagnetic: Directive = {
 		const onMouseLeave = () => {
 			if (!isHovering) return;
 			isHovering = false;
+
+			if (currentMagneticEl === el) {
+				currentMagneticEl = null;
+			}
 
 			xTo(0);
 			yTo(0);
@@ -100,25 +124,28 @@ const vMagnetic: Directive = {
 		};
 
 		const onMouseEnter = () => {
-			if (isHovering) return;
-			isHovering = true;
+			if (currentMagneticEl === el && isHovering) return;
 
-			rect = el.getBoundingClientRect();
-			width = rect.width;
-			height = rect.height;
-			pos.x = rect.left + width / 2;
-			pos.y = rect.top + height / 2;
+			isHovering = true;
+			currentMagneticEl = el;
 
 			window.addEventListener('mousemove', onMouseMove);
 		};
 
-		// Events :
+		// Event registration
 		el.addEventListener('mouseenter', onMouseEnter);
 
-		// Store cleanup :
+		// Fallback activation
+		const onFallbackMove = () => {
+			if (!isHovering) onMouseEnter();
+		};
+		el.addEventListener('mousemove', onFallbackMove);
+
+		// Cleanup function
 		(el as any).__magnetic_cleanup__ = () => {
 			el.removeEventListener('mouseenter', onMouseEnter);
-			window.removeEventListener('mousemove', onMouseMove);
+			el.removeEventListener('mousemove', onFallbackMove);
+			onMouseLeave();
 		};
 	},
 	unmounted(el: HTMLElement) {

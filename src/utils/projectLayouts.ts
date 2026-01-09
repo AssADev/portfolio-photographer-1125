@@ -2,49 +2,235 @@ export const PROJECT_LAYOUT_CONFIGS: Record<string, string[][]> = {
 	'layout-one': [
 		[
 			'col-start-1',
-			'col-end-12',
+			'col-end-10',
 			'col-start-tb-2',
 			'col-end-tb-12',
-			'col-start-dk-4',
-			'col-end-dk-20',
-			'col-start-lg-4',
-			'col-end-lg-18',
+			'col-start-dk-3',
+			'col-end-dk-15',
+			'col-start-lg-3',
+			'col-end-lg-14',
 			'col-start-xxlg-3',
-			'col-end-xxlg-17'
+			'col-end-xxlg-18'
 		],
 		[
-			'col-start-2',
-			'col-end-13',
-			'col-start-tb-6',
+			'col-start-5',
+			'col-end-12',
+			'col-start-tb-9',
 			'col-end-tb-16',
-			'col-start-dk-12',
-			'col-end-dk-28',
-			'col-start-lg-14',
-			'col-end-lg-28',
-			'col-start-xxlg-12',
-			'col-end-xxlg-26'
+			'col-start-dk-20',
+			'col-end-dk-29',
+			'col-start-lg-21',
+			'col-end-lg-29',
+			'col-start-xxlg-21',
+			'col-end-xxlg-30'
 		]
 	],
-	'layout-two': [
+	'layout-two': [['col-start-1', 'col-end-13', 'col-start-tb-1', 'col-end-tb-15', 'col-start-dk-2', 'col-end-dk-26']],
+	'layout-three': [
+		[
+			'col-start-2',
+			'col-end-9',
+			'col-start-tb-3',
+			'col-end-tb-7',
+			'col-start-dk-5',
+			'col-end-dk-12',
+			'col-start-lg-5',
+			'col-end-lg-11',
+			'col-start-xxlg-5',
+			'col-end-xxlg-12'
+		],
+		[
+			'col-start-4',
+			'col-end-13',
+			'col-start-tb-8',
+			'col-end-tb-16',
+			'col-start-dk-17',
+			'col-end-dk-30',
+			'col-start-lg-17',
+			'col-end-lg-29',
+			'col-start-xxlg-16',
+			'col-end-xxlg-30'
+		]
+	],
+	'layout-four': [
 		[
 			'col-start-1',
 			'col-end-12',
-			'col-start-tb-4',
+			'col-start-tb-3',
 			'col-end-tb-14',
-			'col-start-dk-7',
+			'col-start-dk-6',
 			'col-end-dk-23',
-			'col-start-lg-8',
-			'col-end-lg-22',
-			'col-start-xxlg-7',
-			'col-end-xxlg-21'
+			'col-start-lg-7',
+			'col-end-lg-23',
+			'col-start-xxlg-6',
+			'col-end-xxlg-24'
 		]
 	],
-	'layout-three': [[]],
-	'layout-four': [[]],
-	'layout-five': [[]],
-	'layout-six': [[]],
-	'layout-seven': [[]],
-	'layout-eight': [[]],
-	'layout-nine': [[]],
-	'layout-ten': [[]]
+	'layout-five': [
+		[
+			'col-start-4',
+			'col-end-13',
+			'col-start-tb-8',
+			'col-end-tb-17',
+			'col-start-dk-21',
+			'col-end-dk-32',
+			'col-start-lg-22',
+			'col-end-lg-32',
+			'col-start-xxlg-20',
+			'col-end-xxlg-32'
+		],
+		[
+			'col-start-1',
+			'col-end-8',
+			'col-start-tb-1',
+			'col-end-tb-7',
+			'col-start-dk-4',
+			'col-end-dk-14',
+			'col-start-lg-4',
+			'col-end-lg-13',
+			'col-start-xxlg-4',
+			'col-end-xxlg-15'
+		],
+		[
+			'col-start-4',
+			'col-end-12',
+			'col-start-tb-10',
+			'col-end-tb-15',
+			'col-start-dk-19',
+			'col-end-dk-27',
+			'col-start-lg-20',
+			'col-end-lg-27',
+			'col-start-xxlg-19',
+			'col-end-xxlg-28'
+		]
+	],
+	'layout-six': [
+		[
+			'col-start-3',
+			'col-end-13',
+			'col-start-tb-5',
+			'col-end-tb-16',
+			'col-start-dk-12',
+			'col-end-dk-31',
+			'col-start-lg-12',
+			'col-end-lg-31',
+			'col-start-xxlg-11',
+			'col-end-xxlg-31'
+		],
+		[
+			'col-start-1',
+			'col-end-7',
+			'col-start-tb-1',
+			'col-end-tb-8',
+			'col-start-dk-2',
+			'col-end-dk-9',
+			'col-start-lg-2',
+			'col-end-lg-8',
+			'col-start-xxlg-2',
+			'col-end-xxlg-10'
+		]
+	],
+	'layout-seven': [
+		[
+			'col-start-5',
+			'col-end-12',
+			'col-start-tb-11',
+			'col-end-tb-15',
+			'col-start-dk-19',
+			'col-end-dk-29',
+			'col-start-lg-20',
+			'col-end-lg-29',
+			'col-start-xxlg-19',
+			'col-end-xxlg-29'
+		],
+		[
+			'col-start-1',
+			'col-end-10',
+			'col-start-tb-2',
+			'col-end-tb-10',
+			'col-start-dk-3',
+			'col-end-dk-16',
+			'col-start-lg-3',
+			'col-end-lg-16',
+			'col-start-xxlg-3',
+			'col-end-xxlg-17'
+		]
+	],
+	'layout-eight': [
+		[
+			'col-start-5',
+			'col-end-13',
+			'col-start-tb-12',
+			'col-end-tb-17',
+			'col-start-dk-23',
+			'col-end-dk-30',
+			'col-start-lg-25',
+			'col-end-lg-30',
+			'col-start-xxlg-24',
+			'col-end-xxlg-30'
+		],
+		[
+			'col-start-1',
+			'col-end-11',
+			'col-start-tb-1',
+			'col-end-tb-11',
+			'col-start-dk-5',
+			'col-end-dk-17',
+			'col-start-lg-6',
+			'col-end-lg-17',
+			'col-start-xxlg-6',
+			'col-end-xxlg-18'
+		],
+		[
+			'col-start-4',
+			'col-end-12',
+			'col-start-tb-8',
+			'col-end-tb-15',
+			'col-start-dk-20',
+			'col-end-dk-28',
+			'col-start-lg-20',
+			'col-end-lg-27',
+			'col-start-xxlg-20',
+			'col-end-xxlg-28'
+		]
+	],
+	'layout-nine': [
+		[
+			'col-start-1',
+			'col-end-12',
+			'col-start-tb-1',
+			'col-end-tb-14',
+			'col-start-dk-2',
+			'col-end-dk-20',
+			'col-start-lg-2',
+			'col-end-lg-19',
+			'col-start-xxlg-2',
+			'col-end-xxlg-20'
+		],
+		[
+			'col-start-7',
+			'col-end-13',
+			'col-start-tb-11',
+			'col-end-tb-16',
+			'col-start-dk-25',
+			'col-end-dk-31',
+			'col-start-lg-26',
+			'col-end-lg-31',
+			'col-start-xxlg-25',
+			'col-end-xxlg-31'
+		],
+		[
+			'col-start-3',
+			'col-end-11',
+			'col-start-tb-5',
+			'col-end-tb-13',
+			'col-start-dk-14',
+			'col-end-dk-22',
+			'col-start-lg-15',
+			'col-end-lg-23',
+			'col-start-xxlg-13',
+			'col-end-xxlg-23'
+		]
+	],
+	'layout-ten': [['col-start-1', 'col-end-13', 'col-start-tb-2', 'col-end-tb-17', 'col-start-dk-3', 'col-end-dk-32']]
 };
