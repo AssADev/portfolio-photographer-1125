@@ -1,12 +1,26 @@
 ---
-import type { StoryblokProject, StoryblokProjectInformations } from '#types/component-types-sb.js';
+import type {
+	StoryblokProject,
+	StoryblokProjectInformations,
+	StoryblokProjectLayout,
+	StoryblokProjectItemPicture
+} from '#types/component-types-sb.js';
 import type { SbBlokData } from '@storyblok/astro';
 import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro';
 import ProjectHero from '#storyblok/modules/project/ProjectHero.astro';
+import ProjectMinimap from '#storyblok/modules/project/ProjectMinimap.astro';
 
 type Props = { blok: StoryblokProject };
 
 const { blok } = Astro.props;
+
+// Find all pictures :
+const pictures =
+	blok.body
+		?.filter((c): c is StoryblokProjectLayout => c.component === 'ProjectLayout')
+		.flatMap((c) => c.items)
+		.filter((i): i is StoryblokProjectItemPicture => i.component === 'ProjectItemPicture')
+		.map((i) => i.picture) ?? [];
 ---
 
 {blok.informations?.length && <ProjectHero blok={blok.informations[0] as StoryblokProjectInformations} />}
@@ -18,6 +32,8 @@ const { blok } = Astro.props;
 		})
 	}
 </div>
+
+{pictures.length && <ProjectMinimap pictures={pictures} />}
 
 <style lang="scss" scoped>
 	.modules-container {

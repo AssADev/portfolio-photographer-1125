@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import emblaCarouselVue from 'embla-carousel-vue';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 import { formatIndex } from '#utils/formatIndex.ts';
 import { getLinkAttributes } from '#utils/link.ts';
@@ -50,7 +50,7 @@ const onPointerUp = () => {
 	isGrabbing.value = false;
 };
 
-// Attach :
+// Attach & Detach :
 onMounted(() => {
 	if (!emblaApi.value) return;
 
@@ -62,6 +62,16 @@ onMounted(() => {
 
 	// Init :
 	updateCurrentSlide();
+});
+
+onUnmounted(() => {
+	if (!emblaApi.value) return;
+
+	// Events :
+	emblaApi.value.off('select', updateCurrentSlide);
+	emblaApi.value.off('reInit', updateCurrentSlide);
+	emblaApi.value.off('pointerDown', onPointerDown);
+	emblaApi.value.off('pointerUp', onPointerUp);
 });
 </script>
 

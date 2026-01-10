@@ -1,0 +1,12 @@
+---
+import ProjectMinimapVue from '#storyblok/modules/project/ProjectMinimap.vue';
+import type { StoryblokAsset } from '#types/component-types-sb.js';
+
+type Props = {
+	pictures: StoryblokAsset[];
+};
+
+const { pictures } = Astro.props;
+---
+
+<ProjectMinimapVue pictures={pictures} client:visible />
