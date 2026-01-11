@@ -169,3 +169,17 @@ export const parseMedia = (media?: string) => {
 
 	return `(min-width: ${bp})`;
 };
+
+export const getAspectRatio = (src: string | StoryblokAsset) => {
+	const url = typeof src === 'string' ? src : src.filename;
+	if (!url || !url.includes('a.storyblok.com')) return undefined;
+
+	try {
+		const { width, height } = parseDimensionsFromUrl(url);
+		if (width && height) return width / height;
+	} catch (e) {
+		return undefined;
+	}
+
+	return undefined;
+};

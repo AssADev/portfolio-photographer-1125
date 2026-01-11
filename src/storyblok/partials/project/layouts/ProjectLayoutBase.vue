@@ -3,17 +3,18 @@ import { computed } from 'vue';
 
 import StoryblokComponent from '#components/utils/StoryblokComponent.vue';
 
-import type { StoryblokLabelLink, StoryblokProjectLayout } from '#types/component-types-sb.js';
+import type { StoryblokAsset, StoryblokLabelLink, StoryblokProjectLayout } from '#types/component-types-sb.js';
 
 import ProjectItemPicture from '#storyblok/partials/project/ProjectItemPicture.vue';
 import ProjectItemVideo from '#storyblok/partials/project/ProjectItemVideo.vue';
 
 // Props :
-const { blok, layouts } = defineProps<{
+const { blok, layouts, pictures } = defineProps<{
 	blok: StoryblokProjectLayout;
 	socials: StoryblokLabelLink[];
 	layouts: string[][];
 	layoutName: string;
+	pictures: StoryblokAsset[];
 }>();
 
 // Components :
@@ -24,6 +25,12 @@ const ItemsComponents = {
 
 // Computed :
 const limitedItems = computed(() => blok.items.slice(0, layouts.length));
+
+// Methods :
+const getGlobalIndex = (item: any) => {
+	if (item.component !== 'ProjectItemPicture') return undefined;
+	return pictures.findIndex((p) => p.id === item.picture.id || p.filename === item.picture.filename);
+};
 </script>
 
 <template>
@@ -34,6 +41,7 @@ const limitedItems = computed(() => blok.items.slice(0, layouts.length));
 				:blok="item"
 				:socials="socials"
 				:class="layouts[index % layouts.length]"
+				:index="getGlobalIndex(item)"
 			/>
 		</div>
 	</div>

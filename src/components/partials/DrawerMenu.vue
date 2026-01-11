@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useVModel } from '@nanostores/vue';
 import { useResizeObserver } from '@vueuse/core';
 import gsap from 'gsap';
 import { onMounted, ref, useTemplateRef, watch } from 'vue';
@@ -39,13 +38,12 @@ const socialsRef = useTemplateRef('socialsRef');
 
 // Composables :
 const [innerEl, outerEl] = useAnimateHeight();
-const lockScroll = useVModel($global, 'lockScroll');
 
 useTrap(drawerRef, { model: toggled, clickOutsideDeactivates: clickOutsideEnabled, escapeDeactivates: true });
 
 // Animations :
 const openDrawer = () => {
-	lockScroll.value = true;
+	$global.setKey('lockScroll', true);
 
 	tl?.kill();
 	tl = gsap.timeline();
@@ -63,7 +61,7 @@ const openDrawer = () => {
 const closeDrawer = () => {
 	emit('close');
 	toggled.value = false;
-	lockScroll.value = false;
+	$global.setKey('lockScroll', false);
 
 	tl?.kill();
 	tl = gsap.timeline();

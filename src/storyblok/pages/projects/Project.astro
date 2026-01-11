@@ -26,11 +26,20 @@ const pictures =
 {blok.informations?.length && <ProjectHero blok={blok.informations[0] as StoryblokProjectInformations} />}
 
 <div class="modules-container">
-	{
-		blok.body?.map((blok, i) => {
-			return <StoryblokComponent blok={blok as SbBlokData} id={blok._uid} data-component-name={blok.component} />;
-		})
-	}
+	<div class="modules-inner-container">
+		{
+			blok.body?.map((blok, i) => {
+				return (
+					<StoryblokComponent
+						blok={blok as SbBlokData}
+						id={blok._uid}
+						data-component-name={blok.component}
+						pictures={pictures}
+					/>
+				);
+			})
+		}
+	</div>
 </div>
 
 {pictures.length && <ProjectMinimap pictures={pictures} />}
@@ -46,5 +55,10 @@ const pictures =
 		&::before {
 			transform: translate3d(0, calc(-100% + 2px), 0);
 		}
+	}
+
+	.modules-inner-container {
+		position: relative;
+		z-index: 1;
 	}
 </style>

@@ -1,4 +1,5 @@
 import gsap from 'gsap';
+import { Flip } from 'gsap/Flip';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 import LenisVue from 'lenis/vue';
@@ -18,7 +19,7 @@ export default (app: App) => {
 
 	// Make sure to register GSAP only once for the whole app :
 	if (!import.meta.env.SSR && !gsapInitialized) {
-		gsap.registerPlugin(ScrollTrigger, SplitText);
+		gsap.registerPlugin(Flip, ScrollTrigger, SplitText);
 		gsap.config({ force3D: true });
 		gsapInitialized = true;
 	}

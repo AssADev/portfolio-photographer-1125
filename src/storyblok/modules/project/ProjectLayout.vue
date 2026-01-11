@@ -3,14 +3,15 @@ import { computed } from 'vue';
 
 import { PROJECT_LAYOUT_CONFIGS } from '#utils/projectLayouts.ts';
 
-import type { StoryblokLabelLink, StoryblokProjectLayout } from '#types/component-types-sb.js';
+import type { StoryblokAsset, StoryblokLabelLink, StoryblokProjectLayout } from '#types/component-types-sb.js';
 
 import ProjectLayoutBase from '#storyblok/partials/project/layouts/ProjectLayoutBase.vue';
 
 // Props :
-const { blok } = defineProps<{
+const { blok, pictures } = defineProps<{
 	blok: StoryblokProjectLayout;
 	socials: StoryblokLabelLink[];
+	pictures: StoryblokAsset[];
 }>();
 
 // Config :
@@ -25,6 +26,7 @@ const currentConfig = computed(() => PROJECT_LAYOUT_CONFIGS[blok.layout]);
 			:socials="socials"
 			:layouts="currentConfig"
 			:layout-name="blok.layout"
+			:pictures="pictures"
 		/>
 	</section>
 </template>

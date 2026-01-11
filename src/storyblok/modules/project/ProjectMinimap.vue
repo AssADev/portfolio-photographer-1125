@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { useVModel } from '@nanostores/vue';
+import { useStore } from '@nanostores/vue';
 import emblaCarouselVue from 'embla-carousel-vue';
-import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
+import { gsap } from 'gsap';
+import { Flip } from 'gsap/Flip';
+import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
 
 import Button from '#components/utils/Button.vue';
 import Icon from '#components/utils/Icon.vue';
@@ -10,6 +12,7 @@ import Image from '#components/utils/Image.vue';
 import type { StoryblokAsset } from '#types/component-types-sb.js';
 
 import { $global } from '#stores/global.ts';
+import { $projectMinimap, closeMinimap } from '#stores/project.ts';
 
 // Props :
 const { pictures } = defineProps<{
@@ -17,12 +20,18 @@ const { pictures } = defineProps<{
 }>();
 
 // Refs :
-const lockScroll = useVModel($global, 'lockScroll');
+const projectMinimapStore = useStore($projectMinimap);
+
+const rootRef = useTemplateRef('rootRef');
+const viewerWrapperRef = useTemplateRef('viewerWrapperRef');
+
+const isOpening = ref(false);
+const isVisible = ref(false);
 const currentSlide = ref(0);
 const isGrabbing = ref(false);
 const isDarkTheme = ref(false);
 const currentPictureZoom = ref(1);
-const isZoomIndicatorSmooth = ref(false);
+const isZoomSmooth = ref(false);
 
 const [emblaRef, emblaApi] = emblaCarouselVue({
 	align: 'start',
@@ -41,6 +50,7 @@ const updateCurrentSlide = () => {
 	if (!emblaApi.value) return;
 
 	currentSlide.value = emblaApi.value.selectedScrollSnap();
+	$projectMinimap.setKey('currentIndex', currentSlide.value);
 };
 
 const onPointerDown = () => {
@@ -61,18 +71,100 @@ const onToggleDarkTheme = () => {
 };
 
 const onHandlePictureZoom = (value: number) => {
-	isZoomIndicatorSmooth.value = true;
+	isZoomSmooth.value = true;
 	currentPictureZoom.value = value;
 
 	setTimeout(() => {
-		isZoomIndicatorSmooth.value = false;
+		isZoomSmooth.value = false;
 	}, 400);
 };
 
+const onClose = () => {
+	const { initialIndex, currentIndex, clickedElement, clickedParentElement } = projectMinimapStore.value;
+	const isSameImage = initialIndex === currentIndex;
+
+	if (isSameImage && clickedElement && clickedParentElement && viewerWrapperRef.value) {
+		const pictureWrapper = viewerWrapperRef.value.querySelector('.picture-wrapper') as HTMLElement;
+		const initialPictureWrapper = clickedParentElement.querySelector('.picture-wrapper') as HTMLElement;
+
+		if (!initialPictureWrapper || !pictureWrapper) return;
+
+		$projectMinimap.setKey('isFlipping', true);
+		initialPictureWrapper.style.opacity = '0';
+
+		const state = Flip.getState(pictureWrapper);
+
+		clickedParentElement.appendChild(pictureWrapper);
+
+		Flip.from(state, {
+			absolute: true,
+			duration: 0.8,
+			clearProps: 'all',
+			ease: 'power2.inOut',
+			transform: 'scale3d(1, 1, 1)',
+			onComplete: () => {
+				isDarkTheme.value = false;
+				isZoomSmooth.value = false;
+				currentPictureZoom.value = 1;
+				initialPictureWrapper.style.opacity = '1';
+				$projectMinimap.setKey('isFlipping', false);
+				viewerWrapperRef.value?.appendChild(pictureWrapper);
+			}
+		});
+
+		isVisible.value = false;
+		closeMinimap();
+	} else {
+		isVisible.value = false;
+		closeMinimap();
+	}
+};
+
+// Watchers :
+watch(
+	() => projectMinimapStore.value.isOpen,
+	async (isOpen) => {
+		if (isOpen) {
+			const { clickedElement, clickedParentElement, currentIndex } = projectMinimapStore.value;
+
+			isOpening.value = true;
+			isVisible.value = true;
+			currentSlide.value = currentIndex;
+			$projectMinimap.setKey('isFlipping', true);
+
+			await nextTick();
+
+			if (emblaApi.value) {
+				emblaApi.value.reInit();
+				emblaApi.value?.scrollTo(currentIndex, true);
+			}
+
+			if (clickedElement && viewerWrapperRef.value) {
+				const state = Flip.getState(clickedElement as HTMLElement);
+
+				viewerWrapperRef.value.appendChild(clickedElement as HTMLElement);
+
+				Flip.from(state, {
+					absolute: true,
+					duration: 0.8,
+					ease: 'power2.inOut',
+					onComplete: () => {
+						isOpening.value = false;
+						$projectMinimap.setKey('isFlipping', false);
+						clickedParentElement?.appendChild(clickedElement as HTMLElement);
+					}
+				});
+			}
+
+			$global.setKey('lockScroll', true);
+		} else {
+			$global.setKey('lockScroll', false);
+		}
+	}
+);
+
 // Attach & Detach :
 onMounted(() => {
-	lockScroll.value = true;
-
 	if (!emblaApi.value) return;
 
 	// Events :
@@ -86,7 +178,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-	lockScroll.value = false;
+	$global.setKey('lockScroll', false);
 
 	if (!emblaApi.value) return;
 
@@ -99,12 +191,36 @@ onUnmounted(() => {
 </script>
 
 <template>
-	<section class="partials-project-minimap" :class="{ 'is-dark': isDarkTheme }" data-lenis-prevent>
+	<section
+		ref="rootRef"
+		class="partials-project-minimap"
+		:class="{ 'is-dark': isDarkTheme, 'is-visible': isVisible }"
+		data-lenis-prevent
+	>
+		<Button class="close-cta" @click="onClose">
+			<span>Close</span>
+		</Button>
 		<Button class="theme-cta" @click="onToggleDarkTheme">
 			<span>
 				{{ isDarkTheme ? 'Light' : 'Dark' }}
 			</span>
 		</Button>
+		<div class="viewer-container">
+			<div
+				class="picture-viewer-container col-start-dk-10 col-end-dk-24 col-start-mlg-9 col-end-mlg-25 col-start-xlg-8 col-end-xlg-26"
+			>
+				<div class="picture-inner-wrapper" ref="viewerWrapperRef">
+					<div
+						class="picture-wrapper"
+						v-if="!isOpening"
+						:class="{ 'is-smooth': isZoomSmooth }"
+						:style="{ transform: `scale3d(${currentPictureZoom}, ${currentPictureZoom}, 1)` }"
+					>
+						<Image :src="pictures[currentSlide]" object-fit="contain" />
+					</div>
+				</div>
+			</div>
+		</div>
 		<div class="minimap-container">
 			<div
 				class="slideshow-container col-start-dk-5 col-end-dk-8 col-start-mlg-4 col-end-mlg-7 col-start-xlg-3 col-end-xlg-6"
@@ -130,46 +246,37 @@ onUnmounted(() => {
 					</Button>
 				</div>
 			</div>
-			<div
-				class="picture-viewer-container col-start-dk-10 col-end-dk-24 col-start-mlg-9 col-end-mlg-25 col-start-xlg-8 col-end-xlg-26"
-				:style="{ transform: `scale3d(${currentPictureZoom}, ${currentPictureZoom}, 1)` }"
-			>
-				<div class="picture-wrapper">
-					<Image :src="pictures[currentSlide]" object-fit="contain" />
-				</div>
+		</div>
+		<div class="zoom-container hide-mobile-tablet">
+			<div class="zoom-inner-container">
+				<Button
+					v-for="value in [0.5, 1, 1.5, 2]"
+					:key="value"
+					@click="onHandlePictureZoom(value)"
+					:class="{ 'is-active': currentPictureZoom === value }"
+				>
+					<Icon name="square-small" />
+				</Button>
 			</div>
-			<div class="zoom-container hide-mobile-tablet">
-				<div class="zoom-inner-container">
-					<Button
-						v-for="value in [0.5, 1, 1.5, 2]"
-						:key="value"
-						@click="onHandlePictureZoom(value)"
-						:class="{ 'is-active': currentPictureZoom === value }"
-					>
-						<Icon name="square-small" />
-					</Button>
-				</div>
-				<div class="range-wrapper">
-					<input
-						type="range"
-						min="0.5"
-						max="2.0"
-						v-model.number="currentPictureZoom"
-						step="0.001"
-						class="zoom-range"
-						@pointerdown="isZoomIndicatorSmooth = false"
-					/>
-				</div>
-				<div class="custom-thumb-wrapper">
-					<div
-						class="custom-thumb"
-						:class="{ 'is-smooth': isZoomIndicatorSmooth }"
-						:style="{
-							left: `calc(${((currentPictureZoom - 0.5) / 1.5) * 100}% - ${((currentPictureZoom - 0.5) / 1.5) * 32}px)`
-						}"
-					>
-						<span>{{ formattedZoom }}</span>
-					</div>
+			<div class="range-wrapper">
+				<input
+					type="range"
+					min="0.5"
+					max="2.0"
+					v-model.number="currentPictureZoom"
+					step="0.001"
+					@pointerdown="isZoomSmooth = false"
+				/>
+			</div>
+			<div class="custom-thumb-wrapper">
+				<div
+					class="custom-thumb"
+					:class="{ 'is-smooth': isZoomSmooth }"
+					:style="{
+						left: `calc(${((currentPictureZoom - 0.5) / 1.5) * 100}% - ${((currentPictureZoom - 0.5) / 1.5) * 32}px)`
+					}"
+				>
+					<span>{{ formattedZoom }}</span>
 				</div>
 			</div>
 		</div>
@@ -183,11 +290,42 @@ onUnmounted(() => {
 	inset: 0;
 	background: $white;
 	overflow: hidden;
-	transition: background 0.4s $power2InOut;
+	opacity: 0;
+	pointer-events: none;
+	transition:
+		background 0.4s $power2InOut,
+		opacity 0.4s $power2InOut;
 
 	&.is-dark {
 		background: $smokyBlack;
 	}
+
+	&.is-visible {
+		opacity: 1;
+		pointer-events: all;
+	}
+
+	@include mq($until: desktop) {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		gap: var(--gutter);
+		padding-block: calc(var(--header-height) + (var(--gutter) * 2));
+	}
+}
+
+.close-cta {
+	position: absolute;
+	z-index: 1;
+	top: var(--gutter);
+	left: var(--gutter);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: $whiteChoco;
+	height: var(--header-height);
+	border-radius: var(--border-radius);
+	aspect-ratio: 1/1;
 }
 
 .theme-cta {
@@ -204,36 +342,70 @@ onUnmounted(() => {
 	aspect-ratio: 1/1;
 }
 
-.picture-viewer-container {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	overflow: hidden;
-	transition: transform 0.4s $power2Out;
+.viewer-container {
+	pointer-events: none;
 
 	@include mq($until: desktop) {
 		@include container;
 
-		transform: none !important;
-	}
-
-	.picture-wrapper {
-		height: 100%;
-		padding-block: calc(var(--header-height) + (var(--gutter) * 2));
-	}
-}
-
-.minimap-container {
-	height: 100%;
-
-	@include mq($until: desktop) {
-		display: flex;
-		flex-direction: column;
-		padding-block: calc(var(--header-height) + (var(--gutter) * 2));
+		height: calc(100vh - (var(--header-height) + (var(--gutter) * 2) * 4) - fluidSize(150px, 125px, null, desktop));
 	}
 
 	@include mq(desktop) {
 		@include container-grid;
+
+		position: absolute;
+		inset: 0;
+	}
+}
+
+.picture-viewer-container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	@include mq($until: desktop) {
+		@include container;
+
+		height: 100%;
+	}
+
+	@include mq(desktop) {
+		height: 100vh;
+		padding-block: calc(var(--header-height) + (var(--gutter) * 2));
+	}
+
+	.picture-inner-wrapper {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 100%;
+	}
+
+	:deep(.picture-wrapper) {
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		// transform: none !important;
+
+		&.is-smooth {
+			transition: transform 0.4s $power2Out;
+		}
+	}
+}
+
+.minimap-container {
+	@include mq($until: desktop) {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+
+	@include mq(desktop) {
+		@include container-grid;
+
+		height: 100%;
 	}
 }
 
@@ -242,13 +414,7 @@ onUnmounted(() => {
 	overflow: hidden;
 
 	@include mq($until: desktop) {
-		order: 1;
-		padding-block: fluidSize(60px, 48px, null, desktop);
 		padding-inline: var(--gutter);
-	}
-
-	@include mq(desktop) {
-		padding-block-start: 50vh;
 	}
 }
 
@@ -256,13 +422,6 @@ onUnmounted(() => {
 	display: flex;
 	gap: $gap;
 	transition: opacity 0.4s $power2InOut;
-
-	@include mq(desktop) {
-		&.is-hidden {
-			opacity: 0;
-			pointer-events: none;
-		}
-	}
 
 	&.can-grab {
 		cursor: grab;
@@ -273,12 +432,19 @@ onUnmounted(() => {
 	}
 
 	@include mq($until: desktop) {
-		min-height: fluidSize(150px, 100px, null, desktop);
+		align-items: center;
+		min-height: fluidSize(150px, 125px, null, desktop);
 	}
 
 	@include mq(desktop) {
 		flex-direction: column;
 		height: 100vh;
+		margin-block-start: 50vh;
+
+		&.is-hidden {
+			opacity: 0;
+			pointer-events: none;
+		}
 	}
 
 	& > .picture-wrapper {
@@ -292,12 +458,15 @@ onUnmounted(() => {
 
 		@include mq($until: desktop) {
 			min-width: 0;
-			flex: 0 0 25%;
-			max-width: fluidSize(150px, 125px, null, desktop);
+			flex: 0 0 fluidSize(150px, 85px);
 		}
 
 		@include mq(desktop) {
 			width: 100%;
+
+			&:last-of-type {
+				padding-block-end: 100vh;
+			}
 		}
 	}
 }
@@ -374,35 +543,48 @@ onUnmounted(() => {
 	transform: translate3d(-50%, -50%, 0);
 	width: calc(100% - fluidSize(20px, 16px));
 	height: 22px;
-}
 
-.zoom-range {
-	position: relative;
-	appearance: none;
-	width: 100%;
-	background: transparent;
-	cursor: pointer;
-
-	&:focus {
-		outline: none;
-	}
-
-	// Track :
-	&::-webkit-slider-runnable-track,
-	&::-moz-range-track {
-		width: 100%;
-		height: 2px;
-		background: rgba($smokyBlack, 0.1);
-	}
-
-	// Thumb (hidden but functional) :
-	&::-webkit-slider-thumb,
-	&::-moz-range-thumb {
+	& > input[type='range'] {
+		position: relative;
 		appearance: none;
-		width: 32px;
-		height: 22px;
+		-webkit-appearance: none;
+		width: 100%;
+		height: 100%;
 		background: transparent;
-		border: none;
+		cursor: pointer;
+
+		&:focus {
+			outline: none;
+		}
+
+		// Track :
+		&::-webkit-slider-runnable-track {
+			width: 100%;
+			height: 100%;
+		}
+
+		&::-moz-range-track {
+			width: 100%;
+			height: 100%;
+		}
+
+		// Thumb (hidden but functional) :
+		&::-webkit-slider-thumb {
+			-webkit-appearance: none;
+			appearance: none;
+			width: 0;
+			height: 0;
+			border: none;
+			margin-top: -1px;
+			background: transparent;
+		}
+
+		&::-moz-range-thumb {
+			width: 0;
+			height: 0;
+			border: none;
+			background: transparent;
+		}
 	}
 }
 
@@ -439,7 +621,7 @@ onUnmounted(() => {
 
 		color: $white;
 		display: flex;
-		margin-block-end: fluidSize(2px, 1px);
+		margin-block-end: 1px;
 	}
 }
 </style>
