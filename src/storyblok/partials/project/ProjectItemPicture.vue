@@ -54,15 +54,18 @@ const onOpenMinimap = () => {
 <style lang="scss" scoped>
 .partials-project-item-picture {
 	position: relative;
-	// overflow: hidden;
 }
 
 .picture-container {
 	aspect-ratio: v-bind(aspectRatio);
 
-	& > .picture-wrapper {
+	& > :deep(.picture-wrapper) {
 		position: absolute;
 		inset: 0;
+
+		img {
+			height: 100%;
+		}
 	}
 }
 </style>

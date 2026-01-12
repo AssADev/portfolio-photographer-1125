@@ -5,6 +5,8 @@ import { gsap } from 'gsap';
 import { Flip } from 'gsap/Flip';
 import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
 
+import { sleep } from '#utils/sleep.ts';
+
 import Button from '#components/utils/Button.vue';
 import Icon from '#components/utils/Icon.vue';
 import Image from '#components/utils/Image.vue';
@@ -26,12 +28,14 @@ const rootRef = useTemplateRef('rootRef');
 const viewerWrapperRef = useTemplateRef('viewerWrapperRef');
 
 const isOpening = ref(false);
+const isClosing = ref(false);
 const isVisible = ref(false);
 const currentSlide = ref(0);
 const isGrabbing = ref(false);
 const isDarkTheme = ref(false);
 const currentPictureZoom = ref(1);
 const isZoomSmooth = ref(false);
+const isInitializing = ref(false);
 
 const [emblaRef, emblaApi] = emblaCarouselVue({
 	align: 'start',
@@ -47,8 +51,7 @@ const isSlideshowHidden = computed(() => currentPictureZoom.value > 1.25);
 
 // Methods :
 const updateCurrentSlide = () => {
-	if (!emblaApi.value) return;
-
+	if (!emblaApi.value || isInitializing.value) return;
 	currentSlide.value = emblaApi.value.selectedScrollSnap();
 	$projectMinimap.setKey('currentIndex', currentSlide.value);
 };
@@ -79,23 +82,54 @@ const onHandlePictureZoom = (value: number) => {
 	}, 400);
 };
 
-const onClose = () => {
-	const { initialIndex, currentIndex, clickedElement, clickedParentElement } = projectMinimapStore.value;
-	const isSameImage = initialIndex === currentIndex;
+const resetMinimap = () => {
+	isDarkTheme.value = false;
+	isZoomSmooth.value = false;
+	currentPictureZoom.value = 1;
+};
 
-	if (isSameImage && clickedElement && clickedParentElement && viewerWrapperRef.value) {
-		const pictureWrapper = viewerWrapperRef.value.querySelector('.picture-wrapper') as HTMLElement;
-		const initialPictureWrapper = clickedParentElement.querySelector('.picture-wrapper') as HTMLElement;
+// Animations :
+const animateFlipOpen = async (clickedElement: HTMLElement) => {
+	if (!viewerWrapperRef.value) return;
 
-		if (!initialPictureWrapper || !pictureWrapper) return;
+	const state = Flip.getState(clickedElement);
 
-		$projectMinimap.setKey('isFlipping', true);
-		initialPictureWrapper.style.opacity = '0';
+	viewerWrapperRef.value.style.opacity = '1';
+	viewerWrapperRef.value.style.display = 'flex';
+	viewerWrapperRef.value.appendChild(clickedElement);
 
-		const state = Flip.getState(pictureWrapper);
+	return new Promise<void>((resolve) => {
+		Flip.from(state, {
+			absolute: true,
+			duration: 0.8,
+			ease: 'power2.inOut',
+			onComplete: () => {
+				isOpening.value = false;
+				$projectMinimap.setKey('isFlipping', false);
+				(projectMinimapStore.value.clickedParentElement as HTMLElement)?.appendChild(clickedElement);
+				resolve();
+			}
+		});
+	});
+};
 
-		clickedParentElement.appendChild(pictureWrapper);
+const animateFlipClose = async (
+	pictureWrapper: HTMLElement,
+	initialPictureWrapper: HTMLElement,
+	clickedParentElement: HTMLElement
+) => {
+	$projectMinimap.setKey('isFlipping', true);
+	initialPictureWrapper.style.opacity = '0';
 
+	isZoomSmooth.value = true;
+	currentPictureZoom.value = 1;
+
+	await sleep(400);
+
+	const state = Flip.getState(pictureWrapper);
+	clickedParentElement.appendChild(pictureWrapper);
+
+	return new Promise<void>((resolve) => {
 		Flip.from(state, {
 			absolute: true,
 			duration: 0.8,
@@ -103,21 +137,65 @@ const onClose = () => {
 			ease: 'power2.inOut',
 			transform: 'scale3d(1, 1, 1)',
 			onComplete: () => {
-				isDarkTheme.value = false;
-				isZoomSmooth.value = false;
-				currentPictureZoom.value = 1;
 				initialPictureWrapper.style.opacity = '1';
 				$projectMinimap.setKey('isFlipping', false);
-				viewerWrapperRef.value?.appendChild(pictureWrapper);
+
+				if (viewerWrapperRef.value) {
+					viewerWrapperRef.value.style.display = 'none';
+					viewerWrapperRef.value.appendChild(pictureWrapper);
+				}
+				resolve();
 			}
 		});
+	});
+};
 
+const animateFadeClose = () => {
+	return new Promise<void>((resolve) => {
+		gsap.to(viewerWrapperRef.value, {
+			opacity: 0,
+			duration: 0.4,
+			ease: 'power2.inOut',
+			onComplete: () => {
+				resolve();
+			}
+		});
+	});
+};
+
+const onClose = async () => {
+	if (isClosing.value) return;
+	isClosing.value = true;
+
+	const { initialIndex, currentIndex, clickedElement, clickedParentElement } = projectMinimapStore.value;
+	const isSameImage = initialIndex === currentIndex;
+
+	try {
 		isVisible.value = false;
+
+		if (isSameImage && clickedElement && clickedParentElement && viewerWrapperRef.value) {
+			const pictureWrapper = viewerWrapperRef.value.querySelector('.picture-wrapper') as HTMLElement;
+			const initialPictureWrapper = clickedParentElement.querySelector('.picture-wrapper') as HTMLElement;
+
+			if (initialPictureWrapper && pictureWrapper) {
+				await animateFlipClose(pictureWrapper, initialPictureWrapper, clickedParentElement);
+			}
+		} else {
+			await animateFadeClose();
+		}
+	} finally {
 		closeMinimap();
-	} else {
-		isVisible.value = false;
-		closeMinimap();
+		resetMinimap();
+		isClosing.value = false;
 	}
+};
+
+// Carousel :
+const initializeCarousel = (index: number) => {
+	if (!emblaApi.value) return;
+
+	emblaApi.value.reInit();
+	emblaApi.value.scrollTo(index, true);
 };
 
 // Watchers :
@@ -125,37 +203,26 @@ watch(
 	() => projectMinimapStore.value.isOpen,
 	async (isOpen) => {
 		if (isOpen) {
-			const { clickedElement, clickedParentElement, currentIndex } = projectMinimapStore.value;
+			const { clickedElement, currentIndex } = projectMinimapStore.value;
+
+			viewerWrapperRef.value!.style.display = 'flex';
+
+			await nextTick();
 
 			isOpening.value = true;
 			isVisible.value = true;
+			isInitializing.value = true;
 			currentSlide.value = currentIndex;
 			$projectMinimap.setKey('isFlipping', true);
 
 			await nextTick();
+			initializeCarousel(currentIndex);
 
-			if (emblaApi.value) {
-				emblaApi.value.reInit();
-				emblaApi.value?.scrollTo(currentIndex, true);
+			if (clickedElement) {
+				await animateFlipOpen(clickedElement as HTMLElement);
 			}
 
-			if (clickedElement && viewerWrapperRef.value) {
-				const state = Flip.getState(clickedElement as HTMLElement);
-
-				viewerWrapperRef.value.appendChild(clickedElement as HTMLElement);
-
-				Flip.from(state, {
-					absolute: true,
-					duration: 0.8,
-					ease: 'power2.inOut',
-					onComplete: () => {
-						isOpening.value = false;
-						$projectMinimap.setKey('isFlipping', false);
-						clickedParentElement?.appendChild(clickedElement as HTMLElement);
-					}
-				});
-			}
-
+			isInitializing.value = false;
 			$global.setKey('lockScroll', true);
 		} else {
 			$global.setKey('lockScroll', false);
@@ -172,9 +239,6 @@ onMounted(() => {
 	emblaApi.value.on('reInit', updateCurrentSlide);
 	emblaApi.value.on('pointerDown', onPointerDown);
 	emblaApi.value.on('pointerUp', onPointerUp);
-
-	// Init :
-	updateCurrentSlide();
 });
 
 onUnmounted(() => {
@@ -197,7 +261,8 @@ onUnmounted(() => {
 		:class="{ 'is-dark': isDarkTheme, 'is-visible': isVisible }"
 		data-lenis-prevent
 	>
-		<Button class="close-cta" @click="onClose">
+		<div class="overlay" />
+		<Button class="close-cta" @click="onClose" :disabled="isClosing">
 			<span>Close</span>
 		</Button>
 		<Button class="theme-cta" @click="onToggleDarkTheme">
@@ -211,8 +276,8 @@ onUnmounted(() => {
 			>
 				<div class="picture-inner-wrapper" ref="viewerWrapperRef">
 					<div
-						class="picture-wrapper"
 						v-if="!isOpening"
+						class="picture-wrapper"
 						:class="{ 'is-smooth': isZoomSmooth }"
 						:style="{ transform: `scale3d(${currentPictureZoom}, ${currentPictureZoom}, 1)` }"
 					>
@@ -288,21 +353,33 @@ onUnmounted(() => {
 	position: fixed;
 	z-index: 20;
 	inset: 0;
-	background: $white;
 	overflow: hidden;
-	opacity: 0;
 	pointer-events: none;
-	transition:
-		background 0.4s $power2InOut,
-		opacity 0.4s $power2InOut;
+	transition: background 0.4s $power2InOut;
 
 	&.is-dark {
 		background: $smokyBlack;
 	}
 
 	&.is-visible {
-		opacity: 1;
 		pointer-events: all;
+
+		.overlay,
+		.minimap-container,
+		.close-cta,
+		.theme-cta,
+		.zoom-container {
+			opacity: 1;
+		}
+	}
+
+	.overlay,
+	.minimap-container,
+	.close-cta,
+	.theme-cta,
+	.zoom-container {
+		opacity: 0;
+		transition: opacity 0.4s $power2InOut;
 	}
 
 	@include mq($until: desktop) {
@@ -312,6 +389,14 @@ onUnmounted(() => {
 		gap: var(--gutter);
 		padding-block: calc(var(--header-height) + (var(--gutter) * 2));
 	}
+}
+
+.overlay {
+	position: absolute;
+	inset: 0;
+	opacity: 0;
+	background: $white;
+	transition: opacity 0.4s $power2InOut;
 }
 
 .close-cta {
@@ -376,7 +461,7 @@ onUnmounted(() => {
 	}
 
 	.picture-inner-wrapper {
-		display: flex;
+		display: none;
 		align-items: center;
 		justify-content: center;
 		height: 100%;
@@ -387,7 +472,6 @@ onUnmounted(() => {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		// transform: none !important;
 
 		&.is-smooth {
 			transition: transform 0.4s $power2Out;
@@ -416,6 +500,11 @@ onUnmounted(() => {
 	@include mq($until: desktop) {
 		padding-inline: var(--gutter);
 	}
+
+	@include mq(desktop) {
+		// margin-block-start: 50vh;
+		// padding-block-end: 100vh;
+	}
 }
 
 .slideshow-wrapper {
@@ -439,7 +528,8 @@ onUnmounted(() => {
 	@include mq(desktop) {
 		flex-direction: column;
 		height: 100vh;
-		margin-block-start: 50vh;
+		// padding-block-end: 50vh;
+		// padding-block-end: 100vh;
 
 		&.is-hidden {
 			opacity: 0;
@@ -464,9 +554,13 @@ onUnmounted(() => {
 		@include mq(desktop) {
 			width: 100%;
 
-			&:last-of-type {
-				padding-block-end: 100vh;
-			}
+			// &:first-of-type {
+			// 	padding-block-start: 100vh;
+			// }
+
+			// &:last-of-type {
+			// 	padding-block-end: 100vh;
+			// }
 		}
 	}
 }
