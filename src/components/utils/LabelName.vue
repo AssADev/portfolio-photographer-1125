@@ -62,22 +62,24 @@ defineProps<{
 	}
 
 	@at-root {
-		a:not(:disabled):hover &,
-		button:not(:disabled):hover & {
-			:deep(.partials-rich-text) {
-				transform: translate3d(-10px, 0, 0);
-				transition: transform 0.4s $power2Out;
-			}
-
-			svg {
-				&:first-of-type {
-					transform: translate3d(0, -50%, 0) scale3d(0, 0, 0) rotate(90deg);
+		@media (hover: hover) and (pointer: fine) {
+			a:not(:disabled):hover &,
+			button:not(:disabled):hover & {
+				:deep(.partials-rich-text) {
+					transform: translate3d(-10px, 0, 0);
 					transition: transform 0.4s $power2Out;
 				}
 
-				&:last-of-type {
-					transform: translate3d(0, -50%, 0) scale3d(1, 1, 1);
-					transition: transform 0.4s $elasticOut 0.2s;
+				svg {
+					&:first-of-type {
+						transform: translate3d(0, -50%, 0) scale3d(0, 0, 0) rotate(90deg);
+						transition: transform 0.4s $power2Out;
+					}
+
+					&:last-of-type {
+						transform: translate3d(0, -50%, 0) scale3d(1, 1, 1);
+						transition: transform 0.4s $elasticOut 0.2s;
+					}
 				}
 			}
 		}

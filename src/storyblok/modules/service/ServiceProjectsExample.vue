@@ -94,7 +94,7 @@ const projects = computed(() => {
 
 	&:last-child {
 		@include mq($until: desktop) {
-			margin-block-start: fluidSize(24px, 18px, null, desktop);
+			margin-block-start: fluidSize(56px, 48px, null, desktop);
 		}
 
 		@include mq(desktop) {

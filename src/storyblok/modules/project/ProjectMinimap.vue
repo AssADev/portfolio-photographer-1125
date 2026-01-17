@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { useStore } from '@nanostores/vue';
-import emblaCarouselVue from 'embla-carousel-vue';
+import { useDebounceFn } from '@vueuse/core';
 import { gsap } from 'gsap';
 import { Flip } from 'gsap/Flip';
 import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
 
+import { breakPointsNoUnits } from '#utils/breakpoints.ts';
 import { sleep } from '#utils/sleep.ts';
 
+import Slideshow from '#components/partials/Slideshow.vue';
 import Button from '#components/utils/Button.vue';
 import Icon from '#components/utils/Icon.vue';
 import Image from '#components/utils/Image.vue';
@@ -26,6 +28,7 @@ const projectMinimapStore = useStore($projectMinimap);
 
 const rootRef = useTemplateRef('rootRef');
 const viewerWrapperRef = useTemplateRef('viewerWrapperRef');
+const slideshowRef = useTemplateRef('slideshowRef');
 
 const isOpening = ref(false);
 const isClosing = ref(false);
@@ -37,55 +40,42 @@ const currentPictureZoom = ref(1);
 const isZoomSmooth = ref(false);
 const isInitializing = ref(false);
 
-const [emblaRef, emblaApi] = emblaCarouselVue({
-	align: 'start',
-	active: (pictures?.length ?? 0) > 1 ? true : false,
-	breakpoints: {
-		'(min-width: 1024px)': { axis: 'y' }
-	}
-});
+const isDesktop = ref(false);
 
 // Computed :
 const formattedZoom = computed(() => currentPictureZoom.value.toFixed(1));
 const isSlideshowHidden = computed(() => currentPictureZoom.value > 1.25);
 
-// Methods :
-const updateCurrentSlide = () => {
-	if (!emblaApi.value || isInitializing.value) return;
-	currentSlide.value = emblaApi.value.selectedScrollSnap();
-	$projectMinimap.setKey('currentIndex', currentSlide.value);
+const goToNext = () => {
+	slideshowRef.value?.next();
 };
 
-const onPointerDown = () => {
-	isGrabbing.value = true;
-};
-
-const onPointerUp = () => {
-	isGrabbing.value = false;
+const goToPrev = () => {
+	slideshowRef.value?.prev();
 };
 
 const goToSlide = (index: number) => {
-	if (!emblaApi.value || index === emblaApi.value.selectedScrollSnap()) return;
-	emblaApi.value.scrollTo(index);
+	if (slideshowRef.value?.isMoving) return;
+	slideshowRef.value?.scrollToSlide(index);
 };
 
-const onToggleDarkTheme = () => {
-	isDarkTheme.value = !isDarkTheme.value;
+const onWheel = (e: WheelEvent) => {
+	if (!isVisible.value || pictures.length <= 1) return;
+	if (Math.abs(e.deltaY) > 20) {
+		if (e.deltaY > 0) goToNext();
+		else goToPrev();
+	}
 };
 
-const onHandlePictureZoom = (value: number) => {
-	isZoomSmooth.value = true;
-	currentPictureZoom.value = value;
-
-	setTimeout(() => {
-		isZoomSmooth.value = false;
-	}, 400);
-};
-
-const resetMinimap = () => {
-	isDarkTheme.value = false;
-	isZoomSmooth.value = false;
-	currentPictureZoom.value = 1;
+const onKeyDown = (event: KeyboardEvent) => {
+	if (!isVisible.value) return;
+	if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
+		event.preventDefault();
+		goToPrev();
+	} else if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
+		event.preventDefault();
+		goToNext();
+	}
 };
 
 // Animations :
@@ -178,7 +168,7 @@ const onClose = async () => {
 			const initialPictureWrapper = clickedParentElement.querySelector('.picture-wrapper') as HTMLElement;
 
 			if (initialPictureWrapper && pictureWrapper) {
-				await animateFlipClose(pictureWrapper, initialPictureWrapper, clickedParentElement);
+				await animateFlipClose(pictureWrapper, initialPictureWrapper, clickedParentElement as any);
 			}
 		} else {
 			await animateFadeClose();
@@ -188,14 +178,6 @@ const onClose = async () => {
 		resetMinimap();
 		isClosing.value = false;
 	}
-};
-
-// Carousel :
-const initializeCarousel = (index: number) => {
-	if (!emblaApi.value) return;
-
-	emblaApi.value.reInit();
-	emblaApi.value.scrollTo(index, true);
 };
 
 // Watchers :
@@ -216,10 +198,10 @@ watch(
 			$projectMinimap.setKey('isFlipping', true);
 
 			await nextTick();
-			initializeCarousel(currentIndex);
+			slideshowRef.value?.scrollToSlide(currentIndex, true);
 
 			if (clickedElement) {
-				await animateFlipOpen(clickedElement as HTMLElement);
+				await animateFlipOpen(clickedElement as any);
 			}
 
 			isInitializing.value = false;
@@ -230,27 +212,46 @@ watch(
 	}
 );
 
+const onToggleDarkTheme = () => {
+	isDarkTheme.value = !isDarkTheme.value;
+};
+
+const onHandlePictureZoom = (value: number) => {
+	isZoomSmooth.value = true;
+	currentPictureZoom.value = value;
+
+	setTimeout(() => {
+		isZoomSmooth.value = false;
+	}, 400);
+};
+
+const resetMinimap = () => {
+	isDarkTheme.value = false;
+	isZoomSmooth.value = false;
+	currentPictureZoom.value = 1;
+};
+
+const checkBreakpoint = () => {
+	isDesktop.value = window.innerWidth >= breakPointsNoUnits.desktop;
+};
+
+const debouncedResize = useDebounceFn(checkBreakpoint, 200);
+
+watch(currentSlide, (index) => {
+	$projectMinimap.setKey('currentIndex', index);
+});
+
 // Attach & Detach :
 onMounted(() => {
-	if (!emblaApi.value) return;
-
-	// Events :
-	emblaApi.value.on('select', updateCurrentSlide);
-	emblaApi.value.on('reInit', updateCurrentSlide);
-	emblaApi.value.on('pointerDown', onPointerDown);
-	emblaApi.value.on('pointerUp', onPointerUp);
+	checkBreakpoint();
+	window.addEventListener('resize', debouncedResize);
+	window.addEventListener('keydown', onKeyDown);
 });
 
 onUnmounted(() => {
 	$global.setKey('lockScroll', false);
-
-	if (!emblaApi.value) return;
-
-	// Events :
-	emblaApi.value.off('select', updateCurrentSlide);
-	emblaApi.value.off('reInit', updateCurrentSlide);
-	emblaApi.value.off('pointerDown', onPointerDown);
-	emblaApi.value.off('pointerUp', onPointerUp);
+	window.removeEventListener('resize', debouncedResize);
+	window.removeEventListener('keydown', onKeyDown);
 });
 </script>
 
@@ -287,30 +288,25 @@ onUnmounted(() => {
 			</div>
 		</div>
 		<div class="minimap-container">
-			<div
-				class="slideshow-container col-start-dk-5 col-end-dk-8 col-start-mlg-4 col-end-mlg-7 col-start-xlg-3 col-end-xlg-6"
-				ref="emblaRef"
+			<Slideshow
+				ref="slideshowRef"
+				v-model="currentSlide"
+				class="col-start-dk-5 col-end-dk-8 col-start-mlg-4 col-end-mlg-7 col-start-xlg-3 col-end-xlg-6"
+				:enabled="pictures.length > 1"
+				:is-hidden="isSlideshowHidden"
+				@wheel.passive="onWheel"
 			>
-				<div
-					class="slideshow-wrapper"
-					:class="{
-						'can-grab': emblaApi && pictures.length > 1,
-						'is-grabbing': isGrabbing,
-						'is-hidden': isSlideshowHidden
-					}"
+				<Button
+					class="picture-wrapper"
+					v-for="(picture, index) in pictures"
+					:key="index"
+					:data-cursor-label="$t('visualize')"
+					@click="goToSlide(index)"
+					:class="{ 'is-current': index === currentSlide }"
 				>
-					<Button
-						class="picture-wrapper"
-						v-for="(picture, index) in pictures"
-						:key="index"
-						:data-cursor-label="$t('visualize')"
-						@click="goToSlide(index)"
-						:class="{ 'is-current': index === currentSlide }"
-					>
-						<Image :src="picture" object-fit="contain" />
-					</Button>
-				</div>
-			</div>
+					<Image :src="picture" object-fit="contain" />
+				</Button>
+			</Slideshow>
 		</div>
 		<div class="zoom-container hide-mobile-tablet">
 			<div class="zoom-inner-container">
@@ -497,15 +493,14 @@ onUnmounted(() => {
 
 .slideshow-container {
 	position: relative;
-	overflow: hidden;
 
 	@include mq($until: desktop) {
 		padding-inline: var(--gutter);
 	}
 
 	@include mq(desktop) {
-		// margin-block-start: 50vh;
-		// padding-block-end: 100vh;
+		height: 100vh;
+		touch-action: none;
 	}
 }
 
@@ -529,9 +524,8 @@ onUnmounted(() => {
 
 	@include mq(desktop) {
 		flex-direction: column;
-		height: 100vh;
-		// padding-block-end: 50vh;
-		// padding-block-end: 100vh;
+		height: auto;
+		will-change: transform;
 
 		&.is-hidden {
 			opacity: 0;
@@ -541,29 +535,41 @@ onUnmounted(() => {
 
 	& > .picture-wrapper {
 		height: 100%;
-		transition: opacity 0.4s $power2InOut;
 
 		&.is-current {
 			pointer-events: none;
-			opacity: 0.75;
 		}
 
 		@include mq($until: desktop) {
 			min-width: 0;
 			flex: 0 0 fluidSize(150px, 85px);
+			height: fit-content;
 		}
 
 		@include mq(desktop) {
 			width: 100%;
-
-			// &:first-of-type {
-			// 	padding-block-start: 100vh;
-			// }
-
-			// &:last-of-type {
-			// 	padding-block-end: 100vh;
-			// }
 		}
+	}
+}
+
+.active-indicator {
+	position: absolute;
+	z-index: 2;
+	left: 0;
+	border: 2px solid $khaki;
+	pointer-events: none;
+	background: rgba($khaki, 0.25);
+
+	@include mq($until: desktop) {
+		top: 50%;
+	}
+
+	@include mq(desktop) {
+		top: 0;
+	}
+
+	.is-dark & {
+		border-color: $white;
 	}
 }
 
