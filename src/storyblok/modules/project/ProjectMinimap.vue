@@ -355,10 +355,11 @@ onUnmounted(() => {
 	inset: 0;
 	overflow: hidden;
 	pointer-events: none;
-	transition: background 0.4s $power2InOut;
 
 	&.is-dark {
-		background: $smokyBlack;
+		.overlay {
+			background: $smokyBlack;
+		}
 	}
 
 	&.is-visible {
@@ -373,7 +374,6 @@ onUnmounted(() => {
 		}
 	}
 
-	.overlay,
 	.minimap-container,
 	.close-cta,
 	.theme-cta,
@@ -396,7 +396,9 @@ onUnmounted(() => {
 	inset: 0;
 	opacity: 0;
 	background: $white;
-	transition: opacity 0.4s $power2InOut;
+	transition:
+		opacity 0.4s $power2InOut,
+		background 0.4s $power2InOut;
 }
 
 .close-cta {
