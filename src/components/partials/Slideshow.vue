@@ -24,7 +24,12 @@ const isGrabbing = ref(false);
 const isDesktop = ref(true);
 const isMoving = ref(false);
 
-// Carousel logic :
+// Cache for slides and their dimensions (avoids repeated DOM queries) :
+let slidesCache: HTMLElement[] = [];
+let slidesDimensionsCache: Array<{ size: number; pos: number }> = [];
+let containerSizeCache = 0;
+
+// Carousel logic:
 let startPos = 0;
 let startTranslate = 0;
 let currentTranslate = 0;
@@ -37,33 +42,61 @@ let axis = 'x';
 
 const dragThreshold = 5;
 
-// Methods :
-const getSlideDimensions = (slide: HTMLElement) => {
-	return isDesktop.value
-		? { size: slide.offsetHeight, pos: slide.offsetTop }
-		: { size: slide.offsetWidth, pos: slide.offsetLeft };
+// GSAP Ticker for velocity calculation (synced with RAF) :
+let tickerVelocity = 0;
+let tickerLastPos = 0;
+let tickerActive = false;
+
+const velocityTicker = () => {
+	if (!isDragging) return;
+
+	const pos = isDesktop.value ? lastPos : lastPos;
+	const delta = pos - tickerLastPos;
+
+	// Moving average for smooth velocity :
+	tickerVelocity = tickerVelocity * 0.7 + delta * 0.3;
+	tickerLastPos = pos;
 };
 
-const getContainerSize = () => {
-	if (!slideshowContainerRef.value) return 0;
-	return isDesktop.value ? slideshowContainerRef.value.offsetHeight : slideshowContainerRef.value.offsetWidth;
-};
+// Methods:
+const initSlidesCache = () => {
+	if (!slideshowWrapperRef.value) return;
 
-const getAllSlides = () => {
-	if (!slideshowWrapperRef.value) return [];
-	return Array.from(
+	// Query DOM once and cache all slides :
+	slidesCache = Array.from(
 		slideshowWrapperRef.value.querySelectorAll(props.itemSelector || ':scope > .picture-wrapper')
 	) as HTMLElement[];
+
+	// Pre-calculate dimensions :
+	updateSlideDimensionsCache();
 };
+
+const updateSlideDimensionsCache = () => {
+	if (!slideshowContainerRef.value) return;
+
+	// Cache container size
+	containerSizeCache = isDesktop.value
+		? slideshowContainerRef.value.offsetHeight
+		: slideshowContainerRef.value.offsetWidth;
+
+	// Pre-calculate all slide dimensions and positions :
+	slidesDimensionsCache = slidesCache.map((slide) => ({
+		size: isDesktop.value ? slide.offsetHeight : slide.offsetWidth,
+		pos: isDesktop.value ? slide.offsetTop : slide.offsetLeft
+	}));
+};
+
+// Return cached slides instead of querying DOM :
+const getAllSlides = () => slidesCache;
 
 const updateActiveIndicator = (immediate = false) => {
 	if (!activeIndicatorRef.value || !slideshowWrapperRef.value) return;
 
-	const slides = getAllSlides();
-	const activeSlide = slides[modelValue.value];
+	const activeSlide = slidesCache[modelValue.value];
 	if (!activeSlide) return;
 
-	const { pos } = getSlideDimensions(activeSlide);
+	// Use cached dimensions :
+	const { pos } = slidesDimensionsCache[modelValue.value];
 	const slideWidth = activeSlide.offsetWidth;
 	const slideHeight = activeSlide.offsetHeight;
 
@@ -81,16 +114,11 @@ const updateActiveIndicator = (immediate = false) => {
 };
 
 const scrollToSlide = (index: number, immediate = false) => {
-	if (!slideshowWrapperRef.value || !slideshowContainerRef.value) return;
+	if (!slideshowWrapperRef.value || index >= slidesCache.length) return;
 
-	const slides = getAllSlides();
-	if (!slides[index]) return;
-
-	const slide = slides[index];
-	const { size, pos } = getSlideDimensions(slide);
-	const containerSize = getContainerSize();
-
-	const target = containerSize / 2 - (pos + size / 2);
+	// Use cached dimensions (no DOM queries) :
+	const { size, pos } = slidesDimensionsCache[index];
+	const target = containerSizeCache / 2 - (pos + size / 2);
 	currentTranslate = target;
 
 	gsap.to(slideshowWrapperRef.value, {
@@ -108,15 +136,12 @@ const scrollToSlide = (index: number, immediate = false) => {
 };
 
 const findNearestSlide = () => {
-	const slides = getAllSlides();
-	const containerSize = getContainerSize();
-	const center = containerSize / 2;
-
+	const center = containerSizeCache / 2;
 	let closestIndex = 0;
 	let minDistance = Infinity;
 
-	slides.forEach((slide, index) => {
-		const { size, pos } = getSlideDimensions(slide);
+	// Use cached dimensions for calculation :
+	slidesDimensionsCache.forEach(({ size, pos }, index) => {
 		const slideCenter = currentTranslate + pos + size / 2;
 		const distance = Math.abs(center - slideCenter);
 
@@ -136,18 +161,26 @@ const onPointerDown = (e: PointerEvent) => {
 	isGrabbing.value = true;
 	startPos = isDesktop.value ? e.clientY : e.clientX;
 
-	// Read actual position to avoid jumps from unfinished animations
+	// Read actual position to avoid jumps from unfinished animations :
 	currentTranslate = gsap.getProperty(slideshowWrapperRef.value, axis) as number;
 	startTranslate = currentTranslate;
 	lastPos = startPos;
-	lastTime = Date.now();
+	lastTime = performance.now();
 	velocity = 0;
 	didMove = false;
 	isMoving.value = false;
 
+	// Initialize ticker for smooth velocity tracking :
+	tickerVelocity = 0;
+	tickerLastPos = startPos;
+	if (!tickerActive) {
+		gsap.ticker.add(velocityTicker);
+		tickerActive = true;
+	}
+
 	gsap.killTweensOf(slideshowWrapperRef.value);
 
-	// Events :
+	// Events:
 	window.addEventListener('pointermove', onPointerMove, { passive: false });
 	window.addEventListener('pointerup', onPointerUp);
 	window.addEventListener('pointercancel', onPointerUp);
@@ -166,13 +199,12 @@ const onPointerMove = (e: PointerEvent) => {
 
 	const targetTranslate = startTranslate + delta;
 
-	// Update currentTranslate with resistance if out of bounds
-	const containerSize = getContainerSize();
+	// Update currentTranslate with resistance if out of bounds :
 	const wrapperSize = isDesktop.value
 		? slideshowWrapperRef.value.offsetHeight
 		: slideshowWrapperRef.value.offsetWidth;
-	const minTranslate = containerSize / 2 - (wrapperSize - 50);
-	const maxTranslate = containerSize / 2 + 50;
+	const minTranslate = containerSizeCache / 2 - (wrapperSize - 50);
+	const maxTranslate = containerSizeCache / 2 + 50;
 
 	if (targetTranslate > maxTranslate) {
 		currentTranslate = maxTranslate + (targetTranslate - maxTranslate) * 0.3;
@@ -186,17 +218,12 @@ const onPointerMove = (e: PointerEvent) => {
 		[axis]: currentTranslate
 	});
 
-	// Calculate velocity :
-	const now = Date.now();
-	const dt = now - lastTime;
-
-	if (dt > 0) {
-		const instantVelocity = (pos - lastPos) / dt;
-		velocity = velocity * 0.8 + instantVelocity * 0.2;
-	}
-
+	// Simplified update for ticker :
 	lastPos = pos;
-	lastTime = now;
+	lastTime = performance.now();
+
+	// Use ticker velocity instead of manual calculation :
+	velocity = tickerVelocity;
 };
 
 const onPointerUp = () => {
@@ -205,29 +232,35 @@ const onPointerUp = () => {
 	isDragging = false;
 	isGrabbing.value = false;
 
+	// Stop ticker
+	if (tickerActive) {
+		gsap.ticker.remove(velocityTicker);
+		tickerActive = false;
+	}
+
 	window.removeEventListener('pointermove', onPointerMove);
 	window.removeEventListener('pointerup', onPointerUp);
 	window.removeEventListener('pointercancel', onPointerUp);
 
-	const slides = getAllSlides();
-	if (slides.length === 0) return;
+	if (slidesCache.length === 0) return;
 
-	// Kill all animations :
+	// Kill all animations:
 	gsap.killTweensOf(slideshowWrapperRef.value);
 	gsap.killTweensOf(activeIndicatorRef.value);
 
 	let targetIndex = findNearestSlide();
 
-	// Improved Momentum snapping :
-	if (Math.abs(velocity) > 0.2) {
-		const slideSize = isDesktop.value ? slides[0].offsetHeight : slides[0].offsetWidth;
-		const travelDist = velocity * 250;
+	// Improved momentum snapping using ticker velocity :
+	if (Math.abs(tickerVelocity) > 0.5) {
+		// Adjusted threshold for ticker :
+		const slideSize = slidesDimensionsCache[0]?.size || 0;
+		const travelDist = tickerVelocity * 15;
 		const slideOffset = Math.round(travelDist / slideSize);
 
-		if (velocity > 0) {
+		if (tickerVelocity > 0) {
 			targetIndex = Math.max(0, targetIndex - Math.abs(slideOffset));
 		} else {
-			targetIndex = Math.min(slides.length - 1, targetIndex + Math.abs(slideOffset));
+			targetIndex = Math.min(slidesCache.length - 1, targetIndex + Math.abs(slideOffset));
 		}
 	}
 
@@ -248,6 +281,9 @@ const checkBreakpoint = () => {
 
 	axis = isDesktop.value ? 'y' : 'x';
 
+	// Recalculate dimensions cache on breakpoint change :
+	updateSlideDimensionsCache();
+
 	nextTick(() => {
 		scrollToSlide(modelValue.value, true);
 	});
@@ -258,9 +294,10 @@ const debouncedResize = useDebounceFn(checkBreakpoint, 200);
 // Expose methods to parent :
 defineExpose({
 	scrollToSlide,
-	next: () => scrollToSlide((modelValue.value + 1) % getAllSlides().length),
-	prev: () => scrollToSlide((modelValue.value - 1 + getAllSlides().length) % getAllSlides().length),
-	isMoving
+	next: () => scrollToSlide((modelValue.value + 1) % slidesCache.length),
+	prev: () => scrollToSlide((modelValue.value - 1 + slidesCache.length) % slidesCache.length),
+	isMoving,
+	refreshCache: initSlidesCache
 });
 
 // Watchers :
@@ -272,11 +309,14 @@ watch(modelValue, (newVal, oldVal) => {
 
 // Attach & Detach :
 onMounted(() => {
+	initSlidesCache();
 	checkBreakpoint();
 	window.addEventListener('resize', debouncedResize);
 });
 
 onUnmounted(() => {
+	if (tickerActive) gsap.ticker.remove(velocityTicker);
+
 	window.removeEventListener('resize', debouncedResize);
 	window.removeEventListener('pointermove', onPointerMove);
 	window.removeEventListener('pointerup', onPointerUp);
