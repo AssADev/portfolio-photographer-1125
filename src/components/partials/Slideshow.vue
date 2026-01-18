@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useDebounceFn } from '@vueuse/core';
+import { useResizeObserver } from '@vueuse/core';
 import { gsap } from 'gsap';
 import { nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
 
@@ -86,9 +86,6 @@ const updateSlideDimensionsCache = () => {
 	}));
 };
 
-// Return cached slides instead of querying DOM :
-const getAllSlides = () => slidesCache;
-
 const updateActiveIndicator = (immediate = false) => {
 	if (!activeIndicatorRef.value || !slideshowWrapperRef.value) return;
 
@@ -156,6 +153,9 @@ const findNearestSlide = () => {
 
 const onPointerDown = (e: PointerEvent) => {
 	if (!props.enabled) return;
+
+	const target = e.target as HTMLElement;
+	if (target && target.setPointerCapture) target.setPointerCapture(e.pointerId);
 
 	isDragging = true;
 	isGrabbing.value = true;
@@ -226,11 +226,13 @@ const onPointerMove = (e: PointerEvent) => {
 	velocity = tickerVelocity;
 };
 
-const onPointerUp = () => {
+const onPointerUp = (e: PointerEvent) => {
 	if (!isDragging) return;
 
+	const target = e.target as HTMLElement;
+	if (target && target.releasePointerCapture) target.releasePointerCapture(e.pointerId);
+
 	isDragging = false;
-	isGrabbing.value = false;
 
 	// Stop ticker
 	if (tickerActive) {
@@ -272,24 +274,7 @@ const onPointerUp = () => {
 	}, 50);
 };
 
-const checkBreakpoint = () => {
-	isDesktop.value = window.innerWidth >= breakPointsNoUnits.desktop;
-
-	if (slideshowWrapperRef.value) {
-		gsap.set(slideshowWrapperRef.value, { clearProps: 'all' });
-	}
-
-	axis = isDesktop.value ? 'y' : 'x';
-
-	// Recalculate dimensions cache on breakpoint change :
-	updateSlideDimensionsCache();
-
-	nextTick(() => {
-		scrollToSlide(modelValue.value, true);
-	});
-};
-
-const debouncedResize = useDebounceFn(checkBreakpoint, 200);
+const checkBreakpoint = () => {};
 
 // Expose methods to parent :
 defineExpose({
@@ -298,6 +283,22 @@ defineExpose({
 	prev: () => scrollToSlide((modelValue.value - 1 + slidesCache.length) % slidesCache.length),
 	isMoving,
 	refreshCache: initSlidesCache
+});
+
+// Resize observers :
+useResizeObserver(slideshowContainerRef, () => {
+	isDesktop.value = window.innerWidth >= breakPointsNoUnits.desktop;
+
+	if (slideshowWrapperRef.value) {
+		gsap.set(slideshowWrapperRef.value, { clearProps: 'all' });
+	}
+
+	axis = isDesktop.value ? 'y' : 'x';
+	updateSlideDimensionsCache();
+
+	nextTick(() => {
+		scrollToSlide(modelValue.value, true);
+	});
 });
 
 // Watchers :
@@ -310,14 +311,11 @@ watch(modelValue, (newVal, oldVal) => {
 // Attach & Detach :
 onMounted(() => {
 	initSlidesCache();
-	checkBreakpoint();
-	window.addEventListener('resize', debouncedResize);
 });
 
 onUnmounted(() => {
 	if (tickerActive) gsap.ticker.remove(velocityTicker);
 
-	window.removeEventListener('resize', debouncedResize);
 	window.removeEventListener('pointermove', onPointerMove);
 	window.removeEventListener('pointerup', onPointerUp);
 });

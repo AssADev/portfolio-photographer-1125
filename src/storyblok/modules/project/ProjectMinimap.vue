@@ -67,14 +67,17 @@ const onWheel = (e: WheelEvent) => {
 	}
 };
 
-const onKeyDown = (event: KeyboardEvent) => {
+const onKeyDown = (e: KeyboardEvent) => {
 	if (!isVisible.value) return;
-	if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
-		event.preventDefault();
+
+	e.preventDefault();
+
+	if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
 		goToPrev();
-	} else if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
-		event.preventDefault();
+	} else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
 		goToNext();
+	} else if (e.key === 'Escape') {
+		onClose();
 	}
 };
 
