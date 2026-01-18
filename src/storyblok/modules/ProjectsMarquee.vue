@@ -79,7 +79,8 @@ const marqueePlaying = ref(true);
 
 	:deep(.partials-circular-star) {
 		@include mq($until: desktop) {
-			height: 125vh;
+			@include svh(125, height);
+
 			transform: translate3d(0, 50%, 0);
 		}
 

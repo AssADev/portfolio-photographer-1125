@@ -431,7 +431,9 @@ onUnmounted(() => {
 	@include mq($until: desktop) {
 		@include container;
 
-		height: calc(100vh - (var(--header-height) + (var(--gutter) * 2) * 4) - fluidSize(150px, 125px, null, desktop));
+		height: calc(
+			100svh - (var(--header-height) + (var(--gutter) * 2) * 4) - fluidSize(150px, 125px, null, desktop)
+		);
 	}
 
 	@include mq(desktop) {

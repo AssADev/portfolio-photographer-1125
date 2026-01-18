@@ -163,7 +163,7 @@ useGSAP(() => {
 		transform: translate3d(-50%, -50%, 0) scale3d(0, 0, 1);
 
 		@include mq($until: desktop) {
-			height: 125vh;
+			@include svh(125, height);
 		}
 
 		@include mq(desktop) {

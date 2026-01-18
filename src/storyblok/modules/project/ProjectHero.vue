@@ -149,7 +149,7 @@ onMounted(() => {
 
 	:deep(.partials-circular-star) {
 		@include mq($until: desktop) {
-			height: 125vh;
+			@include svh(125, height);
 		}
 
 		@include mq($until: large) {
