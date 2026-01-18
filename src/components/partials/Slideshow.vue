@@ -103,10 +103,10 @@ const updateActiveIndicator = (immediate = false) => {
 	gsap.killTweensOf(activeIndicatorRef.value);
 
 	gsap.to(activeIndicatorRef.value, {
-		width: slideWidth + 10,
-		height: slideHeight + 10,
-		x: isDesktop.value ? -5 : pos - 5,
-		y: isDesktop.value ? pos - 5 : '-50%',
+		width: slideWidth + 12,
+		height: slideHeight + 12,
+		x: isDesktop.value ? -6 : pos - 6,
+		y: isDesktop.value ? pos - 6 : '-50%',
 		duration: immediate ? 0 : 0.6,
 		ease: 'power3.out',
 		overwrite: 'auto'
