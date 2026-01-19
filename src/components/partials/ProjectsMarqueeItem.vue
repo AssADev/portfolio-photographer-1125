@@ -120,7 +120,7 @@ useGSAP(() => {
 	<a
 		ref="elRef"
 		v-if="informations"
-		:href="project.full_slug"
+		:href="`/${project.full_slug}`"
 		class="partials-projects-marquee-item"
 		:data-cursor-label="$t('discoverProject')"
 		@mouseenter="tl?.play()"
