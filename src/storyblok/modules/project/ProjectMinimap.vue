@@ -266,13 +266,13 @@ onUnmounted(() => {
 		data-lenis-prevent
 	>
 		<div class="overlay" />
-		<Button class="close-cta" @click="onClose" :disabled="isClosing">
-			<span>Close</span>
-		</Button>
 		<Button class="theme-cta" @click="onToggleDarkTheme">
 			<span>
 				{{ isDarkTheme ? 'Light' : 'Dark' }}
 			</span>
+		</Button>
+		<Button class="close-cta" @click="onClose" :disabled="isClosing">
+			<span>Close</span>
 		</Button>
 		<div class="viewer-container">
 			<div
@@ -400,7 +400,7 @@ onUnmounted(() => {
 		background 0.4s $power2InOut;
 }
 
-.close-cta {
+.theme-cta {
 	position: absolute;
 	z-index: 1;
 	top: var(--gutter);
@@ -414,7 +414,7 @@ onUnmounted(() => {
 	aspect-ratio: 1/1;
 }
 
-.theme-cta {
+.close-cta {
 	position: absolute;
 	z-index: 1;
 	top: var(--gutter);
