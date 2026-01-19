@@ -19,11 +19,11 @@ defineProps<{
 		:data-cursor-label="cursorLabel || $t('discoverProject')"
 		:style="{ '--hover-scale': hoverScale || 1.0175 }"
 	>
-		<d≈iv class="picture-wrapper">
+		<div class="picture-wrapper">
 			<picture>
 				<slot name="image" />
 			</picture>
-		</d≈iv>
+		</div>
 		<div class="content-container">
 			<LabelName :name="label" />
 			<div v-if="$slots.info" class="informations-wrapper">
@@ -48,9 +48,7 @@ defineProps<{
 	}
 
 	.picture-wrapper {
-		width: 100%;
-		height: 100%;
-		transition: transform 0.6s $elasticOut;
+		transition: transform 0.8s $elasticOut;
 	}
 
 	:deep(img) {
