@@ -48,6 +48,7 @@ defineProps<{
 	}
 
 	.picture-wrapper {
+		height: 100%;
 		transition: transform 0.8s $elasticOut;
 	}
 

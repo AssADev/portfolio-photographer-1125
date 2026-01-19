@@ -107,8 +107,16 @@ const serviceInformations = computed(() => {
 					:cursor-label="$t('discoverProject')"
 					:hover-scale="1.0375"
 					:class="{
-						'col-start-1 col-end-9': !blok.isReversed,
-						'col-start-5 col-end-13': blok.isReversed
+						'col-start-1 col-end-9 col-start-tb-1 col-end-tb-7':
+							(!blok.isReversed && index === 0 && projects.length === 2) ||
+							(!blok.isReversed && index === 0 && projects.length === 3),
+						'col-start-5 col-end-13 col-start-tb-11 col-end-tb-17':
+							(blok.isReversed && index === 0 && projects.length === 2) ||
+							(blok.isReversed && index === 1 && projects.length === 3),
+						'col-start-5 col-end-13 col-start-tb-5 col-end-tb-11':
+							blok.isReversed && index === 0 && projects.length === 3,
+						'col-start-1 col-end-9 col-start-tb-7 col-end-tb-13':
+							!blok.isReversed && index === 1 && projects.length === 3
 					}"
 				>
 					<template #image>
@@ -228,21 +236,16 @@ const serviceInformations = computed(() => {
 
 .project-wrapper-secondary {
 	position: relative;
+	gap: $gap;
 
-	@include mq($until: tablet) {
+	@include mq($until: desktop) {
 		@include grid;
-
-		row-gap: $gap;
-	}
-
-	@include mq(tablet) {
-		display: flex;
-		gap: $gap;
 	}
 
 	@include mq(desktop) {
 		position: sticky;
 		top: 20%;
+		display: flex;
 		height: fit-content;
 		align-items: flex-start;
 	}
