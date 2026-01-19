@@ -66,11 +66,11 @@ const resolvers = getRichTextResolvers('h2');
 .inner-container {
 	color: $white;
 	background: $smokyBlack;
-	padding-block-start: fluidSize(60px, 48px);
+	padding-block-start: fluidSize(72px, 48px);
 }
 
 .container-grid {
-	margin-block-end: fluidSize(60px, 48px);
+	margin-block-end: fluidSize(72px, 48px);
 }
 
 .title-wrapper {
@@ -107,7 +107,7 @@ const resolvers = getRichTextResolvers('h2');
 
 	@include mq($until: tablet) {
 		& > :deep(.partials-service-faq-section):not(:first-child) {
-			margin-block-start: fluidSize(60px, 48px, null, tablet);
+			margin-block-start: fluidSize(72px, 48px, null, tablet);
 		}
 	}
 }

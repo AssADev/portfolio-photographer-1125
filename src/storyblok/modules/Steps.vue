@@ -76,7 +76,7 @@ const layouts = [
 
 <style lang="scss" scoped>
 .steps {
-	padding-block: fluidSize(160px, 120px) fluidSize(120px, 80px);
+	padding-block: fluidSize(180px, 120px) fluidSize(140px, 80px);
 
 	&.with-circular-star {
 		.container-grid {
@@ -126,7 +126,7 @@ const layouts = [
 
 	@include mq(desktop) {
 		&:nth-child(2) {
-			margin-block-start: fluidSize(160px, 120px);
+			margin-block-start: fluidSize(180px, 120px);
 		}
 	}
 }

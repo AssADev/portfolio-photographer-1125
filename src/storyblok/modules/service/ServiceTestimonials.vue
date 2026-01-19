@@ -131,7 +131,7 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 .service-testimonials {
-	padding-block: fluidSize(112px, 72px) fluidSize(128px, 96px);
+	padding-block: fluidSize(112px, 72px) fluidSize(142px, 96px);
 }
 
 .container-grid {
@@ -155,7 +155,7 @@ onUnmounted(() => {
 }
 
 .testimonials-container {
-	margin-block-start: fluidSize(120px, 80px);
+	margin-block-start: fluidSize(140px, 80px);
 }
 
 .slideshow-wrapper {

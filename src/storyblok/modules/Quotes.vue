@@ -73,7 +73,7 @@ const layouts = [
 
 <style lang="scss" scoped>
 .quotes {
-	padding-block: fluidSize(160px, 120px) fluidSize(120px, 80px);
+	padding-block: fluidSize(180px, 120px) fluidSize(140px, 80px);
 
 	&.with-circular-star {
 		@include pseudo-gradient('before', 'top', 'ivory-white-transparent', 1, fluidSize(360px, 280px));

@@ -25,7 +25,7 @@ defineProps<{
 <style lang="scss" scoped>
 .partials-service-testimonials-item {
 	border-bottom: 1px solid rgba($eerieBlack, 0.4);
-	padding-block-end: fluidSize(60px, 48px);
+	padding-block-end: fluidSize(72px, 48px);
 }
 
 .content-container {

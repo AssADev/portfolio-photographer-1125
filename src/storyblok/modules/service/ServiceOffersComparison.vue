@@ -159,7 +159,7 @@ const getFormattedSuffix = (row: ComparisonRow, value: any) => {
 	display: flex;
 	flex-direction: column;
 	gap: fluidSize(10px, 8px);
-	margin-block-end: fluidSize(60px, 48px);
+	margin-block-end: fluidSize(72px, 48px);
 
 	@include mq(tablet) {
 		text-align: right;
@@ -180,7 +180,7 @@ const getFormattedSuffix = (row: ComparisonRow, value: any) => {
 .comparison-container {
 	display: flex;
 	flex-direction: column;
-	gap: fluidSize(40px, 36px);
+	gap: fluidSize(52px, 36px);
 }
 
 .section-container {

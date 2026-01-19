@@ -45,7 +45,7 @@ const MaterialsComponents = {
 <style lang="scss" scoped>
 .links-materials {
 	z-index: 1;
-	padding-block: fluidSize(128px, 96px) fluidSize(112px, 96px);
+	padding-block: fluidSize(142px, 96px) fluidSize(112px, 96px);
 	background: linear-gradient(
 		180deg,
 		rgba($white, 0) 0%,

@@ -40,7 +40,7 @@ const resolvers = getRichTextResolvers('h2');
 
 <style lang="scss" scoped>
 .service-offers {
-	padding-block: fluidSize(60px, 48px);
+	padding-block: fluidSize(72px, 48px);
 }
 
 .title-wrapper {
@@ -66,7 +66,7 @@ const resolvers = getRichTextResolvers('h2');
 .offers-container {
 	display: flex;
 	gap: $gap;
-	margin-block-start: fluidSize(60px, 48px);
+	margin-block-start: fluidSize(72px, 48px);
 
 	@include mq($until: desktop) {
 		flex-direction: column;

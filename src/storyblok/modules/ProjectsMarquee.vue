@@ -66,7 +66,7 @@ const marqueePlaying = ref(true);
 
 <style lang="scss" scoped>
 .projects-marquee {
-	padding-block-start: fluidSize(128px, 96px);
+	padding-block-start: fluidSize(142px, 96px);
 }
 
 .circular-star-wrapper {
@@ -101,7 +101,7 @@ const marqueePlaying = ref(true);
 
 .container-grid {
 	z-index: 2;
-	margin-block-end: fluidSize(60px, 48px, null, xxlarge);
+	margin-block-end: fluidSize(72px, 48px, null, xxlarge);
 
 	& > :deep(.partials-rich-text) {
 		@include roobert-48;

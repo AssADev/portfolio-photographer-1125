@@ -77,7 +77,7 @@ defineProps<{
 
 <style lang="scss" scoped>
 .biography-hero {
-	padding-block-end: fluidSize(128px, 96px);
+	padding-block-end: fluidSize(142px, 96px);
 
 	@include mq($until: desktop) {
 		padding-block-start: 5px;
@@ -179,7 +179,7 @@ defineProps<{
 	:deep(.partials-title-description-and-cta) {
 		@include mq($until: desktop) {
 			max-width: 360px;
-			margin-block-start: fluidSize(128px, 96px);
+			margin-block-start: fluidSize(142px, 96px);
 		}
 	}
 }

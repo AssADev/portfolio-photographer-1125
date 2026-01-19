@@ -129,7 +129,7 @@ useGSAP(() => {
 <style lang="scss" scoped>
 .biography-strangers-portraits {
 	background: linear-gradient(180deg, $white 0%, $ivory 25%, $ivory 75%, $white 100%);
-	padding-block-start: fluidSize(160px, 120px);
+	padding-block-start: fluidSize(180px, 120px);
 	overflow: hidden;
 }
 
