@@ -181,6 +181,7 @@ const handleMouseOver = (e: MouseEvent) => {
 		activeSnapTarget = snapEl;
 	} else if (!snapEl && activeSnapTarget) {
 		activeSnapTarget = null;
+		target.maxRotation = config.DEFAULT_MAX_ROTATION;
 
 		// When leaving, position the target at the bottom-right of the mouse :
 		const releaseAngle = Math.PI / 4; // 45 degrees

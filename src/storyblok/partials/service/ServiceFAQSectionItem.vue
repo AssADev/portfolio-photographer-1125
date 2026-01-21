@@ -27,7 +27,7 @@ watch(isToggled, () => {
 </script>
 
 <template>
-	<div class="partials-service-faq-section-item" :class="{ toggle: isToggled }" data-cursor-snap>
+	<div class="partials-service-faq-section-item" :class="{ toggle: isToggled }">
 		<Button class="question-header" @click="isToggled = !isToggled">
 			<span>{{ blok.question }}</span>
 		</Button>
