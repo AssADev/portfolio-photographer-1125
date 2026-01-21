@@ -6,6 +6,7 @@ import { computed, onMounted, ref, useTemplateRef } from 'vue';
 import { formatDateMonthYear } from '#utils/formatDate.ts';
 import { getRichTextResolvers } from '#utils/getRichTextResolvers.ts';
 import { getLocale } from '#utils/i18n.ts';
+import { getMarqueeImageWidth } from '#utils/marquee.ts';
 
 import Button from '#components/utils/Button.vue';
 import CircularStar from '#components/utils/CircularStar.vue';
@@ -17,13 +18,22 @@ import RichText from '#components/utils/RichText.vue';
 import type { StoryblokProjectInformations, StoryblokService } from '#types/component-types-sb.js';
 
 // Props :
-const { blok } = defineProps<{
+const { blok, pictures } = defineProps<{
 	blok: StoryblokProjectInformations;
+	pictures: string[];
 }>();
 
 // Refs :
 const marqueePlaying = ref(true);
 const sectionRef = useTemplateRef('sectionRef');
+
+// Computed :
+const scaledPictures = computed(() => {
+	return pictures.map((url) => ({
+		url,
+		width: getMarqueeImageWidth(url)
+	}));
+});
 
 // Resolvers (RichText) :
 const resolvers = getRichTextResolvers('h1');
@@ -54,11 +64,6 @@ const informations = computed(() => {
 	];
 });
 
-// Pictures :
-const pictures = computed(() => {
-	return [blok.cover, blok.coverSmall];
-});
-
 // Attach :
 onMounted(() => {
 	ScrollTrigger.create({
@@ -81,15 +86,14 @@ onMounted(() => {
 			<div class="marquee-container">
 				<Marquee
 					:speed="40"
-					pause-on-hover
-					:items="pictures"
+					:items="scaledPictures"
 					:scroll-speed="0.35"
 					align-items="flex-start"
 					v-model:playing="marqueePlaying"
 				>
 					<template #item="{ item }">
-						<div class="picture-wrapper">
-							<Image :src="item" object-fit="contain" />
+						<div class="picture-wrapper" :style="{ width: `${item.width}px` }">
+							<Image :src="item.url" object-fit="contain" />
 						</div>
 					</template>
 				</Marquee>
@@ -205,6 +209,13 @@ onMounted(() => {
 	:deep(.picture-wrapper) {
 		max-width: 350px;
 		max-height: 300px;
+
+		img {
+			width: 100%;
+			height: auto;
+			max-width: inherit;
+			max-height: inherit;
+		}
 	}
 }
 

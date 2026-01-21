@@ -5,9 +5,15 @@ import type { StoryblokProjectInformations } from '#types/component-types-sb.js'
 
 type Props = {
 	blok: StoryblokProjectInformations;
+	pictures: string[];
 };
 
-const { blok } = Astro.props;
+const { blok, pictures } = Astro.props;
 ---
 
-<ProjectHeroVue {...storyblokEditable(blok, Astro.locals.isPreviewMode)} {...Astro.props} client:visible />
+<ProjectHeroVue
+	{...storyblokEditable(blok, Astro.locals.isPreviewMode)}
+	{...Astro.props}
+	pictures={pictures}
+	client:visible
+/>

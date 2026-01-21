@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { ISbStoryData } from '@storyblok/js';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 import { getLinkAttributes } from '#utils/link.ts';
+import { getMarqueeImageWidth } from '#utils/marquee.ts';
 
 import ProjectsMarqueeItem from '#components/partials/ProjectsMarqueeItem.vue';
 import Button from '#components/utils/Button.vue';
@@ -13,13 +14,26 @@ import RichText from '#components/utils/RichText.vue';
 import type { StoryblokProject, StoryblokProjectsMarquee } from '#types/component-types-sb.js';
 
 // Props :
-defineProps<{
+const { projects } = defineProps<{
 	blok: StoryblokProjectsMarquee;
 	projects: ISbStoryData<StoryblokProject>[];
 }>();
 
 // Variables :
 const marqueePlaying = ref(true);
+
+// Computed :
+const scaledProjects = computed(() => {
+	return projects.map((project) => {
+		const cover = project.content.informations?.[0]?.coverSmall;
+		const url = typeof cover === 'string' ? cover : cover?.filename || '';
+
+		return {
+			project,
+			width: getMarqueeImageWidth(url)
+		};
+	});
+});
 </script>
 
 <template>
@@ -51,13 +65,13 @@ const marqueePlaying = ref(true);
 				:speed="40"
 				track-visible
 				pause-on-hover
-				:items="projects"
+				:items="scaledProjects"
 				:scroll-speed="0.35"
 				align-items="flex-end"
 				v-model:playing="marqueePlaying"
 			>
 				<template #item="{ item }">
-					<ProjectsMarqueeItem :project="item" />
+					<ProjectsMarqueeItem :project="item.project" :width="item.width" />
 				</template>
 			</Marquee>
 		</div>

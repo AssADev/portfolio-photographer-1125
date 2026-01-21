@@ -23,7 +23,14 @@ const pictures =
 		.map((i) => i.picture) ?? [];
 ---
 
-{blok.informations?.length && <ProjectHero blok={blok.informations[0] as StoryblokProjectInformations} />}
+{
+	blok.informations?.length && (
+		<ProjectHero
+			blok={blok.informations[0] as StoryblokProjectInformations}
+			pictures={pictures.map((p) => p.filename).filter((f): f is string => !!f)}
+		/>
+	)
+}
 
 <div class="modules-container">
 	<div class="modules-inner-container">

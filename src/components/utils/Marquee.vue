@@ -359,6 +359,7 @@ onUnmounted(() => {
 	flex-shrink: 0;
 	gap: var(--marquee-gap, 0);
 	align-items: v-bind('alignItems');
+	pointer-events: none;
 
 	&:first-of-type {
 		padding-inline-start: var(--marquee-gap, 0);
@@ -369,5 +370,6 @@ onUnmounted(() => {
 	position: relative;
 	flex-shrink: 0;
 	width: var(--marquee-size, fit-content);
+	pointer-events: all;
 }
 </style>
