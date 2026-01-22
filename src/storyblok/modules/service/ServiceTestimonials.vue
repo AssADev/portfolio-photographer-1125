@@ -10,6 +10,7 @@ import LabelShuffle from '#components/partials/LabelShuffle.vue';
 import Button from '#components/utils/Button.vue';
 import CounterShuffle from '#components/utils/CounterShuffle.vue';
 import Icon from '#components/utils/Icon.vue';
+import Image from '#components/utils/Image.vue';
 
 import type { StoryblokServiceTestimonials } from '#types/component-types-sb.js';
 
@@ -25,13 +26,21 @@ const canPrev = ref(false);
 const canNext = ref(false);
 const currentSlide = ref(0);
 const isGrabbing = ref(false);
+const isWaiting = ref(false);
+const hoveredIndex = ref<number | null>(null);
+let waitingTimeout: ReturnType<typeof setTimeout> | null = null;
 
 const [emblaRef, emblaApi] = emblaCarouselVue({
 	active: (blok.testimonials?.length ?? 0) > 1 ? true : false
 });
 
 // Computed :
-const testimonials = computed(() => blok.testimonials);
+const testimonials = computed(() => blok.testimonials || []);
+const hoveredTestimonial = computed(() =>
+	hoveredIndex.value !== null ? testimonials.value[hoveredIndex.value] : null
+);
+const showImages = computed(() => hoveredIndex.value !== null && !isGrabbing.value && !isWaiting.value);
+const displayPictures = computed(() => (showImages.value ? hoveredTestimonial.value?.pictures || [] : []));
 
 // Methods :
 const updateCurrentSlide = () => {
@@ -42,12 +51,29 @@ const updateCurrentSlide = () => {
 	currentSlide.value = emblaApi.value.selectedScrollSnap();
 };
 
+// Events :
 const onPointerDown = () => {
 	isGrabbing.value = true;
+	if (waitingTimeout) clearTimeout(waitingTimeout);
+	isWaiting.value = false;
 };
 
 const onPointerUp = () => {
 	isGrabbing.value = false;
+	isWaiting.value = true;
+
+	if (waitingTimeout) clearTimeout(waitingTimeout);
+	waitingTimeout = setTimeout(() => {
+		isWaiting.value = false;
+	}, 800);
+};
+
+const onMouseEnter = (index: number) => {
+	hoveredIndex.value = index;
+};
+
+const onMouseLeave = () => {
+	hoveredIndex.value = null;
 };
 
 // Attach & Detach :
@@ -73,6 +99,45 @@ onUnmounted(() => {
 	emblaApi.value.off('pointerDown', onPointerDown);
 	emblaApi.value.off('pointerUp', onPointerUp);
 });
+
+// Layouts :
+const layouts = [
+	{
+		classes: [
+			'col-start-dk-20',
+			'col-end-dk-25',
+			'col-start-lg-20',
+			'col-end-lg-25',
+			'col-start-xxlg-20',
+			'col-end-xxlg-25'
+		],
+		align: 'start'
+	},
+	{
+		classes: [
+			'col-start-dk-2',
+			'col-end-dk-5',
+			'col-start-lg-2',
+			'col-end-lg-5',
+			'col-start-xxlg-2',
+			'col-end-xxlg-5'
+		],
+		align: 'center'
+	},
+	{
+		classes: [
+			'col-start-dk-27',
+			'col-end-dk-33',
+			'col-start-lg-27',
+			'col-end-lg-33',
+			'col-start-xxlg-27',
+			'col-end-xxlg-33'
+		],
+		align: 'end'
+	}
+];
+
+// TODO : Layouts responsive / Delete spamm mouseleave / Only on move the pictures needs to disappear
 </script>
 
 <template>
@@ -103,9 +168,22 @@ onUnmounted(() => {
 						}"
 					>
 						<ServiceTestimonialsItem
-							v-for="testimonial in testimonials"
+							v-for="(testimonial, index) in testimonials"
 							:key="testimonial._uid"
 							:blok="testimonial"
+							class="slideshow-item"
+							:class="{ disabled: currentSlide !== index }"
+							:style="{
+								opacity:
+									hoveredIndex !== null &&
+									hoveredIndex !== index &&
+									displayPictures.length &&
+									!isGrabbing
+										? 0.4
+										: 1
+							}"
+							@mouseenter="onMouseEnter(index)"
+							@mouseleave="onMouseLeave"
 						/>
 					</div>
 				</div>
@@ -124,6 +202,19 @@ onUnmounted(() => {
 						</Button>
 					</div>
 				</div>
+			</div>
+			<div class="pictures-container hide-mobile-tablet">
+				<TransitionGroup name="picture-anim">
+					<div
+						v-for="(item, index) in displayPictures"
+						:key="item._uid"
+						class="picture-wrapper"
+						:class="layouts[index]?.classes"
+						:style="{ alignSelf: layouts[index]?.align, '--index': index }"
+					>
+						<Image :src="item.picture" object-fit="contain" />
+					</div>
+				</TransitionGroup>
 			</div>
 		</div>
 	</section>
@@ -158,6 +249,31 @@ onUnmounted(() => {
 	margin-block-start: fluidSize(140px, 80px);
 }
 
+.slideshow-container {
+	position: relative;
+}
+
+.pictures-container {
+	@include grid;
+
+	position: absolute;
+	inset: 0;
+	margin-block-end: fluidSize(80px, 72px);
+	pointer-events: none;
+
+	.picture-wrapper {
+		position: absolute;
+		height: fit-content;
+		overflow: hidden;
+		max-height: fluidSize(220px, 160px, null, widescreen);
+
+		img {
+			height: auto;
+			max-height: inherit;
+		}
+	}
+}
+
 .slideshow-wrapper {
 	display: flex;
 	gap: $gap;
@@ -170,9 +286,14 @@ onUnmounted(() => {
 		cursor: grabbing;
 	}
 
-	& > :deep(.partials-service-testimonials-item) {
+	& > :deep(.slideshow-item) {
 		min-width: 0;
 		flex: 0 0 100%;
+		transition: opacity 0.6s $power2Out;
+
+		&.disabled {
+			pointer-events: none;
+		}
 	}
 }
 
@@ -224,6 +345,71 @@ onUnmounted(() => {
 				inset: -2px -6px -4px;
 			}
 		}
+	}
+}
+
+// Transitions :
+// .picture-anim-enter-active,
+// .picture-anim-leave-active {
+// 	transition: transform 0.8s $power2Out;
+// 	transition-delay: calc(var(--index) * 0.1s);
+
+// 	img {
+// 		transition: transform 0.8s $power2Out;
+// 		transition-delay: calc(var(--index) * 0.1s);
+// 	}
+// }
+
+// .picture-anim-enter-from,
+// .picture-anim-leave-to {
+// 	transform: scale3d(0, 0, 0);
+
+// 	img {
+// 		transform: scale3d(2, 2, 1);
+// 	}
+// }
+
+.picture-anim-enter-active {
+	transition: transform 0.6s $power2Out;
+	transition-delay: calc(var(--index) * 0.1s);
+
+	img {
+		transition: transform 0.6s $power2Out;
+		transition-delay: calc(var(--index) * 0.1s);
+	}
+}
+
+.picture-anim-leave-active {
+	transition: transform 0.6s $power2InOut;
+	transition-delay: calc(var(--index) * 0.1s);
+
+	img {
+		transition: transform 0.6s $power2InOut;
+		transition-delay: calc(var(--index) * 0.1s);
+	}
+}
+
+// .picture-anim-enter-from {
+// 	transform: scale3d(0, 0, 0);
+
+// 	img {
+// 		transform: scale3d(2, 2, 1);
+// 	}
+// }
+
+.picture-anim-enter-from {
+	transform: translate3d(0, 100%, 0);
+
+	img {
+		transform: translate3d(0, -100%, 0);
+	}
+}
+
+.picture-anim-leave-to {
+	transform: translate3d(0, -100%, 0);
+
+	img {
+		transform: translate3d(0, 100%, 0);
 	}
 }
 </style>

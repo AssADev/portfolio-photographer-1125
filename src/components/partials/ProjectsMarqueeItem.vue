@@ -178,9 +178,6 @@ onUnmounted(() => {
 	}
 
 	img {
-		width: 100%;
-		height: auto;
-		max-height: inherit;
 		transition: transform 0.6s $power2Out;
 	}
 }

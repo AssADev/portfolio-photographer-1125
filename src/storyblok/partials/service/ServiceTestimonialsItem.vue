@@ -8,10 +8,14 @@ import type { StoryblokServiceTestimonialsItem } from '#types/component-types-sb
 defineProps<{
 	blok: StoryblokServiceTestimonialsItem;
 }>();
+const emit = defineEmits<{
+	mouseenter: [];
+	mouseleave: [];
+}>();
 </script>
 
 <template>
-	<div class="partials-service-testimonials-item">
+	<div class="partials-service-testimonials-item" @mouseenter="emit('mouseenter')" @mouseleave="emit('mouseleave')">
 		<div class="content-container">
 			<RichText :doc="blok.testimonial" />
 			<div v-if="blok.author" class="author-wrapper">
