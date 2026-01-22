@@ -13,7 +13,7 @@ export type MarqueeImageOptions = {
  * and preserving its original aspect ratio.
  */
 export function getMarqueeImageWidth(url: string, options: MarqueeImageOptions = {}): number {
-	const { maxWidth = 350, maxHeight = 300, minScale = 0.75, maxScale = 1.0, roundTo = 10 } = options;
+	const { maxWidth = 350, maxHeight = 300, minScale = 0.75, maxScale = 1.0, roundTo = 20 } = options;
 
 	// 1. Get original dimensions :
 	const { width, height } = parseDimensionsFromUrl(url);
