@@ -80,7 +80,7 @@ onUnmounted(() => {
 		<div class="container-grid">
 			<h2 class="col-start-1 col-end-13 col-start-tb-1 col-end-tb-4">{{ blok.title }}</h2>
 			<div
-				class="description-wrapper col-start-1 col-end-13 col-start-tb-4 col-end-tb-13 col-start-dk-5 col-end-dk-16 col-start-lg-6 col-end-lg-15 col-start-xxlg-6 col-end-xxlg-14 col-start-wd-6 col-end-wd-13"
+				class="description-wrapper col-start-1 col-end-13 col-start-tb-4 col-end-tb-13 col-start-dk-6 col-end-dk-17 col-start-lg-6 col-end-lg-15 col-start-xxlg-6 col-end-xxlg-14 col-start-wd-6 col-end-wd-13"
 			>
 				<p v-html="nl2br(blok.description)" />
 				<Button
@@ -92,7 +92,7 @@ onUnmounted(() => {
 				/>
 			</div>
 			<div
-				class="testimonials-container col-start-1 col-end-13 col-start-tb-4 col-end-tb-15 col-start-dk-5 col-end-dk-26 col-start-lg-6 col-end-lg-26 col-start-xxlg-6 col-end-xxlg-23"
+				class="testimonials-container col-start-1 col-end-13 col-start-tb-4 col-end-tb-15 col-start-dk-6 col-end-dk-27 col-start-lg-6 col-end-lg-26 col-start-xxlg-6 col-end-xxlg-23"
 			>
 				<div class="slideshow-container" ref="emblaRef">
 					<div

@@ -32,7 +32,7 @@ defineProps<{
 	display: flex;
 	flex-direction: column;
 	gap: fluidSize(12px, 8px);
-	padding-inline-end: fluidSize(80px, 28px, null, widescreen);
+	padding-inline-end: fluidSize(160px, 56px, null, widescreen);
 
 	& > :deep(.partials-rich-text) {
 		@include roobert-48;
