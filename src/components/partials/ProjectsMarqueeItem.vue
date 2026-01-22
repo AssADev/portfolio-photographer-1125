@@ -159,8 +159,8 @@ onUnmounted(() => {
 		z-index: 1;
 		inset: 0;
 		opacity: 0;
-		background: radial-gradient(rgba($black, 0) 0%, rgba($black, 0.4) 100%);
-		transition: opacity 1s $power2Out 0.1s;
+		background: radial-gradient(rgba($black, 0) 0%, rgba($black, 0.5) 100%);
+		transition: opacity 1.2s $power2Out 0.1s;
 	}
 }
 
@@ -197,10 +197,10 @@ onUnmounted(() => {
 	padding: var(--gutter);
 
 	:deep(.title) {
-		@include roobert-36;
+		@include roobert-28;
 
 		em {
-			@include romie-36-italic;
+			@include romie-28-italic;
 
 			display: inline-block;
 			white-space: normal;
@@ -208,7 +208,7 @@ onUnmounted(() => {
 	}
 
 	:deep(.service) {
-		@include roobert-14-uppercase;
+		@include roobert-12-uppercase;
 
 		position: absolute;
 		bottom: var(--gutter);
