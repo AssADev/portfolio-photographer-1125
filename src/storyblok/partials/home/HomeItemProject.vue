@@ -44,26 +44,21 @@ const aspectRatio = computed(() => {
 		:to="`${project.full_slug}`"
 		v-magnetic="{
 			strength: 0.1,
-			parallax: { target: '.picture-viewer-container', strength: 0.025 }
+			parallax: { target: 'img', strength: 0.025 }
 		}"
 	>
 		<div class="informations-container">
-			<span>{{ formatIndex(index ?? 0) }}</span>
+			<span>/{{ formatIndex(index ?? 0) }}</span>
 			<RichText v-if="serviceName" :doc="serviceName" />
 		</div>
-		<div class="picture-viewer-container">
-			<div class="picture-container">
-				<div class="picture-wrapper" ref="imageRef">
-					<Image
-						v-if="cover"
-						:src="cover"
-						object-fit="contain"
-						:sizes="[{ widescreen: '2560px' }, '100vw']"
-					/>
-				</div>
+		<div class="picture-container">
+			<div class="picture-wrapper" ref="imageRef">
+				<Image v-if="cover" :src="cover" object-fit="contain" :sizes="[{ widescreen: '2560px' }, '100vw']" />
 			</div>
 		</div>
-		<RichText v-if="projectName" :doc="projectName" />
+		<div class="title-container">
+			<RichText v-if="projectName" :doc="projectName" />
+		</div>
 	</Button>
 </template>
 
@@ -72,8 +67,20 @@ const aspectRatio = computed(() => {
 	position: relative;
 }
 
+.informations-container {
+	@include roobert-14-uppercase;
+
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: fluidSize(20px, 16px);
+	margin-block-end: fluidSize(10px, 8px);
+}
+
 .picture-container {
+	position: relative;
 	aspect-ratio: v-bind(aspectRatio);
+	overflow: hidden;
 
 	& > :deep(.picture-wrapper) {
 		position: absolute;
@@ -81,6 +88,17 @@ const aspectRatio = computed(() => {
 
 		img {
 			height: 100%;
+			transform: scale3d(1.025, 1.025, 1);
+		}
+	}
+}
+
+.title-container {
+	& > :deep(.partials-rich-text) {
+		@include roobert-48;
+
+		em {
+			@include romie-48-italic;
 		}
 	}
 }
