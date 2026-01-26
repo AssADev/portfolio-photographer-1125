@@ -1,5 +1,28 @@
 ---
+import type { StoryblokHome } from '#types/component-types-sb.js';
+import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro';
+import type { SbBlokData } from '@storyblok/astro';
+import type { StoryblokHomeLayout } from '#types/component-types-sb.js';
+
+type Props = { blok: StoryblokHome };
+
 const { blok } = Astro.props;
+
+// Find all projects :
+const projects = blok.body
+	?.filter((c): c is StoryblokHomeLayout => c.component === 'HomeLayout')
+	.flatMap((c) => c.projects);
 ---
 
-<h1>Home</h1>
+{
+	blok.body?.map((blok, i) => {
+		return (
+			<StoryblokComponent
+				blok={blok as SbBlokData}
+				id={blok._uid}
+				data-component-name={blok.component}
+				projects={projects}
+			/>
+		);
+	})
+}

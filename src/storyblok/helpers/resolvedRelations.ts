@@ -6,5 +6,6 @@ export default [
 	'ServicesItem.service',
 	'ServicesItem.projects',
 	'ServiceProjectsHighlight.projects',
-	'ServiceProjectsExample.projects'
+	'ServiceProjectsExample.projects',
+	'HomeLayout.projects'
 ];

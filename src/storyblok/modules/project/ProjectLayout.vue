@@ -8,7 +8,7 @@ import type { StoryblokAsset, StoryblokLabelLink, StoryblokProjectLayout } from 
 import ProjectLayoutBase from '#storyblok/partials/project/layouts/ProjectLayoutBase.vue';
 
 // Props :
-const { blok, pictures } = defineProps<{
+const { blok } = defineProps<{
 	blok: StoryblokProjectLayout;
 	socials: StoryblokLabelLink[];
 	pictures: StoryblokAsset[];

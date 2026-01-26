@@ -11,6 +11,7 @@ export interface StoryblokBiography {
 		| StoryblokBiographyHero
 		| StoryblokBiographyStrangersPortraits
 		| StoryblokHomeHero
+		| StoryblokHomeLayout
 		| StoryblokLinksHero
 		| StoryblokLinksMaterials
 		| StoryblokOtherServices
@@ -125,6 +126,7 @@ export interface StoryblokHome {
 		| StoryblokBiographyHero
 		| StoryblokBiographyStrangersPortraits
 		| StoryblokHomeHero
+		| StoryblokHomeLayout
 		| StoryblokLinksHero
 		| StoryblokLinksMaterials
 		| StoryblokOtherServices
@@ -151,6 +153,25 @@ export interface StoryblokHomeHero {
 	title: StoryblokRichtext;
 	services?: (ISbStoryData<StoryblokProject> | string)[];
 	component: 'HomeHero';
+	_uid: string;
+}
+
+export interface StoryblokHomeLayout {
+	projects: (ISbStoryData<StoryblokProject> | string)[];
+	layout:
+		| ''
+		| 'layout-one'
+		| 'layout-two'
+		| 'layout-three'
+		| 'layout-four'
+		| 'layout-five'
+		| 'layout-six'
+		| 'layout-seven'
+		| 'layout-eight'
+		| 'layout-nine'
+		| 'layout-ten';
+	isReversed?: boolean;
+	component: 'HomeLayout';
 	_uid: string;
 }
 
@@ -222,6 +243,7 @@ export interface StoryblokLinks {
 		| StoryblokBiographyHero
 		| StoryblokBiographyStrangersPortraits
 		| StoryblokHomeHero
+		| StoryblokHomeLayout
 		| StoryblokLinksHero
 		| StoryblokLinksMaterials
 		| StoryblokOtherServices
@@ -316,6 +338,7 @@ export interface StoryblokProject {
 		| StoryblokBiographyHero
 		| StoryblokBiographyStrangersPortraits
 		| StoryblokHomeHero
+		| StoryblokHomeLayout
 		| StoryblokLinksHero
 		| StoryblokLinksMaterials
 		| StoryblokOtherServices
@@ -514,6 +537,7 @@ export interface StoryblokServices {
 		| StoryblokBiographyHero
 		| StoryblokBiographyStrangersPortraits
 		| StoryblokHomeHero
+		| StoryblokHomeLayout
 		| StoryblokLinksHero
 		| StoryblokLinksMaterials
 		| StoryblokOtherServices
