@@ -10,7 +10,6 @@ export interface StoryblokBiography {
 		| StoryblokBiographyCopyright
 		| StoryblokBiographyHero
 		| StoryblokBiographyStrangersPortraits
-		| StoryblokHomeHero
 		| StoryblokHomeLayout
 		| StoryblokLinksHero
 		| StoryblokLinksMaterials
@@ -121,11 +120,11 @@ export interface StoryblokFormSuccess {
 
 export interface StoryblokHome {
 	SEO: StoryblokSEO[];
+	hero: StoryblokHomeHero[];
 	body?: (
 		| StoryblokBiographyCopyright
 		| StoryblokBiographyHero
 		| StoryblokBiographyStrangersPortraits
-		| StoryblokHomeHero
 		| StoryblokHomeLayout
 		| StoryblokLinksHero
 		| StoryblokLinksMaterials
@@ -151,7 +150,7 @@ export interface StoryblokHome {
 
 export interface StoryblokHomeHero {
 	title: StoryblokRichtext;
-	services?: (ISbStoryData<StoryblokProject> | string)[];
+	services?: (ISbStoryData<StoryblokService> | string)[];
 	component: 'HomeHero';
 	_uid: string;
 }
@@ -242,7 +241,6 @@ export interface StoryblokLinks {
 		| StoryblokBiographyCopyright
 		| StoryblokBiographyHero
 		| StoryblokBiographyStrangersPortraits
-		| StoryblokHomeHero
 		| StoryblokHomeLayout
 		| StoryblokLinksHero
 		| StoryblokLinksMaterials
@@ -337,7 +335,6 @@ export interface StoryblokProject {
 		| StoryblokBiographyCopyright
 		| StoryblokBiographyHero
 		| StoryblokBiographyStrangersPortraits
-		| StoryblokHomeHero
 		| StoryblokHomeLayout
 		| StoryblokLinksHero
 		| StoryblokLinksMaterials
@@ -536,7 +533,6 @@ export interface StoryblokServices {
 		| StoryblokBiographyCopyright
 		| StoryblokBiographyHero
 		| StoryblokBiographyStrangersPortraits
-		| StoryblokHomeHero
 		| StoryblokHomeLayout
 		| StoryblokLinksHero
 		| StoryblokLinksMaterials

@@ -96,6 +96,7 @@
 		width: 100%;
 		height: #{$height};
 		background: map.get($gradients, $gradient);
+		pointer-events: none;
 
 		@if $zIndex != 0 {
 			z-index: $zIndex;

@@ -2,27 +2,46 @@
 import type { StoryblokHome } from '#types/component-types-sb.js';
 import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro';
 import type { SbBlokData } from '@storyblok/astro';
-import type { StoryblokHomeLayout } from '#types/component-types-sb.js';
+import type { StoryblokHomeLayout, StoryblokHomeHero } from '#types/component-types-sb.js';
+import HomeHero from '#storyblok/modules/home/HomeHero.astro';
 
 type Props = { blok: StoryblokHome };
 
 const { blok } = Astro.props;
 
 // Find all projects :
-const projects = blok.body
-	?.filter((c): c is StoryblokHomeLayout => c.component === 'HomeLayout')
-	.flatMap((c) => c.projects);
+const projects =
+	blok.body?.filter((c): c is StoryblokHomeLayout => c.component === 'HomeLayout').flatMap((c) => c.projects) || [];
 ---
 
-{
-	blok.body?.map((blok, i) => {
-		return (
-			<StoryblokComponent
-				blok={blok as SbBlokData}
-				id={blok._uid}
-				data-component-name={blok.component}
-				projects={projects}
-			/>
-		);
-	})
-}
+{blok.hero?.length && <HomeHero blok={blok.hero[0] as StoryblokHomeHero} projects={projects} />}
+
+<div class="modules-container">
+	<div class="modules-inner-container">
+		{
+			blok.body?.map((blok, i) => {
+				return (
+					<StoryblokComponent
+						blok={blok as SbBlokData}
+						id={blok._uid}
+						data-component-name={blok.component}
+						projects={projects}
+					/>
+				);
+			})
+		}
+	</div>
+</div>
+
+<style lang="scss" scoped>
+	.modules-container {
+		@include pseudo-gradient('before', 'bottom', 'white-ivory-transparent', 1, fluidSize(640px, 420px));
+
+		position: relative;
+	}
+
+	.modules-inner-container {
+		position: relative;
+		z-index: 1;
+	}
+</style>
