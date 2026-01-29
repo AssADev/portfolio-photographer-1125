@@ -24,10 +24,10 @@ const informations = computed(() => project.content.informations?.[0]);
 const cover = computed(() => informations.value?.cover);
 const projectName = computed(() => informations.value?.name);
 
-const serviceName = computed(() => {
+const service = computed(() => {
 	const service = informations.value?.service?.[0];
 	if (service && typeof service !== 'string') {
-		return service.content.informations?.[0]?.name;
+		return service;
 	}
 	return undefined;
 });
@@ -49,7 +49,9 @@ const aspectRatio = computed(() => {
 	>
 		<div class="informations-container">
 			<span>/{{ formatIndex(index ?? 0) }}</span>
-			<RichText v-if="serviceName" :doc="serviceName" />
+			<Button :to="`${service?.full_slug}`" data-cursor-snap>
+				<RichText v-if="service" :doc="service.content.informations?.[0]?.name" shuffle />
+			</Button>
 		</div>
 		<div class="picture-container">
 			<div class="picture-wrapper" ref="imageRef">

@@ -621,6 +621,9 @@ export interface StoryblokSiteConfig {
 	defaultImage: StoryblokAsset;
 	favicon: StoryblokAsset;
 	formsContact: (ISbStoryData<StoryblokForms> | string)[];
+	projectMarqueeTitle?: StoryblokRichtext;
+	projectMarqueeDescription?: string;
+	projectMarqueeLink?: StoryblokLabelLink[];
 	component: 'SiteConfig';
 	_uid: string;
 }

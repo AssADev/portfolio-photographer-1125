@@ -16,7 +16,7 @@ import resolvedRelations from '#storyblok/helpers/resolvedRelations';
  * @param isPreviewMode - Whether to fetch draft or published projects.
  * @returns An array of projects.
  */
-export async function getProjects(pageId: string, language = locales[0], isPreviewMode: boolean) {
+export async function getProjects(pageId: string, language = locales[0], isPreviewMode: boolean, tags?: string[]) {
 	const storyblokApi = useStoryblokApi();
 
 	const queryBaseParams: ISbStoriesParams = {
@@ -27,6 +27,19 @@ export async function getProjects(pageId: string, language = locales[0], isPrevi
 	};
 
 	try {
+		// Try fetching with tags if provided :
+		if (tags && tags.length > 0) {
+			const taggedResponse = await storyblokApi.get('cdn/stories', {
+				...queryBaseParams,
+				with_tag: tags.join(',')
+			} as any);
+
+			if (taggedResponse.data.stories?.length > 0) {
+				return taggedResponse.data.stories as ISbStoryData<StoryblokProject>[];
+			}
+		}
+
+		// Fallback to all projects if no tags or no projects found with tags :
 		const pageSpecificResponse = await storyblokApi.get('cdn/stories', queryBaseParams);
 
 		const allProjects: ISbStoryData<StoryblokProject>[] = pageSpecificResponse.data.stories || [];

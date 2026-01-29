@@ -171,14 +171,10 @@ const handleMouseOver = (e: MouseEvent) => {
 	const targetEl = eventTarget.closest('[data-cursor-label]') as HTMLElement;
 	const snapEl = eventTarget.closest('[data-cursor-snap]') as HTMLElement;
 
-	if (targetEl && targetEl !== activeTarget) {
-		triggerHover(targetEl);
-	} else if (!targetEl && activeTarget) {
-		triggerOut();
-	}
-
+	// 1. Update snap target first :
 	if (snapEl && snapEl !== activeSnapTarget) {
 		activeSnapTarget = snapEl;
+		if (activeTarget) triggerOut();
 	} else if (!snapEl && activeSnapTarget) {
 		activeSnapTarget = null;
 		target.maxRotation = config.DEFAULT_MAX_ROTATION;
@@ -187,6 +183,17 @@ const handleMouseOver = (e: MouseEvent) => {
 		const releaseAngle = Math.PI / 4; // 45 degrees
 		target.x = mouse.x + Math.cos(releaseAngle) * (config.DRAG_RADIUS / 2);
 		target.y = mouse.y + Math.sin(releaseAngle) * config.DRAG_RADIUS;
+	}
+
+	// 2. Only process label logic if we are NOT snapping :
+	if (!activeSnapTarget) {
+		if (targetEl && targetEl !== activeTarget) {
+			triggerHover(targetEl);
+		} else if (!targetEl && activeTarget) {
+			triggerOut();
+		}
+	} else if (activeTarget) {
+		triggerOut();
 	}
 };
 

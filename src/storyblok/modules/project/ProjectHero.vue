@@ -112,7 +112,11 @@ onMounted(() => {
 								v-if="information.isLink && information.value && typeof information.value === 'object'"
 							>
 								<Button :to="information.value.full_slug" data-cursor-snap>
-									<RichText class="value" :doc="information.value.content.informations[0].name" />
+									<RichText
+										class="value"
+										:doc="information.value.content.informations[0].name"
+										shuffle
+									/>
 								</Button>
 							</template>
 							<p v-else class="value">{{ information.value }}</p>

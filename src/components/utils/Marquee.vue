@@ -220,6 +220,17 @@ const onScroll = (instance: Lenis) => {
 	rate.set(Math.abs(instance.velocity) * (scrollSpeed || 1) + 1);
 };
 
+const handleMouseOver = (e: MouseEvent) => {
+	if (!pauseOnHover) return;
+	hovering.value = !!(e.target as HTMLElement).closest('.li-marquee');
+};
+
+const handleMouseOut = (e: MouseEvent) => {
+	if (!pauseOnHover) return;
+	const relatedTarget = e.relatedTarget as HTMLElement;
+	hovering.value = !!(relatedTarget && relatedTarget.closest('.li-marquee'));
+};
+
 const updateTicker = async () => {
 	extraItems.value = Math.round(noFill ? 0 : initialDuplicateCount);
 	gCtx.context?.revert();
@@ -299,8 +310,8 @@ onUnmounted(() => {
 		ref="container"
 		class="marquee-wrapper"
 		:aria-hidden="true"
-		@mouseenter="hovering = true"
-		@mouseleave="hovering = false"
+		@mouseover="handleMouseOver"
+		@mouseout="handleMouseOut"
 	>
 		<div class="marquee-inner" :inert>
 			<ul ref="list" class="ul-marquee">
@@ -351,6 +362,7 @@ onUnmounted(() => {
 	align-items: v-bind('alignItems');
 	width: max-content;
 	height: 100%;
+	pointer-events: none;
 }
 
 .ul-marquee {

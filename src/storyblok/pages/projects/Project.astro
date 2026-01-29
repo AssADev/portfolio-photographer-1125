@@ -3,16 +3,19 @@ import type {
 	StoryblokProject,
 	StoryblokProjectInformations,
 	StoryblokProjectLayout,
-	StoryblokProjectItemPicture
+	StoryblokProjectItemPicture,
+	StoryblokProjectsMarquee
 } from '#types/component-types-sb.js';
 import type { SbBlokData } from '@storyblok/astro';
 import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro';
 import ProjectHero from '#storyblok/modules/project/ProjectHero.astro';
 import ProjectMinimap from '#storyblok/modules/project/ProjectMinimap.astro';
+import ProjectsMarquee from '#storyblok/modules/ProjectsMarquee.astro';
 
 type Props = { blok: StoryblokProject };
 
 const { blok } = Astro.props;
+const { projectMarqueeTitle, projectMarqueeDescription, projectMarqueeLink } = Astro.locals.siteConfig;
 
 // Find all pictures :
 const pictures =
@@ -21,6 +24,15 @@ const pictures =
 		.flatMap((c) => c.items)
 		.filter((i): i is StoryblokProjectItemPicture => i.component === 'ProjectItemPicture')
 		.map((i) => i.picture) ?? [];
+
+// Create a marquee blok :
+const marqueeBlok = {
+	_uid: `${blok._uid}-marquee`,
+	component: 'ProjectsMarquee',
+	title: projectMarqueeTitle,
+	description: projectMarqueeDescription,
+	link: projectMarqueeLink
+} as any as StoryblokProjectsMarquee;
 ---
 
 {
@@ -47,6 +59,7 @@ const pictures =
 			})
 		}
 	</div>
+	<ProjectsMarquee blok={marqueeBlok} />
 </div>
 
 {pictures.length && <ProjectMinimap pictures={pictures} />}

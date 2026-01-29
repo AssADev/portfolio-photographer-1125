@@ -54,6 +54,8 @@ try {
 	// Deep clone the story to avoid mutating the original story cacheable by Storyblok :
 	story = structuredClone(storyResult);
 
+	Astro.locals.story = story;
+
 	Astro.response.headers.set('Cache-Control', 'public, max-age=600, s-maxage=31536000');
 
 	const storyblokApi = useStoryblokApi();

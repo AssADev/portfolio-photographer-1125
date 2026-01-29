@@ -14,17 +14,23 @@ import RichText from '#components/utils/RichText.vue';
 import type { StoryblokProject, StoryblokProjectsMarquee } from '#types/component-types-sb.js';
 
 // Props :
-const { projects } = defineProps<{
+const { projects, excludeUuid } = defineProps<{
 	blok: StoryblokProjectsMarquee;
 	projects: ISbStoryData<StoryblokProject>[];
+	excludeUuid?: string;
 }>();
 
 // Variables :
 const marqueePlaying = ref(true);
 
 // Computed :
+const filteredProjects = computed(() => {
+	if (!excludeUuid) return projects;
+	return projects.filter((p) => p.uuid !== excludeUuid);
+});
+
 const scaledProjects = computed(() => {
-	return projects.map((project) => {
+	return filteredProjects.value.map((project) => {
 		const cover = project.content.informations?.[0]?.coverSmall;
 		const url = typeof cover === 'string' ? cover : cover?.filename || '';
 

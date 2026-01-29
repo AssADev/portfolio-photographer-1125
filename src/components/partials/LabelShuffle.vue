@@ -21,7 +21,7 @@ const letterRefs = ref<HTMLElement[]>([]);
 const innerRefs = ref<HTMLElement[]>([]);
 
 // Variables :
-const LETTERS_POOL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}<>?/';
+const LETTERS_POOL = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}<>?/';
 const SHUFFLE_MAX_ITERATIONS = 5;
 const SHUFFLE_SPEED = 70;
 
