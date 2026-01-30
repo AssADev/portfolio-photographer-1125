@@ -14,7 +14,6 @@ import HomeItemProject from '#storyblok/partials/home/HomeItemProject.vue';
 const { blok, layouts, projects } = defineProps<{
 	blok: StoryblokHomeLayout;
 	layouts: string[][];
-	layoutName: string;
 	projects: ISbStoryData<StoryblokProject>[];
 }>();
 
@@ -98,7 +97,7 @@ onMounted(() => {
 </script>
 
 <template>
-	<div :class="['partials-home-layout-base', layoutName, { 'is-reversed': blok.isReversed }]">
+	<div :class="['partials-home-layout-base', { 'is-reversed': blok.isReversed }]">
 		<div v-for="(project, index) in limitedProjects" :key="project.id" ref="containerRefs" class="container-grid">
 			<HomeItemProject
 				:project="project"

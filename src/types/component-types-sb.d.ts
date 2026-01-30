@@ -412,7 +412,7 @@ export interface StoryblokProjectsMarquee {
 }
 
 export interface StoryblokProjectTestimonial {
-	author: StoryblokRichtext;
+	author?: StoryblokRichtext;
 	testimonial: StoryblokRichtext;
 	component: 'ProjectTestimonial';
 	_uid: string;

@@ -13,7 +13,6 @@ const { blok, layouts, pictures } = defineProps<{
 	blok: StoryblokProjectLayout;
 	socials: StoryblokLabelLink[];
 	layouts: string[][];
-	layoutName: string;
 	pictures: StoryblokAsset[];
 }>();
 
@@ -34,7 +33,7 @@ const getGlobalIndex = (item: any) => {
 </script>
 
 <template>
-	<div :class="['partials-project-layout-base', layoutName, { 'is-reversed': blok.isReversed }]">
+	<div :class="['partials-project-layout-base', { 'is-reversed': blok.isReversed }]">
 		<div v-for="(item, index) in limitedItems" :key="item._uid" class="container-grid">
 			<StoryblokComponent
 				:components="ItemsComponents"

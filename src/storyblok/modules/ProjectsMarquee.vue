@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ISbStoryData } from '@storyblok/js';
+import { useElementSize } from '@vueuse/core';
 import { computed, ref } from 'vue';
 
 import { getLinkAttributes } from '#utils/link.ts';
@@ -22,6 +23,8 @@ const { projects, excludeUuid } = defineProps<{
 
 // Variables :
 const marqueePlaying = ref(true);
+const marqueeRef = ref<HTMLElement | null>(null);
+const { height: marqueeHeight } = useElementSize(marqueeRef);
 
 // Computed :
 const filteredProjects = computed(() => {
@@ -40,10 +43,14 @@ const scaledProjects = computed(() => {
 		};
 	});
 });
+
+const marqueeStyle = computed(() => ({
+	'--marquee-height': `${marqueeHeight.value}px`
+}));
 </script>
 
 <template>
-	<section class="modules projects-marquee">
+	<section class="modules projects-marquee" :style="marqueeStyle">
 		<div class="circular-star-wrapper">
 			<CircularStar :scroll-speed="0.5" />
 		</div>
@@ -66,7 +73,7 @@ const scaledProjects = computed(() => {
 			</div>
 		</div>
 
-		<div class="marquee-container">
+		<div class="marquee-container" ref="marqueeRef">
 			<Marquee
 				:speed="40"
 				track-visible
@@ -91,7 +98,7 @@ const scaledProjects = computed(() => {
 
 .circular-star-wrapper {
 	position: absolute;
-	bottom: fluidSize(300px, 250px);
+	bottom: var(--marquee-height, fluidSize(200px, 150px, null, xxlarge));
 	left: 50%;
 	transform: translate3d(-50%, 0, 0);
 	overflow: hidden;

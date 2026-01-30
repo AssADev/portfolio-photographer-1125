@@ -20,13 +20,7 @@ const currentConfig = computed(() => HOME_LAYOUT_CONFIGS[blok.layout]);
 
 <template>
 	<section class="modules home-layout">
-		<HomeLayoutBase
-			v-if="currentConfig"
-			:blok="blok"
-			:layouts="currentConfig"
-			:layout-name="blok.layout"
-			:projects="projects"
-		/>
+		<HomeLayoutBase v-if="currentConfig" :blok="blok" :layouts="currentConfig" :projects="projects" />
 	</section>
 </template>
 

@@ -54,7 +54,7 @@ const aspectRatio = computed(() => {
 			</Button>
 		</div>
 		<div class="picture-container">
-			<div class="picture-wrapper" ref="imageRef">
+			<div class="picture-wrapper">
 				<Image v-if="cover" :src="cover" object-fit="contain" :sizes="[{ widescreen: '2560px' }, '100vw']" />
 			</div>
 		</div>

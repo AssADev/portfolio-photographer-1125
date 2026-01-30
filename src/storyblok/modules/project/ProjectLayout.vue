@@ -25,7 +25,6 @@ const currentConfig = computed(() => PROJECT_LAYOUT_CONFIGS[blok.layout]);
 			:blok="blok"
 			:socials="socials"
 			:layouts="currentConfig"
-			:layout-name="blok.layout"
 			:pictures="pictures"
 		/>
 	</section>
