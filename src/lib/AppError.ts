@@ -1,3 +1,5 @@
+import locales from '#utils/locales.json';
+
 import logger from './logger.ts';
 
 /**
@@ -75,7 +77,8 @@ export class AppError extends Error {
 	 * Create a 404 error
 	 */
 	static notFound(slug: string, language?: string): AppError {
-		return new AppError(`Page not found: ${slug}`, 404, '/404', undefined, { slug, language });
+		const redirectPath = language && language !== locales[0] ? `/${language}/404` : '/404';
+		return new AppError(`Page not found: ${slug}`, 404, redirectPath, undefined, { slug, language });
 	}
 
 	/**

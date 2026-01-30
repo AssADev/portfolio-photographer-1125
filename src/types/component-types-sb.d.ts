@@ -603,6 +603,9 @@ export interface StoryblokServiceTestimonialsItemPicture {
 }
 
 export interface StoryblokSiteConfig {
+	errorTitle: StoryblokRichtext;
+	errorLink: StoryblokLabelLink[];
+	errorDescription: StoryblokRichtext;
 	serviceBookingFormLink: StoryblokLabelLink[];
 	identity: string;
 	email: string;
@@ -624,6 +627,7 @@ export interface StoryblokSiteConfig {
 	projectMarqueeTitle?: StoryblokRichtext;
 	projectMarqueeDescription?: string;
 	projectMarqueeLink?: StoryblokLabelLink[];
+	errorAuthor?: StoryblokRichtext;
 	component: 'SiteConfig';
 	_uid: string;
 }

@@ -73,7 +73,6 @@ const scaledProjects = computed(() => {
 		<div class="marquee-container" ref="marqueeRef">
 			<Marquee
 				:speed="40"
-				track-visible
 				pause-on-hover
 				:items="scaledProjects"
 				:scroll-speed="0.35"

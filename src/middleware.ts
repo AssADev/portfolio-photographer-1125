@@ -1,9 +1,11 @@
 import { onRequest as storyblokMiddleware } from '@storyblok/astro/middleware.ts';
 import { defineMiddleware, sequence } from 'astro:middleware';
 
-import { isPreviewMode } from '#lib/previewMode.ts';
+import locales from '#utils/locales.json';
+import parseUrl from '#utils/parseUrl.ts';
 
-import { getRouteList } from './storyblok/helpers/routeList';
+import { isPreviewMode } from '#lib/previewMode.ts';
+import { getRouteList } from '#storyblok/helpers/routeList';
 
 const noop = defineMiddleware((_context, next) => next());
 
@@ -36,7 +38,11 @@ const validateRoute = defineMiddleware(async ({ request, url, locals }, next) =>
 	const currentPath = url.pathname.replace(/^\/*|\/*$/g, '');
 
 	// Return 404 if the route doesn't exist
-	if (currentPath && !routes.includes(currentPath)) return next('/404');
+	if (currentPath && !routes.includes(currentPath)) {
+		const { language } = parseUrl(url.pathname);
+		const target = language && language !== locales[0] ? `/${language}/404` : '/404';
+		return next(target);
+	}
 
 	return response;
 });
@@ -45,7 +51,7 @@ function requestIs404Or500(request: Request, base = '') {
 	const url = new URL(request.url);
 	const pathname = url.pathname.slice(base.length);
 
-	return /^\/404\/?$/.test(pathname) || /^\/500\/?$/.test(pathname);
+	return /^\/(?:[a-z]{2}\/)?404\/?$/.test(pathname) || /^\/(?:[a-z]{2}\/)?500\/?$/.test(pathname);
 }
 
 const previewMiddleware = defineMiddleware((context, next) => {

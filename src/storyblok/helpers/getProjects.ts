@@ -11,12 +11,11 @@ import resolvedRelations from '#storyblok/helpers/resolvedRelations';
 /**
  * Fetches all projects from Storyblok.
  *
- * @param pageId - The ID of the page to fetch projects for.
  * @param language - The language to fetch projects in.
  * @param isPreviewMode - Whether to fetch draft or published projects.
  * @returns An array of projects.
  */
-export async function getProjects(pageId: string, language = locales[0], isPreviewMode: boolean, tags?: string[]) {
+export async function getProjects(language = locales[0], isPreviewMode: boolean, tags?: string[]) {
 	const storyblokApi = useStoryblokApi();
 
 	const queryBaseParams: ISbStoriesParams = {
