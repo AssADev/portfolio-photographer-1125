@@ -222,7 +222,8 @@ const layouts = [
 
 <style lang="scss" scoped>
 .service-testimonials {
-	padding-block: fluidSize(112px, 72px) fluidSize(142px, 96px);
+	margin-block-start: fluidSize(96px, 36px, null, xxlarge);
+	padding-block: fluidSize(96px, 36px, null, xxlarge) fluidSize(142px, 96px, null, xxlarge);
 }
 
 .container-grid {

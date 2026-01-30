@@ -40,7 +40,8 @@ const resolvers = getRichTextResolvers('h2');
 
 <style lang="scss" scoped>
 .service-offers {
-	padding-block: fluidSize(72px, 48px);
+	margin-block-start: fluidSize(56px, 24px, null, xxlarge);
+	padding-block: fluidSize(56px, 24px, null, xxlarge) fluidSize(72px, 48px, null, xxlarge);
 }
 
 .title-wrapper {
