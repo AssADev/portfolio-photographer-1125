@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ISbStoryData } from '@storyblok/js';
+import { useElementSize } from '@vueuse/core';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { computed, onMounted, ref, useTemplateRef } from 'vue';
 
@@ -26,6 +27,9 @@ const { blok, pictures } = defineProps<{
 // Refs :
 const marqueePlaying = ref(true);
 const sectionRef = useTemplateRef('sectionRef');
+const marqueeRef = useTemplateRef('marqueeRef');
+
+const { height: marqueeHeight } = useElementSize(marqueeRef);
 
 // Computed :
 const scaledPictures = computed(() => {
@@ -83,7 +87,7 @@ onMounted(() => {
 			<div class="circular-star-wrapper">
 				<CircularStar :scroll-speed="1" />
 			</div>
-			<div class="marquee-container">
+			<div class="marquee-container" ref="marqueeRef">
 				<Marquee
 					:speed="40"
 					:items="scaledPictures"
@@ -92,7 +96,7 @@ onMounted(() => {
 					v-model:playing="marqueePlaying"
 				>
 					<template #item="{ item }">
-						<div class="picture-wrapper" :style="{ width: `${item.width}px` }">
+						<div class="picture-wrapper" :style="{ width: `${item.width / 1.375}px` }">
 							<Image :src="item.url" object-fit="contain" />
 						</div>
 					</template>
@@ -143,7 +147,11 @@ onMounted(() => {
 	overflow: hidden;
 
 	& > .container {
-		min-height: fluidSize(810px, 780px);
+		min-height: calc(fluidSize(810px, 780px) - v-bind("marqueeHeight + 'px'"));
+
+		@include mq($until: desktop) {
+			padding-block-end: fluidSize(96px, 64px, null, desktop);
+		}
 	}
 }
 
@@ -252,7 +260,7 @@ onMounted(() => {
 
 .informations-container {
 	position: absolute;
-	bottom: calc(fluidSize(64px, 48px) * -1);
+	bottom: calc(fluidSize(64px, 40px) * -1);
 	left: 50%;
 	transform: translate3d(-50%, +100%, 0);
 	width: 100%;
@@ -262,7 +270,7 @@ onMounted(() => {
 
 	@include mq($until: tablet) {
 		flex-direction: column;
-		gap: fluidSize(40px, 32px);
+		gap: fluidSize(40px, 28px);
 	}
 
 	@include mq(tablet) {

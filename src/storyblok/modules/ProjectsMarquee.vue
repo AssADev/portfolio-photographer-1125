@@ -24,6 +24,7 @@ const { projects, excludeUuid } = defineProps<{
 // Variables :
 const marqueePlaying = ref(true);
 const marqueeRef = ref<HTMLElement | null>(null);
+
 const { height: marqueeHeight } = useElementSize(marqueeRef);
 
 // Computed :
@@ -43,14 +44,10 @@ const scaledProjects = computed(() => {
 		};
 	});
 });
-
-const marqueeStyle = computed(() => ({
-	'--marquee-height': `${marqueeHeight.value}px`
-}));
 </script>
 
 <template>
-	<section class="modules projects-marquee" :style="marqueeStyle">
+	<section class="modules projects-marquee">
 		<div class="circular-star-wrapper">
 			<CircularStar :scroll-speed="0.5" />
 		</div>
@@ -98,7 +95,7 @@ const marqueeStyle = computed(() => ({
 
 .circular-star-wrapper {
 	position: absolute;
-	bottom: var(--marquee-height, fluidSize(200px, 150px, null, xxlarge));
+	bottom: v-bind("marqueeHeight + 'px'");
 	left: 50%;
 	transform: translate3d(-50%, 0, 0);
 	overflow: hidden;
