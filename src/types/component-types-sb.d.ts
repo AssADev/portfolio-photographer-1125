@@ -573,6 +573,7 @@ export interface StoryblokServicesHighlight {
 
 export interface StoryblokServicesItem {
 	service: (ISbStoryData<StoryblokService> | string)[];
+	cover: StoryblokAsset;
 	projects: (ISbStoryData<StoryblokProject> | string)[];
 	isReversed?: boolean;
 	component: 'ServicesItem';

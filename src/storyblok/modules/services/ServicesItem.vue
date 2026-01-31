@@ -2,16 +2,13 @@
 import type { ISbStoryData } from '@storyblok/vue';
 import { computed } from 'vue';
 
-import { nl2br } from '#utils/nl2br.ts';
-
-import Icon from '#components/utils/Icon.vue';
 import Image from '#components/utils/Image.vue';
-import RichText from '#components/utils/RichText.vue';
 
 import type { StoryblokProject, StoryblokService, StoryblokServicesItem } from '#types/component-types-sb.js';
 
 import vParallax from '#directives/vParallax.ts';
 import ServicesProject from '#storyblok/partials/services/ServicesProject.vue';
+import ServicesService from '#storyblok/partials/services/ServicesService.vue';
 
 // Props :
 const { blok } = defineProps<{
@@ -38,85 +35,75 @@ const serviceInformations = computed(() => {
 <template>
 	<section class="modules services-item" :class="{ 'is-reversed': blok.isReversed }">
 		<div class="projects-container">
-			<div
+			<ServicesService
+				:url="service!.full_slug"
+				:label="serviceInformations!.name"
+				:summary="serviceInformations!.summary"
+				:is-column="projects.length === 2"
 				class="project-wrapper-primary"
 				:class="{
 					'col-start-dk-1 col-end-dk-23 col-start-mlg-1 col-end-mlg-25':
-						!blok.isReversed && projects.length === 2,
-					'col-start-dk-1 col-end-dk-17': !blok.isReversed && projects.length === 3,
+						!blok.isReversed && projects.length === 1,
+					'col-start-dk-1 col-end-dk-17': !blok.isReversed && projects.length === 2,
 					'col-start-dk-11 col-end-dk-33 col-start-mlg-9 col-end-mlg-33':
-						blok.isReversed && projects.length === 2,
-					'col-start-dk-17 col-end-dk-33': blok.isReversed && projects.length === 3
+						blok.isReversed && projects.length === 1,
+					'col-start-dk-17 col-end-dk-33': blok.isReversed && projects.length === 2
 				}"
 			>
-				<ServicesProject
-					:url="projects[0]!.full_slug"
-					:label="projects[0].content.informations![0].name"
-					:cursor-label="$t('discoverProject')"
-				>
-					<template #image>
-						<Image
-							v-parallax="6"
-							source
-							media="tablet"
-							:aspect-ratio="projects.length === 3 ? 695 / 628 : 1024 / 628"
-							:src="projects[0].content.informations![0].cover"
-							:sizes="
-								projects.length === 3 ? [{ desktop: '50vw' }, '100vw'] : [{ desktop: '80vw' }, '100vw']
-							"
-						/>
-						<Image
-							v-parallax="6"
-							unstyled
-							layout="fullWidth"
-							:aspect-ratio="335 / 438"
-							:src="projects[0].content.informations![0].cover"
-						/>
-					</template>
-					<template #info>
-						<div class="informations-label">
-							<span>{{
-								numberOfProjects > 1
-									? $t('projectsNumber', { n: numberOfProjects })
-									: $t('projectNumber', { n: numberOfProjects })
-							}}</span>
-						</div>
-						<div class="informations-label">
-							<span>{{ $t('serviceStartPrice', { price: serviceStartPrice }) }}</span>
-						</div>
-					</template>
-				</ServicesProject>
-			</div>
+				<template #image>
+					<Image
+						v-parallax="6"
+						source
+						media="tablet"
+						:aspect-ratio="projects.length === 2 ? 695 / 810 : 1024 / 810"
+						:src="blok.cover"
+						:sizes="projects.length === 2 ? [{ desktop: '50vw' }, '100vw'] : [{ desktop: '80vw' }, '100vw']"
+					/>
+					<Image v-parallax="6" unstyled layout="fullWidth" :aspect-ratio="335 / 438" :src="blok.cover" />
+				</template>
+				<template #info>
+					<div class="informations-label">
+						<span>{{
+							numberOfProjects > 1
+								? $t('projectsNumber', { n: numberOfProjects })
+								: $t('projectNumber', { n: numberOfProjects })
+						}}</span>
+					</div>
+					<div class="informations-label">
+						<span>{{ $t('serviceStartPrice', { price: serviceStartPrice }) }}</span>
+					</div>
+				</template>
+			</ServicesService>
 			<div
-				v-if="projects.length > 1"
+				v-if="projects.length"
 				class="project-wrapper-secondary"
 				:class="{
 					'col-start-dk-23 col-end-dk-33 col-start-mlg-25 col-end-mlg-33':
-						!blok.isReversed && projects.length === 2,
-					'col-start-dk-17 col-end-dk-33': !blok.isReversed && projects.length === 3,
+						!blok.isReversed && projects.length === 1,
+					'col-start-dk-17 col-end-dk-33': !blok.isReversed && projects.length === 2,
 					'col-start-dk-1 col-end-dk-11 col-start-mlg-1 col-end-mlg-9':
-						blok.isReversed && projects.length === 2,
-					'col-start-dk-1 col-end-dk-17': blok.isReversed && projects.length === 3
+						blok.isReversed && projects.length === 1,
+					'col-start-dk-1 col-end-dk-17': blok.isReversed && projects.length === 2
 				}"
 			>
 				<ServicesProject
-					v-for="(n, index) in projects.length - 1"
+					v-for="(n, index) in projects.length"
 					:key="index"
-					:url="projects[index + 1]!.full_slug"
-					:label="projects[index + 1].content.informations![0].name"
+					:url="projects[index]!.full_slug"
+					:label="projects[index].content.informations![0].name"
 					:cursor-label="$t('discoverProject')"
 					:hover-scale="1.0375"
 					:class="{
 						'col-start-1 col-end-9 col-start-tb-1 col-end-tb-7':
-							(!blok.isReversed && index === 0 && projects.length === 2) ||
-							(!blok.isReversed && index === 0 && projects.length === 3),
+							(!blok.isReversed && index === 0 && projects.length === 1) ||
+							(!blok.isReversed && index === 0 && projects.length === 2),
 						'col-start-5 col-end-13 col-start-tb-11 col-end-tb-17':
-							(blok.isReversed && index === 0 && projects.length === 2) ||
-							(blok.isReversed && index === 1 && projects.length === 3),
+							(blok.isReversed && index === 0 && projects.length === 1) ||
+							(blok.isReversed && index === 1 && projects.length === 2),
 						'col-start-5 col-end-13 col-start-tb-5 col-end-tb-11':
-							blok.isReversed && index === 0 && projects.length === 3,
+							blok.isReversed && index === 0 && projects.length === 2,
 						'col-start-1 col-end-9 col-start-tb-7 col-end-tb-13':
-							!blok.isReversed && index === 1 && projects.length === 3
+							!blok.isReversed && index === 1 && projects.length === 2
 					}"
 				>
 					<template #image>
@@ -125,9 +112,9 @@ const serviceInformations = computed(() => {
 							source
 							media="tablet"
 							:aspect-ratio="342 / 284"
-							:src="projects[index + 1].content.informations![0].cover"
+							:src="projects[index].content.informations![0].cover"
 							:sizes="
-								projects.length === 3 ? [{ desktop: '50vw' }, '100vw'] : [{ desktop: '80vw' }, '100vw']
+								projects.length === 2 ? [{ desktop: '50vw' }, '100vw'] : [{ desktop: '80vw' }, '100vw']
 							"
 						/>
 						<Image
@@ -135,50 +122,12 @@ const serviceInformations = computed(() => {
 							unstyled
 							layout="fullWidth"
 							:aspect-ratio="220 / 328"
-							:src="projects[index + 1].content.informations![0].cover"
+							:src="projects[index].content.informations![0].cover"
 						/>
 					</template>
 				</ServicesProject>
-				<a
-					v-if="projects.length === 3"
-					:href="service!.full_slug"
-					class="title-wrapper hide-mobile-tablet"
-					:class="{
-						reversed: blok.isReversed
-					}"
-				>
-					/<RichText :doc="serviceInformations!.name" />
-				</a>
 			</div>
 		</div>
-		<a :href="service!.full_slug" class="service-informations-container">
-			<div
-				class="title-wrapper"
-				:class="{
-					'col-start-tb-1 col-end-tb-10 col-start-dk-1 col-end-dk-12':
-						!blok.isReversed && projects.length === 2,
-					'col-start-tb-1 col-end-tb-10 col-start-dk-11 col-end-dk-23 col-start-mlg-9 col-end-mlg-21 col-start-xlg-9 col-end-xlg-20 col-start-xxlg-9 col-end-xxlg-19':
-						blok.isReversed && projects.length === 2,
-					'col-start-tb-1 col-end-tb-10 hide-desktop': projects.length === 3
-				}"
-			>
-				/<RichText :doc="serviceInformations!.name" />
-			</div>
-			<p
-				class="summary"
-				:class="{
-					'col-start-tb-10 col-end-tb-16 col-start-dk-12 col-end-dk-21 col-start-mlg-12 col-end-mlg-19 col-start-xlg-13 col-end-xlg-20 col-start-xxlg-13 col-end-xxlg-19':
-						!blok.isReversed && projects.length === 2,
-					'col-start-tb-10 col-end-tb-16 col-start-dk-1 col-end-dk-10':
-						!blok.isReversed && projects.length === 3,
-					'col-start-tb-10 col-end-tb-16 col-start-dk-23 col-end-dk-33 col-start-mlg-22 col-end-mlg-30 col-start-xlg-22 col-end-xlg-29 col-start-xxlg-21 col-end-xxlg-28':
-						blok.isReversed && projects.length === 2,
-					'col-start-tb-10 col-end-tb-16 col-start-dk-17 col-end-dk-27':
-						blok.isReversed && projects.length === 3
-				}"
-				v-html="nl2br(serviceInformations!.summary)"
-			></p>
-		</a>
 	</section>
 </template>
 
@@ -217,14 +166,11 @@ const serviceInformations = computed(() => {
 	@include mq(desktop) {
 		@include container-grid;
 
-		aspect-ratio: 1440 / 628;
+		aspect-ratio: 1440 / 810;
 	}
 }
 
 .project-wrapper-primary {
-	width: 100%;
-	height: 100%;
-
 	@include mq($until: tablet) {
 		aspect-ratio: 335 / 438;
 	}
@@ -262,52 +208,6 @@ const serviceInformations = computed(() => {
 		@include mq($from: tablet, $until: desktop) {
 			max-width: fluidSize(380px, 320px, null, desktop);
 		}
-	}
-
-	.title-wrapper {
-		position: absolute;
-		bottom: 0;
-		transform: translate3d(0, calc(100% + 2px), 0);
-
-		&:not(.reversed) {
-			left: 0;
-		}
-
-		&.reversed {
-			left: 50%;
-		}
-	}
-}
-
-.service-informations-container {
-	margin-block-start: fluidSize(12px, 10px);
-
-	@include mq($until: tablet) {
-		@include container;
-
-		display: flex;
-		flex-direction: column;
-		gap: 6px;
-	}
-
-	@include mq(tablet) {
-		@include container-grid;
-	}
-}
-
-.title-wrapper {
-	@include roobert-48;
-
-	display: flex;
-}
-
-.summary {
-	@include roobert-18;
-
-	max-width: fluidSize(460px, 320px, null, widescreen);
-
-	@include mq(tablet) {
-		margin-block-start: 2px;
 	}
 }
 </style>

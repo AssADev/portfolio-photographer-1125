@@ -259,7 +259,7 @@ $serviceHeight: fluidSize(440px, 280px, null, xxlarge);
 		bottom: 0;
 		left: 0;
 		width: 100%;
-		padding: 20px;
+		padding: var(--gutter);
 		color: $white;
 
 		span {

@@ -7,7 +7,7 @@ import Image from '#components/utils/Image.vue';
 import type { StoryblokProject, StoryblokService, StoryblokServicesHighlight } from '#types/component-types-sb.js';
 
 import vParallax from '#directives/vParallax.ts';
-import ServicesProject from '#storyblok/partials/services/ServicesProject.vue';
+import ServicesService from '#storyblok/partials/services/ServicesService.vue';
 
 // Props :
 const { blok } = defineProps<{
@@ -28,10 +28,11 @@ const service = computed(() => {
 
 <template>
 	<section class="modules services-highlight">
-		<ServicesProject
+		<ServicesService
 			:url="service!.full_slug"
 			:label="service!.content.informations![0].name"
-			:cursor-label="$t('discoverService')"
+			:summary="service!.content.informations![0].summary"
+			:with-cursor-label="true"
 			:hover-scale="1.0125"
 		>
 			<template #image>
@@ -65,7 +66,7 @@ const service = computed(() => {
 					<span>{{ $t('serviceStartPrice', { price: serviceStartPrice }) }}</span>
 				</div>
 			</template>
-		</ServicesProject>
+		</ServicesService>
 	</section>
 </template>
 
