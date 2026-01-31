@@ -226,7 +226,7 @@ const resolvers = getRichTextResolvers('h1');
 
 .description-container {
 	position: absolute;
-	bottom: calc(var(--header-height) * 2 + var(--gutter) * 2);
+	bottom: fluidSize(96px, 84px);
 	left: 0;
 	display: flex;
 	flex-direction: column;

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ISbStoryData } from '@storyblok/js';
+import { useDebounceFn } from '@vueuse/core';
 import gsap from 'gsap';
 import { SplitText } from 'gsap/SplitText';
 import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
@@ -88,6 +89,8 @@ const refreshAnimation = () => {
 	if (isHovered.value) tl.progress(1);
 };
 
+const debounceResize = useDebounceFn(refreshAnimation);
+
 // Events :
 const onPointerEnter = () => {
 	isHovered.value = true;
@@ -103,7 +106,7 @@ const onPointerLeave = () => {
 onMounted(() => {
 	refreshAnimation();
 
-	window.addEventListener('resize', refreshAnimation);
+	window.addEventListener('resize', debounceResize);
 });
 
 onUnmounted(() => {
@@ -111,7 +114,7 @@ onUnmounted(() => {
 	splitTitle?.revert();
 	splitService?.revert();
 
-	window.removeEventListener('resize', refreshAnimation);
+	window.removeEventListener('resize', debounceResize);
 });
 </script>
 
