@@ -17,9 +17,14 @@ const target = { x: 0, y: 0, rotation: 0, maxRotation: 60 };
 let firstMove = true;
 let hoverTween: gsap.core.Tween | null = null;
 let activeTarget: HTMLElement | null = null;
-let currentLabel: string | null = null;
+let currentText = '';
 let activeSnapTarget: HTMLElement | null = null;
 const charsRefs = ref<HTMLSpanElement[]>([]);
+
+let hasPending = false;
+let isTransitioning = false;
+let pendingText: string | null = null;
+let outTimeout: ReturnType<typeof setTimeout> | null = null;
 
 const snapState = {
 	w: 9,
@@ -144,25 +149,104 @@ const tick = () => {
 };
 
 // Utils :
-const splitText = (text: string) => {
-	if (!cursorLabelRef.value) return;
-	cursorLabelRef.value.innerHTML = '';
-	charsRefs.value = [];
+const findCommonPrefix = (a: string, b: string) => {
+	let i = 0;
+	while (i < a.length && i < b.length && a[i] === b[i]) {
+		i++;
+	}
+	return i;
+};
 
-	const chars = text.split('');
-	chars.forEach((char) => {
-		const charWrapper = document.createElement('span');
-		charWrapper.className = 'char-wrapper';
+const updateLabel = (newText: string | null) => {
+	const targetText = newText || '';
 
-		const charInner = document.createElement('span');
-		charInner.className = 'char';
-		charInner.textContent = char === ' ' ? '\u00A0' : char;
-		charInner.style.transform = 'translate3d(120%, 0, 0)';
+	if (isTransitioning) {
+		pendingText = targetText;
+		hasPending = true;
+		return;
+	}
 
-		charWrapper.appendChild(charInner);
-		cursorLabelRef.value?.appendChild(charWrapper);
-		charsRefs.value.push(charInner);
-	});
+	if (targetText === currentText && charsRefs.value.length > 0) return;
+
+	isTransitioning = true;
+	performTransition(targetText);
+};
+
+const performTransition = (targetText: string) => {
+	const commonPrefixLen = findCommonPrefix(currentText, targetText);
+
+	// Characters that need to leave :
+	const charsToExit = charsRefs.value.slice(commonPrefixLen);
+
+	if (charsToExit.length > 0) {
+		hoverTween?.kill();
+		hoverTween = gsap.to(charsToExit, {
+			x: '120%',
+			duration: 0.25,
+			stagger: -0.02,
+			ease: 'power2.in',
+			onComplete: () => {
+				charsToExit.forEach((el) => el.parentElement?.remove());
+				charsRefs.value = charsRefs.value.slice(0, commonPrefixLen);
+				addNewChars(targetText, commonPrefixLen);
+			}
+		});
+	} else {
+		addNewChars(targetText, commonPrefixLen);
+	}
+};
+
+const addNewChars = (targetText: string, commonPrefixLen: number) => {
+	if (!cursorLabelRef.value) {
+		isTransitioning = false;
+		return;
+	}
+
+	const suffix = targetText.slice(commonPrefixLen);
+	if (suffix.length > 0) {
+		suffix.split('').forEach((char) => {
+			const charWrapper = document.createElement('span');
+			charWrapper.className = 'char-wrapper';
+
+			const charInner = document.createElement('span');
+			charInner.className = 'char';
+			charInner.textContent = char === ' ' ? '\u00A0' : char;
+			charInner.style.transform = 'translate3d(120%, 0, 0)';
+
+			charWrapper.appendChild(charInner);
+			cursorLabelRef.value?.appendChild(charWrapper);
+			charsRefs.value.push(charInner);
+		});
+
+		const newChars = charsRefs.value.slice(commonPrefixLen);
+		hoverTween?.kill();
+		hoverTween = gsap.to(newChars, {
+			x: '0%',
+			duration: 0.3,
+			stagger: 0.02,
+			ease: 'power2.out',
+			onComplete: () => {
+				finishStep(targetText);
+			}
+		});
+	} else {
+		finishStep(targetText);
+	}
+};
+
+const finishStep = (targetText: string) => {
+	isTransitioning = false;
+	currentText = targetText;
+
+	if (!activeTarget && targetText === '') {
+		target.maxRotation = config.DEFAULT_MAX_ROTATION;
+	}
+
+	if (hasPending) {
+		const next = pendingText;
+		hasPending = false;
+		updateLabel(next);
+	}
 };
 
 // Events :
@@ -198,42 +282,26 @@ const handleMouseOver = (e: MouseEvent) => {
 };
 
 const triggerHover = (targetEl: HTMLElement) => {
+	if (outTimeout) {
+		clearTimeout(outTimeout);
+		outTimeout = null;
+	}
+
 	activeTarget = targetEl;
 	target.maxRotation = config.HOVER_MAX_ROTATION;
 
 	const label = targetEl.getAttribute('data-cursor-label');
-
-	if (label) {
-		if (label !== currentLabel || charsRefs.value.length === 0) {
-			splitText(label);
-			currentLabel = label;
-		}
-
-		hoverTween?.kill();
-		hoverTween = gsap.to(charsRefs.value, {
-			x: '0%',
-			duration: 0.3,
-			stagger: 0.03,
-			ease: 'power2.out',
-			overwrite: true
-		});
-	}
+	updateLabel(label);
 };
 
 const triggerOut = () => {
-	activeTarget = null;
+	if (outTimeout) clearTimeout(outTimeout);
 
-	hoverTween?.kill();
-	hoverTween = gsap.to(charsRefs.value, {
-		x: '120%',
-		duration: 0.3,
-		ease: 'power2.in',
-		stagger: -0.03,
-		overwrite: true,
-		onComplete: () => {
-			target.maxRotation = config.DEFAULT_MAX_ROTATION;
-		}
-	});
+	outTimeout = setTimeout(() => {
+		activeTarget = null;
+		updateLabel(null);
+		outTimeout = null;
+	}, 50);
 };
 
 // Attach & Detach :

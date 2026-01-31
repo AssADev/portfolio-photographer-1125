@@ -11,7 +11,6 @@ defineProps<{
 	url: string;
 	label: StoryblokRichtext;
 	summary?: string;
-	withCursorLabel?: boolean;
 	hoverScale?: number;
 	isColumn?: boolean;
 }>();
@@ -21,7 +20,7 @@ defineProps<{
 	<Button
 		:to="url"
 		class="partials-services-service"
-		:data-cursor-label="withCursorLabel ? $t('discoverService') : ''"
+		:data-cursor-label="$t('discoverService')"
 		:style="{ '--hover-scale': hoverScale || 1.0175 }"
 	>
 		<div class="picture-wrapper">

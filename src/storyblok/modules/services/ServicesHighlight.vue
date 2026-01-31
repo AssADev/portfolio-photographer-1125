@@ -32,7 +32,6 @@ const service = computed(() => {
 			:url="service!.full_slug"
 			:label="service!.content.informations![0].name"
 			:summary="service!.content.informations![0].summary"
-			:with-cursor-label="true"
 			:hover-scale="1.0125"
 		>
 			<template #image>
