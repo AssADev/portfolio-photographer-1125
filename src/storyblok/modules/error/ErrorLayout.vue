@@ -231,7 +231,14 @@ const resolvers = getRichTextResolvers('h1');
 	display: flex;
 	flex-direction: column;
 	gap: fluidSize(12px, 8px);
-	max-width: fluidSize(620px, 480px);
+
+	@include mq($until: desktop) {
+		max-width: fluidSize(540px, 360px, null, desktop);
+	}
+
+	@include mq(desktop) {
+		max-width: fluidSize(620px, 480px);
+	}
 
 	& > :deep(.partials-rich-text) {
 		@include roobert-28;
