@@ -3,6 +3,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLenis } from 'lenis/vue';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 
+import LabelShuffle from '#components/partials/LabelShuffle.vue';
 import Button from '#components/utils/Button.vue';
 
 // Types :
@@ -81,10 +82,11 @@ onUnmounted(() => {
 		<Button
 			v-for="button in visibleButtons"
 			:key="button.id"
-			:text="$t(button.i18nKey)"
 			:class="{ active: activeSection === getTargetId(button.id) }"
 			@click="scrollTo(button.id)"
-		/>
+		>
+			<LabelShuffle :label="$t(button.i18nKey)" no-snap />
+		</Button>
 	</div>
 </template>
 
@@ -116,6 +118,7 @@ onUnmounted(() => {
 
 	&.active {
 		color: $white;
+		pointer-events: none;
 	}
 
 	span {
