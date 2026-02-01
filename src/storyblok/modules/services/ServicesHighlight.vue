@@ -40,7 +40,7 @@ const service = computed(() => {
 					source
 					media="tablet"
 					layout="fullWidth"
-					:aspect-ratio="1440 / 810"
+					:aspect-ratio="1440 / 720"
 					:sizes="[{ widescreen: '2560px' }, '100vw']"
 					:src="project!.content.informations![0].cover"
 				/>
@@ -48,7 +48,7 @@ const service = computed(() => {
 					v-parallax="6"
 					unstyled
 					layout="fullWidth"
-					:aspect-ratio="375 / 810"
+					:aspect-ratio="375 / 720"
 					:sizes="[{ tablet: '768px' }, '100vw']"
 					:src="project!.content.informations![0].cover"
 				/>

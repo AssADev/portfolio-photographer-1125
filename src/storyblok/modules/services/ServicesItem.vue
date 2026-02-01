@@ -55,7 +55,7 @@ const serviceInformations = computed(() => {
 						v-parallax="6"
 						source
 						media="tablet"
-						:aspect-ratio="projects.length === 2 ? 695 / 810 : 1024 / 810"
+						:aspect-ratio="projects.length === 2 ? 695 / 720 : 1024 / 720"
 						:src="blok.cover"
 						:sizes="projects.length === 2 ? [{ desktop: '50vw' }, '100vw'] : [{ desktop: '80vw' }, '100vw']"
 					/>
@@ -166,7 +166,7 @@ const serviceInformations = computed(() => {
 	@include mq(desktop) {
 		@include container-grid;
 
-		aspect-ratio: 1440 / 810;
+		aspect-ratio: 1440 / 720;
 	}
 }
 
