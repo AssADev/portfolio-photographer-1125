@@ -7,9 +7,11 @@ const props = withDefaults(
 	defineProps<{
 		label: string;
 		isActive?: boolean;
+		noSnap?: boolean;
 	}>(),
 	{
-		isActive: true
+		isActive: true,
+		noSnap: false
 	}
 );
 
@@ -147,7 +149,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-	<div class="partials-label-shuffle" @mouseleave="resetLetters" data-cursor-snap>
+	<div class="partials-label-shuffle" @mouseleave="resetLetters" :data-cursor-snap="!noSnap ? true : null">
 		<span
 			v-for="(letter, index) in originalLetters"
 			:key="index"

@@ -4,6 +4,7 @@ import { getLocale } from '#utils/i18n.ts';
 import { getLinkAttributes } from '#utils/link.ts';
 import { nl2br } from '#utils/nl2br.ts';
 
+import LabelShuffle from '#components/partials/LabelShuffle.vue';
 import Icon from '#components/utils/Icon.vue';
 import Image from '#components/utils/Image.vue';
 import RichText from '#components/utils/RichText.vue';
@@ -69,7 +70,7 @@ const resolvers = getRichTextResolvers('h1');
 					</li>
 					<li v-for="social in socials" :key="social._uid">
 						<a v-bind="getLinkAttributes(social.link)">
-							<span>{{ social.label }}</span>
+							<LabelShuffle :label="social.label!" no-snap />
 						</a>
 					</li>
 				</ul>
@@ -169,6 +170,14 @@ const resolvers = getRichTextResolvers('h1');
 		border-radius: 4px;
 		height: 100%;
 		background: $whiteChoco;
+		transition:
+			color 0.4s $power2Out,
+			background 0.4s $power2Out;
+
+		@include hover {
+			color: $white;
+			background: $eerieBlack;
+		}
 	}
 }
 </style>
