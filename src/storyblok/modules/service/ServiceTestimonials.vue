@@ -136,8 +136,6 @@ const layouts = [
 		align: 'end'
 	}
 ];
-
-// TODO : Layouts responsive / Delete spamm mouseleave / Only on move the pictures needs to disappear
 </script>
 
 <template>
@@ -350,67 +348,39 @@ const layouts = [
 }
 
 // Transitions :
-// .picture-anim-enter-active,
-// .picture-anim-leave-active {
-// 	transition: transform 0.8s $power2Out;
-// 	transition-delay: calc(var(--index) * 0.1s);
-
-// 	img {
-// 		transition: transform 0.8s $power2Out;
-// 		transition-delay: calc(var(--index) * 0.1s);
-// 	}
-// }
-
-// .picture-anim-enter-from,
-// .picture-anim-leave-to {
-// 	transform: scale3d(0, 0, 0);
-
-// 	img {
-// 		transform: scale3d(2, 2, 1);
-// 	}
-// }
-
 .picture-anim-enter-active {
 	transition: transform 0.6s $power2Out;
-	transition-delay: calc(var(--index) * 0.1s);
+	transition-delay: calc(var(--index) * 0.125s);
 
 	img {
 		transition: transform 0.6s $power2Out;
-		transition-delay: calc(var(--index) * 0.1s);
+		transition-delay: calc(var(--index) * 0.125s);
 	}
 }
 
 .picture-anim-leave-active {
 	transition: transform 0.6s $power2InOut;
-	transition-delay: calc(var(--index) * 0.1s);
+	transition-delay: calc(var(--index) * 0.125s);
 
 	img {
 		transition: transform 0.6s $power2InOut;
-		transition-delay: calc(var(--index) * 0.1s);
+		transition-delay: calc(var(--index) * 0.125s);
 	}
 }
 
-// .picture-anim-enter-from {
-// 	transform: scale3d(0, 0, 0);
-
-// 	img {
-// 		transform: scale3d(2, 2, 1);
-// 	}
-// }
-
 .picture-anim-enter-from {
-	transform: translate3d(0, 100%, 0);
+	transform: translate3d(0, 105%, 0);
 
 	img {
-		transform: translate3d(0, -100%, 0);
+		transform: translate3d(0, -105%, 0);
 	}
 }
 
 .picture-anim-leave-to {
-	transform: translate3d(0, -100%, 0);
+	transform: translate3d(0, -105%, 0);
 
 	img {
-		transform: translate3d(0, 100%, 0);
+		transform: translate3d(0, 105%, 0);
 	}
 }
 </style>
