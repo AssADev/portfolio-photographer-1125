@@ -510,34 +510,6 @@ onUnmounted(() => {
 }
 
 .slideshow-wrapper {
-	display: flex;
-	gap: $gap;
-	transition: opacity 0.4s $power2InOut;
-
-	&.can-grab {
-		cursor: grab;
-	}
-
-	&.is-grabbing {
-		cursor: grabbing;
-	}
-
-	@include mq($until: desktop) {
-		align-items: center;
-		min-height: fluidSize(150px, 125px, null, desktop);
-	}
-
-	@include mq(desktop) {
-		flex-direction: column;
-		height: auto;
-		will-change: transform;
-
-		&.is-hidden {
-			opacity: 0;
-			pointer-events: none;
-		}
-	}
-
 	& > .picture-wrapper {
 		height: 100%;
 
@@ -554,27 +526,6 @@ onUnmounted(() => {
 		@include mq(desktop) {
 			width: 100%;
 		}
-	}
-}
-
-.active-indicator {
-	position: absolute;
-	z-index: 2;
-	left: 0;
-	border: 2px solid $khaki;
-	pointer-events: none;
-	background: rgba($khaki, 0.25);
-
-	@include mq($until: desktop) {
-		top: 50%;
-	}
-
-	@include mq(desktop) {
-		top: 0;
-	}
-
-	.is-dark & {
-		border-color: $white;
 	}
 }
 

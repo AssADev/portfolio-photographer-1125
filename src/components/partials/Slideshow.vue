@@ -233,6 +233,7 @@ const onPointerUp = (e: PointerEvent) => {
 	if (target && target.releasePointerCapture) target.releasePointerCapture(e.pointerId);
 
 	isDragging = false;
+	isGrabbing.value = false;
 
 	// Stop ticker
 	if (tickerActive) {
@@ -362,7 +363,7 @@ onUnmounted(() => {
 
 	@include mq($until: desktop) {
 		align-items: center;
-		height: 100%;
+		min-height: fluidSize(150px, 125px, null, desktop);
 	}
 
 	@include mq(desktop) {
