@@ -89,7 +89,7 @@ const updateCurrentSlide = () => {
 			if (prevBar.style.getPropertyValue('--progress-scale') !== '1') {
 				tl.to(prevBar, {
 					'--progress-scale': 1,
-					duration: 0.4,
+					duration: 0.6,
 					ease: 'power2.out'
 				});
 			}
@@ -98,8 +98,8 @@ const updateCurrentSlide = () => {
 			});
 			tl.to(prevBar, {
 				'--progress-scale': 0,
-				duration: 0.4,
-				ease: 'power2.in'
+				duration: 0.6,
+				ease: 'power2.inOut'
 			});
 		}
 	}

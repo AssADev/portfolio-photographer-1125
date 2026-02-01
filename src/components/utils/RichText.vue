@@ -10,11 +10,13 @@ import type { StoryblokRichtext } from '#types/component-types-sb.js';
 const {
 	doc,
 	resolvers,
-	shuffle = false
+	shuffle = false,
+	noSnap = false
 } = defineProps<{
 	doc: StoryblokRichtext;
 	resolvers?: Record<string, (node: StoryblokRichTextNode<VNode>) => VNode>;
 	shuffle?: boolean;
+	noSnap?: boolean;
 }>();
 
 // Refs :
@@ -40,7 +42,7 @@ defineExpose({ el });
 
 <template>
 	<div ref="el" class="partials-rich-text">
-		<LabelShuffle v-if="shuffle" :label="plaintext" />
+		<LabelShuffle v-if="shuffle" :label="plaintext" :no-snap />
 		<StoryblokRichText v-else :doc :resolvers />
 	</div>
 </template>

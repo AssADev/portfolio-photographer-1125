@@ -34,7 +34,7 @@ const resolvers = getRichTextResolvers('h1');
 
 <style lang="scss" scoped>
 .service-hero {
-	padding-block: fluidSize(142px, 96px) fluidSize(72px, 48px);
+	padding-block: fluidSize(142px, 96px) fluidSize(56px, 32px);
 }
 
 .title-wrapper {

@@ -2,6 +2,7 @@
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ref, watch } from 'vue';
 
+import LabelShuffle from '#components/partials/LabelShuffle.vue';
 import Button from '#components/utils/Button.vue';
 import RichText from '#components/utils/RichText.vue';
 
@@ -29,7 +30,7 @@ watch(isToggled, () => {
 <template>
 	<div class="partials-service-faq-section-item" :class="{ toggle: isToggled }">
 		<Button class="question-header" @click="isToggled = !isToggled">
-			<span>{{ blok.question }}</span>
+			<LabelShuffle :label="blok.question" no-snap />
 		</Button>
 		<div class="question-answer-container" :inert="!isToggled">
 			<div class="question-answer-wrapper">
@@ -58,7 +59,7 @@ watch(isToggled, () => {
 .question-header {
 	padding-block: fluidSize(16px, 12px) fluidSize(20px, 16px);
 
-	span {
+	.partials-label-shuffle {
 		@include roobert-14-uppercase;
 	}
 }

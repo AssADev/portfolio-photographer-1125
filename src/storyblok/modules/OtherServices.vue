@@ -131,7 +131,7 @@ useGSAP(() => {
 						</div>
 					</div>
 					<div class="label-wrapper">
-						<span class="service-name"> /<RichText :doc="service.content.informations[0].name" /> </span>
+						<span> /<RichText :doc="service.content.informations[0].name" shuffle no-snap /> </span>
 					</div>
 				</a>
 			</div>
