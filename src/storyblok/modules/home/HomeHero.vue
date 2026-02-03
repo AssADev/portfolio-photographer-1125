@@ -2,9 +2,11 @@
 import { useStore } from '@nanostores/vue';
 import type { ISbStoryData } from '@storyblok/js';
 import { useResizeObserver } from '@vueuse/core';
-import { computed, nextTick, onMounted, ref } from 'vue';
+import gsap from 'gsap';
+import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
 
 import { formatIndex } from '#utils/formatIndex.ts';
+import { t } from '#utils/i18n.ts';
 
 import Button from '#components/utils/Button.vue';
 import CircularStar from '#components/utils/CircularStar.vue';
@@ -12,7 +14,9 @@ import RichText from '#components/utils/RichText.vue';
 
 import type { StoryblokHomeHero, StoryblokProject, StoryblokService } from '#types/component-types-sb.js';
 
+import { useTrap } from '#composables/useTrap.ts';
 import { $currentFilter, setCurrentFilter } from '#stores/filter.ts';
+import { $global } from '#stores/global.ts';
 
 // Props :
 const { blok, projects } = defineProps<{
@@ -21,11 +25,34 @@ const { blok, projects } = defineProps<{
 }>();
 
 // Refs :
-const containerRef = ref<HTMLElement | null>(null);
-const richTextRef = ref<InstanceType<typeof RichText> | null>(null);
+const containerRef = useTemplateRef('containerRef');
+const dropdownRef = useTemplateRef('dropdownRef');
+const richTextRef = useTemplateRef('richTextRef');
 
 // Store :
 const currentFilter = useStore($currentFilter);
+
+// Animation & Sync :
+let charIdCounter = 0;
+let isManualClickOnOpenDropdown = false;
+let pendingSwap: { newSlug: string; oldSlug: string } | null = null;
+
+const isDropdownToggle = ref(false);
+
+const labelChars = ref<{ char: string; id: number }[]>([]);
+const countChars = ref<{ char: string; id: number }[]>([]);
+const mobileFilters = ref<{ slug: string; name: string; count: number }[]>([]);
+
+const mobileLabelRef = useTemplateRef('mobileLabelRef');
+const mobileCountRef = useTemplateRef('mobileCountRef');
+
+const stringToChars = (s: string) => s.split('').map((c) => ({ char: c, id: charIdCounter++ }));
+
+useTrap(dropdownRef, {
+	model: isDropdownToggle,
+	clickOutsideDeactivates: true,
+	escapeDeactivates: true
+});
 
 // Computed :
 const services = computed(() => {
@@ -35,6 +62,38 @@ const services = computed(() => {
 const visibleServices = computed(() => {
 	return services.value.filter((service) => getProjectCount(service.slug) > 0);
 });
+
+const allFilters = computed(() => {
+	const all = [
+		{
+			slug: 'allMyProjects',
+			name: t('allMyProjects'),
+			count: getProjectCount()
+		},
+		...visibleServices.value.map((s) => ({
+			slug: s.slug,
+			name: extractPlainText(s.content.informations?.[0]?.name),
+			count: getProjectCount(s.slug)
+		}))
+	];
+	return all;
+});
+
+// Helper :
+const extractPlainText = (doc: any): string => {
+	if (!doc) return '';
+	if (typeof doc === 'string') return doc;
+
+	const walk = (node: any): string => {
+		if (node.text) return node.text;
+		if (node.content && Array.isArray(node.content)) {
+			return node.content.map(walk).join('');
+		}
+		return '';
+	};
+
+	return walk(doc);
+};
 
 // Methods :
 const getProjectCount = (serviceSlug?: string) => {
@@ -49,6 +108,51 @@ const getProjectCount = (serviceSlug?: string) => {
 			return s.slug === serviceSlug || s.uuid === serviceSlug;
 		});
 	}).length;
+};
+
+const exitMaskedChars = async (charsRef: typeof labelChars, containerRef: typeof mobileLabelRef) => {
+	const exitChars = charsRef.value;
+
+	if (exitChars.length > 0 && containerRef.value) {
+		const exitEls = exitChars
+			.map((item) => containerRef.value!.querySelector(`[data-char-id="${item.id}"]`))
+			.filter(Boolean);
+
+		await gsap.to(exitEls, {
+			x: '105%',
+			duration: 0.25,
+			stagger: -0.02,
+			ease: 'power2.in'
+		});
+	}
+
+	charsRef.value = [];
+};
+
+const enterMaskedChars = async (newText: string, charsRef: typeof labelChars, containerRef: typeof mobileLabelRef) => {
+	if (charsRef.value.length > 0) return;
+
+	const newSuffix = newText;
+	if (newSuffix.length > 0) {
+		const newItems = newSuffix.split('').map((char) => ({ char, id: charIdCounter++ }));
+		charsRef.value.push(...newItems);
+
+		await nextTick();
+
+		if (containerRef.value) {
+			const newEls = newItems
+				.map((item) => containerRef.value!.querySelector(`[data-char-id="${item.id}"]`))
+				.filter(Boolean);
+
+			gsap.set(newEls, { x: '105%' });
+			await gsap.to(newEls, {
+				x: '0%',
+				duration: 0.3,
+				stagger: 0.02,
+				ease: 'power2.out'
+			});
+		}
+	}
 };
 
 const updateFontSize = async () => {
@@ -74,34 +178,168 @@ const updateFontSize = async () => {
 	}
 };
 
-const handleFilterClick = (filter: string) => {
-	setCurrentFilter(filter);
+const handleFilterClick = (filterSlug: string) => {
+	if (filterSlug === currentFilter.value) return;
+
+	// Capture if dropdown was open before any state change :
+	const wasOpen = isDropdownToggle.value;
+
+	if (wasOpen) {
+		isManualClickOnOpenDropdown = true;
+		handleToggleDropdown();
+	}
+
+	setCurrentFilter(filterSlug);
+};
+
+const handleToggleDropdown = () => {
+	isDropdownToggle.value = !isDropdownToggle.value;
+	$global.setKey('lockScroll', isDropdownToggle.value);
 };
 
 // Events :
 useResizeObserver(containerRef, updateFontSize);
 
+watch(
+	() => currentFilter.value,
+	async (newSlug, oldSlug) => {
+		const newFilter = allFilters.value.find((f) => f.slug === newSlug);
+		const oldFilter = allFilters.value.find((f) => f.slug === oldSlug);
+
+		if (newFilter && oldFilter) {
+			// Handle swap detection immediately :
+			if (isManualClickOnOpenDropdown) {
+				pendingSwap = { newSlug, oldSlug };
+				isManualClickOnOpenDropdown = false;
+			}
+
+			const newCountText = `(${formatIndex(newFilter.count)})`;
+
+			// 1. Exit Logic : Count then Label (slightly overlapping) :
+			await Promise.all([
+				exitMaskedChars(countChars, mobileCountRef),
+				new Promise((resolve) => setTimeout(resolve, countChars.value.length * 20)).then(() =>
+					exitMaskedChars(labelChars, mobileLabelRef)
+				)
+			]);
+
+			// 2. Enter Logic : Label then Count (slightly overlapping) :
+			await Promise.all([
+				enterMaskedChars(newFilter.name, labelChars, mobileLabelRef),
+				new Promise((resolve) => setTimeout(resolve, labelChars.value.length * 20)).then(() =>
+					enterMaskedChars(newCountText, countChars, mobileCountRef)
+				)
+			]);
+
+			// If not a manual click (e.g. desktop change), swap immediately :
+			if (!pendingSwap) {
+				performMobileFilterSwap(newSlug, oldSlug);
+			}
+		}
+	}
+);
+
+const performMobileFilterSwap = (newSlug: string, oldSlug: string) => {
+	const oldFilter = allFilters.value.find((f) => f.slug === oldSlug);
+	if (!oldFilter) return;
+
+	const index = mobileFilters.value.findIndex((f) => f.slug === newSlug);
+	if (index !== -1) {
+		mobileFilters.value[index] = oldFilter;
+	}
+};
+
+const onDropdownTransitionEnd = (e: TransitionEvent) => {
+	if (e.propertyName === 'grid-template-rows') {
+		if (!isDropdownToggle.value && pendingSwap) {
+			performMobileFilterSwap(pendingSwap.newSlug, pendingSwap.oldSlug);
+			pendingSwap = null;
+		}
+	}
+};
+
+// Watchers :
+watch(isDropdownToggle, (val) => {
+	if (!val && pendingSwap) {
+		// Ensure any pending swap is done if closed via click-outside/escape :
+		performMobileFilterSwap(pendingSwap.newSlug, pendingSwap.oldSlug);
+		pendingSwap = null;
+	}
+});
+
 // Attach :
 onMounted(() => {
 	updateFontSize();
+
+	// Init (Mobile filters) :
+	const current = allFilters.value.find((f) => f.slug === currentFilter.value) || allFilters.value[0];
+	labelChars.value = stringToChars(current.name);
+	countChars.value = stringToChars(`(${formatIndex(current.count)})`);
+	mobileFilters.value = allFilters.value.filter((f) => f.slug !== current.slug);
+
+	// Events :
+	dropdownRef.value?.addEventListener('transitionend', onDropdownTransitionEnd);
+});
+
+onUnmounted(() => {
+	dropdownRef.value?.removeEventListener('transitionend', onDropdownTransitionEnd);
 });
 </script>
 
 <template>
+	<div class="modules">
+		<div class="circular-star-wrapper">
+			<CircularStar :scroll-speed="1" />
+		</div>
+	</div>
 	<section class="modules home-hero">
 		<div ref="containerRef" class="container">
-			<div class="circular-star-wrapper">
-				<CircularStar :scroll-speed="1" />
-			</div>
 			<div class="content-container">
 				<RichText ref="richTextRef" :doc="blok.title" />
-				<div class="filters-container">
+				<div class="filters-container hide-desktop" :class="{ toggle: isDropdownToggle }">
+					<Button @click="handleToggleDropdown">
+						<div class="inner-cta">
+							<span ref="mobileLabelRef" class="mobile-label">
+								<span v-for="char in labelChars" :key="char.id" class="char-wrapper">
+									<span class="char" :data-char-id="char.id">{{
+										char.char === ' ' ? '\u00A0' : char.char
+									}}</span>
+								</span>
+							</span>
+							<span ref="mobileCountRef" class="number mobile-number">
+								<span v-for="char in countChars" :key="char.id" class="char-wrapper">
+									<span class="char" :data-char-id="char.id">{{ char.char }}</span>
+								</span>
+							</span>
+						</div>
+					</Button>
+
+					<div ref="dropdownRef" class="dropdown-container" :class="{ toggle: isDropdownToggle }">
+						<div class="dropdown-inner-container">
+							<div class="dropdown-inner-wrapper">
+								<Button
+									v-for="filter in mobileFilters"
+									:key="filter.slug"
+									@click="handleFilterClick(filter.slug)"
+								>
+									<div class="inner-cta">
+										<span>{{ filter.name }}</span>
+										<span class="number">({{ formatIndex(filter.count) }})</span>
+									</div>
+								</Button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="filters-container hide-mobile-tablet">
 					<Button
 						:class="{ active: currentFilter === 'allMyProjects' }"
 						@click="handleFilterClick('allMyProjects')"
 					>
-						<span>{{ $t('allMyProjects') }}</span>
-						<span class="number">({{ formatIndex(getProjectCount()) }})</span>
+						<div class="inner-cta">
+							<span>{{ $t('allMyProjects') }}</span>
+							<span class="number">({{ formatIndex(getProjectCount()) }})</span>
+						</div>
 					</Button>
 
 					<Button
@@ -110,8 +348,10 @@ onMounted(() => {
 						:class="{ active: currentFilter === service.slug }"
 						@click="handleFilterClick(service.slug)"
 					>
-						<span><RichText :doc="service.content.informations?.[0]?.name" /></span>
-						<span class="number">({{ formatIndex(getProjectCount(service.slug)) }})</span>
+						<div class="inner-cta">
+							<span><RichText :doc="service.content.informations?.[0]?.name" /></span>
+							<span class="number">({{ formatIndex(getProjectCount(service.slug)) }})</span>
+						</div>
 					</Button>
 				</div>
 			</div>
@@ -121,12 +361,15 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .modules.home-hero {
-	@include pseudo-gradient('before', 'top', 'ivory-white-transparent', 1, fluidSize(640px, 420px));
-
+	position: sticky;
+	z-index: 2;
+	top: 0;
 	margin-block-end: fluidSize(96px, 60px, null, xxlarge);
 }
 
 .circular-star-wrapper {
+	@include pseudo-gradient('before', 'top', 'ivory-white-transparent', 1, fluidSize(640px, 420px));
+
 	position: absolute;
 	top: 0;
 	left: 50%;
@@ -182,9 +425,31 @@ onMounted(() => {
 }
 
 .filters-container {
+	position: relative;
 	display: flex;
-	gap: $gap;
 	width: 100%;
+
+	@include mq($until: desktop) {
+		border-radius: 4px;
+
+		& > button {
+			border-radius: 4px;
+		}
+
+		&.toggle {
+			& > button {
+				border-radius: 4px 4px 0 0;
+				transition:
+					background 0.3s $power2Out,
+					color 0.3s $power2Out,
+					border-radius 0.1s $power2Out;
+			}
+		}
+	}
+
+	@include mq(desktop) {
+		gap: $gap;
+	}
 
 	button {
 		@include roobert-14-uppercase;
@@ -195,29 +460,104 @@ onMounted(() => {
 		gap: fluidSize(6px, 4px);
 		width: 100%;
 		height: 40px;
-		background: $whiteChoco;
-		border-radius: 4px;
 		text-align: center;
 		padding-inline: fluidSize(20px, 16px);
 		transition:
 			background 0.3s $power2Out,
-			color 0.3s $power2Out;
+			color 0.3s $power2Out,
+			border-radius 0.1s $power2Out 0.5s;
 
-		@include hover {
-			background: $khaki;
+		@include mq($until: desktop) {
+			color: $white;
+			background: $eerieBlack;
+
+			@include hover {
+				background: $smokyBlack;
+			}
+
+			&.active {
+				background: $eerieBlack;
+				color: $white;
+				pointer-events: none;
+			}
+		}
+
+		@include mq(desktop) {
+			border-radius: 4px;
+			background: $whiteChoco;
+
+			@include hover {
+				background: $khaki;
+			}
+
+			&.active {
+				background: $eerieBlack;
+				color: $white;
+				pointer-events: none;
+			}
 		}
 
 		&.active {
-			background: $eerieBlack;
-			color: $white;
 			pointer-events: none;
+		}
+
+		.inner-cta {
+			position: relative;
 		}
 
 		.number {
 			@include romie-12;
 
-			padding-block-end: fluidSize(12px, 10px);
+			position: absolute;
+			top: 0;
+			right: 0;
+			transform: translate3d(calc(100% + fluidSize(4px, 3px)), calc(fluidSize(6px, 5px) * -1), 0);
 		}
+
+		.mobile-label,
+		.mobile-number {
+			display: inline-flex;
+		}
+
+		.char-wrapper {
+			display: inline-flex;
+			overflow: hidden;
+			vertical-align: bottom;
+		}
+
+		.char {
+			display: inline-block;
+			will-change: transform;
+		}
+	}
+}
+
+.dropdown-container {
+	position: absolute;
+	z-index: 1;
+	top: 100%;
+	left: 0;
+	width: 100%;
+	display: grid;
+	grid-template-rows: 0fr;
+	transition: grid-template-rows 0.6s $power2InOut;
+	overflow: hidden;
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+
+	&.toggle {
+		grid-template-rows: 1fr;
+		transition: grid-template-rows 0.6s $power2Out;
+	}
+}
+
+.dropdown-inner-container {
+	min-height: 0;
+}
+
+.dropdown-inner-wrapper {
+	& > button {
+		border-top: 1px solid rgba($white, 0.1);
 	}
 }
 </style>

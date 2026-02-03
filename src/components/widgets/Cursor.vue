@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import gsap from 'gsap';
-import { nextTick, onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
+import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
 
 import { isTouchDevice } from '#utils/device.ts';
+import { findCommonPrefix } from '#utils/findCommonPrefix.ts';
 
 // Refs :
 const elRef = useTemplateRef('elRef');
@@ -149,14 +150,6 @@ const tick = () => {
 };
 
 // Utils :
-const findCommonPrefix = (a: string, b: string) => {
-	let i = 0;
-	while (i < a.length && i < b.length && a[i] === b[i]) {
-		i++;
-	}
-	return i;
-};
-
 const updateLabel = (newText: string | null) => {
 	const targetText = newText || '';
 
