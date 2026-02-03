@@ -287,7 +287,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-	<div class="modules">
+	<div class="modules home-hero-circular-star">
 		<div class="circular-star-wrapper">
 			<CircularStar :scroll-speed="1" />
 		</div>
@@ -360,6 +360,10 @@ onUnmounted(() => {
 </template>
 
 <style lang="scss" scoped>
+.home-hero-circular-star {
+	@include pseudo-gradient('before', 'top', 'ivory-white-transparent', 1, fluidSize(640px, 420px));
+}
+
 .modules.home-hero {
 	position: sticky;
 	z-index: 2;
@@ -368,8 +372,6 @@ onUnmounted(() => {
 }
 
 .circular-star-wrapper {
-	@include pseudo-gradient('before', 'top', 'ivory-white-transparent', 1, fluidSize(640px, 420px));
-
 	position: absolute;
 	top: 0;
 	left: 50%;
@@ -411,6 +413,15 @@ onUnmounted(() => {
 		text-wrap: nowrap;
 		white-space: nowrap;
 		margin-block-end: fluidSize(40px, 24px);
+
+		@include mq(desktop) {
+			white-space: nowrap;
+			display: inline-block;
+
+			p {
+				display: inline;
+			}
+		}
 
 		em {
 			@include romie(500, none, -0.02em);
