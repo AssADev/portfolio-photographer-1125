@@ -3,6 +3,7 @@ import type { ISbStoryData } from '@storyblok/js';
 import { computed } from 'vue';
 
 import { nl2br } from '#utils/nl2br.ts';
+import { trackNavigationClick } from '#utils/tracking.ts';
 
 import Button from '#components/utils/Button.vue';
 import Image from '#components/utils/Image.vue';
@@ -56,6 +57,7 @@ const projects = computed(() => {
 					class="project-container"
 					:to="projects[index].full_slug"
 					:data-cursor-label="$t('discoverProject')"
+					@click="trackNavigationClick"
 				>
 					<div class="picture-container">
 						<div class="picture-wrapper">

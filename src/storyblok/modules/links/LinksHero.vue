@@ -3,6 +3,7 @@ import { getRichTextResolvers } from '#utils/getRichTextResolvers.ts';
 import { getLocale } from '#utils/i18n.ts';
 import { getLinkAttributes } from '#utils/link.ts';
 import { nl2br } from '#utils/nl2br.ts';
+import { trackNavigationClick } from '#utils/tracking.ts';
 
 import LabelShuffle from '#components/partials/LabelShuffle.vue';
 import Icon from '#components/utils/Icon.vue';
@@ -59,17 +60,17 @@ const resolvers = getRichTextResolvers('h1');
 				<RichText :doc="blok.title" :resolvers="resolvers" />
 				<ul class="socials-container">
 					<li v-if="email" class="small-item">
-						<a :href="`mailto:${email}`" :data-cursor-label="$t('email')">
+						<a :href="`mailto:${email}`" :data-cursor-label="$t('email')" @click="trackNavigationClick">
 							<Icon name="email" />
 						</a>
 					</li>
 					<li class="small-item">
-						<a :href="homeUrl" :data-cursor-label="$t('website')">
+						<a :href="homeUrl" :data-cursor-label="$t('website')" @click="trackNavigationClick">
 							<Icon name="website" />
 						</a>
 					</li>
 					<li v-for="social in socials" :key="social._uid">
-						<a v-bind="getLinkAttributes(social.link)">
+						<a v-bind="getLinkAttributes(social.link)" @click="trackNavigationClick">
 							<LabelShuffle :label="social.label!" no-snap />
 						</a>
 					</li>

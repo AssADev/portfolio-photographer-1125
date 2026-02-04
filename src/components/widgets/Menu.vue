@@ -3,6 +3,7 @@ import { computed, inject } from 'vue';
 
 import locales from '#utils/locales.json';
 import { nl2br } from '#utils/nl2br.ts';
+import { trackNavigationClick } from '#utils/tracking.ts';
 
 import DrawerMenu from '#components/partials/DrawerMenu.vue';
 import Icon from '#components/utils/Icon.vue';
@@ -70,7 +71,12 @@ const findActiveMenuItem = (menuItems: any[], currentPath: string) => {
 		</template>
 		<ul v-if="menuLinks" class="links-container">
 			<li v-for="item in activeMenuItems" :key="item.label" :class="{ active: item.active }">
-				<a :href="item.link" role="menuitem" :aria-current="item.active ? 'page' : undefined">
+				<a
+					:href="item.link"
+					role="menuitem"
+					:aria-current="item.active ? 'page' : undefined"
+					@click="trackNavigationClick"
+				>
 					<span>{{ item.label }}</span>
 				</a>
 			</li>

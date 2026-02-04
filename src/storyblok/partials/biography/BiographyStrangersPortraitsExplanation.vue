@@ -2,6 +2,7 @@
 import { formatIndex } from '#utils/formatIndex.ts';
 import { getLinkAttributes } from '#utils/link.ts';
 import { nl2br } from '#utils/nl2br.ts';
+import { trackNavigationClick } from '#utils/tracking.ts';
 
 import CircularStar from '#components/utils/CircularStar.vue';
 import RichText from '#components/utils/RichText.vue';
@@ -32,7 +33,7 @@ defineProps<{
 			</div>
 			<ul v-if="socials.length" class="socials-wrapper">
 				<li v-for="social in socials" :key="social._uid">
-					<a v-bind="getLinkAttributes(social.link)">
+					<a v-bind="getLinkAttributes(social.link)" @click="trackNavigationClick">
 						<span>{{ social.label }}</span>
 					</a>
 				</li>

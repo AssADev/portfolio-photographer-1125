@@ -3,6 +3,7 @@ import gsap from 'gsap';
 import { computed, inject, ref, useTemplateRef } from 'vue';
 
 import { getLinkAttributes } from '#utils/link.ts';
+import { trackNavigationClick } from '#utils/tracking.ts';
 
 import Icon from '#components/utils/Icon.vue';
 
@@ -73,7 +74,7 @@ const handleSocialLeave = () => {
 			<Icon name="square-small" :class="{ visible: isIconVisible }" />
 		</div>
 		<li v-for="social in menuSocials" :key="social.label">
-			<a v-bind="getLinkAttributes(social.link)" @mouseenter="handleSocialHover">
+			<a v-bind="getLinkAttributes(social.link)" @mouseenter="handleSocialHover" @click="trackNavigationClick">
 				<span>{{ social.label }}</span>
 			</a>
 		</li>

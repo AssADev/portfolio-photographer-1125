@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { getLinkAttributes } from '#utils/link.ts';
+import { trackNavigationClick } from '#utils/tracking.ts';
 
 import Button from '#components/utils/Button.vue';
 import CircularStar from '#components/utils/CircularStar.vue';
@@ -23,6 +24,7 @@ const columnNumber = Number(blok.columnNumber ?? 1);
 		is="a"
 		class="partials-links-materials-item item-product"
 		:data-cursor-label="$t('viewProduct')"
+		@click="trackNavigationClick"
 	>
 		<div class="informations-container">
 			<div class="pretitle-wrapper">

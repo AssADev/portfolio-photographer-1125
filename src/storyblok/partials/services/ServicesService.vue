@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { nl2br } from '#utils/nl2br.ts';
+import { trackNavigationClick } from '#utils/tracking.ts';
 
 import Button from '#components/utils/Button.vue';
 import RichText from '#components/utils/RichText.vue';
@@ -22,6 +23,7 @@ defineProps<{
 		class="partials-services-service"
 		:data-cursor-label="$t('discoverService')"
 		:style="{ '--hover-scale': hoverScale || 1.0175 }"
+		@click="trackNavigationClick"
 	>
 		<div class="picture-wrapper">
 			<picture>

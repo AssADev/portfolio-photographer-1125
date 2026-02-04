@@ -8,6 +8,7 @@ import Lenis from '#components/providers/Lenis.vue';
 
 import SEO from '#components/widgets/Head/SEO.astro';
 import Head from '#components/widgets/Head/Head.astro';
+import TrackingScripts from '#components/scripts/TrackingScripts.astro';
 
 import Header from '#components/widgets/Header.vue';
 import Cursor from '#components/widgets/Cursor.vue';
@@ -56,6 +57,7 @@ setState('url', Astro.url);
 			nofollow={nofollow}
 			noindex={noindex}
 		/>
+		<TrackingScripts />
 		<slot name="head" />
 	</Head>
 	<body>

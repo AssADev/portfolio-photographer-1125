@@ -4,6 +4,7 @@ import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro';
 import type { SbBlokData } from '@storyblok/astro';
 import type { StoryblokHomeLayout, StoryblokHomeHero } from '#types/component-types-sb.js';
 import HomeHero from '#storyblok/modules/home/HomeHero.astro';
+import HomeHeroCircularStar from '#storyblok/modules/home/HomeHeroCircularStar.astro';
 
 type Props = { blok: StoryblokHome };
 
@@ -13,6 +14,8 @@ const { blok } = Astro.props;
 const projects =
 	blok.body?.filter((c): c is StoryblokHomeLayout => c.component === 'HomeLayout').flatMap((c) => c.projects) || [];
 ---
+
+<HomeHeroCircularStar />
 
 {blok.hero?.length && <HomeHero blok={blok.hero[0] as StoryblokHomeHero} projects={projects} />}
 

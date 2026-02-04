@@ -2,6 +2,7 @@
 import { getRichTextResolvers } from '#utils/getRichTextResolvers.ts';
 import { getLinkAttributes } from '#utils/link.ts';
 import { nl2br } from '#utils/nl2br.ts';
+import { trackFormOpenClick, trackNavigationClick } from '#utils/tracking.ts';
 
 import Button from '#components/utils/Button.vue';
 import RichText from '#components/utils/RichText.vue';
@@ -27,6 +28,11 @@ const resolvers = getRichTextResolvers('h2');
 			theme="dot-dark"
 			:text="data.cta[0].label"
 			:link="data.cta[0].link"
+			@click="
+				data.cta[0].link.component === 'Forms'
+					? trackFormOpenClick($event, { formId: (data.cta[0].link.story as any)?.content?.id })
+					: trackNavigationClick
+			"
 		/>
 	</div>
 </template>

@@ -8,6 +8,7 @@ import { formatDateMonthYear } from '#utils/formatDate.ts';
 import { getRichTextResolvers } from '#utils/getRichTextResolvers.ts';
 import { getLocale } from '#utils/i18n.ts';
 import { getMarqueeImageWidth } from '#utils/marquee.ts';
+import { trackNavigationClick } from '#utils/tracking.ts';
 
 import Button from '#components/utils/Button.vue';
 import CircularStar from '#components/utils/CircularStar.vue';
@@ -115,7 +116,11 @@ onMounted(() => {
 							<template
 								v-if="information.isLink && information.value && typeof information.value === 'object'"
 							>
-								<Button :to="information.value.full_slug" data-cursor-snap>
+								<Button
+									:to="information.value.full_slug"
+									data-cursor-snap
+									@click="trackNavigationClick"
+								>
 									<RichText
 										class="value"
 										:doc="information.value.content.informations[0].name"

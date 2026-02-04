@@ -4,6 +4,7 @@ import { computed, ref } from 'vue';
 
 import { formatIndex } from '#utils/formatIndex.ts';
 import { getAspectRatio } from '#utils/image.ts';
+import { trackNavigationClick } from '#utils/tracking.ts';
 
 import Button from '#components/utils/Button.vue';
 import Image from '#components/utils/Image.vue';
@@ -38,10 +39,8 @@ const aspectRatio = computed(() => {
 </script>
 
 <template>
-	<Button
+	<div
 		class="partials-home-item-project"
-		:data-cursor-label="$t('discoverProject')"
-		:to="`${project.full_slug}`"
 		v-magnetic="{
 			strength: 0.1,
 			parallax: { target: 'img', strength: 0.025 }
@@ -49,24 +48,36 @@ const aspectRatio = computed(() => {
 	>
 		<div class="informations-container">
 			<span>/{{ formatIndex(index ?? 0) }}</span>
-			<Button :to="`${service?.full_slug}`" data-cursor-snap>
-				<RichText v-if="service" :doc="service.content.informations?.[0]?.name" shuffle />
+			<Button v-if="service" :to="`${service?.full_slug}`" data-cursor-snap @click="trackNavigationClick">
+				<RichText :doc="service.content.informations?.[0]?.name" shuffle />
 			</Button>
 		</div>
-		<div class="picture-container">
-			<div class="picture-wrapper">
-				<Image v-if="cover" :src="cover" object-fit="contain" :sizes="[{ widescreen: '2560px' }, '100vw']" />
+		<Button class="project-link" :data-cursor-label="$t('discoverProject')" :to="`${project.full_slug}`">
+			<div class="picture-container">
+				<div class="picture-wrapper">
+					<Image
+						v-if="cover"
+						:src="cover"
+						object-fit="contain"
+						:sizes="[{ widescreen: '2560px' }, '100vw']"
+					/>
+				</div>
 			</div>
-		</div>
-		<div class="title-container">
-			<RichText v-if="projectName" :doc="projectName" />
-		</div>
-	</Button>
+			<div class="title-container">
+				<RichText v-if="projectName" :doc="projectName" />
+			</div>
+		</Button>
+	</div>
 </template>
 
 <style lang="scss" scoped>
 .partials-home-item-project {
 	position: relative;
+}
+
+.project-link {
+	display: block;
+	width: 100%;
 }
 
 .informations-container {

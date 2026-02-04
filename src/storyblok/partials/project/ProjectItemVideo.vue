@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { getLinkAttributes } from '#utils/link.ts';
+import { trackNavigationClick } from '#utils/tracking.ts';
 
 import LabelShuffle from '#components/partials/LabelShuffle.vue';
 import Video from '#components/partials/Video.vue';
@@ -30,7 +31,7 @@ const getSocialLink = (label?: string) => {
 				<div class="socials-sticky-wrapper">
 					<template v-for="social in socials" :key="social._uid">
 						<li v-if="social.label && getSocialLink(social.label)">
-							<a v-bind="getLinkAttributes(getSocialLink(social.label))">
+							<a v-bind="getLinkAttributes(getSocialLink(social.label))" @click="trackNavigationClick">
 								<LabelShuffle :label="social.label" />
 							</a>
 						</li>

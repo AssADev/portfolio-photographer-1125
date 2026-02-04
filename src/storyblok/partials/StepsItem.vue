@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { formatIndex } from '#utils/formatIndex.ts';
 import { nl2br } from '#utils/nl2br.ts';
+import { trackFormOpenClick, trackNavigationClick } from '#utils/tracking.ts';
 
 import Button from '#components/utils/Button.vue';
 
@@ -25,6 +26,7 @@ defineProps<{
 			theme="dot-dark"
 			:text="blok.cta[0].label || $t('bookYourPhotoSession')"
 			:link="blok.cta[0].link"
+			@click="trackFormOpenClick($event, { formId: (blok.cta[0].link.story as any)?.content?.id })"
 		/>
 	</div>
 </template>

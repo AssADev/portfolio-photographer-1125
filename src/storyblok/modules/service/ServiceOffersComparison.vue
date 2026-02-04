@@ -3,6 +3,7 @@ import { computed } from 'vue';
 
 import { getRichTextResolvers } from '#utils/getRichTextResolvers.ts';
 import { t } from '#utils/i18n.ts';
+import { trackNavigationClick } from '#utils/tracking.ts';
 
 import Button from '#components/utils/Button.vue';
 import RichText from '#components/utils/RichText.vue';
@@ -91,6 +92,7 @@ const getFormattedSuffix = (row: ComparisonRow, value: any) => {
 					:text="$t('downloadTheBrochure')"
 					:to="blok.brochure.filename"
 					target="_blank"
+					@click="trackNavigationClick"
 				/>
 			</div>
 

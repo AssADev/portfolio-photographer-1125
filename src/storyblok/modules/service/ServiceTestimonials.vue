@@ -5,6 +5,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { formatIndex } from '#utils/formatIndex.ts';
 import { getLinkAttributes } from '#utils/link.ts';
 import { nl2br } from '#utils/nl2br.ts';
+import { trackFormOpenClick, trackNavigationClick } from '#utils/tracking.ts';
 
 import LabelShuffle from '#components/partials/LabelShuffle.vue';
 import Button from '#components/utils/Button.vue';
@@ -152,6 +153,11 @@ const layouts = [
 					theme="dot-dark"
 					:text="blok.link[0].label"
 					:link="blok.link[0].link"
+					@click="
+						blok.link[0].link.component === 'Forms'
+							? trackFormOpenClick($event, { formId: (blok.link[0].link.story as any)?.content?.id })
+							: trackNavigationClick
+					"
 				/>
 			</div>
 			<div

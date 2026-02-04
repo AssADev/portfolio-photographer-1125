@@ -9,7 +9,6 @@ import { formatIndex } from '#utils/formatIndex.ts';
 import { t } from '#utils/i18n.ts';
 
 import Button from '#components/utils/Button.vue';
-import CircularStar from '#components/utils/CircularStar.vue';
 import RichText from '#components/utils/RichText.vue';
 
 import type { StoryblokHomeHero, StoryblokProject, StoryblokService } from '#types/component-types-sb.js';
@@ -287,11 +286,6 @@ onUnmounted(() => {
 </script>
 
 <template>
-	<div class="modules home-hero-circular-star">
-		<div class="circular-star-wrapper">
-			<CircularStar :scroll-speed="1" />
-		</div>
-	</div>
 	<section class="modules home-hero">
 		<div ref="containerRef" class="container">
 			<div class="content-container">
@@ -360,46 +354,11 @@ onUnmounted(() => {
 </template>
 
 <style lang="scss" scoped>
-.home-hero-circular-star {
-	@include pseudo-gradient('before', 'top', 'ivory-white-transparent', 1, fluidSize(640px, 420px));
-}
-
 .modules.home-hero {
 	position: sticky;
 	z-index: 2;
 	top: 0;
 	margin-block-end: fluidSize(96px, 60px, null, xxlarge);
-}
-
-.circular-star-wrapper {
-	position: absolute;
-	top: 0;
-	left: 50%;
-	transform: translate3d(-50%, 0, 0);
-	overflow: hidden;
-	pointer-events: none;
-
-	:deep(.partials-circular-star) {
-		@include mq($until: desktop) {
-			@include svh(125, height);
-		}
-
-		@include mq($until: large) {
-			transform: translate3d(0, -40%, 0);
-		}
-
-		@include mq(desktop) {
-			width: var(--ctn-w);
-		}
-
-		@include mq(large) {
-			transform: translate3d(0, -55%, 0);
-		}
-
-		@include mq(xlarge) {
-			transform: translate3d(0, -60%, 0);
-		}
-	}
 }
 
 .content-container {

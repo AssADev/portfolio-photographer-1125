@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { getLinkAttributes } from '#utils/link.ts';
 import { nl2br } from '#utils/nl2br.ts';
+import { trackFormOpenClick } from '#utils/tracking.ts';
 
 import Button from '#components/utils/Button.vue';
 import CircularStar from '#components/utils/CircularStar.vue';
@@ -52,6 +53,11 @@ defineProps<{
 				v-bind="getLinkAttributes(serviceBookingFormLink[0])"
 				:text="serviceBookingFormLink[0].label || $t('bookYourPhotoSession')"
 				:link="serviceBookingFormLink[0].link"
+				@click="
+					trackFormOpenClick($event, {
+						formId: (serviceBookingFormLink[0].link.story as any)?.content?.id
+					})
+				"
 			/>
 		</div>
 	</div>

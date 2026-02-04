@@ -5,6 +5,7 @@ import { computed, ref } from 'vue';
 
 import { getLinkAttributes } from '#utils/link.ts';
 import { getMarqueeImageWidth } from '#utils/marquee.ts';
+import { trackFormOpenClick, trackNavigationClick } from '#utils/tracking.ts';
 
 import ProjectsMarqueeItem from '#components/partials/ProjectsMarqueeItem.vue';
 import Button from '#components/utils/Button.vue';
@@ -66,6 +67,11 @@ const scaledProjects = computed(() => {
 					theme="dot-dark"
 					:text="blok.link[0].label || $t('bookYourPhotoSession')"
 					:link="blok.link[0].link"
+					@click="
+						blok.link[0].link.component === 'Forms'
+							? trackFormOpenClick($event, { formId: (blok.link[0].link.story as any)?.content?.id })
+							: trackNavigationClick
+					"
 				/>
 			</div>
 		</div>

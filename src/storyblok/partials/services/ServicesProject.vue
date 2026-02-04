@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { trackNavigationClick } from '#utils/tracking.ts';
+
 import LabelName from '#components/utils/LabelName.vue';
 
 import type { StoryblokRichtext } from '#types/component-types-sb.js';
@@ -18,6 +20,7 @@ defineProps<{
 		class="partials-services-project"
 		:data-cursor-label="cursorLabel || $t('discoverProject')"
 		:style="{ '--hover-scale': hoverScale || 1.0175 }"
+		@click="trackNavigationClick"
 	>
 		<div class="picture-wrapper">
 			<picture>

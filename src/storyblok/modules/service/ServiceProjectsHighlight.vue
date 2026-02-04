@@ -5,6 +5,8 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
 
+import { trackNavigationClick } from '#utils/tracking.ts';
+
 import Image from '#components/utils/Image.vue';
 import LabelName from '#components/utils/LabelName.vue';
 
@@ -185,6 +187,7 @@ onUnmounted(() => {
 					:href="project.full_slug"
 					class="project-slide"
 					:data-cursor-label="$t('discoverProject')"
+					@click="trackNavigationClick"
 				>
 					<div class="picture-wrapper">
 						<Image

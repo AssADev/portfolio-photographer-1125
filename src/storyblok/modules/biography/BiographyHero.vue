@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { trackNavigationClick } from '#utils/tracking.ts';
+
 import LabelShuffle from '#components/partials/LabelShuffle.vue';
 import CircularStar from '#components/utils/CircularStar.vue';
 import Image from '#components/utils/Image.vue';
@@ -39,12 +41,17 @@ defineProps<{
 					/>
 				</div>
 				<div class="socials-container">
-					<a v-if="email" :href="`mailto:${email}`">
+					<a v-if="email" :href="`mailto:${email}`" @click="trackNavigationClick">
 						<LabelShuffle :label="email" />
 					</a>
 					<ul v-if="socials.length" class="socials-wrapper">
 						<li v-for="social in socials" :key="social._uid">
-							<a :href="social.link.url" target="_blank" rel="noopener noreferrer">
+							<a
+								:href="social.link.url"
+								target="_blank"
+								rel="noopener noreferrer"
+								@click="trackNavigationClick"
+							>
 								<LabelShuffle :label="social.label!" />
 							</a>
 						</li>

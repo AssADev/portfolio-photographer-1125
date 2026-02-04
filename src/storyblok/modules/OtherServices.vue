@@ -5,6 +5,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useTemplateRef } from 'vue';
 
 import { breakPointsNoUnits } from '#utils/breakpoints.ts';
+import { trackNavigationClick } from '#utils/tracking.ts';
 
 import Image from '#components/utils/Image.vue';
 import RichText from '#components/utils/RichText.vue';
@@ -120,6 +121,7 @@ useGSAP(() => {
 					:href="service.full_slug"
 					class="service-wrapper"
 					:data-cursor-label="$t('learnMore')"
+					@click="trackNavigationClick"
 				>
 					<div class="cover-wrapper">
 						<div class="cover-inner-wrapper">

@@ -37,31 +37,48 @@ const { faqTitle, faqDescription, faqLink, faqSections } = Astro.locals.siteConf
 	hasFAQ={!!blok.moduleFAQ?.length}
 />
 
-{blok.informations?.length && <ServiceHero blok={blok.informations[0] as StoryblokServiceInformations} />}
-
 {
-	blok.moduleProjectsHighlight?.length && (
-		<ServiceProjectsHighlight blok={blok.moduleProjectsHighlight[0] as StoryblokServiceProjectsHighlight} />
+	blok.informations?.length && (
+		<ServiceHero blok={blok.informations[0] as StoryblokServiceInformations} data-component-name="ServiceHero" />
 	)
 }
 
-{blok.moduleSteps?.length && <Steps blok={blok.moduleSteps[0] as StoryblokSteps} />}
+{
+	blok.moduleProjectsHighlight?.length && (
+		<ServiceProjectsHighlight
+			blok={blok.moduleProjectsHighlight[0] as StoryblokServiceProjectsHighlight}
+			data-component-name="ServiceProjectsHighlight"
+		/>
+	)
+}
+
+{blok.moduleSteps?.length && <Steps blok={blok.moduleSteps[0] as StoryblokSteps} data-component-name="Steps" />}
 
 {
 	blok.moduleTestimonials?.length && (
-		<ServiceTestimonials blok={blok.moduleTestimonials[0] as StoryblokServiceTestimonials} />
+		<ServiceTestimonials
+			blok={blok.moduleTestimonials[0] as StoryblokServiceTestimonials}
+			data-component-name="ServiceTestimonials"
+		/>
 	)
 }
 
 {
 	blok.moduleProjectsExample?.length && (
-		<ServiceProjectsExample blok={blok.moduleProjectsExample[0] as StoryblokServiceProjectsExample} />
+		<ServiceProjectsExample
+			blok={blok.moduleProjectsExample[0] as StoryblokServiceProjectsExample}
+			data-component-name="ServiceProjectsExample"
+		/>
 	)
 }
 
 {
 	blok.moduleOffers?.length && (
-		<ServiceOffers blok={blok.moduleOffers[0] as StoryblokServiceOffers} offers={blok.offers ?? []} />
+		<ServiceOffers
+			blok={blok.moduleOffers[0] as StoryblokServiceOffers}
+			offers={blok.offers ?? []}
+			data-component-name="ServiceOffers"
+		/>
 	)
 }
 
@@ -70,6 +87,7 @@ const { faqTitle, faqDescription, faqLink, faqSections } = Astro.locals.siteConf
 		<ServiceOffersComparison
 			blok={blok.moduleOffersComparison[0] as StoryblokServiceOffersComparison}
 			offers={blok.offers ?? []}
+			data-component-name="ServiceOffersComparison"
 		/>
 	)
 }
@@ -82,14 +100,25 @@ const { faqTitle, faqDescription, faqLink, faqSections } = Astro.locals.siteConf
 			faqDescription={faqDescription}
 			faqLink={faqLink}
 			faqSections={faqSections}
+			data-component-name="ServiceFAQ"
 		/>
 	)
 }
 
-{blok.moduleOtherServices?.length && <OtherServices blok={blok.moduleOtherServices[0] as StoryblokOtherServices} />}
+{
+	blok.moduleOtherServices?.length && (
+		<OtherServices
+			blok={blok.moduleOtherServices[0] as StoryblokOtherServices}
+			data-component-name="OtherServices"
+		/>
+	)
+}
 
 {
 	blok.moduleProjectsMarquee?.length && (
-		<ProjectsMarquee blok={blok.moduleProjectsMarquee[0] as StoryblokProjectsMarquee} />
+		<ProjectsMarquee
+			blok={blok.moduleProjectsMarquee[0] as StoryblokProjectsMarquee}
+			data-component-name="ProjectsMarquee"
+		/>
 	)
 }

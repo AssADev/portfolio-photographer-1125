@@ -1,0 +1,19 @@
+<script is:inline>
+	function gtm(w, d, s, l, i) {
+		w[l] = w[l] || [];
+		const f = d.getElementsByTagName(s)[0],
+			j = d.createElement(s),
+			dl = l != 'dataLayer' ? '&l=' + l : '';
+		j.async = true;
+		j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+		f.parentNode.insertBefore(j, f);
+	}
+	gtm(window, document, 'script', 'dataLayer', 'GTM-MLKSHFCZ');
+</script>
+
+<script>
+	import { initTracking, trackPageView } from '#utils/tracking.ts';
+
+	initTracking();
+	document.addEventListener('astro:page-load', () => trackPageView());
+</script>

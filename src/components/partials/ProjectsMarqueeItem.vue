@@ -5,6 +5,8 @@ import gsap from 'gsap';
 import { SplitText } from 'gsap/SplitText';
 import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
 
+import { trackNavigationClick } from '#utils/tracking.ts';
+
 import Image from '#components/utils/Image.vue';
 import RichText from '#components/utils/RichText.vue';
 
@@ -127,6 +129,7 @@ onUnmounted(() => {
 		:data-cursor-label="$t('discoverProject')"
 		@mouseenter="onPointerEnter"
 		@mouseleave="onPointerLeave"
+		@click="trackNavigationClick"
 	>
 		<div class="cover-wrapper" :style="width ? { width: `${width}px` } : {}">
 			<Image :src="informations.coverSmall" object-fit="contain" />

@@ -2,6 +2,7 @@
 import { onMounted, onUnmounted, useTemplateRef } from 'vue';
 
 import { getLinkAttributes } from '#utils/link.ts';
+import { trackNavigationClick } from '#utils/tracking.ts';
 
 import Button from '#components/utils/Button.vue';
 
@@ -68,6 +69,7 @@ onUnmounted(() => {
 		:aria-label="$t('watchVideo')"
 		:data-cursor-label="$t('watchVideo')"
 		class="partials-video"
+		@click="trackNavigationClick"
 	>
 		<video ref="videoRef" :poster="thumbnail.filename" :src="video.filename" loop muted playsinline></video>
 	</Button>
