@@ -6,6 +6,7 @@ import gsap from 'gsap';
 import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
 
 import { formatIndex } from '#utils/formatIndex.ts';
+import { getRichTextResolvers } from '#utils/getRichTextResolvers.ts';
 import { t } from '#utils/i18n.ts';
 
 import Button from '#components/utils/Button.vue';
@@ -266,6 +267,9 @@ watch(isDropdownToggle, (val) => {
 	}
 });
 
+// Resolvers (RichText) :
+const resolvers = getRichTextResolvers('h1');
+
 // Attach :
 onMounted(() => {
 	updateFontSize();
@@ -289,7 +293,7 @@ onUnmounted(() => {
 	<section class="modules home-hero">
 		<div ref="containerRef" class="container">
 			<div class="content-container">
-				<RichText ref="richTextRef" :doc="blok.title" />
+				<RichText ref="richTextRef" :doc="blok.title" :resolvers="resolvers" />
 				<div class="filters-container hide-desktop" :class="{ toggle: isDropdownToggle }">
 					<Button @click="handleToggleDropdown">
 						<div class="inner-cta">
