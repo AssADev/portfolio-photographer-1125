@@ -8,12 +8,15 @@ import type { App } from 'vue';
 import { getState } from '#utils/astro-state.ts';
 import { getLocale, t } from '#utils/i18n.ts';
 
+import vAnimate from '#directives/vAnimate.ts';
+
 let gsapInitialized = false;
 
 export default (app: App) => {
 	app.config.globalProperties.$t = t;
 
 	app.use(LenisVue);
+	app.directive('animate', vAnimate);
 	app.provide('language', getLocale());
 	app.provide('isPreviewMode', getState('isPreviewMode', false));
 

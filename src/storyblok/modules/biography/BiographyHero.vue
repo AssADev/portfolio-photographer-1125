@@ -62,8 +62,8 @@ defineProps<{
 				class="picture-secondary-container col-start-1 col-end-11 col-start-tb-10 col-end-tb-16 col-start-dk-24 col-end-dk-33"
 				v-parallax="{ scale: false, tablet: 10 }"
 			>
-				<p v-if="blok.description">{{ blok.description }}</p>
-				<div class="picture-wrapper">
+				<p v-animate="'reveal-paragraphs'" v-if="blok.description">{{ blok.description }}</p>
+				<div v-animate="{ type: 'mask-reveal', options: { direction: 'up' } }" class="picture-wrapper">
 					<Image
 						v-parallax="{ scale: true, mobile: 8, tablet: 12, desktop: 6 }"
 						:src="blok.pictureSecondary"
