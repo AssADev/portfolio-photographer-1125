@@ -381,7 +381,7 @@ onUnmounted(() => {
 			white-space: nowrap;
 			display: inline-block;
 
-			p {
+			h1 {
 				display: inline;
 			}
 		}
