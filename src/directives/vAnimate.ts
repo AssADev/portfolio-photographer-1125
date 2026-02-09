@@ -9,41 +9,54 @@ interface AnimateBinding {
 	options?: AnimationOptions;
 }
 
-const vAnimate: Directive<HTMLElement, string | AnimateBinding> = {
-	mounted(el, binding) {
-		const value = binding.value;
-		const type = typeof value === 'string' ? value : value.type;
-		const options = typeof value === 'string' ? {} : value.options || {};
+const init = (el: HTMLElement & { _gsapAnim?: gsap.core.Animation }, binding: any) => {
+	const value = binding.value;
+	const type = typeof value === 'string' ? value : value.type;
+	const options = typeof value === 'string' ? {} : value.options || {};
 
-		const animationFn = animations[type];
+	// If containerAnimation is expected but not yet ready, we wait :
+	if ('containerAnimation' in options && !options.containerAnimation) return;
 
-		if (!animationFn) {
-			console.warn(`[v-animate] Animation type "${type}" not found.`);
-			return;
-		}
+	// If we already have a ScrollTrigger for this element, we don't recreate it :
+	const existingST = ScrollTrigger.getAll().find((st) => st.trigger === el);
+	if (existingST) return;
 
-		// Configure ScrollTrigger :
-		const scrollTrigger: any = {
+	const animationFn = animations[type];
+	if (!animationFn) {
+		console.warn(`[v-animate] Animation type "${type}" not found.`);
+		return;
+	}
+
+	const anim = animationFn(el, options);
+	el._gsapAnim = anim;
+
+	if (anim instanceof gsap.core.Timeline || anim instanceof gsap.core.Tween) {
+		ScrollTrigger.create({
 			trigger: el,
 			once: true,
-			start: options.start || 'top bottom',
-			toggleActions: 'play none none none'
-		};
+			animation: anim,
+			toggleActions: 'play none none none',
+			containerAnimation: options.containerAnimation,
+			start: options.start || (options.containerAnimation ? 'left bottom' : 'top bottom')
+		});
+	}
+};
 
-		// Create the animation :
-		const anim = animationFn(el, options);
-
-		if (anim instanceof gsap.core.Timeline || anim instanceof gsap.core.Tween) {
-			ScrollTrigger.create({
-				...scrollTrigger,
-				animation: anim
-			});
-		}
+const vAnimate: Directive<HTMLElement & { _gsapAnim?: gsap.core.Animation }, string | AnimateBinding> = {
+	mounted(el, binding) {
+		init(el, binding);
+	},
+	updated(el, binding) {
+		init(el, binding);
 	},
 	unmounted(el) {
 		ScrollTrigger.getAll().forEach((st) => {
 			if (st.trigger === el) st.kill();
 		});
+		if (el._gsapAnim) {
+			el._gsapAnim.kill();
+			delete el._gsapAnim;
+		}
 	}
 };
 

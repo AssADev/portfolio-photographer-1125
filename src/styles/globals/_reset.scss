@@ -136,6 +136,7 @@ display:revert; revert to element instead of attribute */
 /* Improve text rendering */
 html {
 	user-select: none;
+	font-kerning: none;
 	text-size-adjust: 100%;
 	text-rendering: optimizeLegibility;
 }

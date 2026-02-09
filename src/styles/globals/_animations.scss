@@ -1,0 +1,21 @@
+@use '../tools/colors' as *;
+
+// Reveal titles :
+.reveal-titles-line-wrapper {
+	position: relative;
+	width: fit-content;
+
+	.line {
+		opacity: 0;
+	}
+}
+
+.reveal-titles-block-revealer {
+	position: absolute;
+	z-index: 1;
+	inset: -4px;
+	pointer-events: none;
+	background: $eerieBlack;
+	transform-origin: left center;
+	transform: scale3d(0, 1, 1) translate3d(0, 12.5%, 0);
+}

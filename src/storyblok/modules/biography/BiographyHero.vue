@@ -22,6 +22,7 @@ defineProps<{
 	<section class="modules biography-hero">
 		<div class="container-grid">
 			<h1
+				v-animate="'reveal-titles'"
 				class="title col-start-1 col-end-13 col-start-dk-1 col-end-dk-20 col-start-xlg-1 col-end-xlg-16 col-start-xxlg-1 col-end-xxlg-14"
 			>
 				{{ blok.title }}
@@ -31,8 +32,8 @@ defineProps<{
 			<div
 				class="picture-primary-container col-start-1 col-end-13 col-start-tb-1 col-end-tb-13 col-start-dk-1 col-end-dk-18"
 			>
-				<CircularStar :scroll-speed="1" />
-				<div class="picture-wrapper">
+				<CircularStar v-animate="{ type: 'scale-up', options: { delay: 1.1 } }" :scroll-speed="1" />
+				<div v-animate="{ type: 'mask-reveal', options: { direction: 'up' } }" class="picture-wrapper">
 					<Image
 						v-parallax="12"
 						:src="blok.picturePrimary"
@@ -45,7 +46,7 @@ defineProps<{
 						<LabelShuffle :label="email" />
 					</a>
 					<ul v-if="socials.length" class="socials-wrapper">
-						<li v-for="social in socials" :key="social._uid">
+						<li v-for="(social, index) in socials" :key="social._uid">
 							<a
 								:href="social.link.url"
 								target="_blank"
@@ -62,7 +63,9 @@ defineProps<{
 				class="picture-secondary-container col-start-1 col-end-11 col-start-tb-10 col-end-tb-16 col-start-dk-24 col-end-dk-33"
 				v-parallax="{ scale: false, tablet: 10 }"
 			>
-				<p v-animate="'reveal-paragraphs'" v-if="blok.description">{{ blok.description }}</p>
+				<p v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.55 } }" v-if="blok.description">
+					{{ blok.description }}
+				</p>
 				<div v-animate="{ type: 'mask-reveal', options: { direction: 'up' } }" class="picture-wrapper">
 					<Image
 						v-parallax="{ scale: true, mobile: 8, tablet: 12, desktop: 6 }"

@@ -2,7 +2,7 @@
 import type { ISbStoryData } from '@storyblok/js';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useTemplateRef } from 'vue';
+import { shallowRef, useTemplateRef } from 'vue';
 
 import { breakPointsNoUnits } from '#utils/breakpoints.ts';
 import { trackNavigationClick } from '#utils/tracking.ts';
@@ -26,6 +26,8 @@ const sectionRef = useTemplateRef('sectionRef');
 const containerRef = useTemplateRef('containerRef');
 const titleRef = useTemplateRef('titleRef');
 const servicesContainerRef = useTemplateRef('servicesContainerRef');
+
+const horizontalTl = shallowRef<gsap.core.Timeline>();
 
 // Animation (Horizontal scroll) :
 useGSAP(() => {
@@ -101,6 +103,8 @@ useGSAP(() => {
 				{ x: () => getScrollAmount().endX, ease: 'none' },
 				0
 			);
+
+			horizontalTl.value = tl;
 		}
 	);
 }, sectionRef);
@@ -109,11 +113,23 @@ useGSAP(() => {
 <template>
 	<section ref="sectionRef" class="modules other-services">
 		<div ref="containerRef" class="content-container">
-			<h2 ref="titleRef">{{ blok.title || $t('myServices') }}</h2>
+			<h2
+				v-animate="{
+					type: 'reveal-letters',
+					options: { delay: 0.2, containerAnimation: horizontalTl }
+				}"
+				ref="titleRef"
+			>
+				{{ blok.title || $t('myServices') }}
+			</h2>
 			<div ref="servicesContainerRef" class="services-container" :class="{ 'is-odd': services.length % 2 === 0 }">
 				<a
 					v-for="service in services"
 					:key="service.uuid"
+					v-animate="{
+						type: 'mask-reveal',
+						options: { direction: 'left', containerAnimation: horizontalTl }
+					}"
 					v-magnetic="{
 						strength: 0.2,
 						parallax: { target: '.cover-inner-wrapper', strength: 0.0325 }
