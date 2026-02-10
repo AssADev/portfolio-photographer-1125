@@ -116,7 +116,7 @@ useGSAP(() => {
 			<h2
 				v-animate="{
 					type: 'reveal-letters',
-					options: { delay: 0.2, containerAnimation: horizontalTl }
+					options: { delay: 0.75, containerAnimation: horizontalTl }
 				}"
 				ref="titleRef"
 			>

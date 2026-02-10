@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import gsap from 'gsap';
+
 import Video from '#components/partials/Video.vue';
 
 import type { StoryblokBiographyStrangersPortraitsVideo } from '#types/component-types-sb.js';
@@ -6,11 +8,16 @@ import type { StoryblokBiographyStrangersPortraitsVideo } from '#types/component
 // Props :
 defineProps<{
 	blok: StoryblokBiographyStrangersPortraitsVideo;
+	containerAnimation?: gsap.core.Timeline;
 }>();
 </script>
 
 <template>
 	<Video
+		v-animate="{
+			type: 'none',
+			options: { direction: 'up', containerAnimation }
+		}"
 		:video="blok.video"
 		:thumbnail="blok.thumbnail"
 		:link="blok.link"

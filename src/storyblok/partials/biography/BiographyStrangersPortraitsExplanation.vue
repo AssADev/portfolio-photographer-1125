@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import gsap from 'gsap';
+
 import { formatIndex } from '#utils/formatIndex.ts';
 import { getLinkAttributes } from '#utils/link.ts';
 import { nl2br } from '#utils/nl2br.ts';
@@ -14,11 +16,16 @@ defineProps<{
 	blok: StoryblokBiographyStrangersPortraitsExplanation;
 	index: number;
 	socials: StoryblokLabelLink[];
+	containerAnimation?: gsap.core.Timeline;
 }>();
 </script>
 
 <template>
 	<div
+		v-animate="{
+			type: 'none',
+			options: { direction: 'up', containerAnimation }
+		}"
 		class="partials-biography-strangers-portraits-explanation"
 		:class="{ [index % 2 === 0 ? 'even-theme' : 'odd-theme']: true }"
 	>
@@ -28,11 +35,30 @@ defineProps<{
 				<div class="number-wrapper">
 					<span>{{ formatIndex(index + 1) }}</span>
 				</div>
-				<RichText :doc="blok.title" />
-				<p v-html="nl2br(blok.description)" />
+				<RichText
+					v-animate="{
+						type: 'reveal-titles',
+						options: { containerAnimation }
+					}"
+					:doc="blok.title"
+				/>
+				<p
+					v-animate="{
+						type: 'reveal-paragraphs',
+						options: { containerAnimation }
+					}"
+					v-html="nl2br(blok.description)"
+				/>
 			</div>
 			<ul v-if="socials.length" class="socials-wrapper">
-				<li v-for="social in socials" :key="social._uid">
+				<li
+					v-for="(social, index) in socials"
+					:key="social._uid"
+					v-animate="{
+						type: 'fade-in',
+						options: { delay: index * 0.1, containerAnimation }
+					}"
+				>
 					<a v-bind="getLinkAttributes(social.link)" @click="trackNavigationClick">
 						<span>{{ social.label }}</span>
 					</a>
@@ -99,7 +125,7 @@ defineProps<{
 	width: 40px;
 	height: 40px;
 	aspect-ratio: 1 / 1;
-	border-radius: 8px;
+	border-radius: var(--border-radius);
 	background: $eerieBlack;
 	margin-block-end: fluidSize(28px, 20px);
 
@@ -131,7 +157,7 @@ defineProps<{
 .socials-wrapper {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 10px;
+	gap: $gap;
 
 	li {
 		a {
@@ -139,7 +165,7 @@ defineProps<{
 			display: flex;
 			padding: 8px 16px;
 			border: 1px solid rgba($eerieBlack, 0.25);
-			border-radius: 16px;
+			border-radius: var(--border-radius);
 			transition:
 				color 0.4s $power2Out,
 				background 0.4s $power2Out,

@@ -12,8 +12,8 @@ import { trackNavigationClick } from '#utils/tracking.ts';
 
 import Button from '#components/utils/Button.vue';
 import CircularStar from '#components/utils/CircularStar.vue';
-import Icon from '#components/utils/Icon.vue';
 import Image from '#components/utils/Image.vue';
+import Label from '#components/utils/Label.vue';
 import Marquee from '#components/utils/Marquee.vue';
 import RichText from '#components/utils/RichText.vue';
 
@@ -108,11 +108,7 @@ onMounted(() => {
 					<RichText :doc="blok.name" :resolvers="resolvers" />
 					<div class="informations-container">
 						<div v-for="information in informations" :key="information.label" class="information-wrapper">
-							<div class="label-wrapper">
-								<Icon name="square-small" />
-								<span>{{ $t(information.label) }}</span>
-								<Icon name="square-small" />
-							</div>
+							<Label :label="$t(information.label)" />
 							<template
 								v-if="information.isLink && information.value && typeof information.value === 'object'"
 							>
@@ -299,6 +295,12 @@ onMounted(() => {
 		}
 	}
 
+	& > :deep(.partials-label) {
+		p {
+			@include roobert-14-uppercase;
+		}
+	}
+
 	a {
 		@include a11y-focus(-6px);
 
@@ -308,17 +310,6 @@ onMounted(() => {
 
 	.value {
 		@include roobert-18;
-	}
-}
-
-.label-wrapper {
-	display: flex;
-	align-items: center;
-	gap: fluidSize(6px, 4px);
-	color: $khaki;
-
-	span {
-		@include roobert-14-uppercase;
 	}
 }
 </style>

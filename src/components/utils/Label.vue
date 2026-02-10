@@ -1,15 +1,22 @@
 <script setup lang="ts">
+import { computed } from 'vue';
+
 import Icon from '#components/utils/Icon.vue';
 
 // Props :
-defineProps<{ label: string }>();
+const { label } = defineProps<{ label: string }>();
+
+// Computed :
+const delay = computed(() => {
+	return label.length * 0.075;
+});
 </script>
 
 <template>
 	<div class="partials-label">
-		<Icon name="square-small" />
-		<p>{{ label }}</p>
-		<Icon name="square-small" />
+		<Icon v-animate="'scale-up'" name="square-small" />
+		<p v-animate="'reveal-letters'">{{ label }}</p>
+		<Icon v-animate="{ type: 'scale-up', options: { delay } }" name="square-small" />
 	</div>
 </template>
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import gsap from 'gsap';
-import { computed, useTemplateRef } from 'vue';
+import { computed, shallowRef, useTemplateRef } from 'vue';
 
 import CircularStar from '#components/utils/CircularStar.vue';
 import RichText from '#components/utils/RichText.vue';
@@ -30,6 +30,8 @@ const elRef = useTemplateRef('elRef');
 const sectionsContainerRef = useTemplateRef('sectionsContainerRef');
 const sectionsWrapperRef = useTemplateRef('sectionsWrapperRef');
 const circularStarRef = useTemplateRef('circularStarRef');
+
+const horizontalTl = shallowRef<gsap.core.Timeline>();
 
 // Computed :
 const explanationIndices = computed(() => {
@@ -66,6 +68,8 @@ useGSAP(() => {
 			invalidateOnRefresh: true
 		}
 	});
+
+	horizontalTl.value = tl;
 
 	// Horizontal Scroll & Scale Up (Circular Star) :
 	tl.to(sectionsWrapperRef.value, { x: () => -getScrollAmount(), ease: 'none' });
@@ -119,6 +123,7 @@ useGSAP(() => {
 					:blok="section"
 					:index="explanationIndices[section._uid] ?? index"
 					:socials="socials"
+					:container-animation="horizontalTl"
 				/>
 			</div>
 		</div>
