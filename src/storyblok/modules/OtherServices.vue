@@ -152,7 +152,7 @@ useGSAP(() => {
 						<RichText
 							v-animate="{
 								type: 'reveal-label-shuffle',
-								options: { delay: 0.875, containerAnimation: horizontalTl }
+								options: { delay: 0.85, containerAnimation: horizontalTl }
 							}"
 							:doc="service.content.informations[0].name"
 							prefix="/"
@@ -257,7 +257,6 @@ $serviceHeight: fluidSize(440px, 280px, null, xxlarge);
 	height: $serviceHeight;
 	aspect-ratio: 360 / 440;
 	background: $ivory;
-	box-shadow: 30px 30px 60px rgba($eerieBlack, 0.15);
 	overflow: hidden;
 	flex-shrink: 0;
 

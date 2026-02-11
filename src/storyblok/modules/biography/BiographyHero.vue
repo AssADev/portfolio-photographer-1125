@@ -46,7 +46,7 @@ defineProps<{
 						<LabelShuffle
 							:label="email"
 							reveal
-							v-animate="{ type: 'reveal-label-shuffle', options: { delay: 0.7 } }"
+							v-animate="{ type: 'reveal-label-shuffle', options: { delay: 0.65 } }"
 						/>
 					</a>
 					<ul v-if="socials.length" class="socials-wrapper">
@@ -62,7 +62,7 @@ defineProps<{
 									reveal
 									v-animate="{
 										type: 'reveal-label-shuffle',
-										options: { delay: 0.85 + index * 0.15 }
+										options: { delay: 0.8 + index * 0.15 }
 									}"
 								/>
 							</a>
@@ -193,6 +193,7 @@ defineProps<{
 
 	.picture-wrapper {
 		position: relative;
+		z-index: 1;
 		width: 100%;
 		overflow: hidden;
 	}
