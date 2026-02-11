@@ -16,7 +16,7 @@ defineProps<{
 		<CircularStar v-if="blok.circularStar" :scroll-speed="0.5" />
 		<div class="container">
 			<Label v-if="blok.label" :label="blok.label" />
-			<RichText :doc="blok.title" />
+			<RichText :doc="blok.title" v-animate="'reveal-paragraphs'" />
 		</div>
 	</section>
 </template>

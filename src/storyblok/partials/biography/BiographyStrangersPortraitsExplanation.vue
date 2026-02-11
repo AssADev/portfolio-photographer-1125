@@ -6,46 +6,49 @@ import { getLinkAttributes } from '#utils/link.ts';
 import { nl2br } from '#utils/nl2br.ts';
 import { trackNavigationClick } from '#utils/tracking.ts';
 
+import LabelShuffle from '#components/partials/LabelShuffle.vue';
 import CircularStar from '#components/utils/CircularStar.vue';
 import RichText from '#components/utils/RichText.vue';
 
 import type { StoryblokBiographyStrangersPortraitsExplanation, StoryblokLabelLink } from '#types/component-types-sb.js';
+
+import vMagnetic from '#directives/vMagnetic.ts';
 
 // Props :
 defineProps<{
 	blok: StoryblokBiographyStrangersPortraitsExplanation;
 	index: number;
 	socials: StoryblokLabelLink[];
-	containerAnimation?: gsap.core.Timeline;
+	delay: number;
 }>();
 </script>
 
 <template>
 	<div
 		v-animate="{
-			type: 'none',
-			options: { direction: 'up', containerAnimation }
+			type: 'mask-reveal',
+			options: { direction: 'right', delay }
 		}"
 		class="partials-biography-strangers-portraits-explanation"
 		:class="{ [index % 2 === 0 ? 'even-theme' : 'odd-theme']: true }"
 	>
-		<CircularStar />
+		<CircularStar v-animate="{ type: 'scale-up', options: { delay: delay + 0.8 } }" />
 		<div class="inner-container">
 			<div class="content-container">
-				<div class="number-wrapper">
+				<div class="number-wrapper" v-animate="{ type: 'scale-up', options: { delay: delay + 0.6 } }">
 					<span>{{ formatIndex(index + 1) }}</span>
 				</div>
 				<RichText
 					v-animate="{
 						type: 'reveal-titles',
-						options: { containerAnimation }
+						options: { delay: delay + 0.6 }
 					}"
 					:doc="blok.title"
 				/>
 				<p
 					v-animate="{
 						type: 'reveal-paragraphs',
-						options: { containerAnimation }
+						options: { delay: delay + 0.4 }
 					}"
 					v-html="nl2br(blok.description)"
 				/>
@@ -56,11 +59,15 @@ defineProps<{
 					:key="social._uid"
 					v-animate="{
 						type: 'fade-in',
-						options: { delay: index * 0.1, containerAnimation }
+						options: { delay: delay + 0.8 + index * 0.1 }
 					}"
 				>
-					<a v-bind="getLinkAttributes(social.link)" @click="trackNavigationClick">
-						<span>{{ social.label }}</span>
+					<a
+						v-bind="getLinkAttributes(social.link)"
+						@click="trackNavigationClick"
+						v-magnetic="{ strength: 0.1 }"
+					>
+						<LabelShuffle :label="social.label!" no-snap />
 					</a>
 				</li>
 			</ul>
@@ -177,7 +184,7 @@ defineProps<{
 				border-color: $eerieBlack;
 			}
 
-			span {
+			.partials-label-shuffle {
 				@include roobert-12-uppercase;
 			}
 		}

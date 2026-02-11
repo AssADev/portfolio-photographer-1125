@@ -8,15 +8,15 @@ import type { StoryblokBiographyStrangersPortraitsVideo } from '#types/component
 // Props :
 defineProps<{
 	blok: StoryblokBiographyStrangersPortraitsVideo;
-	containerAnimation?: gsap.core.Timeline;
+	delay: number;
 }>();
 </script>
 
 <template>
 	<Video
 		v-animate="{
-			type: 'none',
-			options: { direction: 'up', containerAnimation }
+			type: 'mask-reveal',
+			options: { direction: 'right', delay }
 		}"
 		:video="blok.video"
 		:thumbnail="blok.thumbnail"

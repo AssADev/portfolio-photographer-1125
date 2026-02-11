@@ -77,10 +77,10 @@ useGSAP(() => {
 			//// Pin :
 			ScrollTrigger.create({
 				trigger: sectionRef.value,
+				scrub: 1,
 				pin: true,
 				start: 'center center',
 				end: () => `+=${getScrollAmount().distance}`,
-				scrub: 1,
 				invalidateOnRefresh: true
 			});
 
