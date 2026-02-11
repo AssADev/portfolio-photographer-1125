@@ -149,7 +149,17 @@ useGSAP(() => {
 						</div>
 					</div>
 					<div class="label-wrapper">
-						<span> /<RichText :doc="service.content.informations[0].name" shuffle no-snap /> </span>
+						<RichText
+							v-animate="{
+								type: 'reveal-label-shuffle',
+								options: { delay: 0.875, containerAnimation: horizontalTl }
+							}"
+							:doc="service.content.informations[0].name"
+							prefix="/"
+							shuffle
+							no-snap
+							reveal
+						/>
 					</div>
 				</a>
 			</div>
@@ -280,18 +290,14 @@ $serviceHeight: fluidSize(440px, 280px, null, xxlarge);
 		padding: var(--gutter);
 		color: $white;
 
-		span {
+		:deep(.partials-rich-text) {
 			@include roobert-14-uppercase;
 
 			display: flex;
 			align-items: center;
 
-			:deep(.partials-rich-text) {
-				display: inline-flex;
-
-				p {
-					margin: 0;
-				}
+			p {
+				margin: 0;
 			}
 		}
 	}

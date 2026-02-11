@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import gsap from 'gsap';
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
 
 // Props :
 const props = withDefaults(
@@ -8,14 +8,18 @@ const props = withDefaults(
 		label: string;
 		isActive?: boolean;
 		noSnap?: boolean;
+		reveal?: boolean;
 	}>(),
 	{
 		isActive: true,
-		noSnap: false
+		noSnap: false,
+		reveal: false
 	}
 );
 
 // Refs :
+const rootEl = useTemplateRef('rootEl');
+
 const originalLetters = computed(() => props.label.split(''));
 const displayedLetters = ref<string[]>([]);
 const letterWidths = ref<number[]>([]);
@@ -112,6 +116,17 @@ const animateOut = () => {
 	});
 };
 
+// Animation :
+const handleAnimateIn = () => {
+	gsap.killTweensOf(innerRefs.value);
+	gsap.to(innerRefs.value, {
+		x: '0%',
+		duration: 0.4,
+		stagger: 0.03,
+		ease: 'power2.out'
+	});
+};
+
 // Watchers :
 watch(
 	() => props.isActive,
@@ -133,23 +148,31 @@ watch(
 
 // Attach & Detach :
 onMounted(() => {
-	if (!props.isActive) gsap.set(innerRefs.value, { x: '120%' });
+	if (!props.isActive || props.reveal) {
+		gsap.set(innerRefs.value, { x: '120%' });
+	}
 
-	// Events :
 	document.fonts.ready.then(() => {
 		measureWidths();
 	});
 
 	window.addEventListener('resize', measureWidths);
+	rootEl.value?.addEventListener('label-shuffle-reveal', handleAnimateIn);
 });
 
 onUnmounted(() => {
 	window.removeEventListener('resize', measureWidths);
+	rootEl.value?.removeEventListener('label-shuffle-reveal', handleAnimateIn);
 });
 </script>
 
 <template>
-	<div class="partials-label-shuffle" @mouseleave="resetLetters" :data-cursor-snap="!noSnap ? true : null">
+	<div
+		ref="rootEl"
+		class="partials-label-shuffle"
+		@mouseleave="resetLetters"
+		:data-cursor-snap="!noSnap ? true : null"
+	>
 		<span
 			v-for="(letter, index) in originalLetters"
 			:key="index"

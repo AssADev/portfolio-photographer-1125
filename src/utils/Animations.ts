@@ -73,6 +73,26 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 		});
 	},
 
+	'reveal-label-shuffle': (el, options) => {
+		const tl = gsap.timeline({
+			delay: options.delay || 0
+		});
+
+		tl.add(() => {
+			// Trigger on the element itself (in case it IS the LabelShuffle) :
+			el.dispatchEvent(new CustomEvent('label-shuffle-reveal', { bubbles: true }));
+
+			// Also search for any LabelShuffle children if the directive is on a wrapper :
+			el.querySelectorAll('.partials-label-shuffle').forEach((child) => {
+				child.dispatchEvent(new CustomEvent('label-shuffle-reveal', { bubbles: false }));
+			});
+		}, 0.01);
+
+		tl.to({}, { duration: 0.1 });
+
+		return tl;
+	},
+
 	'reveal-paragraphs': (el, options) => {
 		const originalHTML = el.innerHTML;
 		el.innerHTML = originalHTML.replace(/<br\s*\/?>/gi, '\u200B<br>\u200B');
