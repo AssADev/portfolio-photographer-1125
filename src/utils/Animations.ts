@@ -102,7 +102,10 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 		const originalHTML = el.innerHTML;
 		el.innerHTML = originalHTML.replace(/<br\s*\/?>/gi, '\u200B<br>\u200B');
 
-		const split = new SplitText(el, { type: 'lines', linesClass: 'line', autoSplit: true });
+		const targets = el.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li');
+		const splitTarget = targets.length > 0 ? Array.from(targets) : [el];
+
+		const split = new SplitText(splitTarget, { type: 'lines', linesClass: 'line', tag: 'span' });
 		const lines = split.lines;
 
 		const tl = gsap.timeline({
@@ -130,8 +133,8 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 
 			lineTl.to(block, {
 				scaleX: 1,
-				duration: 0.8,
-				ease: 'power4.inOut'
+				duration: 0.525,
+				ease: 'power2.inOut'
 			});
 
 			lineTl.set(line, { opacity: 1 });
@@ -139,11 +142,11 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 
 			lineTl.to(block, {
 				scaleX: 0,
-				duration: 0.8,
-				ease: 'power4.inOut'
+				duration: 0.525,
+				ease: 'power2.inOut'
 			});
 
-			tl.add(lineTl, index * 0.15);
+			tl.add(lineTl, index * 0.125);
 		});
 
 		return tl;
