@@ -2,7 +2,7 @@
 import type { ISbStoryData } from '@storyblok/js';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { shallowRef, useTemplateRef } from 'vue';
+import { computed, shallowRef, useTemplateRef } from 'vue';
 
 import { breakPointsNoUnits } from '#utils/breakpoints.ts';
 import { trackNavigationClick } from '#utils/tracking.ts';
@@ -16,7 +16,7 @@ import { useGSAP } from '#composables/useGSAP.ts';
 import vMagnetic from '#directives/vMagnetic.ts';
 
 // Props :
-defineProps<{
+const { blok, services } = defineProps<{
 	blok: StoryblokOtherServices;
 	services: ISbStoryData<StoryblokService>[];
 }>();
@@ -28,6 +28,9 @@ const titleRef = useTemplateRef('titleRef');
 const servicesContainerRef = useTemplateRef('servicesContainerRef');
 
 const horizontalTl = shallowRef<gsap.core.Timeline>();
+
+// Computed :
+const totalHeight = computed(() => `calc(100vh + ${services.length * 75}vh)`);
 
 // Animation (Horizontal scroll) :
 useGSAP(() => {
@@ -60,7 +63,6 @@ useGSAP(() => {
 
 	// ScrollTrigger :
 	const mm = gsap.matchMedia();
-	const halfViewportHeight = window.innerHeight / 2;
 
 	mm.add(
 		{
@@ -69,27 +71,16 @@ useGSAP(() => {
 		},
 		(context) => {
 			const { conditions } = context;
-			const startTlPercent = conditions?.isMobile ? 'top' : 'top-=50%';
 
 			const startTitlePercent = conditions?.isMobile ? '65%' : '80%';
 			const endTitlePercent = conditions?.isMobile ? '-65%' : '-40%';
 
-			//// Pin :
-			ScrollTrigger.create({
-				trigger: sectionRef.value,
-				scrub: 1,
-				pin: true,
-				start: 'center center',
-				end: () => `+=${getScrollAmount().distance}`,
-				invalidateOnRefresh: true
-			});
-
-			//// Animation :
+			// Animation :
 			const tl = gsap.timeline({
 				scrollTrigger: {
 					trigger: sectionRef.value,
-					start: `${startTlPercent} center`,
-					end: () => `+=${getScrollAmount().distance * 1.5 + halfViewportHeight}`,
+					start: `top bottom`,
+					end: `bottom center`,
 					scrub: 1,
 					invalidateOnRefresh: true
 				}
@@ -111,7 +102,7 @@ useGSAP(() => {
 </script>
 
 <template>
-	<section ref="sectionRef" class="modules other-services">
+	<section ref="sectionRef" class="modules other-services" :style="{ height: totalHeight }">
 		<div ref="containerRef" class="content-container">
 			<h2
 				v-animate="{
@@ -128,7 +119,7 @@ useGSAP(() => {
 					:key="service.uuid"
 					v-animate="{
 						type: 'mask-reveal',
-						options: { direction: 'left', containerAnimation: horizontalTl }
+						options: { direction: 'left', containerAnimation: horizontalTl, start: 'left 105%' }
 					}"
 					v-magnetic="{
 						strength: 0.2,
@@ -172,8 +163,6 @@ $serviceHeight: fluidSize(440px, 280px, null, xxlarge);
 
 .other-services {
 	z-index: 1;
-	display: flex;
-	align-items: center;
 	background: linear-gradient(
 		180deg,
 		rgba($white, 0) 0%,
@@ -188,17 +177,14 @@ $serviceHeight: fluidSize(440px, 280px, null, xxlarge);
 }
 
 .content-container {
-	position: relative;
+	position: sticky;
+	top: 0;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	width: 100%;
-
-	@include mq($until: tablet) {
-		@include lvh(50, height);
-
-		max-height: 640px;
-	}
+	height: 100lvh;
+	overflow: hidden;
 
 	@include mq(tablet) {
 		aspect-ratio: 16 / 9;

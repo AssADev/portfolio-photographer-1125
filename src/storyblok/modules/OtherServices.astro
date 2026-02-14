@@ -22,5 +22,5 @@ const services = await getServices(blok.services, language, Astro.locals.isPrevi
 	{...storyblokEditable(blok, Astro.locals.isPreviewMode)}
 	{...Astro.props}
 	services={services}
-	client:load
+	client:visible
 />

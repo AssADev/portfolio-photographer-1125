@@ -14,7 +14,7 @@ import BiographyStrangersPortraitsExplanation from '#storyblok/partials/biograph
 import BiographyStrangersPortraitsVideo from '#storyblok/partials/biography/BiographyStrangersPortraitsVideo.vue';
 
 // Props :
-const props = defineProps<{
+const { blok } = defineProps<{
 	blok: StoryblokBiographyStrangersPortraits;
 	socials: StoryblokLabelLink[];
 }>();
@@ -36,13 +36,25 @@ const explanationIndices = computed(() => {
 	let count = 0;
 	const indices: Record<string, number> = {};
 
-	props.blok.sections?.forEach((section) => {
+	blok.sections?.forEach((section) => {
 		if (section.component.toLowerCase().includes('explanation')) {
 			indices[section._uid] = count++;
 		}
 	});
 
 	return indices;
+});
+
+const sectionHeight = computed(() => {
+	let total = 0;
+
+	blok.sections?.forEach((section) => {
+		const component = section.component.toLowerCase();
+		if (component.includes('video')) total += 25;
+		if (component.includes('explanation')) total += 50;
+	});
+
+	return `calc(100vh + ${total}vh)`;
 });
 
 // Methods :
@@ -60,7 +72,6 @@ useGSAP(() => {
 		scrollTrigger: {
 			trigger: sectionsContainerRef.value,
 			scrub: 0.75,
-			pin: true,
 			start: 'center center',
 			end: () => `+=${getScrollAmount()}`,
 			invalidateOnRefresh: true
@@ -75,7 +86,7 @@ useGSAP(() => {
 	// We want the star to move from the center of sectionsContainer to the bottom of the Copyright module.
 	const copyrightEl = elRef.value?.querySelector('.modules.biography-copyright') as HTMLElement;
 
-	if (copyrightEl && circularStarRef.value?.$el && sectionsContainerRef.value) {
+	if (copyrightEl && circularStarRef.value?.$el) {
 		gsap.timeline({
 			scrollTrigger: {
 				trigger: copyrightEl,
@@ -85,6 +96,13 @@ useGSAP(() => {
 				invalidateOnRefresh: true
 			}
 		}).to(circularStarRef.value.$el, {
+			// y: () => window.innerHeight * 0.5,
+			// y: () => {
+			// 	const halfContainerHeight = window.innerHeight / 2;
+			// 	const copyrightHeight = copyrightEl.offsetHeight;
+
+			// 	return halfContainerHeight + copyrightHeight;
+			// },
 			y: () => {
 				if (!sectionsWrapperRef.value) return 0;
 
@@ -109,18 +127,24 @@ useGSAP(() => {
 				class="col-start-1 col-end-13 col-start-tb-1 col-end-tb-15 col-start-dk-1 col-end-dk-23 col-start-xlg-1 col-end-xlg-21 col-start-xxlg-1 col-end-xxlg-19"
 			/>
 		</div>
-		<div ref="sectionsContainerRef" class="sections-container">
+
+		<div class="circular-star-wrapper">
 			<CircularStar ref="circularStarRef" :scroll-speed="0.5" />
-			<div ref="sectionsWrapperRef" class="sections-wrapper">
-				<StoryblokComponent
-					v-for="(section, index) in blok.sections"
-					:key="section._uid"
-					:components="SectionsComponents"
-					:blok="section"
-					:delay="index * 0.1"
-					:index="explanationIndices[section._uid] ?? index"
-					:socials="socials"
-				/>
+		</div>
+
+		<div class="sections-container" :style="{ height: sectionHeight }">
+			<div ref="sectionsContainerRef" class="sections-sticky-container">
+				<div ref="sectionsWrapperRef" class="sections-wrapper">
+					<StoryblokComponent
+						v-for="(section, index) in blok.sections"
+						:key="section._uid"
+						:components="SectionsComponents"
+						:blok="section"
+						:delay="index * 0.1"
+						:index="explanationIndices[section._uid] ?? index"
+						:socials="socials"
+					/>
+				</div>
 			</div>
 		</div>
 
@@ -129,40 +153,23 @@ useGSAP(() => {
 </template>
 
 <style lang="scss" scoped>
+$sectionsHeight: fluidSize(680px, 540px);
+
 .biography-strangers-portraits {
 	background: linear-gradient(180deg, $white 0%, $ivory 25%, $ivory 75%, $white 100%);
 	padding-block-start: fluidSize(180px, 120px);
-	overflow: hidden;
 }
 
-.container-grid {
-	:deep(.partials-rich-text) {
-		@include roobert-96;
+.circular-star-wrapper {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
 
-		position: relative;
-		z-index: 2;
-		margin-block-end: fluidSize(65px, 48px);
-
-		em {
-			@include romie-96-italic;
-		}
-	}
-}
-
-.sections-container {
-	position: relative;
-	z-index: 1;
-	width: 100%;
-
-	@include mq(widescreen) {
-		@include container;
-	}
-
-	& > :deep(.partials-circular-star) {
-		position: absolute;
+	:deep(.partials-circular-star) {
+		position: sticky;
 		top: 50%;
 		left: 50%;
-		transform: translate3d(-50%, -50%, 0) scale3d(0, 0, 1);
+		transform: translate3d(0, -50%, 0) scale3d(0, 0, 1);
 
 		@include mq($until: desktop) {
 			@include svh(125, height);
@@ -174,12 +181,42 @@ useGSAP(() => {
 	}
 }
 
+.container-grid {
+	:deep(.partials-rich-text) {
+		@include roobert-96;
+
+		margin-block-end: fluidSize(65px, 48px);
+
+		em {
+			@include romie-96-italic;
+		}
+	}
+}
+
+.sections-container {
+	position: relative;
+	z-index: 1;
+}
+
+.sections-sticky-container {
+	position: sticky;
+	top: calc(50% - (#{$sectionsHeight} / 2));
+	width: 100%;
+	display: flex;
+	align-items: center;
+	overflow: hidden;
+
+	@include mq(widescreen) {
+		@include container;
+	}
+}
+
 .sections-wrapper {
 	display: flex;
 	gap: $gap;
-	padding-inline: var(--gutter);
 	width: fit-content;
-	height: fluidSize(680px, 540px);
+	height: $sectionsHeight;
 	max-height: calc(100svh - (var(--header-height) * 4));
+	padding-inline: var(--gutter);
 }
 </style>
