@@ -20,9 +20,14 @@ const resolvers = getRichTextResolvers('h2');
 
 <template>
 	<div class="partials-title-description-and-cta">
-		<RichText v-animate="'reveal-titles'" v-if="data.title?.content" :doc="data.title" :resolvers="resolvers" />
+		<RichText
+			v-animate="{ type: 'reveal-titles', options: { start: 'top 105%' } }"
+			v-if="data.title?.content"
+			:doc="data.title"
+			:resolvers="resolvers"
+		/>
 		<p
-			v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.0175 } }"
+			v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.0175, start: 'top 105%' } }"
 			v-if="data.description"
 			v-html="nl2br(data.description)"
 		/>

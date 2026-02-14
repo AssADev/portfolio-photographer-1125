@@ -15,7 +15,7 @@ const init = (el: HTMLElement & { _gsapAnim?: gsap.core.Animation }, binding: an
 	const options = typeof value === 'string' ? {} : value.options || {};
 
 	// If containerAnimation is expected but not yet ready, we wait :
-	if ('containerAnimation' in options && !options.containerAnimation) return;
+	// if ('containerAnimation' in options && !options.containerAnimation) return;
 
 	// If we already have a ScrollTrigger for this element, we don't recreate it :
 	const existingST = ScrollTrigger.getAll().find((st) => st.trigger === el);
@@ -36,8 +36,7 @@ const init = (el: HTMLElement & { _gsapAnim?: gsap.core.Animation }, binding: an
 			once: true,
 			animation: anim,
 			toggleActions: 'play none none none',
-			containerAnimation: options.containerAnimation,
-			start: options.start || (options.containerAnimation ? 'left bottom' : 'top bottom')
+			start: options.start || 'top bottom'
 		});
 	}
 };

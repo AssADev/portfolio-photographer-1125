@@ -11,7 +11,7 @@ defineProps<{
 
 <template>
 	<div class="quotes-item-wrapper">
-		<RichText v-animate="'reveal-titles'" :doc="blok.content" />
+		<RichText v-animate="'reveal-paragraphs'" :doc="blok.content" />
 	</div>
 </template>
 

@@ -119,7 +119,7 @@ useGSAP(() => {
 					:key="service.uuid"
 					v-animate="{
 						type: 'mask-reveal',
-						options: { direction: 'left', containerAnimation: horizontalTl, start: 'left 105%' }
+						options: { direction: 'left', containerAnimation: horizontalTl, start: 'left 120%' }
 					}"
 					v-magnetic="{
 						strength: 0.2,
@@ -143,7 +143,7 @@ useGSAP(() => {
 						<RichText
 							v-animate="{
 								type: 'reveal-label-shuffle',
-								options: { delay: 0.85, containerAnimation: horizontalTl }
+								options: { delay: 0.85, containerAnimation: horizontalTl, start: 'left 120%' }
 							}"
 							:doc="service.content.informations[0].name"
 							prefix="/"
