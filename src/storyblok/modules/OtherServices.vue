@@ -30,7 +30,7 @@ const servicesContainerRef = useTemplateRef('servicesContainerRef');
 const horizontalTl = shallowRef<gsap.core.Timeline>();
 
 // Computed :
-const totalHeight = computed(() => `calc(100vh + ${services.length * 75}vh)`);
+const totalHeight = computed(() => `calc(100vh + ${services.length * 60}vh)`);
 
 // Animation (Horizontal scroll) :
 useGSAP(() => {

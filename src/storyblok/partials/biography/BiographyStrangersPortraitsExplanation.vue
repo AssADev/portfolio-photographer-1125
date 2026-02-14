@@ -35,7 +35,10 @@ defineProps<{
 		<CircularStar v-animate="{ type: 'scale-up', options: { delay: delay + 0.8 } }" :scroll-speed="0.25" />
 		<div class="inner-container">
 			<div class="content-container">
-				<div class="number-wrapper" v-animate="{ type: 'scale-up', options: { delay: delay + 0.6 } }">
+				<div
+					class="number-wrapper hide-mobile"
+					v-animate="{ type: 'scale-up', options: { delay: delay + 0.6 } }"
+				>
 					<span>{{ formatIndex(index + 1) }}</span>
 				</div>
 				<RichText
@@ -79,7 +82,7 @@ defineProps<{
 .partials-biography-strangers-portraits-explanation {
 	position: relative;
 	flex: 0 0 auto;
-	width: fluidSize(680px, 340px, null, desktop);
+	width: fluidSize(680px, 360px, null, desktop);
 	overflow: hidden;
 	border: 1px solid rgba($eerieBlack, 0.1);
 
@@ -134,7 +137,7 @@ defineProps<{
 	aspect-ratio: 1 / 1;
 	border-radius: var(--border-radius);
 	background: $eerieBlack;
-	margin-block-end: fluidSize(28px, 20px);
+	margin-block-end: fluidSize(20px, 16px);
 
 	span {
 		@include roobert-16-uppercase;

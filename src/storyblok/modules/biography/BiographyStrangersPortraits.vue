@@ -28,6 +28,7 @@ const SectionsComponents = {
 // Refs :
 const elRef = useTemplateRef('elRef');
 const sectionsContainerRef = useTemplateRef('sectionsContainerRef');
+const sectionsStickyContainerRef = useTemplateRef('sectionsStickyContainerRef');
 const sectionsWrapperRef = useTemplateRef('sectionsWrapperRef');
 const circularStarRef = useTemplateRef('circularStarRef');
 
@@ -59,9 +60,9 @@ const sectionHeight = computed(() => {
 
 // Methods :
 const getScrollAmount = () => {
-	if (!sectionsWrapperRef.value || !sectionsContainerRef.value) return 0;
+	if (!sectionsWrapperRef.value || !sectionsStickyContainerRef.value) return 0;
 	const totalWidth = sectionsWrapperRef.value.scrollWidth;
-	const containerWidth = sectionsContainerRef.value.offsetWidth;
+	const containerWidth = sectionsStickyContainerRef.value.offsetWidth;
 
 	return Math.max(0, totalWidth - containerWidth);
 };
@@ -70,51 +71,42 @@ const getScrollAmount = () => {
 useGSAP(() => {
 	const tl = gsap.timeline({
 		scrollTrigger: {
-			trigger: sectionsContainerRef.value,
-			scrub: 0.75,
+			trigger: sectionsStickyContainerRef.value,
 			start: 'center center',
-			end: () => `+=${getScrollAmount()}`,
+			endTrigger: sectionsContainerRef.value,
+			end: 'bottom bottom',
+			scrub: 1,
 			invalidateOnRefresh: true
 		}
 	});
 
 	// Horizontal Scroll & Scale Up (Circular Star) :
 	tl.to(sectionsWrapperRef.value, { x: () => -getScrollAmount(), ease: 'none' });
+
+	// TODO: Fix Circular Star animation (Responsive)
 	tl.to(circularStarRef.value?.$el, { scale: 1, ease: 'none' }, 0);
+	// tl.to(circularStarRef.value?.$el, { scale: 1, xPercent: -50, yPercent: -50, ease: 'none' }, 0);
 
 	// Move to bottom (Circular Star) :
 	// We want the star to move from the center of sectionsContainer to the bottom of the Copyright module.
 	const copyrightEl = elRef.value?.querySelector('.modules.biography-copyright') as HTMLElement;
 
-	if (copyrightEl && circularStarRef.value?.$el) {
-		gsap.timeline({
-			scrollTrigger: {
-				trigger: copyrightEl,
-				start: 'top bottom',
-				end: 'bottom bottom',
-				scrub: true,
-				invalidateOnRefresh: true
-			}
-		}).to(circularStarRef.value.$el, {
-			// y: () => window.innerHeight * 0.5,
-			// y: () => {
-			// 	const halfContainerHeight = window.innerHeight / 2;
-			// 	const copyrightHeight = copyrightEl.offsetHeight;
-
-			// 	return halfContainerHeight + copyrightHeight;
-			// },
-			y: () => {
-				if (!sectionsWrapperRef.value) return 0;
-
-				const halfContainerHeight = sectionsWrapperRef.value.offsetHeight / 2;
-				const copyrightHeight = copyrightEl.offsetHeight;
-
-				return halfContainerHeight + copyrightHeight;
-			},
-			yPercent: -50,
-			ease: 'none'
-		});
-	}
+	// if (copyrightEl && circularStarRef.value?.$el) {
+	// 	gsap.timeline({
+	// 		scrollTrigger: {
+	// 			trigger: copyrightEl,
+	// 			start: 'top bottom',
+	// 			end: 'bottom bottom',
+	// 			scrub: 1,
+	// 			invalidateOnRefresh: true
+	// 		}
+	// 	}).to(circularStarRef.value.$el, {
+	// 		y: () => window.innerHeight * 1.5,
+	// 		xPercent: -50,
+	// 		yPercent: -50,
+	// 		ease: 'none'
+	// 	});
+	// }
 }, elRef);
 </script>
 
@@ -132,8 +124,8 @@ useGSAP(() => {
 			<CircularStar ref="circularStarRef" :scroll-speed="0.5" />
 		</div>
 
-		<div class="sections-container" :style="{ height: sectionHeight }">
-			<div ref="sectionsContainerRef" class="sections-sticky-container">
+		<div ref="sectionsContainerRef" class="sections-container" :style="{ height: sectionHeight }">
+			<div ref="sectionsStickyContainerRef" class="sections-sticky-container">
 				<div ref="sectionsWrapperRef" class="sections-wrapper">
 					<StoryblokComponent
 						v-for="(section, index) in blok.sections"
@@ -169,7 +161,8 @@ $sectionsHeight: fluidSize(680px, 540px);
 		position: sticky;
 		top: 50%;
 		left: 50%;
-		transform: translate3d(0, -50%, 0) scale3d(0, 0, 1);
+		// transform: translate3d(0, -50%, 0) scale3d(0, 0, 1);
+		transform: translate3d(-50%, -50%, 0) scale3d(0, 0, 1);
 
 		@include mq($until: desktop) {
 			@include svh(125, height);

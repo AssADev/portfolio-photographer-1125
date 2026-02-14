@@ -41,6 +41,27 @@ const plaintext = computed(() => {
 	return extractText(doc);
 });
 
+// Resolvers :
+const markResolvers = {
+	textStyle: (node: any) => {
+		const color = node.attrs?.color?.trim();
+
+		if (!color) return node.text;
+
+		return {
+			type: 'span',
+			attrs: { style: `color:${color}` },
+			children: node.text
+		};
+	}
+};
+
+const mergedResolvers = {
+	...markResolvers,
+	...resolvers
+};
+
+// Expose :
 defineExpose({ el });
 </script>
 
@@ -48,6 +69,6 @@ defineExpose({ el });
 	<div ref="el" class="partials-rich-text">
 		<span v-if="prefix">{{ prefix }}</span>
 		<LabelShuffle v-if="shuffle" :label="plaintext" :no-snap :reveal />
-		<StoryblokRichText v-else :doc :resolvers />
+		<StoryblokRichText v-else :doc :resolvers="mergedResolvers" />
 	</div>
 </template>

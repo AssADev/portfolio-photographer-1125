@@ -97,7 +97,8 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 		const originalHTML = el.innerHTML;
 		el.innerHTML = originalHTML.replace(/<br\s*\/?>/gi, '\u200B<br>\u200B');
 
-		const split = new SplitText(el, { type: 'lines', mask: 'lines', autoSplit: true });
+		const target = el.querySelector('p') || el;
+		const split = new SplitText(target, { type: 'lines', mask: 'lines', autoSplit: true });
 		const lines = split.lines;
 
 		return gsap.from(lines, {

@@ -8,7 +8,7 @@ const { label } = defineProps<{ label: string }>();
 
 // Computed :
 const delay = computed(() => {
-	return label.length * 0.075;
+	return label.length * 0.075 + 0.025;
 });
 </script>
 
