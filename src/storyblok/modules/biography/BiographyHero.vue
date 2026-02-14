@@ -23,7 +23,7 @@ defineProps<{
 		<div class="container-grid">
 			<h1
 				v-animate="'reveal-titles'"
-				class="title col-start-1 col-end-13 col-start-dk-1 col-end-dk-20 col-start-xlg-1 col-end-xlg-16 col-start-xxlg-1 col-end-xxlg-14"
+				class="title col-start-1 col-end-13 col-start-dk-1 col-end-dk-20 col-start-xlg-1 col-end-xlg-16 col-start-xxlg-1 col-end-xxlg-15"
 			>
 				{{ blok.title }}
 			</h1>
