@@ -9,7 +9,7 @@ defineProps<{
 
 <template>
 	<div class="partials-links-materials-item item-title" :class="{ [`position-${blok.position}`]: true }">
-		<h3>{{ blok.title }}</h3>
+		<h3 v-animate="'reveal-titles'">{{ blok.title }}</h3>
 	</div>
 </template>
 
@@ -39,6 +39,8 @@ defineProps<{
 	}
 
 	& > h3 {
+		text-wrap: balance;
+
 		@include mq($until: tablet) {
 			@include roobert-28;
 		}

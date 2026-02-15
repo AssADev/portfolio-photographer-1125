@@ -9,7 +9,7 @@ export type MarqueeImageOptions = {
 };
 
 /**
- * Calculates a randomly scaled width for an image while respecting max constraints
+ * Calculates a deterministic scaled width for an image while respecting max constraints
  * and preserving its original aspect ratio.
  */
 export function getMarqueeImageWidth(url: string, options: MarqueeImageOptions = {}): number {
@@ -28,8 +28,14 @@ export function getMarqueeImageWidth(url: string, options: MarqueeImageOptions =
 		baseWidth = baseHeight * aspectRatio;
 	}
 
-	// 3. Apply random scale :
-	const scale = minScale + Math.random() * (maxScale - minScale);
+	// 3. Apply deterministic scale based on the URL :
+	let hash = 0;
+	for (let i = 0; i < url.length; i++) {
+		hash = (hash << 5) - hash + url.charCodeAt(i);
+		hash |= 0;
+	}
+	const deterministicRandom = Math.abs(hash % 1000) / 1000;
+	const scale = minScale + deterministicRandom * (maxScale - minScale);
 	let finalWidth = baseWidth * scale;
 
 	// 4. Rounding :

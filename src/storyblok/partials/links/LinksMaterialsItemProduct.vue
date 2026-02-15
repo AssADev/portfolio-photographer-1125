@@ -29,13 +29,13 @@ const columnNumber = Number(blok.columnNumber ?? 1);
 		<div class="informations-container">
 			<div class="pretitle-wrapper">
 				<Icon name="square-small" />
-				<p>{{ blok.pretitle }}</p>
+				<p v-animate="'reveal-letters'">{{ blok.pretitle }}</p>
 			</div>
-			<p>{{ blok.title }}</p>
+			<p v-animate="'reveal-paragraphs'">{{ blok.title }}</p>
 		</div>
-		<div class="picture-container">
+		<div v-animate="'fade-in'" class="picture-container">
 			<CircularStar />
-			<div class="picture-wrapper">
+			<div v-animate="'scale-up'" class="picture-wrapper">
 				<Image
 					objectFit="contain"
 					:src="blok.picture"

@@ -58,7 +58,7 @@ const layouts = [
 		:data-cursor-projects="blok.cursorProjects || undefined"
 	>
 		<div v-if="blok.circularStar" class="circular-star-wrapper">
-			<CircularStar :scroll-speed="0.5" />
+			<CircularStar v-animate="{ type: 'scale-up', options: { start: 'bottom 62.5%' } }" :scroll-speed="0.5" />
 		</div>
 		<div class="container-grid">
 			<QuotesItem

@@ -54,15 +54,22 @@ const scaledProjects = computed(() => {
 		</div>
 		<div class="container-grid">
 			<RichText
+				v-animate="'reveal-titles'"
 				:doc="blok.title"
 				class="col-start-1 col-end-13 col-start-tb-1 col-end-tb-12 col-start-dk-20 col-end-dk-33 col-start-xxlg-24 col-end-xxlg-33"
 			/>
 			<div
 				class="description-wrapper col-start-1 col-end-13 col-start-tb-1 col-end-tb-11 col-start-dk-1 col-end-dk-14 col-start-mlg-1 col-end-mlg-12 col-start-xxlg-1 col-end-xxlg-9"
 			>
-				<p v-if="blok.description" class="description" v-html="blok.description" />
+				<p
+					v-if="blok.description"
+					v-animate="'reveal-paragraphs'"
+					class="description"
+					v-html="blok.description"
+				/>
 				<Button
 					v-if="blok.link?.[0]"
+					v-animate="{ type: 'reveal-button-dot', options: { delay: 0.035 } }"
 					v-bind="getLinkAttributes(blok.link[0])"
 					theme="dot-dark"
 					:text="blok.link[0].label || $t('bookYourPhotoSession')"
@@ -85,8 +92,15 @@ const scaledProjects = computed(() => {
 				align-items="flex-end"
 				v-model:playing="marqueePlaying"
 			>
-				<template #item="{ item }">
-					<ProjectsMarqueeItem :project="item.project" :width="item.width" />
+				<template #item="{ item, index }">
+					<ProjectsMarqueeItem
+						v-animate="{
+							type: 'mask-reveal',
+							options: { direction: 'up', delay: index * 0.125, withTranslate: true }
+						}"
+						:project="item.project"
+						:width="item.width"
+					/>
 				</template>
 			</Marquee>
 		</div>
@@ -134,6 +148,8 @@ const scaledProjects = computed(() => {
 
 	& > :deep(.partials-rich-text) {
 		@include roobert-48;
+
+		text-wrap: balance;
 
 		@include mq(desktop) {
 			text-align: right;

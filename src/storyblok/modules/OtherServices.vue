@@ -119,7 +119,12 @@ useGSAP(() => {
 					:key="service.uuid"
 					v-animate="{
 						type: 'mask-reveal',
-						options: { direction: 'left', containerAnimation: horizontalTl, start: 'left 120%' }
+						options: {
+							direction: 'left',
+							containerAnimation: horizontalTl,
+							start: 'left 120%',
+							withTranslate: true
+						}
 					}"
 					v-magnetic="{
 						strength: 0.2,

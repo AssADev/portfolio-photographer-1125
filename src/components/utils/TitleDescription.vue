@@ -18,8 +18,12 @@ const resolvers = getRichTextResolvers('h2');
 
 <template>
 	<div class="partials-title-description">
-		<RichText v-if="title" :doc="title" :resolvers="resolvers" />
-		<p v-if="description" v-html="nl2br(description)" />
+		<RichText v-if="title" v-animate="'reveal-titles'" :doc="title" :resolvers="resolvers" />
+		<p
+			v-if="description"
+			v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.15 } }"
+			v-html="nl2br(description)"
+		/>
 	</div>
 </template>
 
@@ -29,6 +33,7 @@ const resolvers = getRichTextResolvers('h2');
 	flex-direction: column;
 	gap: fluidSize(12px, 10px);
 	margin-block-end: fluidSize(48px, 36px);
+	text-wrap: balance;
 
 	& > :deep(.partials-rich-text) {
 		@include roobert-48;

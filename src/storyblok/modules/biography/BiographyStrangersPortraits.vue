@@ -178,6 +178,7 @@ $sectionsHeight: fluidSize(680px, 540px);
 	:deep(.partials-rich-text) {
 		@include roobert-96;
 
+		text-wrap: balance;
 		margin-block-end: fluidSize(65px, 48px);
 
 		em {

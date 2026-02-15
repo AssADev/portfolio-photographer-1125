@@ -33,7 +33,10 @@ defineProps<{
 				class="picture-primary-container col-start-1 col-end-13 col-start-tb-1 col-end-tb-13 col-start-dk-1 col-end-dk-18"
 			>
 				<CircularStar v-animate="{ type: 'scale-up', options: { delay: 1.1 } }" :scroll-speed="1" />
-				<div v-animate="{ type: 'mask-reveal', options: { direction: 'up' } }" class="picture-wrapper">
+				<div
+					v-animate="{ type: 'mask-reveal', options: { direction: 'up', withTranslate: true } }"
+					class="picture-wrapper"
+				>
 					<Image
 						v-parallax="12"
 						:src="blok.picturePrimary"
@@ -77,7 +80,10 @@ defineProps<{
 				<p v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.55 } }" v-if="blok.description">
 					{{ blok.description }}
 				</p>
-				<div v-animate="{ type: 'mask-reveal', options: { direction: 'up' } }" class="picture-wrapper">
+				<div
+					v-animate="{ type: 'mask-reveal', options: { direction: 'up', withTranslate: true } }"
+					class="picture-wrapper"
+				>
 					<Image
 						v-parallax="{ scale: true, mobile: 8, tablet: 12, desktop: 6 }"
 						:src="blok.pictureSecondary"
@@ -109,6 +115,7 @@ defineProps<{
 	@include roobert-96;
 
 	z-index: 1;
+	text-wrap: balance;
 }
 
 .content-container {

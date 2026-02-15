@@ -55,9 +55,14 @@ const resolvers = getRichTextResolvers('h1');
 			</picture>
 		</div>
 		<div class="container">
-			<p v-if="blok.description" class="description" v-html="nl2br(blok.description)" />
+			<p
+				v-if="blok.description"
+				v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.475 } }"
+				class="description"
+				v-html="nl2br(blok.description)"
+			/>
 			<div class="content-container">
-				<RichText :doc="blok.title" :resolvers="resolvers" />
+				<RichText v-animate="'reveal-titles'" :doc="blok.title" :resolvers="resolvers" />
 				<ul class="socials-container">
 					<li v-if="email" class="small-item">
 						<a :href="`mailto:${email}`" :data-cursor-label="$t('email')" @click="trackNavigationClick">
@@ -119,6 +124,7 @@ const resolvers = getRichTextResolvers('h1');
 	& > :deep(.partials-rich-text) {
 		@include roobert-96;
 
+		text-wrap: balance;
 		margin-block-end: 20px;
 
 		em {

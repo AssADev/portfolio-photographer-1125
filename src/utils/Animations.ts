@@ -12,22 +12,11 @@ export interface AnimationOptions {
 }
 
 export const animations: Record<string, (el: HTMLElement, options: AnimationOptions) => gsap.core.Animation> = {
-	'fade-up': (el, options) => {
-		return gsap.from(el, {
-			y: 40,
-			opacity: 0,
-			duration: 1,
-			ease: 'power3.out',
-			delay: options.delay || 0,
-			immediateRender: true
-		});
-	},
-
 	'fade-in': (el, options) => {
 		return gsap.from(el, {
 			opacity: 0,
-			duration: 1,
-			ease: 'power3.out',
+			duration: 1.2,
+			ease: 'power2.inOut',
 			delay: options.delay || 0,
 			immediateRender: true
 		});
@@ -46,8 +35,8 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 						: direction === 'left'
 							? 'inset(0% 0% 0% 100%)'
 							: 'inset(0% 100% 0% 0%)',
-			y: axis === 'Y' ? (direction === 'up' ? 75 : -75) : 0,
-			x: axis === 'X' ? (direction === 'left' ? 75 : -75) : 0,
+			y: axis === 'Y' && options.withTranslate ? (direction === 'up' ? 75 : -75) : 0,
+			x: axis === 'X' && options.withTranslate ? (direction === 'left' ? 75 : -75) : 0,
 			duration: 1.6,
 			delay: options.delay || 0,
 			ease: 'power3.inOut',
@@ -98,7 +87,8 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 		if (span) {
 			tl.add(
 				animations['reveal-letters'](span, {
-					delay: 0.55
+					delay: 0.55,
+					staggers: 0.0475
 				}),
 				0
 			);
@@ -114,7 +104,7 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 		return gsap.from(chars, {
 			x: '120%',
 			duration: 1.1,
-			stagger: 0.075,
+			stagger: options.staggers || 0.075,
 			ease: 'power4.out',
 			transformOrigin: 'left center',
 			delay: options.delay || 0,

@@ -52,6 +52,7 @@ const resolvers = getRichTextResolvers('h2');
 	& > :deep(.partials-rich-text) {
 		@include roobert-48;
 
+		text-wrap: balance;
 		margin-block-end: fluidSize(28px, 20px);
 
 		em {
