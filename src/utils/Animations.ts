@@ -55,6 +55,58 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 		});
 	},
 
+	'reveal-button-dot': (el, options) => {
+		const tl = gsap.timeline({
+			delay: options.delay || 0
+		});
+
+		// Animation :
+		tl.from(el, {
+			clipPath: 'inset(0% 100% 100% 0%)',
+			duration: 1.2,
+			ease: 'power3.inOut',
+			pointerEvents: 'none',
+			immediateRender: true,
+			onComplete: () => {
+				gsap.set(el, { clearProps: 'all' });
+			}
+		});
+
+		// Animation of the dot :
+		const dot = el.querySelector('svg');
+		if (dot) {
+			tl.from(
+				dot,
+				{
+					scale: 0,
+					rotateZ: 90,
+					duration: 0.4,
+					ease: 'power2.out',
+					delay: 0.65,
+					immediateRender: true,
+					transition: 'none',
+					onComplete: () => {
+						gsap.set(dot, { clearProps: 'all' });
+					}
+				},
+				0
+			);
+		}
+
+		// Animation of the text :
+		const span = el.querySelector('span');
+		if (span) {
+			tl.add(
+				animations['reveal-letters'](span, {
+					delay: 0.55
+				}),
+				0
+			);
+		}
+
+		return tl;
+	},
+
 	'reveal-letters': (el, options) => {
 		const split = new SplitText(el, { type: 'words,chars', mask: 'chars', autoSplit: true });
 		const chars = split.chars;

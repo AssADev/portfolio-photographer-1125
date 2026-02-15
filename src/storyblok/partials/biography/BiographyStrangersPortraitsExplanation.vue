@@ -37,7 +37,7 @@ defineProps<{
 			<div class="content-container">
 				<div
 					class="number-wrapper hide-mobile"
-					v-animate="{ type: 'scale-up', options: { delay: delay + 0.6 } }"
+					v-animate="{ type: 'reveal-button-dot', options: { delay: delay + 0.25 } }"
 				>
 					<span>{{ formatIndex(index + 1) }}</span>
 				</div>
