@@ -1,11 +1,15 @@
 <script setup lang="ts">
-import { computed, inject, nextTick, ref, watch } from 'vue';
+import gsap from 'gsap';
+import { SplitText } from 'gsap/SplitText';
+import { computed, inject, nextTick, ref, useTemplateRef, watch } from 'vue';
 
+import { animations } from '#utils/Animations.ts';
 import { formatIndex } from '#utils/formatIndex.ts';
 import { nl2br } from '#utils/nl2br.ts';
 
 import DrawerMenu from '#components/partials/DrawerMenu.vue';
 import Form from '#components/partials/Form.vue';
+import Button from '#components/utils/Button.vue';
 
 // Injections :
 const siteConfig = inject<any>('siteConfig');
@@ -22,8 +26,17 @@ const { titleContact, descriptionContact, formsContact } = siteConfig;
 
 // Refs :
 const showTransition = ref(true);
+const drawerMenuRef = ref<any>(null);
 const selectedForm = ref<any | null>(null);
 const formStatus = ref<'idle' | 'success' | 'error'>('idle');
+
+const closeLabelRef = useTemplateRef('closeLabelRef');
+
+const titleRef = useTemplateRef('titleRef');
+const descriptionRef = useTemplateRef('descriptionRef');
+const formsRef = useTemplateRef('formsRef');
+
+let tl: gsap.core.Timeline | null = null;
 
 // Computed :
 const forms = computed(() => {
@@ -70,6 +83,15 @@ const closeDrawer = () => {
 };
 
 // Watchers :
+watch(toggled, async (val) => {
+	if (val) {
+		await nextTick();
+		if (closeLabelRef.value) {
+			animations['reveal-letters-speed'](closeLabelRef.value, { delay: 0.4 });
+		}
+	}
+});
+
 watch(
 	() => formId,
 	async (newId) => {
@@ -86,10 +108,52 @@ watch(
 	},
 	{ immediate: true }
 );
+
+// Animatinon :
+const onOpen = () => {
+	tl?.kill();
+	tl = gsap.timeline();
+
+	if (titleRef.value) tl.add(animations['reveal-paragraphs'](titleRef.value, { delay: 0.45 }), 0);
+	if (descriptionRef.value) tl.add(animations['reveal-paragraphs'](descriptionRef.value, { delay: 0.475 }), 0);
+
+	formsRef.value?.forEach((form: any, index: number) => {
+		const reverseIndex = formsRef.value!.length - 1 - index;
+
+		const title = form.querySelector('.title');
+		const number = form.querySelector('.number');
+		const description = form.querySelector('.description');
+
+		tl!.add(animations['reveal-paragraphs'](title, { delay: 0.125 + reverseIndex * 0.1 }), 0);
+		tl!.add(animations['reveal-letters'](number, { delay: 0.2 + reverseIndex * 0.1 }), 0);
+		tl!.add(animations['reveal-paragraphs'](description, { delay: 0.2 + reverseIndex * 0.1 }), 0);
+	});
+
+	return tl;
+};
+
+const onButtonLeave = (el: any, done: () => void) => {
+	const label = el.querySelector('span');
+	label ? animations['hide-letters-speed'](label, { onComplete: done }) : done();
+};
+
+const onButtonEnter = (el: any, done: () => void) => {
+	const label = el.querySelector('span');
+	label ? animations['reveal-letters-speed'](label, { onComplete: done }) : done();
+};
+
+// Expose :
+defineExpose({
+	onOpen,
+	drawerRef: computed(() => drawerMenuRef.value?.drawerRef),
+	openDrawer: () => drawerMenuRef.value?.openDrawer(),
+	closeDrawer: () => drawerMenuRef.value?.closeDrawer()
+});
 </script>
 
 <template>
 	<DrawerMenu
+		ref="drawerMenuRef"
 		v-model:toggled="toggled"
 		theme="light"
 		:has-error="formStatus === 'error'"
@@ -99,8 +163,13 @@ watch(
 		<template #title>
 			<transition v-if="showTransition" name="fade" mode="out-in">
 				<div :key="selectedForm ? selectedForm.content.id : 'default'" class="text-container">
-					<p class="title">{{ currentTitle }}</p>
-					<p v-if="currentDescription" class="description" v-html="nl2br(currentDescription)"></p>
+					<p ref="titleRef" class="title">{{ currentTitle }}</p>
+					<p
+						v-if="currentDescription"
+						ref="descriptionRef"
+						class="description"
+						v-html="nl2br(currentDescription)"
+					></p>
 				</div>
 			</transition>
 			<div v-else class="text-container">
@@ -114,14 +183,14 @@ watch(
 					<Form :form="selectedForm" :language="language" @status="onFormStatusChange" />
 				</div>
 				<ul v-else class="forms-container">
-					<li v-for="(form, index) in forms" :key="form.content.id">
-						<button @click="openForm(form)">
+					<li v-for="(form, index) in forms" :key="form.content.id" ref="formsRef">
+						<Button @click="openForm(form)">
 							<div class="title-wrapper">
 								<p class="title">{{ form.content.title }}</p>
 								<span class="number">/{{ formatIndex(Number(index) + 1) }}</span>
 							</div>
 							<p class="description" v-html="nl2br(form.content.description)"></p>
-						</button>
+						</Button>
 					</li>
 				</ul>
 			</transition>
@@ -131,24 +200,26 @@ watch(
 				</div>
 				<ul v-else class="forms-container">
 					<li v-for="(form, index) in forms" :key="form.content.id">
-						<button @click="openForm(form)">
+						<Button @click="openForm(form)">
 							<div class="title-wrapper">
 								<p class="title">{{ form.content.title }}</p>
 								<span class="number">/{{ formatIndex(Number(index) + 1) }}</span>
 							</div>
 							<p class="description" v-html="nl2br(form.content.description)"></p>
-						</button>
+						</Button>
 					</li>
 				</ul>
 			</div>
 		</div>
 		<template #footer>
-			<button v-if="!selectedForm || formStatus === 'success'" @click="closeDrawer">
-				<span>{{ $t('close') }}</span>
-			</button>
-			<button v-else @click="backToChoices">
-				<span>{{ $t('backToChoices') }}</span>
-			</button>
+			<transition mode="out-in" :css="false" @leave="onButtonLeave" @enter="onButtonEnter">
+				<Button v-if="!selectedForm || formStatus === 'success'" key="close" @click="closeDrawer">
+					<span ref="closeLabelRef">{{ $t('close') }}</span>
+				</Button>
+				<Button v-else key="back" @click="backToChoices">
+					<span>{{ $t('backToChoices') }}</span>
+				</Button>
+			</transition>
 		</template>
 	</DrawerMenu>
 </template>
@@ -215,18 +286,22 @@ $border: 1px solid rgba($eerieBlack, 0.08);
 
 			.title {
 				@include roobert-16-uppercase;
+
+				width: 100%;
 			}
 
 			.number {
 				@include roobert-16-uppercase;
 
 				color: $khaki;
+				flex-shrink: 0;
 			}
 		}
 
 		.description {
 			@include roobert-14;
 
+			width: 100%;
 			color: $khaki;
 		}
 	}

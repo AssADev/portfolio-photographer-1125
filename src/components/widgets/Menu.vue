@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject } from 'vue';
+import { computed, inject, ref } from 'vue';
 
 import locales from '#utils/locales.json';
 import { nl2br } from '#utils/nl2br.ts';
@@ -28,6 +28,9 @@ const { identity, menuDescription, menuLinks } = siteConfig;
 
 // Composables :
 const { location } = useRouter();
+
+// Refs :
+const drawerMenuRef = ref<any>(null);
 
 // Computed :
 const menuItems = computed(() => {
@@ -61,10 +64,23 @@ const findActiveMenuItem = (menuItems: any[], currentPath: string) => {
 		return normalizedMenuLink === normalizedCurrentPath;
 	});
 };
+
+// Animatinon :
+const onOpen = () => {
+	console.log('Menu opened');
+};
+
+// Expose :
+defineExpose({
+	onOpen,
+	drawerRef: computed(() => drawerMenuRef.value?.drawerRef),
+	openDrawer: () => drawerMenuRef.value?.openDrawer(),
+	closeDrawer: () => drawerMenuRef.value?.closeDrawer()
+});
 </script>
 
 <template>
-	<DrawerMenu v-model:toggled="toggled" theme="dark">
+	<DrawerMenu ref="drawerMenuRef" v-model:toggled="toggled" theme="dark">
 		<template v-if="identity || menuDescription" #title>
 			<p v-if="identity" class="title">{{ identity }}</p>
 			<p v-if="menuDescription" class="description" v-html="nl2br(menuDescription)"></p>

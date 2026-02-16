@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { useResizeObserver } from '@vueuse/core';
 import gsap from 'gsap';
-import { onMounted, ref, useTemplateRef, watch } from 'vue';
+import { ref, useTemplateRef, watch } from 'vue';
+
+import { animations } from '#utils/Animations.ts';
 
 import MenuSocials from '#components/partials/MenuSocials.vue';
 
@@ -22,62 +24,61 @@ const {
 
 const toggled = defineModel<boolean>('toggled', { default: false });
 
-// Emits :
-const emit = defineEmits<{
-	(e: 'close'): void;
-}>();
-
 // Refs :
 let tl: gsap.core.Timeline | null = null;
 
 const clickOutsideEnabled = ref(!preventClickOutside);
 
 const drawerRef = useTemplateRef('drawerRef');
+const containerRef = useTemplateRef('containerRef');
 const titleContainerRef = useTemplateRef('titleContainerRef');
 const socialsRef = useTemplateRef('socialsRef');
 
 // Composables :
 const [innerEl, outerEl] = useAnimateHeight();
 
-useTrap(drawerRef, { model: toggled, clickOutsideDeactivates: clickOutsideEnabled, escapeDeactivates: true });
+useTrap(containerRef, { model: toggled, clickOutsideDeactivates: clickOutsideEnabled, escapeDeactivates: true });
 
 // Animations :
 const openDrawer = () => {
 	$global.setKey('lockScroll', true);
 
+	// Animation :
 	tl?.kill();
 	tl = gsap.timeline();
 
-	gsap.set(drawerRef.value, { visibility: 'visible' });
+	tl.to(
+		drawerRef.value,
+		{
+			clipPath: 'inset(0% 0 0 0)',
+			duration: 0.8,
+			ease: 'power2.inOut'
+		},
+		0
+	);
 
-	tl.to(drawerRef.value, {
-		autoAlpha: 1,
-		y: 0,
-		duration: 0.6,
-		ease: 'expo.out'
+	const socialsLinks = socialsRef.value?.$el.querySelectorAll('a span');
+	socialsLinks.forEach((link: any, index: number) => {
+		const reverseIndex = socialsLinks.length - 1 - index;
+
+		tl!.add(animations['reveal-letters-speed'](link, { delay: 0.25 + reverseIndex * 0.125 }), 0);
 	});
+
+	return tl;
 };
 
 const closeDrawer = () => {
-	emit('close');
 	toggled.value = false;
 	$global.setKey('lockScroll', false);
 
+	// Animation :
 	tl?.kill();
 	tl = gsap.timeline();
 
-	tl.to(drawerRef.value, {
-		autoAlpha: 0,
-		y: 20,
-		duration: 0.4,
-		ease: 'power2.out'
-	});
-};
+	tl.to(drawerRef.value, { clipPath: 'inset(100% 0 0 0)', duration: 0.6, ease: 'power2.inOut' });
 
-// Lifecycle :
-onMounted(() => {
-	gsap.set(drawerRef.value, { autoAlpha: 0, y: 20 });
-});
+	return tl;
+};
 
 // Watchers :
 watch(
@@ -88,7 +89,7 @@ watch(
 );
 
 watch(toggled, (isToggled) => {
-	isToggled ? openDrawer() : closeDrawer();
+	if (!isToggled && tl?.progress() === 1) closeDrawer();
 });
 
 // Resize observers :
@@ -101,12 +102,19 @@ useResizeObserver(socialsRef, () => {
 	const socialsHeight = socialsRef.value?.$el?.offsetHeight || 0;
 	drawerRef.value!.style.setProperty('--drawer-socials-height', `${socialsHeight}px`);
 });
+
+// Expose :
+defineExpose({
+	drawerRef,
+	openDrawer,
+	closeDrawer
+});
 </script>
 
 <template>
 	<div ref="drawerRef" class="drawer-menu">
-		<div class="overlay" @click="!preventClickOutside && closeDrawer()" />
-		<div class="drawer-container" :class="theme">
+		<div class="overlay" @click="!preventClickOutside && (toggled = false)" />
+		<div ref="containerRef" class="drawer-container" :class="theme">
 			<div ref="outerEl" class="drawer-body" :class="{ 'form-error': hasError }">
 				<div ref="innerEl" class="drawer-inner-body">
 					<div v-if="$slots.title" ref="titleContainerRef" class="drawer-title-container">
@@ -138,9 +146,9 @@ useResizeObserver(socialsRef, () => {
 	z-index: 25;
 	max-width: var(--width);
 	width: calc(100% - var(--gutter) * 2);
-	opacity: 0;
-	visibility: hidden;
-	transform: translate3d(0, 20px, 0);
+	clip-path: inset(100% 0 0 0);
+	// opacity: 0;
+	// visibility: hidden;
 }
 
 .overlay {

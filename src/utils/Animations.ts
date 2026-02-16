@@ -97,24 +97,6 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 		return tl;
 	},
 
-	'reveal-letters': (el, options) => {
-		const split = new SplitText(el, { type: 'words,chars', mask: 'chars', autoSplit: true });
-		const chars = split.chars;
-
-		return gsap.from(chars, {
-			x: '120%',
-			duration: 1.1,
-			stagger: options.staggers || 0.075,
-			ease: 'power4.out',
-			transformOrigin: 'left center',
-			delay: options.delay || 0,
-			immediateRender: true,
-			onComplete: () => {
-				if (options.revert !== false) split.revert();
-			}
-		});
-	},
-
 	'reveal-label-shuffle': (el, options) => {
 		const tl = gsap.timeline({
 			delay: options.delay || 0
@@ -133,6 +115,65 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 		tl.to({}, { duration: 0.1 });
 
 		return tl;
+	},
+
+	'reveal-letters': (el, options) => {
+		const split = new SplitText(el, { type: 'words,chars', mask: 'chars', autoSplit: true });
+		const chars = split.chars;
+
+		return gsap.from(chars, {
+			x: '120%',
+			duration: 1.1,
+			stagger: options.staggers || 0.075,
+			ease: 'power4.out',
+			delay: options.delay || 0,
+			immediateRender: true,
+			onComplete: () => {
+				if (options.revert !== false) split.revert();
+				options.onComplete?.();
+			}
+		});
+	},
+
+	'reveal-letters-speed': (el, options) => {
+		const split = new SplitText(el, { type: 'words,chars', mask: 'chars', autoSplit: true });
+		const chars = split.chars;
+
+		return gsap.from(chars, {
+			x: options.direction === 'left' ? '-120%' : '120%',
+			duration: 0.4,
+			stagger: 0.03,
+			ease: 'power2.out',
+			delay: options.delay || 0,
+			immediateRender: true,
+			onStart: () => {
+				options.onStart?.();
+			},
+			onComplete: () => {
+				if (options.revert !== false) split.revert();
+				options.onComplete?.();
+			}
+		});
+	},
+
+	'hide-letters-speed': (el, options) => {
+		const split = new SplitText(el, { type: 'words,chars', mask: 'chars', autoSplit: true });
+		const chars = split.chars;
+
+		return gsap.to(chars, {
+			x: options.direction === 'right' ? '120%' : '-120%',
+			duration: 0.4,
+			stagger: 0.03,
+			ease: 'power2.out',
+			delay: options.delay || 0,
+			onStart: () => {
+				options.onStart?.();
+			},
+			onComplete: () => {
+				if (options.revert !== false) split.revert();
+				options.onComplete?.();
+			}
+		});
 	},
 
 	'reveal-paragraphs': (el, options) => {
