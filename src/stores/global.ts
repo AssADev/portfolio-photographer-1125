@@ -6,6 +6,7 @@ export type GlobalStore = {
 	isContactToggled: boolean;
 	isMenuToggled: boolean;
 	contactFormId?: string;
+	isHeaderAnimating: boolean;
 };
 
 export const $global = map<GlobalStore>({
@@ -13,5 +14,6 @@ export const $global = map<GlobalStore>({
 	headerTheme: 'light',
 	isContactToggled: false,
 	isMenuToggled: false,
+	isHeaderAnimating: false,
 	contactFormId: undefined
 });

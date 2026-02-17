@@ -29,6 +29,7 @@ const globalStore = useStore($global);
 const contactFormId = useVModel($global, 'contactFormId');
 const isContactToggled = useVModel($global, 'isContactToggled');
 const isMenuToggled = useVModel($global, 'isMenuToggled');
+const isAnimating = useVModel($global, 'isHeaderAnimating');
 
 // Refs :
 const interactionsRef = useTemplateRef('interactionsRef');
@@ -41,7 +42,6 @@ const contactFormsRef = ref<any>(null);
 const menuRef = ref<any>(null);
 
 const initialWidth = ref(0);
-const isAnimating = ref(false);
 let tlHeader: gsap.core.Timeline | null = null;
 
 // Computed :
@@ -56,20 +56,24 @@ const drawerEl = computed(() => activeDrawer.value?.drawerRef);
 // Methods :
 const toggleContact = () => {
 	if (isAnimating.value) return;
+	if (!isContactToggled.value) isMenuToggled.value = false;
 	isContactToggled.value = !isContactToggled.value;
 };
 
 const toggleMenu = () => {
 	if (isAnimating.value) return;
+	if (!isMenuToggled.value) isContactToggled.value = false;
 	isMenuToggled.value = !isMenuToggled.value;
 };
 
 const onContactToggled = (val: boolean) => {
+	if (isAnimating.value) return;
 	isContactToggled.value = val;
 	if (!val) contactFormId.value = undefined;
 };
 
 const onMenuToggled = (val: boolean) => {
+	if (isAnimating.value) return;
 	isMenuToggled.value = val;
 };
 
@@ -80,9 +84,16 @@ watchEffect(() => {
 
 watch([isContactToggled, isMenuToggled], async ([contactVal, menuVal], [oldContact, oldMenu]) => {
 	if (isAnimating.value) return;
-
 	isAnimating.value = true;
-	tlHeader?.kill();
+
+	if (tlHeader) {
+		tlHeader.getChildren(true, true, true).forEach((tween: any) => {
+			if (tween.data && tween.data.split) {
+				tween.data.split.revert();
+			}
+		});
+		tlHeader.kill();
+	}
 
 	try {
 		// Opening Logic :
@@ -111,28 +122,37 @@ watch([isContactToggled, isMenuToggled], async ([contactVal, menuVal], [oldConta
 		}
 		// Closing Logic :
 		else {
-			const drawerToClose = oldContact ? contactFormsRef.value : oldMenu ? menuRef.value : null;
+			const drawerToClose =
+				oldContact === true || (oldContact === undefined && !contactVal && isContactToggled.value === false)
+					? contactFormsRef.value
+					: oldMenu === true || (oldMenu === undefined && !menuVal && isMenuToggled.value === false)
+						? menuRef.value
+						: null;
 
-			if (drawerToClose) {
-				const drawerTl = drawerToClose.closeDrawer?.();
+			if (drawerToClose?.closeDrawer) {
+				const drawerTl = drawerToClose.closeDrawer();
 				if (drawerTl) await drawerTl;
 			}
 
 			tlHeader = gsap.timeline();
 
-			tlHeader.to(interactionsRef.value, {
-				width: initialWidth.value,
-				duration: 0.6,
-				ease: 'power2.inOut',
-				clearProps: 'width'
-			});
+			if (interactionsRef.value) {
+				tlHeader.to(interactionsRef.value, {
+					width: initialWidth.value,
+					duration: 0.6,
+					ease: 'power2.inOut',
+					clearProps: 'width'
+				});
+			}
 
-			tlHeader.add(
-				animations['reveal-letters-speed'](contactLabelRef.value!, {
-					onStart: () => gsap.set(contactLabelRef.value!, { visibility: 'visible' })
-				}),
-				0.325
-			);
+			if (contactLabelRef.value) {
+				tlHeader.add(
+					animations['reveal-letters-speed'](contactLabelRef.value, {
+						onStart: () => gsap.set(contactLabelRef.value!, { visibility: 'visible' })
+					}),
+					0.325
+				);
+			}
 
 			await tlHeader;
 		}
@@ -149,8 +169,9 @@ useEventListener('scroll', () => {
 });
 
 useResizeObserver(interactionsRef, () => {
-	if (!isContactToggled.value && !isMenuToggled.value) {
-		initialWidth.value = interactionsRef.value?.offsetWidth || 0;
+	if (!isContactToggled.value && !isMenuToggled.value && !isAnimating.value) {
+		const width = interactionsRef.value?.offsetWidth || 0;
+		if (width > 0) initialWidth.value = width;
 	}
 });
 </script>

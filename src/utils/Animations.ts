@@ -136,10 +136,16 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 	},
 
 	'reveal-letters-speed': (el, options) => {
+		if (!el) {
+			options.onStart?.();
+			options.onComplete?.();
+			return gsap.to({}, { duration: 0 });
+		}
+
 		const split = new SplitText(el, { type: 'words,chars', mask: 'chars', autoSplit: true });
 		const chars = split.chars;
 
-		return gsap.from(chars, {
+		const tween = gsap.from(chars, {
 			x: options.direction === 'left' ? '-120%' : '120%',
 			duration: 0.4,
 			stagger: 0.03,
@@ -154,13 +160,21 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 				options.onComplete?.();
 			}
 		});
+
+		(tween as any).data = { split };
+		return tween;
 	},
 
 	'hide-letters-speed': (el, options) => {
+		if (!el) {
+			options.onComplete?.();
+			return gsap.to({}, { duration: 0 });
+		}
+
 		const split = new SplitText(el, { type: 'words,chars', mask: 'chars', autoSplit: true });
 		const chars = split.chars;
 
-		return gsap.to(chars, {
+		const tween = gsap.to(chars, {
 			x: options.direction === 'right' ? '120%' : '-120%',
 			duration: 0.4,
 			stagger: 0.03,
@@ -174,6 +188,9 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 				options.onComplete?.();
 			}
 		});
+
+		(tween as any).data = { split };
+		return tween;
 	},
 
 	'reveal-paragraphs': (el, options) => {

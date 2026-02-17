@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { useStore } from '@nanostores/vue';
 import { useResizeObserver } from '@vueuse/core';
 import gsap from 'gsap';
-import { ref, useTemplateRef, watch } from 'vue';
+import { computed, useTemplateRef, watch } from 'vue';
 
 import { animations } from '#utils/Animations.ts';
 
@@ -22,17 +23,19 @@ const {
 	preventClickOutside?: boolean;
 }>();
 
+const globalStore = useStore($global);
 const toggled = defineModel<boolean>('toggled', { default: false });
 
 // Refs :
 let tl: gsap.core.Timeline | null = null;
 
-const clickOutsideEnabled = ref(!preventClickOutside);
-
 const drawerRef = useTemplateRef('drawerRef');
 const containerRef = useTemplateRef('containerRef');
 const titleContainerRef = useTemplateRef('titleContainerRef');
 const socialsRef = useTemplateRef('socialsRef');
+
+// Computed :
+const clickOutsideEnabled = computed(() => !preventClickOutside && !globalStore.value.isHeaderAnimating);
 
 // Composables :
 const [innerEl, outerEl] = useAnimateHeight();
@@ -81,13 +84,6 @@ const closeDrawer = () => {
 };
 
 // Watchers :
-watch(
-	() => preventClickOutside,
-	(newValue) => {
-		clickOutsideEnabled.value = !newValue;
-	}
-);
-
 watch(toggled, (isToggled) => {
 	if (!isToggled && tl?.progress() === 1) closeDrawer();
 });
