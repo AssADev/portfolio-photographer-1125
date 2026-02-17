@@ -134,12 +134,22 @@ const onOpen = () => {
 
 const onButtonLeave = (el: any, done: () => void) => {
 	const label = el.querySelector('span');
-	label ? animations['hide-letters-speed'](label, { onComplete: done }) : done();
+	if (label) {
+		const anim = animations['hide-letters-speed'](label, { onComplete: done });
+		gsap.delayedCall(Math.max(0, anim.totalDuration() - 0.25), done);
+	} else {
+		done();
+	}
 };
 
 const onButtonEnter = (el: any, done: () => void) => {
 	const label = el.querySelector('span');
-	label ? animations['reveal-letters-speed'](label, { onComplete: done }) : done();
+	if (label) {
+		const anim = animations['reveal-letters-speed'](label, { onComplete: done });
+		gsap.delayedCall(Math.max(0, anim.totalDuration() - 0.25), done);
+	} else {
+		done();
+	}
 };
 
 // Expose :

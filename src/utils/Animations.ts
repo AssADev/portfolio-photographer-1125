@@ -136,12 +136,6 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 	},
 
 	'reveal-letters-speed': (el, options) => {
-		if (!el) {
-			options.onStart?.();
-			options.onComplete?.();
-			return gsap.to({}, { duration: 0 });
-		}
-
 		const split = new SplitText(el, { type: 'words,chars', mask: 'chars', autoSplit: true });
 		const chars = split.chars;
 
@@ -166,11 +160,6 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 	},
 
 	'hide-letters-speed': (el, options) => {
-		if (!el) {
-			options.onComplete?.();
-			return gsap.to({}, { duration: 0 });
-		}
-
 		const split = new SplitText(el, { type: 'words,chars', mask: 'chars', autoSplit: true });
 		const chars = split.chars;
 
