@@ -93,6 +93,7 @@ defineExpose({ focus, blur, clear });
 		@include hover {
 			&::before {
 				transform: scale3d(0.4, 0.4, 1);
+				transition: transform 0.25s $power2Out;
 			}
 		}
 

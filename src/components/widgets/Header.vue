@@ -9,6 +9,7 @@ import locales from '#utils/locales.json';
 import { trackNavigationClick } from '#utils/tracking.ts';
 
 import Button from '#components/utils/Button.vue';
+import Icon from '#components/utils/Icon.vue';
 import ContactForms from '#components/widgets/ContactForms.vue';
 import Menu from '#components/widgets/Menu.vue';
 
@@ -44,6 +45,11 @@ const menuRef = ref<any>(null);
 const initialWidth = ref(0);
 let tlHeader: gsap.core.Timeline | null = null;
 
+const contactActionRef = useTemplateRef('contactActionRef');
+const languagesRef = useTemplateRef('languagesRef');
+const languageItemsRef = useTemplateRef('languageItemsRef');
+const languageIconsRef = useTemplateRef('languageIconsRef');
+
 // Computed :
 const activeDrawer = computed(() => {
 	if (isContactToggled.value) return contactFormsRef.value;
@@ -51,7 +57,13 @@ const activeDrawer = computed(() => {
 	return null;
 });
 
-const drawerEl = computed(() => activeDrawer.value?.drawerRef);
+const orderedLocales = computed(() => {
+	return [language, ...(locales as string[]).filter((locale) => locale !== language)];
+});
+
+const isContactFormActive = computed(() => globalStore.value.isContactFormActive);
+
+const drawerEl = computed(() => activeDrawer.value?.containerRef);
 
 // Methods :
 const toggleContact = () => {
@@ -77,6 +89,40 @@ const onMenuToggled = (val: boolean) => {
 	isMenuToggled.value = val;
 };
 
+const handleContactAction = () => {
+	console.log('handleContactAction');
+	console.log(isAnimating.value, isMenuToggled.value, isContactFormActive.value);
+
+	if (isAnimating.value || isMenuToggled.value) return;
+
+	if (isContactToggled.value) {
+		isContactFormActive.value ? contactFormsRef.value?.backToChoices() : (isContactToggled.value = false);
+		return;
+	}
+
+	toggleContact();
+};
+
+const onActionLeave = (el: any, done: () => void) => {
+	const label = el.querySelector('span');
+	if (label) {
+		const anim = animations['hide-letters-speed'](label, { onComplete: done });
+		gsap.delayedCall(Math.max(0, anim.totalDuration() - 0.25), done);
+	} else {
+		done();
+	}
+};
+
+const onActionEnter = (el: any, done: () => void) => {
+	const label = el.querySelector('span');
+	if (label) {
+		const anim = animations['reveal-letters-speed'](label, { onComplete: done });
+		gsap.delayedCall(Math.max(0, anim.totalDuration() - 0.25), done);
+	} else {
+		done();
+	}
+};
+
 // Watchers :
 watchEffect(() => {
 	hidden.value = scrollHide.value;
@@ -100,25 +146,46 @@ watch([isContactToggled, isMenuToggled], async ([contactVal, menuVal], [oldConta
 		if (contactVal || menuVal) {
 			tlHeader = gsap.timeline();
 
+			// 1. Hide Contact label :
 			tlHeader.add(
 				animations['hide-letters-speed'](contactLabelRef.value!, {
 					onComplete: () => gsap.set(contactLabelRef.value!, { visibility: 'hidden' })
-				})
+				}),
+				0
 			);
 
+			// 2. Expand width :
 			tlHeader.to(
 				interactionsRef.value,
 				{ width: drawerEl.value?.offsetWidth || 365, duration: 0.6, ease: 'power2.inOut' },
 				0
 			);
 
-			await tlHeader;
-
+			// 3. Open drawer :
 			const drawerTl = activeDrawer.value?.openDrawer?.();
 			const onOpenTl = activeDrawer.value?.onOpen?.();
 
-			if (drawerTl) await drawerTl;
-			if (onOpenTl) await onOpenTl;
+			if (drawerTl) tlHeader.add(drawerTl, 0.1);
+			if (onOpenTl) tlHeader.add(onOpenTl, 0.2);
+
+			// 4. Reveal new Header content :
+			if (menuVal) {
+				// Reveal Languages :
+				tlHeader.set(languagesRef.value, { visibility: 'visible' }, 0.4);
+				languageItemsRef.value?.forEach((item: any, index: number) => {
+					tlHeader!.add(animations['reveal-letters'](item, { delay: 0.1 * index }), 0.4);
+				});
+				languageIconsRef.value?.forEach((icon: any, index: number) => {
+					tlHeader!.add(animations['scale-up'](icon?.$el || icon, { delay: 0.05 + 0.1 * index }), 0.4);
+				});
+			} else {
+				// Reveal Close/Back :
+				tlHeader.set(contactActionRef.value, { visibility: 'visible' }, 0.4);
+				const label = contactActionRef.value?.querySelector('.label-action span');
+				if (label) tlHeader.add(animations['reveal-letters-speed'](label as HTMLElement, {}), 0.4);
+			}
+
+			await tlHeader;
 		}
 		// Closing Logic :
 		else {
@@ -129,22 +196,32 @@ watch([isContactToggled, isMenuToggled], async ([contactVal, menuVal], [oldConta
 						? menuRef.value
 						: null;
 
-			if (drawerToClose?.closeDrawer) {
-				const drawerTl = drawerToClose.closeDrawer();
-				if (drawerTl) await drawerTl;
-			}
+			let drawerTl;
+			if (drawerToClose?.closeDrawer) drawerTl = drawerToClose.closeDrawer();
 
 			tlHeader = gsap.timeline();
 
-			if (interactionsRef.value) {
-				tlHeader.to(interactionsRef.value, {
-					width: initialWidth.value,
-					duration: 0.6,
-					ease: 'power2.inOut',
-					clearProps: 'width'
+			// 1. Hide current Header content :
+			if (oldMenu) {
+				languageItemsRef.value?.forEach((item: any, index: number) => {
+					tlHeader!.add(animations['hide-letters-speed'](item, { delay: 0.05 * index }), 0);
 				});
+				tlHeader.set(languagesRef.value, { visibility: 'hidden' }, 0.3);
+			} else if (oldContact) {
+				const label = contactActionRef.value?.querySelector('.label-action span');
+				if (label) tlHeader.add(animations['hide-letters-speed'](label as HTMLElement, {}), 0);
+				tlHeader.set(contactActionRef.value, { visibility: 'hidden' }, 0.3);
 			}
 
+			// 2. Shrink width :
+			tlHeader.to(interactionsRef.value, {
+				width: initialWidth.value,
+				duration: 0.6,
+				ease: 'power2.inOut',
+				clearProps: 'width'
+			});
+
+			// 3. Reveal original Contact Label :
 			if (contactLabelRef.value) {
 				tlHeader.add(
 					animations['reveal-letters-speed'](contactLabelRef.value, {
@@ -154,6 +231,7 @@ watch([isContactToggled, isMenuToggled], async ([contactVal, menuVal], [oldConta
 				);
 			}
 
+			if (drawerTl) await drawerTl;
 			await tlHeader;
 		}
 	} catch (e) {
@@ -196,12 +274,48 @@ useResizeObserver(interactionsRef, () => {
 				class="interactions-container"
 				:class="{ 'is-contact-open': isContactToggled, 'is-menu-open': isMenuToggled }"
 			>
-				<Button class="contact-cta" @click="toggleContact">
-					<span ref="contactLabelRef">{{ $t('contactLabel') }}</span>
+				<Button class="contact-cta" @click="handleContactAction">
+					<span ref="contactLabelRef" class="label-contact">{{ $t('contactLabel') }}</span>
+
+					<div ref="languagesRef" class="languages-wrapper">
+						<ul class="languages-selector-container">
+							<template v-for="(locale, index) in orderedLocales" :key="locale">
+								<li>
+									<span v-if="locale === language" ref="languageItemsRef">{{ locale }}</span>
+									<a
+										v-else
+										ref="languageItemsRef"
+										:href="
+											languageAlternates
+												?.find((alt) => alt.hrefLang.split('-')[0] === locale)
+												?.href.toString() || (locale === locales[0] ? '/' : `/${locale}`)
+										"
+									>
+										<span>{{ locale }}</span>
+									</a>
+								</li>
+								<Icon
+									v-if="index < orderedLocales.length - 1"
+									ref="languageIconsRef"
+									name="square-small"
+								/>
+							</template>
+						</ul>
+					</div>
+
+					<div ref="contactActionRef" class="label-action-wrapper">
+						<transition mode="out-in" :css="false" @leave="onActionLeave" @enter="onActionEnter">
+							<div :key="isContactFormActive ? 'back' : 'close'" class="label-action">
+								<span>{{ isContactFormActive ? $t('backToChoices') : $t('close') }}</span>
+							</div>
+						</transition>
+					</div>
 				</Button>
+
 				<Button class="menu-cta" @click="toggleMenu" :aria-label="$t(isMenuToggled ? 'closeMenu' : 'openMenu')">
 					<span>X</span>
 				</Button>
+
 				<Menu
 					ref="menuRef"
 					:toggled="isMenuToggled"
@@ -272,6 +386,9 @@ button {
 
 	&.is-contact-open {
 		.menu-cta {
+			background: $whiteChoco;
+			transition: background 0.3s $power2InOut 0.25s;
+
 			&::before {
 				transform: translate3d(0, 0, 0);
 				transition: transform 0.55s $power2InOut;
@@ -279,6 +396,7 @@ button {
 
 			span {
 				color: $eerieBlack;
+				transition: color 0.25s $power2Out 0.25s;
 			}
 		}
 	}
@@ -303,8 +421,8 @@ button {
 		background: $whiteChoco;
 		justify-content: flex-start;
 		border-radius: var(--border-radius);
-		padding-inline: var(--header-padding-inline);
-		padding-inline-end: 54px;
+		padding-inline: var(--header-padding-inline) 54px;
+		overflow: hidden;
 
 		&::before {
 			content: '';
@@ -317,12 +435,60 @@ button {
 			transition: transform 0.85s $power2InOut;
 		}
 
-		span {
+		.label-contact,
+		.label-action,
+		.languages-wrapper {
 			@include roobert-14-uppercase;
 
 			position: relative;
 			color: $eerieBlack;
 			transition: color 0.25s $power2Out 0.275s;
+		}
+
+		.label-action-wrapper,
+		.languages-wrapper {
+			position: absolute;
+			left: var(--header-padding-inline);
+			top: 50%;
+			transform: translate3d(0, -50%, 0);
+			visibility: hidden;
+		}
+
+		.label-action {
+			display: flex;
+			align-items: center;
+		}
+
+		.languages-selector-container {
+			display: flex;
+			align-items: center;
+			gap: 5px;
+			color: $white;
+
+			li {
+				@include hover {
+					a {
+						opacity: 1;
+					}
+				}
+
+				& > * {
+					display: flex;
+				}
+
+				a {
+					@include a11y-focus;
+					@include roobert-12-uppercase;
+
+					position: relative;
+					opacity: 0.5;
+					transition: opacity 0.4s $power2Out;
+				}
+
+				span {
+					@include roobert-12-uppercase;
+				}
+			}
 		}
 	}
 
@@ -332,6 +498,7 @@ button {
 		background: $eerieBlack;
 		border-radius: var(--border-radius);
 		aspect-ratio: 1/1;
+		transition: background 0.3s $power2InOut 0.6125s;
 
 		&::before {
 			content: '';
@@ -341,7 +508,7 @@ button {
 			border-radius: inherit;
 			pointer-events: none;
 			transform: translate3d(-100%, 0, 0);
-			transition: transform 0.4125s $power2InOut 0.125s;
+			transition: transform 0.425s $power2InOut 0.675s;
 		}
 
 		span {
@@ -349,7 +516,7 @@ button {
 
 			position: relative;
 			color: $white;
-			transition: color 0.25s $power2Out 0.25s;
+			transition: color 0.25s $power2Out 0.8s;
 		}
 	}
 }

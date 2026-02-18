@@ -40,18 +40,24 @@ const clickOutsideEnabled = computed(() => !preventClickOutside && !globalStore.
 // Composables :
 const [innerEl, outerEl] = useAnimateHeight();
 
-useTrap(containerRef, { model: toggled, clickOutsideDeactivates: clickOutsideEnabled, escapeDeactivates: true });
+// useTrap(containerRef, { model: toggled, clickOutsideDeactivates: clickOutsideEnabled, escapeDeactivates: true });
 
 // Animations :
 const openDrawer = () => {
 	$global.setKey('lockScroll', true);
 
+	drawerRef.value!.style.display = 'block';
+
 	// Animation :
 	tl?.kill();
-	tl = gsap.timeline();
+	tl = gsap.timeline({
+		onStart: () => {
+			drawerRef.value!.classList.add('is-open');
+		}
+	});
 
 	tl.to(
-		drawerRef.value,
+		containerRef.value,
 		{
 			clipPath: 'inset(0% 0 0 0)',
 			duration: 0.8,
@@ -71,21 +77,29 @@ const openDrawer = () => {
 };
 
 const closeDrawer = () => {
+	if (!toggled.value && tl?.vars?.isClosing) return tl;
+
 	toggled.value = false;
 	$global.setKey('lockScroll', false);
+	drawerRef.value!.classList.remove('is-open');
 
 	// Animation :
 	tl?.kill();
-	tl = gsap.timeline();
+	tl = gsap.timeline({
+		isClosing: true,
+		onComplete: () => {
+			drawerRef.value!.style.display = 'none';
+		}
+	});
 
-	tl.to(drawerRef.value, { clipPath: 'inset(100% 0 0 0)', duration: 0.6, ease: 'power2.inOut' });
+	tl.to(containerRef.value, { clipPath: 'inset(100% 0 0 0)', duration: 0.6, ease: 'power2.inOut' });
 
 	return tl;
 };
 
 // Watchers :
 watch(toggled, (isToggled) => {
-	if (!isToggled && tl?.progress() === 1) closeDrawer();
+	if (!isToggled && tl && tl.progress() > 0 && !tl.vars.isClosing) closeDrawer();
 });
 
 // Resize observers :
@@ -102,6 +116,7 @@ useResizeObserver(socialsRef, () => {
 // Expose :
 defineExpose({
 	drawerRef,
+	containerRef,
 	openDrawer,
 	closeDrawer
 });
@@ -122,9 +137,6 @@ defineExpose({
 				</div>
 			</div>
 			<MenuSocials ref="socialsRef" />
-			<div class="drawer-footer">
-				<slot name="footer" />
-			</div>
 		</div>
 	</div>
 </template>
@@ -137,25 +149,29 @@ defineExpose({
 	--menu-padding-inline: 14px;
 
 	position: fixed;
-	bottom: var(--gutter);
-	right: var(--gutter);
-	z-index: 25;
-	max-width: var(--width);
-	width: calc(100% - var(--gutter) * 2);
-	clip-path: inset(100% 0 0 0);
-	// opacity: 0;
-	// visibility: hidden;
+	inset: 0;
+	z-index: -1;
+	display: none;
+	pointer-events: none;
+
+	&.is-open {
+		pointer-events: auto;
+
+		.overlay {
+			opacity: 1;
+			transition: opacity 0.6s $power2InOut;
+		}
+	}
 }
 
 .overlay {
 	--deg: 180deg;
 
 	position: absolute;
-	bottom: calc(var(--gutter) * -1);
-	right: calc(var(--gutter) * -1);
-	width: 100vw;
-	height: 100vh;
-	background: linear-gradient(var(--deg), transparent, rgba($whiteChoco, 0.125));
+	inset: 0;
+	opacity: 0;
+	background: linear-gradient(var(--deg), transparent, rgba($black, 0.15));
+	transition: opacity 0.75s $power2InOut;
 
 	@include mq(tablet) {
 		--deg: 125deg;
@@ -163,11 +179,16 @@ defineExpose({
 }
 
 .drawer-container {
-	position: relative;
+	position: absolute;
+	z-index: 2;
+	bottom: var(--gutter);
+	right: var(--gutter);
 	width: 100%;
+	max-width: var(--width);
 	height: fit-content;
 	border-radius: var(--border-radius);
 	overflow: hidden;
+	clip-path: inset(100% 0 0 0);
 
 	&.dark {
 		$border: 1px solid rgba($white, 0.08);
@@ -181,10 +202,7 @@ defineExpose({
 
 		:deep(.menu-socials-container) {
 			border-top: $border;
-		}
-
-		.drawer-footer {
-			border-top: $border;
+			border-bottom: $border;
 		}
 	}
 
@@ -200,10 +218,7 @@ defineExpose({
 
 		:deep(.menu-socials-container) {
 			border-top: $border;
-		}
-
-		.drawer-footer {
-			border-top: $border;
+			border-bottom: $border;
 		}
 	}
 }
@@ -267,12 +282,5 @@ defineExpose({
 		);
 		overflow-y: auto;
 	}
-}
-
-.drawer-footer {
-	display: flex;
-	align-items: center;
-	height: var(--header-height);
-	padding-inline: var(--menu-padding-inline);
 }
 </style>

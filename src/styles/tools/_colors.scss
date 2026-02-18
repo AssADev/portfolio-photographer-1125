@@ -27,7 +27,7 @@ $colors: (
 );
 
 $gradients: (
-	'menu-khaki': linear-gradient(90deg, rgba($khaki, 0.1) 0%, rgba($khaki, 0) 100%),
+	'menu-khaki': linear-gradient(90deg, rgba($khaki, 0.15) 0%, rgba($khaki, 0) 100%),
 	'menu-white': linear-gradient(90deg, rgba($white, 0.05) 0%, rgba($white, 0) 100%),
 	'form-error': linear-gradient(90deg, rgba($red, 0.1) 0%, rgba($red, 0) 100%),
 	'form-error-drawer-body': linear-gradient(180deg, rgba($red, 0.1) 0%, rgba($red, 0) 100%),

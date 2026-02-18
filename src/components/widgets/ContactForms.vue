@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import gsap from 'gsap';
-import { SplitText } from 'gsap/SplitText';
 import { computed, inject, nextTick, ref, useTemplateRef, watch } from 'vue';
 
 import { animations } from '#utils/Animations.ts';
@@ -10,6 +9,8 @@ import { nl2br } from '#utils/nl2br.ts';
 import DrawerMenu from '#components/partials/DrawerMenu.vue';
 import Form from '#components/partials/Form.vue';
 import Button from '#components/utils/Button.vue';
+
+import { $global } from '#stores/global.ts';
 
 // Injections :
 const siteConfig = inject<any>('siteConfig');
@@ -29,8 +30,6 @@ const showTransition = ref(true);
 const drawerMenuRef = ref<any>(null);
 const selectedForm = ref<any | null>(null);
 const formStatus = ref<'idle' | 'success' | 'error'>('idle');
-
-const closeLabelRef = useTemplateRef('closeLabelRef');
 
 const titleRef = useTemplateRef('titleRef');
 const descriptionRef = useTemplateRef('descriptionRef');
@@ -64,11 +63,13 @@ const currentDescription = computed(() => {
 const openForm = (form: any) => {
 	selectedForm.value = form;
 	formStatus.value = 'idle';
+	$global.setKey('isContactFormActive', true);
 };
 
 const backToChoices = () => {
 	selectedForm.value = null;
 	formStatus.value = 'idle';
+	$global.setKey('isContactFormActive', false);
 };
 
 const onFormStatusChange = (status: 'idle' | 'success' | 'error') => {
@@ -80,15 +81,14 @@ const closeDrawer = () => {
 	formStatus.value = 'idle';
 	selectedForm.value = null;
 	showTransition.value = true;
+	$global.setKey('isContactFormActive', false);
 };
 
 // Watchers :
 watch(toggled, async (val) => {
-	if (val) {
-		await nextTick();
-		if (closeLabelRef.value) {
-			animations['reveal-letters-speed'](closeLabelRef.value, { delay: 0.4 });
-		}
+	if (!val) {
+		selectedForm.value = null;
+		$global.setKey('isContactFormActive', false);
 	}
 });
 
@@ -101,6 +101,7 @@ watch(
 				showTransition.value = false;
 				selectedForm.value = found;
 				formStatus.value = 'idle';
+				$global.setKey('isContactFormActive', true);
 				await nextTick();
 				showTransition.value = true;
 			}
@@ -125,37 +126,19 @@ const onOpen = () => {
 		const description = form.querySelector('.description');
 
 		tl!.add(animations['reveal-paragraphs'](title, { delay: 0.125 + reverseIndex * 0.1 }), 0);
-		tl!.add(animations['reveal-letters'](number, { delay: 0.2 + reverseIndex * 0.1 }), 0);
+		tl!.add(animations['reveal-letters'](number, { delay: 0.275 + reverseIndex * 0.1 }), 0);
 		tl!.add(animations['reveal-paragraphs'](description, { delay: 0.2 + reverseIndex * 0.1 }), 0);
 	});
 
 	return tl;
 };
 
-const onButtonLeave = (el: any, done: () => void) => {
-	const label = el.querySelector('span');
-	if (label) {
-		const anim = animations['hide-letters-speed'](label, { onComplete: done });
-		gsap.delayedCall(Math.max(0, anim.totalDuration() - 0.25), done);
-	} else {
-		done();
-	}
-};
-
-const onButtonEnter = (el: any, done: () => void) => {
-	const label = el.querySelector('span');
-	if (label) {
-		const anim = animations['reveal-letters-speed'](label, { onComplete: done });
-		gsap.delayedCall(Math.max(0, anim.totalDuration() - 0.25), done);
-	} else {
-		done();
-	}
-};
-
 // Expose :
 defineExpose({
 	onOpen,
+	backToChoices,
 	drawerRef: computed(() => drawerMenuRef.value?.drawerRef),
+	containerRef: computed(() => drawerMenuRef.value?.containerRef),
 	openDrawer: () => drawerMenuRef.value?.openDrawer(),
 	closeDrawer: () => drawerMenuRef.value?.closeDrawer()
 });
@@ -168,7 +151,6 @@ defineExpose({
 		theme="light"
 		:has-error="formStatus === 'error'"
 		:prevent-click-outside="!!selectedForm && formStatus !== 'success'"
-		@close="closeDrawer"
 	>
 		<template #title>
 			<transition v-if="showTransition" name="fade" mode="out-in">
@@ -221,16 +203,6 @@ defineExpose({
 				</ul>
 			</div>
 		</div>
-		<template #footer>
-			<transition mode="out-in" :css="false" @leave="onButtonLeave" @enter="onButtonEnter">
-				<Button v-if="!selectedForm || formStatus === 'success'" key="close" @click="closeDrawer">
-					<span ref="closeLabelRef">{{ $t('close') }}</span>
-				</Button>
-				<Button v-else key="back" @click="backToChoices">
-					<span>{{ $t('backToChoices') }}</span>
-				</Button>
-			</transition>
-		</template>
 	</DrawerMenu>
 </template>
 
@@ -313,6 +285,7 @@ $border: 1px solid rgba($eerieBlack, 0.08);
 
 			width: 100%;
 			color: $khaki;
+			padding-inline-end: var(--menu-padding-inline);
 		}
 	}
 }

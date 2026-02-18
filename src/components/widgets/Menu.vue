@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { computed, inject, ref } from 'vue';
+import gsap from 'gsap';
+import { computed, inject, ref, useTemplateRef } from 'vue';
 
+import { animations } from '#utils/Animations.ts';
 import locales from '#utils/locales.json';
 import { nl2br } from '#utils/nl2br.ts';
 import { trackNavigationClick } from '#utils/tracking.ts';
@@ -31,6 +33,12 @@ const { location } = useRouter();
 
 // Refs :
 const drawerMenuRef = ref<any>(null);
+
+const titleRef = useTemplateRef('titleRef');
+const descriptionRef = useTemplateRef('descriptionRef');
+const linksRef = useTemplateRef('linksRef');
+
+let tl: gsap.core.Timeline | null = null;
 
 // Computed :
 const menuItems = computed(() => {
@@ -67,13 +75,28 @@ const findActiveMenuItem = (menuItems: any[], currentPath: string) => {
 
 // Animatinon :
 const onOpen = () => {
-	console.log('Menu opened');
+	tl?.kill();
+	tl = gsap.timeline();
+
+	if (titleRef.value) tl.add(animations['reveal-paragraphs'](titleRef.value, { delay: 0.45 }), 0);
+	if (descriptionRef.value) tl.add(animations['reveal-paragraphs'](descriptionRef.value, { delay: 0.475 }), 0);
+
+	linksRef.value?.forEach((form: any, index: number) => {
+		const reverseIndex = linksRef.value!.length - 1 - index;
+
+		const label = form.querySelector('span');
+
+		tl!.add(animations['reveal-paragraphs'](label, { delay: 0.15 + reverseIndex * 0.1 }), 0);
+	});
+
+	return tl;
 };
 
 // Expose :
 defineExpose({
 	onOpen,
 	drawerRef: computed(() => drawerMenuRef.value?.drawerRef),
+	containerRef: computed(() => drawerMenuRef.value?.containerRef),
 	openDrawer: () => drawerMenuRef.value?.openDrawer(),
 	closeDrawer: () => drawerMenuRef.value?.closeDrawer()
 });
@@ -82,12 +105,13 @@ defineExpose({
 <template>
 	<DrawerMenu ref="drawerMenuRef" v-model:toggled="toggled" theme="dark">
 		<template v-if="identity || menuDescription" #title>
-			<p v-if="identity" class="title">{{ identity }}</p>
-			<p v-if="menuDescription" class="description" v-html="nl2br(menuDescription)"></p>
+			<p v-if="identity" ref="titleRef" class="title">{{ identity }}</p>
+			<p v-if="menuDescription" ref="descriptionRef" class="description" v-html="nl2br(menuDescription)"></p>
 		</template>
 		<ul v-if="menuLinks" class="links-container">
 			<li v-for="item in activeMenuItems" :key="item.label" :class="{ active: item.active }">
 				<a
+					ref="linksRef"
 					:href="item.link"
 					role="menuitem"
 					:aria-current="item.active ? 'page' : undefined"
@@ -97,26 +121,6 @@ defineExpose({
 				</a>
 			</li>
 		</ul>
-		<template #footer>
-			<ul class="languages-selector-container">
-				<template v-for="(locale, index) in orderedLocales" :key="locale">
-					<li>
-						<span v-if="locale === language">{{ locale }}</span>
-						<a
-							v-else
-							:href="
-								languageAlternates
-									?.find((alt) => alt.hrefLang.split('-')[0] === locale)
-									?.href.toString() || (locale === locales[0] ? '/' : `/${locale}`)
-							"
-						>
-							<span>{{ locale }}</span>
-						</a>
-					</li>
-					<Icon v-if="index < orderedLocales.length - 1" name="square-small" />
-				</template>
-			</ul>
-		</template>
 	</DrawerMenu>
 </template>
 

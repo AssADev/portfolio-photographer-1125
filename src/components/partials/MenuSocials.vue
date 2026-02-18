@@ -88,6 +88,7 @@ const handleSocialLeave = () => {
 	flex-direction: column;
 	gap: 6px;
 	padding: 32px var(--menu-padding-inline) 16px;
+	margin-block-end: var(--header-height);
 	pointer-events: none;
 
 	@include hover {
