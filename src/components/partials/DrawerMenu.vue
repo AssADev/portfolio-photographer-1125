@@ -1,29 +1,21 @@
 <script setup lang="ts">
-import { useStore } from '@nanostores/vue';
 import { useResizeObserver } from '@vueuse/core';
 import gsap from 'gsap';
-import { computed, useTemplateRef, watch } from 'vue';
+import { useTemplateRef, watch } from 'vue';
 
 import { animations } from '#utils/Animations.ts';
 
 import MenuSocials from '#components/partials/MenuSocials.vue';
 
 import { useAnimateHeight } from '#composables/useAnimateHeight.ts';
-import { useTrap } from '#composables/useTrap.ts';
 import { $global } from '#stores/global.ts';
 
 // Props & Model :
-const {
-	theme = 'dark',
-	hasError = false,
-	preventClickOutside = false
-} = defineProps<{
+const { theme = 'dark', hasError = false } = defineProps<{
 	theme?: 'dark' | 'light';
 	hasError?: boolean;
-	preventClickOutside?: boolean;
 }>();
 
-const globalStore = useStore($global);
 const toggled = defineModel<boolean>('toggled', { default: false });
 
 // Refs :
@@ -34,13 +26,8 @@ const containerRef = useTemplateRef('containerRef');
 const titleContainerRef = useTemplateRef('titleContainerRef');
 const socialsRef = useTemplateRef('socialsRef');
 
-// Computed :
-const clickOutsideEnabled = computed(() => !preventClickOutside && !globalStore.value.isHeaderAnimating);
-
 // Composables :
 const [innerEl, outerEl] = useAnimateHeight();
-
-// useTrap(containerRef, { model: toggled, clickOutsideDeactivates: clickOutsideEnabled, escapeDeactivates: true });
 
 // Animations :
 const openDrawer = () => {
@@ -124,7 +111,7 @@ defineExpose({
 
 <template>
 	<div ref="drawerRef" class="drawer-menu">
-		<div class="overlay" @click="!preventClickOutside && (toggled = false)" />
+		<div class="overlay" @click="toggled = false" />
 		<div ref="containerRef" class="drawer-container" :class="theme">
 			<div ref="outerEl" class="drawer-body" :class="{ 'form-error': hasError }">
 				<div ref="innerEl" class="drawer-inner-body">
@@ -156,26 +143,12 @@ defineExpose({
 
 	&.is-open {
 		pointer-events: auto;
-
-		.overlay {
-			opacity: 1;
-			transition: opacity 0.6s $power2InOut;
-		}
 	}
 }
 
 .overlay {
-	--deg: 180deg;
-
 	position: absolute;
 	inset: 0;
-	opacity: 0;
-	background: linear-gradient(var(--deg), transparent, rgba($black, 0.15));
-	transition: opacity 0.75s $power2InOut;
-
-	@include mq(tablet) {
-		--deg: 125deg;
-	}
 }
 
 .drawer-container {

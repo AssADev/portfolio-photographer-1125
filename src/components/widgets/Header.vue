@@ -15,6 +15,7 @@ import Menu from '#components/widgets/Menu.vue';
 
 import type { LanguageAlternate } from '#types/seo.ts';
 
+import { useTrap } from '#composables/useTrap.ts';
 import { $global } from '#stores/global.ts';
 
 // Props :
@@ -65,6 +66,23 @@ const isContactFormActive = computed(() => globalStore.value.isContactFormActive
 
 const drawerEl = computed(() => activeDrawer.value?.containerRef);
 
+const isInteractionToggled = computed<boolean>({
+	get: () => isMenuToggled.value || isContactToggled.value,
+	set: (val) => {
+		console.log('isInteractionToggled', val);
+
+		if (!val) {
+			if (isAnimating.value || isContactFormActive.value) return;
+
+			isMenuToggled.value = false;
+			isContactToggled.value = false;
+		}
+	}
+});
+
+// Composables :
+useTrap(interactionsRef, { model: isInteractionToggled, escapeDeactivates: true });
+
 // Methods :
 const toggleContact = () => {
 	if (isAnimating.value) return;
@@ -80,6 +98,8 @@ const toggleMenu = () => {
 
 const onContactToggled = (val: boolean) => {
 	if (isAnimating.value) return;
+	if (!val && isContactFormActive.value) return;
+
 	isContactToggled.value = val;
 	if (!val) contactFormId.value = undefined;
 };
@@ -90,13 +110,16 @@ const onMenuToggled = (val: boolean) => {
 };
 
 const handleContactAction = () => {
-	console.log('handleContactAction');
-	console.log(isAnimating.value, isMenuToggled.value, isContactFormActive.value);
-
 	if (isAnimating.value || isMenuToggled.value) return;
 
 	if (isContactToggled.value) {
-		isContactFormActive.value ? contactFormsRef.value?.backToChoices() : (isContactToggled.value = false);
+		if (isContactFormActive.value) {
+			isAnimating.value = true;
+			contactFormsRef.value?.backToChoices();
+			return;
+		}
+
+		isContactToggled.value = false;
 		return;
 	}
 
@@ -104,6 +127,7 @@ const handleContactAction = () => {
 };
 
 const onActionLeave = (el: any, done: () => void) => {
+	isAnimating.value = true;
 	const label = el.querySelector('span');
 	if (label) {
 		const anim = animations['hide-letters-speed'](label, { onComplete: done });
@@ -116,9 +140,18 @@ const onActionLeave = (el: any, done: () => void) => {
 const onActionEnter = (el: any, done: () => void) => {
 	const label = el.querySelector('span');
 	if (label) {
-		const anim = animations['reveal-letters-speed'](label, { onComplete: done });
-		gsap.delayedCall(Math.max(0, anim.totalDuration() - 0.25), done);
+		const anim = animations['reveal-letters-speed'](label, {
+			onComplete: () => {
+				isAnimating.value = false;
+				done();
+			}
+		});
+		gsap.delayedCall(Math.max(0, anim.totalDuration() - 0.25), () => {
+			isAnimating.value = false;
+			done();
+		});
 	} else {
+		isAnimating.value = false;
 		done();
 	}
 };
@@ -165,19 +198,22 @@ watch([isContactToggled, isMenuToggled], async ([contactVal, menuVal], [oldConta
 			const drawerTl = activeDrawer.value?.openDrawer?.();
 			const onOpenTl = activeDrawer.value?.onOpen?.();
 
-			if (drawerTl) tlHeader.add(drawerTl, 0.1);
-			if (onOpenTl) tlHeader.add(onOpenTl, 0.2);
+			if (drawerTl) tlHeader.add(drawerTl, '-=0.1');
+			if (onOpenTl) tlHeader.add(onOpenTl, '<+0.1');
 
 			// 4. Reveal new Header content :
 			if (menuVal) {
 				// Reveal Languages :
 				tlHeader.set(languagesRef.value, { visibility: 'visible' }, 0.4);
 				languageItemsRef.value?.forEach((item: any, index: number) => {
-					tlHeader!.add(animations['reveal-letters'](item, { delay: 0.1 * index }), 0.4);
-				});
+					tlHeader!.add(animations['reveal-letters'](item, { delay: 0.15 * index }), 0.4);
+				}, 0);
 				languageIconsRef.value?.forEach((icon: any, index: number) => {
-					tlHeader!.add(animations['scale-up'](icon?.$el || icon, { delay: 0.05 + 0.1 * index }), 0.4);
-				});
+					tlHeader!.add(
+						animations['scale-up'](icon?.$el || icon, { delay: 0.15 + 0.15 * index, duration: 0.6 }),
+						0.4
+					);
+				}, 0);
 			} else {
 				// Reveal Close/Back :
 				tlHeader.set(contactActionRef.value, { visibility: 'visible' }, 0.4);
@@ -205,7 +241,17 @@ watch([isContactToggled, isMenuToggled], async ([contactVal, menuVal], [oldConta
 			if (oldMenu) {
 				languageItemsRef.value?.forEach((item: any, index: number) => {
 					tlHeader!.add(animations['hide-letters-speed'](item, { delay: 0.05 * index }), 0);
-				});
+				}, 0);
+				languageIconsRef.value?.forEach((icon: any, index: number) => {
+					tlHeader!.add(
+						animations['scale-down'](icon?.$el || icon, {
+							delay: 0.05 + 0.05 * index,
+							duration: 0.4,
+							reset: true
+						}),
+						0
+					);
+				}, 0);
 				tlHeader.set(languagesRef.value, { visibility: 'hidden' }, 0.3);
 			} else if (oldContact) {
 				const label = contactActionRef.value?.querySelector('.label-action span');
@@ -403,6 +449,9 @@ button {
 
 	&.is-menu-open {
 		.contact-cta {
+			background: $eerieBlack;
+			transition: background 0.3s $power2InOut 0.5125s;
+
 			&::before {
 				transform: translate3d(0, 0, 0);
 				transition: transform 0.625s $power2InOut;
@@ -422,6 +471,7 @@ button {
 		justify-content: flex-start;
 		border-radius: var(--border-radius);
 		padding-inline: var(--header-padding-inline) 54px;
+		transition: background 0.3s $power2InOut;
 		overflow: hidden;
 
 		&::before {

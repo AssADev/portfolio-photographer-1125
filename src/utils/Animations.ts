@@ -262,11 +262,24 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 		return tl;
 	},
 
+	'scale-down': (el, options) => {
+		return gsap.to(el, {
+			scale: 0.25,
+			opacity: 0,
+			duration: options.duration || 0.8,
+			ease: 'power3.out',
+			delay: options.delay || 0,
+			onComplete: () => {
+				if (options.reset) gsap.set(el, { clearProps: 'all' });
+			}
+		});
+	},
+
 	'scale-up': (el, options) => {
 		return gsap.from(el, {
 			scale: 0.25,
 			opacity: 0,
-			duration: 1.2,
+			duration: options.duration || 1.2,
 			ease: 'power3.out',
 			delay: options.delay || 0,
 			immediateRender: true
