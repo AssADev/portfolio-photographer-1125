@@ -320,7 +320,7 @@ useResizeObserver(interactionsRef, () => {
 				class="interactions-container"
 				:class="{ 'is-contact-open': isContactToggled, 'is-menu-open': isMenuToggled }"
 			>
-				<Button class="contact-cta" @click="handleContactAction">
+				<Button class="contact-cta" :disabled="isMenuToggled" @click="handleContactAction">
 					<span ref="contactLabelRef" class="label-contact">{{ $t('contactLabel') }}</span>
 
 					<div ref="languagesRef" class="languages-wrapper">
@@ -471,7 +471,7 @@ button {
 		justify-content: flex-start;
 		border-radius: var(--border-radius);
 		padding-inline: var(--header-padding-inline) 54px;
-		transition: background 0.3s $power2InOut;
+		transition: background 0.3s $power2Out;
 		overflow: hidden;
 
 		&::before {
@@ -548,7 +548,7 @@ button {
 		background: $eerieBlack;
 		border-radius: var(--border-radius);
 		aspect-ratio: 1/1;
-		transition: background 0.3s $power2InOut 0.6125s;
+		transition: background 0.3s $power2Out 0.6125s;
 
 		&::before {
 			content: '';
