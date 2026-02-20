@@ -126,7 +126,7 @@ const onOpen = () => {
 		const description = form.querySelector('.description');
 
 		tl!.add(animations['reveal-paragraphs'](title, { delay: 0.125 + reverseIndex * 0.1 }), 0);
-		tl!.add(animations['reveal-letters'](number, { delay: 0.275 + reverseIndex * 0.1 }), 0);
+		tl!.add(animations['reveal-letters'](number, { delay: 0.3 + reverseIndex * 0.1 }), 0);
 		tl!.add(animations['reveal-paragraphs'](description, { delay: 0.2 + reverseIndex * 0.1 }), 0);
 	});
 

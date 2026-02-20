@@ -210,7 +210,11 @@ watch([isContactToggled, isMenuToggled], async ([contactVal, menuVal], [oldConta
 				}, 0);
 				languageIconsRef.value?.forEach((icon: any, index: number) => {
 					tlHeader!.add(
-						animations['scale-up'](icon?.$el || icon, { delay: 0.15 + 0.15 * index, duration: 0.6 }),
+						animations['scale-up'](icon?.$el || icon, {
+							delay: 0.15 + 0.15 * index,
+							duration: 0.6,
+							rotate: 90
+						}),
 						0.4
 					);
 				}, 0);
@@ -247,6 +251,7 @@ watch([isContactToggled, isMenuToggled], async ([contactVal, menuVal], [oldConta
 						animations['scale-down'](icon?.$el || icon, {
 							delay: 0.05 + 0.05 * index,
 							duration: 0.4,
+							rotate: -90,
 							reset: true
 						}),
 						0
@@ -433,7 +438,7 @@ button {
 	&.is-contact-open {
 		.menu-cta {
 			background: $whiteChoco;
-			transition: background 0.3s $power2InOut 0.25s;
+			transition: background 0.3s $power2InOut 0.275s;
 
 			&::before {
 				transform: translate3d(0, 0, 0);
@@ -558,7 +563,7 @@ button {
 			border-radius: inherit;
 			pointer-events: none;
 			transform: translate3d(-100%, 0, 0);
-			transition: transform 0.425s $power2InOut 0.675s;
+			transition: transform 0.425s $power2InOut 0.7s;
 		}
 
 		span {
