@@ -20,7 +20,7 @@ const resolvers = getRichTextResolvers('h1');
 		<div class="container-grid">
 			<RichText
 				v-animate="'reveal-titles'"
-				class="col-start-1 col-end-13 col-start-tb-1 col-end-tb-15 col-start-dk-1 col-end-dk-29"
+				class="col-start-1 col-end-13 col-start-tb-1 col-end-tb-15 col-start-dk-1 col-end-dk-29 col-start-xlg-1 col-end-xlg-27 col-end-xxlg-1 col-end-xxlg-24"
 				:doc="blok.title"
 				:resolvers="resolvers"
 			/>
