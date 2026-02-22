@@ -33,6 +33,7 @@ const onOpenMinimap = () => {
 
 <template>
 	<Button
+		v-animate="{ type: 'mask-reveal', options: { direction: 'down' } }"
 		class="partials-project-item-picture"
 		:data-cursor-label="$t('scaleUp')"
 		@click="onOpenMinimap"

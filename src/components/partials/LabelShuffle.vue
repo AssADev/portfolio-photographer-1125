@@ -9,11 +9,13 @@ const props = withDefaults(
 		isActive?: boolean;
 		noSnap?: boolean;
 		reveal?: boolean;
+		speed?: 'normal' | 'fast';
 	}>(),
 	{
 		isActive: true,
 		noSnap: false,
-		reveal: false
+		reveal: false,
+		speed: 'fast'
 	}
 );
 
@@ -37,6 +39,13 @@ let intervalId: ReturnType<typeof setInterval> | null = null;
 let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
 displayedLetters.value = [...originalLetters.value];
+
+// Computed :
+const animationSettings = computed(() => {
+	return props.speed === 'normal'
+		? { duration: 1.1, stagger: 0.075, ease: 'power4.out' }
+		: { duration: 0.4, stagger: 0.03, ease: 'power2.out' };
+});
 
 // Methods :
 const measureWidths = () => {
@@ -94,36 +103,34 @@ const onLetterEnter = (index: number) => {
 	startShuffle(neighbors);
 };
 
+// Animation :
 const animateIn = () => {
 	gsap.killTweensOf(innerRefs.value);
 	gsap.to(innerRefs.value, {
 		x: '0%',
-		duration: 0.4,
-		stagger: 0.03,
-		ease: 'power2.out',
+		...animationSettings.value,
 		overwrite: true
 	});
 };
 
 const animateOut = () => {
+	const { duration, stagger, ease } = animationSettings.value;
+
 	gsap.killTweensOf(innerRefs.value);
 	gsap.to(innerRefs.value, {
 		x: '120%',
-		duration: 0.4,
-		stagger: -0.03,
-		ease: 'power2.in',
+		duration,
+		stagger: -stagger,
+		ease: ease.replace('out', 'in'),
 		overwrite: true
 	});
 };
 
-// Animation :
 const handleAnimateIn = () => {
 	gsap.killTweensOf(innerRefs.value);
 	gsap.to(innerRefs.value, {
 		x: '0%',
-		duration: 0.4,
-		stagger: 0.03,
-		ease: 'power2.out'
+		...animationSettings.value
 	});
 };
 

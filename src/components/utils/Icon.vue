@@ -3,8 +3,10 @@ import { type SVGAttributes, computed, defineAsyncComponent, h } from 'vue';
 
 import { ICONS } from '#utils/icon.ts';
 
+const ASYNC_ICONS_CACHE = new Map<string | number, any>();
+
 // Props :
-const { name, mirrorX, mirrorY } = defineProps<
+const { name, mirrorX, mirrorY, noFill } = defineProps<
 	{
 		/** Name of the file in `src/assets/svg/` */
 		name: string | number;
@@ -14,19 +16,26 @@ const { name, mirrorX, mirrorY } = defineProps<
 	} & /* @vue-ignore */ Omit<SVGAttributes, 'name'>
 >();
 
-const AsyncIcon = computed(
-	() =>
-		ICONS[name] &&
-		defineAsyncComponent({
-			loader: ICONS[name].svg,
-			loadingComponent: {
-				render() {
-					return h('svg');
-				}
-			},
-			delay: 0
-		})
-);
+const AsyncIcon = computed(() => {
+	if (!ICONS[name]) return null;
+
+	if (!ASYNC_ICONS_CACHE.has(name)) {
+		ASYNC_ICONS_CACHE.set(
+			name,
+			defineAsyncComponent({
+				loader: ICONS[name].svg,
+				loadingComponent: {
+					render() {
+						return h('svg');
+					}
+				},
+				delay: 0
+			})
+		);
+	}
+
+	return ASYNC_ICONS_CACHE.get(name);
+});
 
 if (!AsyncIcon.value) {
 	// retrieve server logs

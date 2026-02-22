@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { getRichTextResolvers } from '#utils/getRichTextResolvers.ts';
 import { nl2br } from '#utils/nl2br.ts';
 import { trackNavigationClick } from '#utils/tracking.ts';
 
@@ -10,15 +11,19 @@ import type { StoryblokRichtext } from '#types/component-types-sb.js';
 // Props :
 defineProps<{
 	url: string;
-	label: StoryblokRichtext;
+	title: StoryblokRichtext;
 	summary?: string;
 	hoverScale?: number;
 	isColumn?: boolean;
 }>();
+
+// Resolvers :
+const resolvers = getRichTextResolvers('h2');
 </script>
 
 <template>
 	<Button
+		v-animate="{ type: 'mask-reveal', options: { direction: 'down' } }"
 		:to="url"
 		class="partials-services-service"
 		:data-cursor-label="$t('discoverService')"
@@ -35,8 +40,18 @@ defineProps<{
 				<slot name="info" />
 			</div>
 			<div class="content-wrapper" :class="{ 'is-column': isColumn }">
-				<h2 class="title-wrapper">/<RichText :doc="label" /></h2>
-				<p v-if="summary" class="summary" v-html="nl2br(summary)"></p>
+				<RichText
+					v-animate="{ type: 'reveal-letters', options: { delay: 0.25 } }"
+					prefix="/"
+					:resolvers="resolvers"
+					:doc="title"
+				/>
+				<p
+					v-if="summary"
+					v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.25 } }"
+					class="summary"
+					v-html="nl2br(summary)"
+				></p>
 			</div>
 		</div>
 	</Button>
@@ -104,7 +119,6 @@ defineProps<{
 		span {
 			@include roobert-14-uppercase;
 
-			display: flex;
 			text-wrap: nowrap;
 		}
 	}
@@ -137,7 +151,7 @@ defineProps<{
 		}
 	}
 
-	.title-wrapper {
+	:deep(.partials-rich-text) {
 		@include roobert-48;
 
 		display: flex;
@@ -146,7 +160,7 @@ defineProps<{
 	.summary {
 		@include roobert-18;
 
-		max-width: fluidSize(460px, 320px, null, widescreen);
+		width: fluidSize(460px, 320px, null, widescreen);
 
 		@include mq(tablet) {
 			margin-block-start: 2px;

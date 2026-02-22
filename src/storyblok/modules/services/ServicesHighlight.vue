@@ -30,7 +30,7 @@ const service = computed(() => {
 	<section class="modules services-highlight">
 		<ServicesService
 			:url="service!.full_slug"
-			:label="service!.content.informations![0].name"
+			:title="service!.content.informations![0].name"
 			:summary="service!.content.informations![0].summary"
 			:hover-scale="1.0125"
 		>
@@ -54,14 +54,14 @@ const service = computed(() => {
 				/>
 			</template>
 			<template #info>
-				<div class="informations-label">
+				<div class="informations-label" v-animate="{ type: 'reveal-button-dot', options: { delay: 0.025 } }">
 					<span>{{
 						numberOfProjects > 1
 							? $t('projectsNumber', { n: numberOfProjects })
 							: $t('projectNumber', { n: numberOfProjects })
 					}}</span>
 				</div>
-				<div class="informations-label">
+				<div class="informations-label" v-animate="{ type: 'reveal-button-dot', options: { delay: 0.175 } }">
 					<span>{{ $t('serviceStartPrice', { price: serviceStartPrice }) }}</span>
 				</div>
 			</template>

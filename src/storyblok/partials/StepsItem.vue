@@ -17,16 +17,23 @@ defineProps<{
 <template>
 	<div class="steps-item-wrapper">
 		<div class="title-wrapper">
-			<span class="number">/{{ formatIndex(index + 1) }}</span>
-			<h2 v-if="blok.title">{{ blok.title }}</h2>
+			<span class="number" v-animate="{ type: 'reveal-letters', options: { delay: 0.4 } }"
+				>/{{ formatIndex(index + 1) }}</span
+			>
+			<h2 v-if="blok.title" v-animate="'reveal-titles'">{{ blok.title }}</h2>
 		</div>
-		<p v-if="blok.description" v-html="nl2br(blok.description)" />
+		<p v-if="blok.description" v-animate="'reveal-paragraphs'" v-html="nl2br(blok.description)" />
 		<Button
 			v-if="blok.cta?.[0]"
+			v-animate="{ type: 'reveal-button-dot', options: { delay: 0.035 } }"
 			theme="dot-dark"
 			:text="blok.cta[0].label || $t('bookYourPhotoSession')"
 			:link="blok.cta[0].link"
-			@click="trackFormOpenClick($event, { formId: (blok.cta[0].link.story as any)?.content?.id })"
+			@click="
+				blok.cta[0].link.component === 'Forms'
+					? trackFormOpenClick($event, { formId: (blok.cta[0].link.story as any)?.content?.id })
+					: trackNavigationClick
+			"
 		/>
 	</div>
 </template>
@@ -71,7 +78,7 @@ defineProps<{
 		position: absolute;
 		bottom: 0;
 		left: calc(fluidSize(32px, 24px, null, widescreen) * -1);
-		transform: translate3d(-100%, -50%, 0);
+		transform: translate3d(-100%, -25%, 0);
 	}
 }
 </style>

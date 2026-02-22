@@ -10,4 +10,4 @@ type Props = {
 const { blok } = Astro.props;
 ---
 
-<ProjectTestimonialVue {...storyblokEditable(blok, Astro.locals.isPreviewMode)} {...Astro.props} />
+<ProjectTestimonialVue {...storyblokEditable(blok, Astro.locals.isPreviewMode)} {...Astro.props} client:visible />

@@ -13,7 +13,8 @@ const {
 	shuffle = false,
 	noSnap = false,
 	reveal = false,
-	prefix = ''
+	prefix = '',
+	speed = 'fast'
 } = defineProps<{
 	doc: StoryblokRichtext;
 	resolvers?: Record<string, (node: StoryblokRichTextNode<VNode>) => VNode>;
@@ -21,6 +22,7 @@ const {
 	noSnap?: boolean;
 	reveal?: boolean;
 	prefix?: string;
+	speed?: 'normal' | 'fast';
 }>();
 
 // Refs :
@@ -68,7 +70,7 @@ defineExpose({ el });
 <template>
 	<div ref="el" class="partials-rich-text">
 		<span v-if="prefix">{{ prefix }}</span>
-		<LabelShuffle v-if="shuffle" :label="plaintext" :no-snap :reveal />
+		<LabelShuffle v-if="shuffle" :label="plaintext" :no-snap :reveal :speed />
 		<StoryblokRichText v-else :doc :resolvers="mergedResolvers" />
 	</div>
 </template>

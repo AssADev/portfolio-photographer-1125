@@ -37,7 +37,7 @@ const serviceInformations = computed(() => {
 		<div class="projects-container">
 			<ServicesService
 				:url="service!.full_slug"
-				:label="serviceInformations!.name"
+				:title="serviceInformations!.name"
 				:summary="serviceInformations!.summary"
 				:is-column="projects.length === 2"
 				class="project-wrapper-primary"
@@ -62,14 +62,20 @@ const serviceInformations = computed(() => {
 					<Image v-parallax="6" unstyled layout="fullWidth" :aspect-ratio="335 / 438" :src="blok.cover" />
 				</template>
 				<template #info>
-					<div class="informations-label">
+					<div
+						class="informations-label"
+						v-animate="{ type: 'reveal-button-dot', options: { delay: 0.025 } }"
+					>
 						<span>{{
 							numberOfProjects > 1
 								? $t('projectsNumber', { n: numberOfProjects })
 								: $t('projectNumber', { n: numberOfProjects })
 						}}</span>
 					</div>
-					<div class="informations-label">
+					<div
+						class="informations-label"
+						v-animate="{ type: 'reveal-button-dot', options: { delay: 0.175 } }"
+					>
 						<span>{{ $t('serviceStartPrice', { price: serviceStartPrice }) }}</span>
 					</div>
 				</template>
@@ -90,7 +96,7 @@ const serviceInformations = computed(() => {
 					v-for="(n, index) in projects.length"
 					:key="index"
 					:url="projects[index]!.full_slug"
-					:label="projects[index].content.informations![0].name"
+					:title="projects[index].content.informations![0].name"
 					:cursor-label="$t('discoverProject')"
 					:hover-scale="1.0375"
 					:class="{

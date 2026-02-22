@@ -25,14 +25,27 @@ const getSocialLink = (label?: string) => {
 
 <template>
 	<div class="partials-project-item-video">
-		<Video :video="blok.video" :thumbnail="blok.thumbnail" :link="blok.link_instagram" class="video-container" />
+		<Video
+			v-animate="{ type: 'mask-reveal', options: { direction: 'down' } }"
+			:video="blok.video"
+			:thumbnail="blok.thumbnail"
+			:link="blok.link_instagram"
+			class="video-container"
+		/>
 		<ul v-if="socials.length" class="socials-container">
 			<div class="socials-wrapper">
 				<div class="socials-sticky-wrapper">
-					<template v-for="social in socials" :key="social._uid">
+					<template v-for="(social, index) in socials" :key="social._uid">
 						<li v-if="social.label && getSocialLink(social.label)">
 							<a v-bind="getLinkAttributes(getSocialLink(social.label))" @click="trackNavigationClick">
-								<LabelShuffle :label="social.label" />
+								<LabelShuffle
+									reveal
+									v-animate="{
+										type: 'reveal-label-shuffle',
+										options: { delay: 0.65 + index * 0.15 }
+									}"
+									:label="social.label"
+								/>
 							</a>
 						</li>
 					</template>

@@ -86,7 +86,7 @@ onMounted(() => {
 	<section ref="sectionRef" class="modules project-hero">
 		<div class="inner-container">
 			<div class="circular-star-wrapper">
-				<CircularStar :scroll-speed="1" />
+				<CircularStar v-animate="'scale-up'" :scroll-speed="1" />
 			</div>
 			<div class="marquee-container" ref="marqueeRef">
 				<Marquee
@@ -96,8 +96,15 @@ onMounted(() => {
 					align-items="flex-start"
 					v-model:playing="marqueePlaying"
 				>
-					<template #item="{ item }">
-						<div class="picture-wrapper" :style="{ width: `${item.width / 1.375}px` }">
+					<template #item="{ item, index }">
+						<div
+							v-animate="{
+								type: 'mask-reveal',
+								options: { direction: 'down', delay: index * 0.125, withTranslate: true }
+							}"
+							class="picture-wrapper"
+							:style="{ width: `${item.width / 1.375}px` }"
+						>
 							<Image :src="item.url" object-fit="contain" />
 						</div>
 					</template>
@@ -105,7 +112,7 @@ onMounted(() => {
 			</div>
 			<div class="container">
 				<div class="title-container">
-					<RichText :doc="blok.name" :resolvers="resolvers" />
+					<RichText v-animate="'reveal-titles'" :doc="blok.name" :resolvers="resolvers" />
 					<div class="informations-container">
 						<div v-for="information in informations" :key="information.label" class="information-wrapper">
 							<Label :label="$t(information.label)" />
@@ -118,13 +125,16 @@ onMounted(() => {
 									@click="trackNavigationClick"
 								>
 									<RichText
+										reveal
+										speed="normal"
+										v-animate="'reveal-label-shuffle'"
 										class="value"
 										:doc="information.value.content.informations[0].name"
 										shuffle
 									/>
 								</Button>
 							</template>
-							<p v-else class="value">{{ information.value }}</p>
+							<p v-else v-animate="'reveal-letters'" class="value">{{ information.value }}</p>
 						</div>
 					</div>
 				</div>

@@ -8,7 +8,7 @@ import type { StoryblokRichtext } from '#types/component-types-sb.js';
 // Props :
 defineProps<{
 	url: string;
-	label: StoryblokRichtext;
+	title: StoryblokRichtext;
 	cursorLabel?: string;
 	hoverScale?: number;
 }>();
@@ -16,6 +16,7 @@ defineProps<{
 
 <template>
 	<a
+		v-animate="{ type: 'mask-reveal', options: { direction: 'down' } }"
 		:href="url"
 		class="partials-services-project"
 		:data-cursor-label="cursorLabel || $t('discoverProject')"
@@ -28,7 +29,7 @@ defineProps<{
 			</picture>
 		</div>
 		<div class="content-container">
-			<LabelName :name="label" />
+			<LabelName v-animate="{ type: 'reveal-button-dot' }" :name="title" />
 			<div v-if="$slots.info" class="informations-wrapper">
 				<slot name="info" />
 			</div>

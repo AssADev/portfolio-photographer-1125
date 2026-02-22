@@ -1,6 +1,6 @@
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import type { Directive } from 'vue';
+import { type Directive, nextTick } from 'vue';
 
 import { type AnimationOptions, animations } from '#utils/Animations.ts';
 
@@ -44,7 +44,7 @@ const init = (el: HTMLElement & { _gsapAnim?: gsap.core.Animation }, binding: an
 
 const vAnimate: Directive<HTMLElement & { _gsapAnim?: gsap.core.Animation }, string | AnimateBinding> = {
 	mounted(el, binding) {
-		init(el, binding);
+		nextTick(() => init(el, binding));
 	},
 	updated(el, binding) {
 		init(el, binding);

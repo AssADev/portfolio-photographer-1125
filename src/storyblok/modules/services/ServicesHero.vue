@@ -19,6 +19,7 @@ const resolvers = getRichTextResolvers('h1');
 	<section class="modules services-hero">
 		<div class="container-grid">
 			<RichText
+				v-animate="'reveal-titles'"
 				class="col-start-1 col-end-13 col-start-tb-1 col-end-tb-15 col-start-dk-1 col-end-dk-29"
 				:doc="blok.title"
 				:resolvers="resolvers"
@@ -27,8 +28,18 @@ const resolvers = getRichTextResolvers('h1');
 				v-if="blok.subtitle || blok.description"
 				class="description-wrapper col-start-3 col-end-13 col-start-tb-9 col-end-tb-16 col-start-dk-16 col-end-dk-28 col-start-mlg-19 col-end-mlg-29 col-start-xlg-21 col-end-xlg-29 col-start-xxlg-21 col-end-xxlg-28"
 			>
-				<p v-if="blok.subtitle" class="subtitle" v-html="nl2br(blok.subtitle)" />
-				<p v-if="blok.description" class="description" v-html="nl2br(blok.description)" />
+				<p
+					v-if="blok.subtitle"
+					v-animate="'reveal-letters-speed'"
+					class="subtitle"
+					v-html="nl2br(blok.subtitle)"
+				/>
+				<p
+					v-if="blok.description"
+					v-animate="'reveal-paragraphs'"
+					class="description"
+					v-html="nl2br(blok.description)"
+				/>
 			</div>
 		</div>
 	</section>
