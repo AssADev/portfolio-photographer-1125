@@ -32,7 +32,10 @@ defineProps<{
 		class="partials-biography-strangers-portraits-explanation"
 		:class="{ [index % 2 === 0 ? 'even-theme' : 'odd-theme']: true }"
 	>
-		<CircularStar v-animate="{ type: 'scale-up', options: { delay: delay + 0.8 } }" :scroll-speed="0.25" />
+		<CircularStar
+			v-animate="{ type: 'scale-up', options: { delay: delay + 0.8, reset: true } }"
+			:scroll-speed="0.25"
+		/>
 		<div class="inner-container">
 			<div class="content-container">
 				<div

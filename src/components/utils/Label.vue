@@ -30,5 +30,11 @@ const delay = computed(() => {
 	& > p {
 		@include roobert-12-uppercase;
 	}
+
+	:deep(svg) {
+		@include mq(large) {
+			margin-block-start: fluidSize(4px, 2px, null, xxlarge);
+		}
+	}
 }
 </style>

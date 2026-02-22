@@ -86,7 +86,10 @@ onMounted(() => {
 	<section ref="sectionRef" class="modules project-hero">
 		<div class="inner-container">
 			<div class="circular-star-wrapper">
-				<CircularStar v-animate="'scale-up'" :scroll-speed="1" />
+				<CircularStar
+					v-animate="{ type: 'scale-up', options: { delay: 0.85, reset: true } }"
+					:scroll-speed="1"
+				/>
 			</div>
 			<div class="marquee-container" ref="marqueeRef">
 				<Marquee
@@ -103,7 +106,7 @@ onMounted(() => {
 								options: { direction: 'down', delay: index * 0.125, withTranslate: true }
 							}"
 							class="picture-wrapper"
-							:style="{ width: `${item.width / 1.375}px` }"
+							:style="{ '--picture-width': `${item.width}px` }"
 						>
 							<Image :src="item.url" object-fit="contain" />
 						</div>
@@ -230,8 +233,27 @@ onMounted(() => {
 	}
 
 	:deep(.picture-wrapper) {
+		--width-ratio: 1;
+
+		width: calc(var(--picture-width) / var(--width-ratio));
 		max-width: 350px;
 		max-height: 300px;
+
+		@include mq($until: desktop) {
+			--width-ratio: 1.375;
+		}
+
+		@include mq(desktop) {
+			--width-ratio: 1.25;
+		}
+
+		@include mq(large) {
+			--width-ratio: 1.125;
+		}
+
+		@include mq(xlarge) {
+			--width-ratio: 1;
+		}
 
 		img {
 			width: 100%;

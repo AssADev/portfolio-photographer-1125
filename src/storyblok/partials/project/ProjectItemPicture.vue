@@ -33,7 +33,6 @@ const onOpenMinimap = () => {
 
 <template>
 	<Button
-		v-animate="{ type: 'mask-reveal', options: { direction: 'down' } }"
 		class="partials-project-item-picture"
 		:data-cursor-label="$t('scaleUp')"
 		@click="onOpenMinimap"
@@ -44,7 +43,11 @@ const onOpenMinimap = () => {
 	>
 		<div class="picture-viewer-container">
 			<div class="picture-container">
-				<div class="picture-wrapper" ref="imageRef">
+				<div
+					v-animate="{ type: 'mask-reveal', options: { direction: 'down' } }"
+					class="picture-wrapper"
+					ref="imageRef"
+				>
 					<Image :src="blok.picture" object-fit="contain" :sizes="[{ widescreen: '2560px' }, '100vw']" />
 				</div>
 			</div>

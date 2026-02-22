@@ -32,7 +32,10 @@ defineProps<{
 			<div
 				class="picture-primary-container col-start-1 col-end-13 col-start-tb-1 col-end-tb-13 col-start-dk-1 col-end-dk-18"
 			>
-				<CircularStar v-animate="{ type: 'scale-up', options: { delay: 1.1 } }" :scroll-speed="1" />
+				<CircularStar
+					v-animate="{ type: 'scale-up', options: { delay: 1.1, reset: true } }"
+					:scroll-speed="1"
+				/>
 				<div
 					v-animate="{ type: 'mask-reveal', options: { direction: 'up', withTranslate: true } }"
 					class="picture-wrapper"

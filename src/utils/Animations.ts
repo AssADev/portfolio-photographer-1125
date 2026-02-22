@@ -284,7 +284,10 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 			duration: options.duration || 1.2,
 			ease: 'power3.out',
 			delay: options.delay || 0,
-			immediateRender: true
+			immediateRender: true,
+			onComplete: () => {
+				if (options.reset) gsap.set(el, { clearProps: 'all' });
+			}
 		});
 	},
 

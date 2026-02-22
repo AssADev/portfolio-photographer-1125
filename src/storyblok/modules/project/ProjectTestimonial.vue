@@ -16,7 +16,7 @@ defineProps<{
 			<div
 				class="testimonial-wrapper col-start-2 col-end-13 col-start-tb-3 col-end-tb-14 col-start-dk-8 col-end-dk-30 col-start-lg-8 col-end-lg-29 col-start-xlg-9 col-end-xlg-27 col-start-xxlg-10 col-end-xxlg-26 col-start-wd-11 col-end-wd-25"
 			>
-				<RichText v-animate="'reveal-titles'" :doc="blok.testimonial" />
+				<RichText v-animate="'reveal-paragraphs'" :doc="blok.testimonial" />
 				<div v-if="blok.author" class="author-wrapper">
 					<Icon v-animate="{ type: 'scale-up', options: { rotate: 90 } }" name="square-small" />
 					<RichText v-animate="{ type: 'reveal-letters', options: { delay: 0.175 } }" :doc="blok.author" />

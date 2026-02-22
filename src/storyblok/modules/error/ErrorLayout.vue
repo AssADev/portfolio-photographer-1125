@@ -52,7 +52,10 @@ const resolvers = getRichTextResolvers('h1');
 	<section ref="sectionRef" class="modules error-layout">
 		<div class="inner-container">
 			<div class="circular-star-wrapper">
-				<CircularStar :scroll-speed="1" />
+				<CircularStar
+					v-animate="{ type: 'scale-up', options: { delay: 0.85, reset: true } }"
+					:scroll-speed="1"
+				/>
 			</div>
 			<div class="marquee-container" ref="marqueeRef">
 				<Marquee
@@ -63,16 +66,24 @@ const resolvers = getRichTextResolvers('h1');
 					align-items="flex-start"
 					v-model:playing="marqueePlaying"
 				>
-					<template #item="{ item }">
-						<ProjectsMarqueeItem :project="item.project" :width="item.width / 1.325" />
+					<template #item="{ item, index }">
+						<ProjectsMarqueeItem
+							v-animate="{
+								type: 'mask-reveal',
+								options: { direction: 'down', delay: index * 0.125, withTranslate: true }
+							}"
+							:project="item.project"
+							:width="item.width / 1.325"
+						/>
 					</template>
 				</Marquee>
 			</div>
 			<div class="container">
 				<div class="title-container">
-					<RichText :doc="errorTitle" :resolvers="resolvers" />
+					<RichText v-animate="'reveal-titles'" :doc="errorTitle" :resolvers="resolvers" />
 					<Button
 						v-if="errorLink?.[0]"
+						v-animate="{ type: 'reveal-button-dot', options: { delay: 0.25 } }"
 						v-bind="getLinkAttributes(errorLink[0].link)"
 						theme="dot-dark"
 						:text="errorLink[0].label"
@@ -81,10 +92,13 @@ const resolvers = getRichTextResolvers('h1');
 				</div>
 
 				<div class="description-container">
-					<RichText :doc="errorDescription" />
+					<RichText v-animate="'reveal-paragraphs'" :doc="errorDescription" />
 					<div v-if="errorAuthor" class="author-wrapper">
-						<Icon name="square-small" />
-						<RichText :doc="errorAuthor" />
+						<Icon v-animate="{ type: 'scale-up', options: { rotate: 90 } }" name="square-small" />
+						<RichText
+							v-animate="{ type: 'reveal-letters', options: { delay: 0.175 } }"
+							:doc="errorAuthor"
+						/>
 					</div>
 				</div>
 			</div>
