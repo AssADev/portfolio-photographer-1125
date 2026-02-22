@@ -12,7 +12,7 @@ defineProps<{
 <template>
 	<div class="partials-service-faq-section">
 		<div class="title-wrapper col-start-tb-1 col-end-tb-4 col-start-dk-1 col-end-dk-6">
-			<h3>{{ blok.title }}</h3>
+			<h3 v-animate="'reveal-letters'">{{ blok.title }}</h3>
 		</div>
 		<div
 			class="questions-container col-start-tb-6 col-end-tb-17 col-start-dk-12 col-end-dk-33 col-start-lg-14 col-end-lg-33"

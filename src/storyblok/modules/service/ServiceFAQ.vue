@@ -31,19 +31,23 @@ const resolvers = getRichTextResolvers('h2');
 
 <template>
 	<section id="service-faq" class="modules service-faq">
-		<div class="inner-container">
+		<div v-animate="{ type: 'mask-reveal', options: { direction: 'down' } }" class="inner-container">
 			<div class="container-grid">
 				<div
 					class="title-wrapper col-start-1 col-end-13 col-start-tb-1 col-end-tb-6 col-start-dk-1 col-end-dk-10 col-start-lg-1 col-end-lg-8"
 				>
-					<RichText :doc="title" :resolvers="resolvers" />
+					<RichText v-animate="'reveal-titles'" :doc="title" :resolvers="resolvers" />
 				</div>
 				<div
 					class="description-wrapper col-start-1 col-end-13 col-start-tb-10 col-end-tb-16 col-start-dk-22 col-end-dk-32 col-start-lg-23 col-end-lg-32 col-start-xxlg-24 col-end-xxlg-31"
 				>
-					<p v-html="nl2br(description)" />
+					<p
+						v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.0175 } }"
+						v-html="nl2br(description)"
+					/>
 					<Button
 						v-if="link?.[0]"
+						v-animate="{ type: 'reveal-button-dot', options: { delay: 0.035 } }"
 						v-bind="getLinkAttributes(link[0])"
 						theme="dot-white"
 						:text="link[0].label"

@@ -29,7 +29,7 @@ defineProps<{
 			</picture>
 		</div>
 		<div class="content-container">
-			<LabelName v-animate="{ type: 'reveal-button-dot' }" :name="title" />
+			<LabelName v-animate="{ type: 'reveal-button-dot', options: { start: 'top 110%' } }" :name="title" />
 			<div v-if="$slots.info" class="informations-wrapper">
 				<slot name="info" />
 			</div>

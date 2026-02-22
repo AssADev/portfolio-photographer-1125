@@ -39,12 +39,12 @@ const getSocialLink = (label?: string) => {
 						<li v-if="social.label && getSocialLink(social.label)">
 							<a v-bind="getLinkAttributes(getSocialLink(social.label))" @click="trackNavigationClick">
 								<LabelShuffle
-									reveal
 									v-animate="{
 										type: 'reveal-label-shuffle',
 										options: { delay: 0.65 + index * 0.15 }
 									}"
 									:label="social.label"
+									reveal
 								/>
 							</a>
 						</li>

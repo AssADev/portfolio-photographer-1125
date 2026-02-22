@@ -129,7 +129,11 @@ const layouts = [
 
 	@include mq(desktop) {
 		&:nth-child(2) {
-			margin-block-start: fluidSize(180px, 120px);
+			margin-block-start: fluidSize(220px, 160px);
+		}
+
+		&:nth-child(3) {
+			margin-block-start: fluidSize(40px, 20px);
 		}
 	}
 }

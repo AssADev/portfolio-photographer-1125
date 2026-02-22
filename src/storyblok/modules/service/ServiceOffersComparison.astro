@@ -11,4 +11,9 @@ type Props = {
 const { blok, offers } = Astro.props;
 ---
 
-<ServiceOffersComparisonVue {...storyblokEditable(blok, Astro.locals.isPreviewMode)} {...Astro.props} offers={offers} />
+<ServiceOffersComparisonVue
+	{...storyblokEditable(blok, Astro.locals.isPreviewMode)}
+	{...Astro.props}
+	offers={offers}
+	client:visible
+/>

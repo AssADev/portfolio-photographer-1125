@@ -142,13 +142,16 @@ const layouts = [
 <template>
 	<section v-if="testimonials?.length" id="service-testimonials" class="modules service-testimonials">
 		<div class="container-grid">
-			<h2 class="col-start-1 col-end-13 col-start-tb-1 col-end-tb-4">{{ blok.title }}</h2>
+			<h2 v-animate="'reveal-letters'" class="col-start-1 col-end-13 col-start-tb-1 col-end-tb-4">
+				{{ blok.title }}
+			</h2>
 			<div
 				class="description-wrapper col-start-1 col-end-13 col-start-tb-4 col-end-tb-13 col-start-dk-6 col-end-dk-17 col-start-lg-6 col-end-lg-15 col-start-xxlg-6 col-end-xxlg-14 col-start-wd-6 col-end-wd-13"
 			>
-				<p v-html="nl2br(blok.description)" />
+				<p v-animate="'reveal-paragraphs'" v-html="nl2br(blok.description)" />
 				<Button
 					v-if="blok.link?.[0]"
+					v-animate="{ type: 'reveal-button-dot', options: { delay: 0.035 } }"
 					v-bind="getLinkAttributes(blok.link[0])"
 					theme="dot-dark"
 					:text="blok.link[0].label"
@@ -175,6 +178,7 @@ const layouts = [
 							v-for="(testimonial, index) in testimonials"
 							:key="testimonial._uid"
 							:blok="testimonial"
+							:index="index"
 							class="slideshow-item"
 							:class="{ disabled: currentSlide !== index }"
 							:style="{

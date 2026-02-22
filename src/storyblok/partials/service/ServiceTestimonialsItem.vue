@@ -7,7 +7,9 @@ import type { StoryblokServiceTestimonialsItem } from '#types/component-types-sb
 // Props :
 defineProps<{
 	blok: StoryblokServiceTestimonialsItem;
+	index: number;
 }>();
+
 const emit = defineEmits<{
 	mouseenter: [];
 	mouseleave: [];
@@ -17,10 +19,19 @@ const emit = defineEmits<{
 <template>
 	<div class="partials-service-testimonials-item" @mouseenter="emit('mouseenter')" @mouseleave="emit('mouseleave')">
 		<div class="content-container">
-			<RichText :doc="blok.testimonial" />
+			<RichText
+				v-animate="{ type: 'reveal-paragraphs', options: { delay: index * 0.125 } }"
+				:doc="blok.testimonial"
+			/>
 			<div v-if="blok.author" class="author-wrapper">
-				<Icon name="square-small" />
-				<RichText :doc="blok.author" />
+				<Icon
+					v-animate="{ type: 'scale-up', options: { delay: index * 0.125, rotate: 90 } }"
+					name="square-small"
+				/>
+				<RichText
+					v-animate="{ type: 'reveal-letters', options: { delay: 0.175 + index * 0.125 } }"
+					:doc="blok.author"
+				/>
 			</div>
 		</div>
 	</div>

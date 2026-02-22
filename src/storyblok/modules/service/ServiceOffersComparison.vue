@@ -85,9 +85,10 @@ const getFormattedSuffix = (row: ComparisonRow, value: any) => {
 	<section class="modules service-offers-comparison">
 		<div class="container">
 			<div class="title-container">
-				<RichText :doc="blok.title" :resolvers="resolvers" />
+				<RichText v-animate="'reveal-titles'" :doc="blok.title" :resolvers="resolvers" />
 				<Button
 					v-if="blok.brochure.filename"
+					v-animate="{ type: 'reveal-button-dot', options: { delay: 0.25 } }"
 					theme="dot-dark"
 					:text="$t('downloadTheBrochure')"
 					:to="blok.brochure.filename"
@@ -102,16 +103,25 @@ const getFormattedSuffix = (row: ComparisonRow, value: any) => {
 						<div
 							class="header-wrapper col-start-1 col-end-13 col-start-tb-1 col-end-tb-7 col-start-dk-1 col-end-dk-14"
 						>
-							<div class="title">{{ $t(section.titleKey) }}</div>
-							<p v-if="section.descriptionKey" class="description">{{ $t(section.descriptionKey) }}</p>
+							<div v-animate="'reveal-paragraphs'" class="title">{{ $t(section.titleKey) }}</div>
+							<p
+								v-if="section.descriptionKey"
+								v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.1 } }"
+								class="description"
+							>
+								{{ $t(section.descriptionKey) }}
+							</p>
 						</div>
 
 						<ul
 							v-if="section.showOfferTitles"
 							class="offers-wrapper hide-mobile-tablet col-start-1 col-end-13 col-start-tb-7 col-end-tb-17 col-start-dk-14 col-end-dk-33 col-start-mlg-14 col-end-mlg-33"
 						>
-							<li v-for="offer in offers" :key="offer._uid">
-								<span>{{ offer.title }}</span>
+							<li v-for="(offer, index) in offers" :key="offer._uid">
+								<span
+									v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.125 + index * 0.125 } }"
+									>{{ offer.title }}</span
+								>
 							</li>
 						</ul>
 					</div>
@@ -125,16 +135,22 @@ const getFormattedSuffix = (row: ComparisonRow, value: any) => {
 									: 'col-start-1 col-end-13 col-start-tb-1 col-end-tb-7 col-start-dk-1 col-end-dk-14'
 							"
 						>
-							<div class="title">{{ $t(row.labelKey) }}</div>
+							<div v-animate="'reveal-paragraphs'" class="title">{{ $t(row.labelKey) }}</div>
 						</div>
 
 						<ul
 							v-if="!row.isFullWidth"
 							class="offers-wrapper col-start-1 col-end-13 col-start-tb-7 col-end-tb-17 col-start-dk-14 col-end-dk-33 col-start-mlg-14 col-end-mlg-33"
 						>
-							<li v-for="offer in offers" :key="offer._uid">
-								<span class="hide-desktop">{{ offer.title }}</span>
-								<span>
+							<li v-for="(offer, index) in offers" :key="offer._uid">
+								<span
+									v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.125 + index * 0.125 } }"
+									class="hide-desktop"
+									>{{ offer.title }}</span
+								>
+								<span
+									v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.125 + index * 0.125 } }"
+								>
 									<template v-if="row.field">
 										{{ offer[row.field] }}{{ row.suffix
 										}}{{ getFormattedSuffix(row, offer[row.field]) }}

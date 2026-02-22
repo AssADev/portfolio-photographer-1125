@@ -30,7 +30,7 @@ watch(isToggled, () => {
 <template>
 	<div class="partials-service-faq-section-item" :class="{ toggle: isToggled }">
 		<Button class="question-header" @click="isToggled = !isToggled">
-			<LabelShuffle :label="blok.question" no-snap />
+			<LabelShuffle v-animate="'reveal-label-shuffle'" :label="blok.question" no-snap reveal />
 		</Button>
 		<div class="question-answer-container" :inert="!isToggled">
 			<div class="question-answer-wrapper">

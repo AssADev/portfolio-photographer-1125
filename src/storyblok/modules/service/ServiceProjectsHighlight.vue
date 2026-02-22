@@ -173,7 +173,11 @@ onUnmounted(() => {
 
 <template>
 	<section class="modules service-projects-highlight" ref="sectionRef">
-		<div class="slideshow-container" ref="emblaRef">
+		<div
+			v-animate="{ type: 'mask-reveal', options: { direction: 'down', delay: 0.275 } }"
+			class="slideshow-container"
+			ref="emblaRef"
+		>
 			<div
 				class="slideshow-wrapper"
 				:class="{
@@ -210,6 +214,7 @@ onUnmounted(() => {
 					</div>
 					<LabelName
 						v-if="project.content.informations?.[0]?.name"
+						v-animate="{ type: 'reveal-button-dot', options: { start: 'top 110%' } }"
 						:name="project.content.informations[0].name"
 					/>
 				</a>

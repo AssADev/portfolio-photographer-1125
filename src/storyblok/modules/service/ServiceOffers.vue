@@ -23,15 +23,16 @@ const resolvers = getRichTextResolvers('h2');
 	<section id="service-offers" class="modules service-offers">
 		<div class="container">
 			<div class="title-wrapper">
-				<RichText :doc="blok.title" :resolvers="resolvers" />
-				<p v-html="nl2br(blok.description)" />
+				<RichText v-animate="'reveal-titles'" :doc="blok.title" :resolvers="resolvers" />
+				<p v-animate="'reveal-paragraphs'" v-html="nl2br(blok.description)" />
 			</div>
 			<div class="offers-container">
 				<ServiceOffer
-					v-for="offer in offers"
+					v-for="(offer, index) in offers"
 					:key="offer._uid"
 					:blok="offer"
 					:serviceBookingFormLink="serviceBookingFormLink"
+					:index="index"
 				/>
 			</div>
 		</div>

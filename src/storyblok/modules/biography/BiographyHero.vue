@@ -50,9 +50,9 @@ defineProps<{
 				<div class="socials-container">
 					<a v-if="email" :href="`mailto:${email}`" @click="trackNavigationClick">
 						<LabelShuffle
+							v-animate="{ type: 'reveal-label-shuffle', options: { delay: 0.65 } }"
 							:label="email"
 							reveal
-							v-animate="{ type: 'reveal-label-shuffle', options: { delay: 0.65 } }"
 						/>
 					</a>
 					<ul v-if="socials.length" class="socials-wrapper">
@@ -64,12 +64,12 @@ defineProps<{
 								@click="trackNavigationClick"
 							>
 								<LabelShuffle
-									:label="social.label!"
-									reveal
 									v-animate="{
 										type: 'reveal-label-shuffle',
 										options: { delay: 0.8 + index * 0.15 }
 									}"
+									:label="social.label!"
+									reveal
 								/>
 							</a>
 						</li>

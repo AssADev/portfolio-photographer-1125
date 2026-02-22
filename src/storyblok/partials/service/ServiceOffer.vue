@@ -13,43 +13,74 @@ import type { StoryblokLabelLink, StoryblokServiceOffer } from '#types/component
 defineProps<{
 	blok: StoryblokServiceOffer;
 	serviceBookingFormLink: StoryblokLabelLink[];
+	index: number;
 }>();
+
+// TODO : Animations (Start & Stagger)
 </script>
 
 <template>
-	<div class="partials-service-offer" :class="{ 'is-popular': blok.isPopular }">
-		<CircularStar v-if="blok.isPopular" :scroll-speed="-1" />
+	<div
+		v-animate="{ type: 'mask-reveal', options: { direction: 'down', delay: index * 0.125 } }"
+		class="partials-service-offer"
+		:class="{ 'is-popular': blok.isPopular }"
+	>
+		<CircularStar
+			v-if="blok.isPopular"
+			v-animate="{ type: 'scale-up', options: { delay: 0.6 + index * 0.125, reset: true } }"
+			:scroll-speed="-1"
+		/>
 		<div class="header-container">
 			<div class="title-wrapper">
-				<h3>{{ blok.title }}</h3>
-				<p v-html="nl2br(blok.description)" />
+				<h3 v-animate="{ type: 'reveal-letters', options: { delay: 0.2 + index * 0.125 } }">
+					{{ blok.title }}
+				</h3>
+				<p
+					v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.4 + 0.2 + index * 0.125 } }"
+					v-html="nl2br(blok.description)"
+				/>
 			</div>
 			<div class="informations-wrapper">
 				<div class="price-wrapper">
-					<span>{{ blok.price }}</span>
-					<span class="currency">€</span>
+					<span v-animate="{ type: 'reveal-letters', options: { delay: 0.2 + index * 0.125 } }">{{
+						blok.price
+					}}</span>
+					<span
+						v-animate="{ type: 'reveal-letters', options: { delay: 0.2 + index * 0.125 } }"
+						class="currency"
+						>€</span
+					>
 				</div>
 				<div class="duration-wrapper">
-					<span>/{{ blok.duration }}h</span>
+					<span v-animate="{ type: 'reveal-letters', options: { delay: 0.2 + index * 0.125 } }"
+						>/{{ blok.duration }}h</span
+					>
 				</div>
 			</div>
 		</div>
 		<ul class="items-container">
 			<li>
-				<Icon name="checkmark" />
-				<span>{{ $t('offersEditedPhotos', { n: blok.numberOfEditedPhotos }) }}</span>
+				<Icon v-animate="{ type: 'scale-up', options: { delay: 0.2 + index * 0.125 } }" name="checkmark" />
+				<span v-animate="{ type: 'reveal-paragrpahs', options: { delay: 0.2 + index * 0.125 } }">{{
+					$t('offersEditedPhotos', { n: blok.numberOfEditedPhotos })
+				}}</span>
 			</li>
 			<li>
-				<Icon name="checkmark" />
-				<span>{{ $t('offersPrivateGallery') }}</span>
+				<Icon v-animate="{ type: 'scale-up', options: { delay: 0.2 + index * 0.125 } }" name="checkmark" />
+				<span v-animate="{ type: 'reveal-paragrpahs', options: { delay: 0.2 + index * 0.125 } }">{{
+					$t('offersPrivateGallery')
+				}}</span>
 			</li>
 			<li>
-				<Icon name="checkmark" />
-				<span>{{ $t('offersBlackAndWhitePhotos', { n: blok.numberOfBlackAndWhitePhotos }) }}</span>
+				<Icon v-animate="{ type: 'scale-up', options: { delay: 0.2 + index * 0.125 } }" name="checkmark" />
+				<span v-animate="{ type: 'reveal-paragrpahs', options: { delay: 0.2 + index * 0.125 } }">{{
+					$t('offersBlackAndWhitePhotos', { n: blok.numberOfBlackAndWhitePhotos })
+				}}</span>
 			</li>
 		</ul>
 		<div v-if="serviceBookingFormLink?.[0]" class="link-container">
 			<Button
+				v-animate="{ type: 'reveal-button-dot', options: { delay: 0.2 + index * 0.125 } }"
 				v-bind="getLinkAttributes(serviceBookingFormLink[0])"
 				:text="serviceBookingFormLink[0].label || $t('bookYourPhotoSession')"
 				:link="serviceBookingFormLink[0].link"

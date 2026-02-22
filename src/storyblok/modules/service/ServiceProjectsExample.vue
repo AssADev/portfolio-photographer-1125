@@ -50,7 +50,11 @@ const projects = computed(() => {
 				:class="layout.classes"
 				v-parallax="layout.parallax"
 			>
-				<p v-if="layout.hasDescription && blok.description" v-html="nl2br(blok.description)" />
+				<p
+					v-if="layout.hasDescription && blok.description"
+					v-animate="'reveal-paragraphs'"
+					v-html="nl2br(blok.description)"
+				/>
 
 				<Button
 					v-if="projects[index]"
@@ -60,7 +64,10 @@ const projects = computed(() => {
 					@click="trackNavigationClick"
 				>
 					<div class="picture-container">
-						<div class="picture-wrapper">
+						<div
+							v-animate="{ type: 'mask-reveal', options: { direction: 'down' } }"
+							class="picture-wrapper"
+						>
 							<Image
 								v-if="projects[index].content.informations?.[0]?.cover"
 								v-parallax="4"
@@ -72,6 +79,7 @@ const projects = computed(() => {
 					</div>
 					<LabelName
 						v-if="projects[index].content.informations?.[0]?.name"
+						v-animate="{ type: 'reveal-button-dot', options: { start: 'top 110%' } }"
 						:name="projects[index].content.informations[0].name"
 					/>
 				</Button>
