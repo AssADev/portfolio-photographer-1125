@@ -82,31 +82,27 @@ useGSAP(() => {
 
 	// Horizontal Scroll & Scale Up (Circular Star) :
 	tl.to(sectionsWrapperRef.value, { x: () => -getScrollAmount(), ease: 'none' });
-
-	// TODO: Fix Circular Star animation (Responsive)
-	tl.to(circularStarRef.value?.$el, { scale: 1, ease: 'none' }, 0);
-	// tl.to(circularStarRef.value?.$el, { scale: 1, xPercent: -50, yPercent: -50, ease: 'none' }, 0);
+	tl.to(circularStarRef.value?.$el, { scale: 1, yPercent: -50, ease: 'none' }, 0);
 
 	// Move to bottom (Circular Star) :
 	// We want the star to move from the center of sectionsContainer to the bottom of the Copyright module.
 	const copyrightEl = elRef.value?.querySelector('.modules.biography-copyright') as HTMLElement;
 
-	// if (copyrightEl && circularStarRef.value?.$el) {
-	// 	gsap.timeline({
-	// 		scrollTrigger: {
-	// 			trigger: copyrightEl,
-	// 			start: 'top bottom',
-	// 			end: 'bottom bottom',
-	// 			scrub: 1,
-	// 			invalidateOnRefresh: true
-	// 		}
-	// 	}).to(circularStarRef.value.$el, {
-	// 		y: () => window.innerHeight * 1.5,
-	// 		xPercent: -50,
-	// 		yPercent: -50,
-	// 		ease: 'none'
-	// 	});
-	// }
+	if (copyrightEl && circularStarRef.value?.$el) {
+		gsap.timeline({
+			scrollTrigger: {
+				trigger: copyrightEl,
+				start: 'top bottom',
+				end: 'bottom bottom',
+				scrub: 1,
+				invalidateOnRefresh: true
+			}
+		}).to(circularStarRef.value?.$el, {
+			y: () => window.innerHeight * 0.5,
+			yPercent: -50,
+			ease: 'none'
+		});
+	}
 }, elRef);
 </script>
 
@@ -120,8 +116,12 @@ useGSAP(() => {
 			/>
 		</div>
 
-		<div class="circular-star-wrapper">
-			<CircularStar ref="circularStarRef" :scroll-speed="0.5" />
+		<div class="circular-star-container">
+			<div class="circular-star-wrapper">
+				<div class="circular-star-inner">
+					<CircularStar ref="circularStarRef" :scroll-speed="0.5" />
+				</div>
+			</div>
 		</div>
 
 		<div ref="sectionsContainerRef" class="sections-container" :style="{ height: sectionHeight }">
@@ -152,16 +152,29 @@ $sectionsHeight: fluidSize(680px, 540px);
 	padding-block-start: fluidSize(180px, 120px);
 }
 
-.circular-star-wrapper {
+.circular-star-container {
 	position: absolute;
 	inset: 0;
 	pointer-events: none;
 
-	:deep(.partials-circular-star) {
+	.circular-star-wrapper {
+		position: relative;
+		width: 100%;
+		height: 100%;
+	}
+
+	.circular-star-inner {
 		position: sticky;
+		top: 0;
+		width: 100%;
+		height: 100vh;
+		overflow: hidden;
+	}
+
+	:deep(.partials-circular-star) {
+		position: absolute;
 		top: 50%;
 		left: 50%;
-		// transform: translate3d(0, -50%, 0) scale3d(0, 0, 1);
 		transform: translate3d(-50%, -50%, 0) scale3d(0, 0, 1);
 
 		@include mq($until: desktop) {
