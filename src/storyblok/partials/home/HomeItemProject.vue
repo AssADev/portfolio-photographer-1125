@@ -47,14 +47,19 @@ const aspectRatio = computed(() => {
 		}"
 	>
 		<div class="informations-container">
-			<span>/{{ formatIndex(index ?? 0) }}</span>
+			<span v-animate="{ type: 'reveal-letters', options: { delay: 0.2 } }">/{{ formatIndex(index ?? 0) }}</span>
 			<Button v-if="service" :to="`${service?.full_slug}`" data-cursor-snap @click="trackNavigationClick">
-				<RichText :doc="service.content.informations?.[0]?.name" shuffle />
+				<RichText
+					v-animate="{ type: 'reveal-label-shuffle', options: { delay: 0.2 } }"
+					:doc="service.content.informations?.[0]?.name"
+					shuffle
+					reveal
+				/>
 			</Button>
 		</div>
 		<Button class="project-link" :data-cursor-label="$t('discoverProject')" :to="`${project.full_slug}`">
 			<div class="picture-container">
-				<div class="picture-wrapper">
+				<div v-animate="{ type: 'mask-reveal', options: { direction: 'down' } }" class="picture-wrapper">
 					<Image
 						v-if="cover"
 						:src="cover"
@@ -64,7 +69,11 @@ const aspectRatio = computed(() => {
 				</div>
 			</div>
 			<div class="title-container">
-				<RichText v-if="projectName" :doc="projectName" />
+				<RichText
+					v-if="projectName"
+					v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.175 } }"
+					:doc="projectName"
+				/>
 			</div>
 		</Button>
 	</div>
