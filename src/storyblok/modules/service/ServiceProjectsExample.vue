@@ -58,16 +58,14 @@ const projects = computed(() => {
 
 				<Button
 					v-if="projects[index]"
+					v-animate="{ type: 'mask-reveal', options: { direction: 'down' } }"
 					class="project-container"
 					:to="projects[index].full_slug"
 					:data-cursor-label="$t('discoverProject')"
 					@click="trackNavigationClick"
 				>
 					<div class="picture-container">
-						<div
-							v-animate="{ type: 'mask-reveal', options: { direction: 'down' } }"
-							class="picture-wrapper"
-						>
+						<div class="picture-wrapper">
 							<Image
 								v-if="projects[index].content.informations?.[0]?.cover"
 								v-parallax="4"
