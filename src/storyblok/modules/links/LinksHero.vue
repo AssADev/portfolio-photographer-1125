@@ -30,7 +30,7 @@ const resolvers = getRichTextResolvers('h1');
 </script>
 
 <template>
-	<section class="modules links-hero">
+	<section v-animate="{ type: 'mask-reveal', options: { direction: 'up' } }" class="modules links-hero">
 		<div class="background-container">
 			<picture>
 				<Image
@@ -57,26 +57,50 @@ const resolvers = getRichTextResolvers('h1');
 		<div class="container">
 			<p
 				v-if="blok.description"
-				v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.475 } }"
+				v-animate="{ type: 'reveal-paragraphs', options: { delay: 1.2 } }"
 				class="description"
 				v-html="nl2br(blok.description)"
 			/>
 			<div class="content-container">
-				<RichText v-animate="'reveal-titles'" :doc="blok.title" :resolvers="resolvers" />
+				<RichText
+					v-animate="{ type: 'reveal-titles', options: { delay: 0.725 } }"
+					:doc="blok.title"
+					:resolvers="resolvers"
+				/>
 				<ul class="socials-container">
 					<li v-if="email" class="small-item">
-						<a :href="`mailto:${email}`" :data-cursor-label="$t('email')" @click="trackNavigationClick">
-							<Icon name="email" />
+						<a
+							:href="`mailto:${email}`"
+							:data-cursor-label="$t('email')"
+							@click="trackNavigationClick"
+							v-animate="{ type: 'reveal-square', options: { delay: 0.45, withoutSvgRotate: true } }"
+						>
+							<Icon v-animate="{ type: 'scale-up', options: { delay: 1 } }" name="email" />
 						</a>
 					</li>
 					<li class="small-item">
-						<a :href="homeUrl" :data-cursor-label="$t('website')" @click="trackNavigationClick">
-							<Icon name="website" />
+						<a
+							:href="homeUrl"
+							:data-cursor-label="$t('website')"
+							@click="trackNavigationClick"
+							v-animate="{ type: 'reveal-square', options: { delay: 0.5, withoutSvgRotate: true } }"
+						>
+							<Icon v-animate="{ type: 'scale-up', options: { delay: 1.05 } }" name="website" />
 						</a>
 					</li>
-					<li v-for="social in socials" :key="social._uid">
-						<a v-bind="getLinkAttributes(social.link)" @click="trackNavigationClick">
-							<LabelShuffle :label="social.label!" no-snap />
+					<li v-for="(social, index) in socials" :key="social._uid">
+						<a
+							v-bind="getLinkAttributes(social.link)"
+							@click="trackNavigationClick"
+							v-animate="{ type: 'reveal-square', options: { delay: 0.55 + index * 0.05 } }"
+						>
+							<LabelShuffle
+								v-animate="{ type: 'reveal-label-shuffle', options: { delay: 1.15 + index * 0.05 } }"
+								:label="social.label!"
+								no-snap
+								reveal
+								speed="normal"
+							/>
 						</a>
 					</li>
 				</ul>

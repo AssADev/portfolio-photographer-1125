@@ -19,7 +19,7 @@ const init = (el: HTMLElement & { _gsapAnim?: gsap.core.Animation }, binding: an
 
 	// If we already have a ScrollTrigger for this element, we don't recreate it :
 	const existingST = ScrollTrigger.getAll().find((st) => st.trigger === el);
-	if (existingST) return;
+	if (existingST || el._gsapAnim) return;
 
 	const animationFn = animations[type];
 	if (!animationFn) {

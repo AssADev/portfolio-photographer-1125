@@ -68,10 +68,11 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 				dot,
 				{
 					scale: 0,
-					rotateZ: 90,
+					rotateZ: options.withoutSvgRotate ? 0 : 90,
 					duration: 0.4,
 					ease: 'power2.out',
 					delay: 0.65,
+					transformOrigin: options.withTranslate ? 'top left' : 'center center',
 					immediateRender: true,
 					transition: 'none',
 					onComplete: () => {
@@ -262,6 +263,26 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 		return tl;
 	},
 
+	'reveal-square': (el, options) => {
+		const tl = gsap.timeline({
+			delay: options.delay || 0
+		});
+
+		// Animation :
+		tl.from(el, {
+			clipPath: 'inset(0% 100% 100% 0%)',
+			duration: 1.2,
+			ease: 'power3.inOut',
+			pointerEvents: 'none',
+			immediateRender: true,
+			onComplete: () => {
+				gsap.set(el, { clearProps: 'all' });
+			}
+		});
+
+		return tl;
+	},
+
 	'scale-down': (el, options) => {
 		return gsap.to(el, {
 			scale: 0.25,
@@ -279,7 +300,7 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 	'scale-up': (el, options) => {
 		return gsap.from(el, {
 			scale: 0.25,
-			opacity: 0,
+			opacity: options.withoutOpacity ? 1 : 0,
 			rotate: options.rotate || 0,
 			duration: options.duration || 1.2,
 			ease: 'power3.out',

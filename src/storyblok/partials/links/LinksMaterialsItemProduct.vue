@@ -28,7 +28,7 @@ const columnNumber = Number(blok.columnNumber ?? 1);
 	>
 		<div class="informations-container">
 			<div class="pretitle-wrapper">
-				<Icon name="square-small" />
+				<Icon v-animate="'scale-up'" name="square-small" />
 				<p v-animate="'reveal-letters'">{{ blok.pretitle }}</p>
 			</div>
 			<p v-animate="'reveal-paragraphs'">{{ blok.title }}</p>

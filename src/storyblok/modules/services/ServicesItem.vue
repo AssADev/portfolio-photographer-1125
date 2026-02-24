@@ -34,6 +34,7 @@ const serviceInformations = computed(() => {
 
 <template>
 	<section class="modules services-item" :class="{ 'is-reversed': blok.isReversed }">
+		<hr v-animate="{ type: 'scale-up', options: { withoutOpacity: true } }" />
 		<div class="projects-container">
 			<ServicesService
 				:url="service!.full_slug"
@@ -157,8 +158,14 @@ const serviceInformations = computed(() => {
 	}
 }
 
+hr {
+	width: var(--ctn-w);
+	height: 1px;
+	margin-inline: auto;
+	background: rgba($khaki, 0.4);
+}
+
 .projects-container {
-	border-top: 1px solid rgba($khaki, 0.4);
 	padding-block-start: fluidSize(60px, 40px);
 
 	@include mq($until: desktop) {

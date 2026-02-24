@@ -40,6 +40,7 @@ const resolvers = getRichTextResolvers('h2');
 				<slot name="info" />
 			</div>
 			<div class="content-wrapper" :class="{ 'is-column': isColumn }">
+				<hr v-animate="{ type: 'scale-up', options: { withoutOpacity: true } }" />
 				<RichText
 					v-animate="{ type: 'reveal-letters', options: { delay: 0.25, start: 'top 110%' } }"
 					prefix="/"
@@ -124,11 +125,11 @@ const resolvers = getRichTextResolvers('h2');
 	}
 
 	.content-wrapper {
+		position: relative;
 		display: flex;
 		gap: fluidSize(24px, 20px);
 		width: 100%;
 		padding-block-start: fluidSize(24px, 20px);
-		border-top: 1px solid $white;
 
 		&.is-column {
 			@include mq($until: large) {
@@ -149,6 +150,14 @@ const resolvers = getRichTextResolvers('h2');
 				justify-content: space-between;
 			}
 		}
+	}
+
+	hr {
+		position: absolute;
+		top: 0;
+		width: 100%;
+		height: 1px;
+		background: $white;
 	}
 
 	:deep(.partials-rich-text) {

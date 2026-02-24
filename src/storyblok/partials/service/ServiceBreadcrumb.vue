@@ -78,14 +78,20 @@ onUnmounted(() => {
 </script>
 
 <template>
-	<div v-if="isVisible" class="partials-service-breadcrumb">
+	<div v-if="isVisible" class="partials-service-breadcrumb" v-animate="'reveal-square'">
 		<Button
-			v-for="button in visibleButtons"
+			v-for="(button, index) in visibleButtons"
 			:key="button.id"
 			:class="{ active: activeSection === getTargetId(button.id) }"
 			@click="scrollTo(button.id)"
 		>
-			<LabelShuffle :label="$t(button.i18nKey)" no-snap />
+			<LabelShuffle
+				v-animate="{ type: 'reveal-label-shuffle', options: { delay: 0.525 + 0.375 * index } }"
+				:label="$t(button.i18nKey)"
+				no-snap
+				reveal
+				speed="normal"
+			/>
 		</Button>
 	</div>
 </template>
