@@ -9,6 +9,7 @@ import { formatIndex } from '#utils/formatIndex.ts';
 import { getRichTextResolvers } from '#utils/getRichTextResolvers.ts';
 import { t } from '#utils/i18n.ts';
 
+import IconPlusMinus from '#components/partials/IconPlusMinus.vue';
 import Button from '#components/utils/Button.vue';
 import RichText from '#components/utils/RichText.vue';
 
@@ -27,6 +28,7 @@ const { blok, projects } = defineProps<{
 // Refs :
 const containerRef = useTemplateRef('containerRef');
 const dropdownRef = useTemplateRef('dropdownRef');
+const filtersContainerRef = useTemplateRef('filtersContainerRef');
 const richTextRef = useTemplateRef('richTextRef');
 
 // Store :
@@ -48,7 +50,7 @@ const mobileCountRef = useTemplateRef('mobileCountRef');
 
 const stringToChars = (s: string) => s.split('').map((c) => ({ char: c, id: charIdCounter++ }));
 
-useTrap(dropdownRef, {
+useTrap(filtersContainerRef, {
 	model: isDropdownToggle,
 	clickOutsideDeactivates: true,
 	escapeDeactivates: true
@@ -294,7 +296,11 @@ onUnmounted(() => {
 		<div ref="containerRef" class="container">
 			<div class="content-container">
 				<RichText ref="richTextRef" :doc="blok.title" :resolvers="resolvers" />
-				<div class="filters-container hide-desktop" :class="{ toggle: isDropdownToggle }">
+				<div
+					ref="filtersContainerRef"
+					class="filters-container hide-desktop"
+					:class="{ toggle: isDropdownToggle }"
+				>
 					<Button @click="handleToggleDropdown">
 						<div class="inner-cta">
 							<span ref="mobileLabelRef" class="mobile-label">
@@ -310,6 +316,7 @@ onUnmounted(() => {
 								</span>
 							</span>
 						</div>
+						<IconPlusMinus :active="isDropdownToggle" />
 					</Button>
 
 					<div ref="dropdownRef" class="dropdown-container" :class="{ toggle: isDropdownToggle }">
@@ -477,6 +484,13 @@ onUnmounted(() => {
 
 		.inner-cta {
 			position: relative;
+		}
+
+		:deep(.partials-icon-plus-minus) {
+			position: absolute;
+			top: 50%;
+			right: 12px;
+			transform: translate3d(0, -50%, 0);
 		}
 
 		.number {

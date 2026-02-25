@@ -132,7 +132,6 @@ defineExpose({
 @use 'sass:map';
 
 .drawer-menu {
-	--width: 365px;
 	--menu-padding-inline: 14px;
 
 	position: fixed;
@@ -157,11 +156,18 @@ defineExpose({
 	bottom: var(--gutter);
 	right: var(--gutter);
 	width: 100%;
-	max-width: var(--width);
 	height: fit-content;
 	border-radius: var(--border-radius);
 	overflow: hidden;
 	clip-path: inset(100% 0 0 0);
+
+	@include mq($until: tablet) {
+		max-width: calc(100vw - var(--gutter) * 2);
+	}
+
+	@include mq(tablet) {
+		max-width: var(--drawer-max-width);
+	}
 
 	&.dark {
 		$border: 1px solid rgba($white, 0.08);

@@ -174,7 +174,7 @@ onUnmounted(() => {
 <template>
 	<section class="modules service-projects-highlight" ref="sectionRef">
 		<div
-			v-animate="{ type: 'mask-reveal', options: { direction: 'down', delay: 0.275 } }"
+			v-animate="{ type: 'mask-reveal', options: { direction: 'up' } }"
 			class="slideshow-container"
 			ref="emblaRef"
 		>

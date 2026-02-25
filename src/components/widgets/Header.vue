@@ -8,6 +8,7 @@ import { animations } from '#utils/Animations.ts';
 import locales from '#utils/locales.json';
 import { trackNavigationClick } from '#utils/tracking.ts';
 
+import IconPlusMinus from '#components/partials/IconPlusMinus.vue';
 import Button from '#components/utils/Button.vue';
 import Icon from '#components/utils/Icon.vue';
 import ContactForms from '#components/widgets/ContactForms.vue';
@@ -36,6 +37,7 @@ const isAnimating = useVModel($global, 'isHeaderAnimating');
 // Refs :
 const interactionsRef = useTemplateRef('interactionsRef');
 const contactLabelRef = useTemplateRef('contactLabelRef');
+const iconPlusMinusRef = useTemplateRef('iconPlusMinusRef');
 
 const scrollHide = ref(false);
 const hidden = ref(false);
@@ -69,8 +71,6 @@ const drawerEl = computed(() => activeDrawer.value?.containerRef);
 const isInteractionToggled = computed<boolean>({
 	get: () => isMenuToggled.value || isContactToggled.value,
 	set: (val) => {
-		console.log('isInteractionToggled', val);
-
 		if (!val) {
 			if (isAnimating.value || isContactFormActive.value) return;
 
@@ -86,13 +86,23 @@ useTrap(interactionsRef, { model: isInteractionToggled, escapeDeactivates: true 
 // Methods :
 const toggleContact = () => {
 	if (isAnimating.value) return;
-	if (!isContactToggled.value) isMenuToggled.value = false;
+
+	if (isMenuToggled.value) {
+		isMenuToggled.value = false;
+		return;
+	}
+
 	isContactToggled.value = !isContactToggled.value;
 };
 
 const toggleMenu = () => {
 	if (isAnimating.value) return;
-	if (!isMenuToggled.value) isContactToggled.value = false;
+
+	if (isContactToggled.value) {
+		isContactToggled.value = false;
+		return;
+	}
+
 	isMenuToggled.value = !isMenuToggled.value;
 };
 
@@ -180,19 +190,15 @@ watch([isContactToggled, isMenuToggled], async ([contactVal, menuVal], [oldConta
 			tlHeader = gsap.timeline();
 
 			// 1. Hide Contact label :
-			tlHeader.add(
+			tlHeader.add(() => {
+				iconPlusMinusRef.value?.toggleMinus(true);
 				animations['hide-letters-speed'](contactLabelRef.value!, {
 					onComplete: () => gsap.set(contactLabelRef.value!, { visibility: 'hidden' })
-				}),
-				0
-			);
+				});
+			}, 0);
 
 			// 2. Expand width :
-			tlHeader.to(
-				interactionsRef.value,
-				{ width: drawerEl.value?.offsetWidth || 365, duration: 0.6, ease: 'power2.inOut' },
-				0
-			);
+			tlHeader.to(interactionsRef.value, { width: '100%', duration: 0.6, ease: 'power2.inOut' }, 0);
 
 			// 3. Open drawer :
 			const drawerTl = activeDrawer.value?.openDrawer?.();
@@ -282,6 +288,10 @@ watch([isContactToggled, isMenuToggled], async ([contactVal, menuVal], [oldConta
 				);
 			}
 
+			if (iconPlusMinusRef.value) {
+				tlHeader.add(() => iconPlusMinusRef.value?.toggleMinus(false), 0.625);
+			}
+
 			if (drawerTl) await drawerTl;
 			await tlHeader;
 		}
@@ -364,7 +374,7 @@ useResizeObserver(interactionsRef, () => {
 				</Button>
 
 				<Button class="menu-cta" @click="toggleMenu" :aria-label="$t(isMenuToggled ? 'closeMenu' : 'openMenu')">
-					<span>X</span>
+					<IconPlusMinus ref="iconPlusMinusRef" />
 				</Button>
 
 				<Menu
@@ -397,9 +407,7 @@ useResizeObserver(interactionsRef, () => {
 }
 
 .header-container {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
+	position: relative;
 	height: var(--header-height);
 	margin: var(--gutter);
 
@@ -418,6 +426,9 @@ button {
 }
 
 .identity-cta {
+	position: absolute;
+	bottom: 0;
+	left: 0;
 	background: $eerieBlack;
 	padding-inline: var(--header-padding-inline);
 	border-radius: var(--border-radius);
@@ -430,10 +441,21 @@ button {
 }
 
 .interactions-container {
-	position: relative;
+	position: absolute;
+	bottom: 0;
+	right: 0;
 	display: flex;
 	align-items: center;
+	width: fit-content;
 	height: 100%;
+
+	@include mq($until: tablet) {
+		max-width: calc(100vw - var(--gutter) * 2);
+	}
+
+	@include mq(tablet) {
+		max-width: var(--drawer-max-width);
+	}
 
 	&.is-contact-open {
 		.menu-cta {
@@ -448,6 +470,17 @@ button {
 			span {
 				color: $eerieBlack;
 				transition: color 0.25s $power2Out 0.25s;
+			}
+
+			:deep(.partials-icon-plus-minus) {
+				.inner-container {
+					& > div {
+						background: $eerieBlack;
+						transition:
+							transform 0.6s $power2Out,
+							background 0.25s $power2Out 0.25s;
+					}
+				}
 			}
 		}
 	}
@@ -572,6 +605,16 @@ button {
 			position: relative;
 			color: $white;
 			transition: color 0.25s $power2Out 0.8s;
+		}
+
+		:deep(.partials-icon-plus-minus) {
+			.inner-container {
+				& > div {
+					transition:
+						transform 0.6s $power2Out,
+						background 0.25s $power2Out 0.85s;
+				}
+			}
 		}
 	}
 }

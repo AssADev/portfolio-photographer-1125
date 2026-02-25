@@ -118,7 +118,7 @@ onMounted(() => {
 					<RichText v-animate="'reveal-titles'" :doc="blok.name" :resolvers="resolvers" />
 					<div class="informations-container">
 						<div v-for="information in informations" :key="information.label" class="information-wrapper">
-							<Label :label="$t(information.label)" />
+							<Label :label="$t(information.label)" :initial-delay="0.55" />
 							<template
 								v-if="information.isLink && information.value && typeof information.value === 'object'"
 							>
@@ -130,14 +130,16 @@ onMounted(() => {
 									<RichText
 										reveal
 										speed="normal"
-										v-animate="'reveal-label-shuffle'"
+										v-animate="{ type: 'reveal-label-shuffle', options: { delay: 0.55 } }"
 										class="value"
 										:doc="information.value.content.informations[0].name"
 										shuffle
 									/>
 								</Button>
 							</template>
-							<p v-else v-animate="'reveal-letters'" class="value">{{ information.value }}</p>
+							<p v-else v-animate="{ type: 'reveal-letters', options: { delay: 0.55 } }" class="value">
+								{{ information.value }}
+							</p>
 						</div>
 					</div>
 				</div>

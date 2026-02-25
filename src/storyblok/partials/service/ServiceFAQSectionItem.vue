@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ref, watch } from 'vue';
+import { ref, useTemplateRef, watch } from 'vue';
 
+import IconPlusMinus from '#components/partials/IconPlusMinus.vue';
 import LabelShuffle from '#components/partials/LabelShuffle.vue';
 import Button from '#components/utils/Button.vue';
 import RichText from '#components/utils/RichText.vue';
@@ -14,6 +15,8 @@ defineProps<{
 }>();
 
 // Refs :
+const iconPlusMinusRef = useTemplateRef('iconPlusMinusRef');
+
 const isToggled = ref(false);
 
 // Variables :
@@ -31,6 +34,11 @@ watch(isToggled, () => {
 	<div class="partials-service-faq-section-item" :class="{ toggle: isToggled }">
 		<Button class="question-header" @click="isToggled = !isToggled">
 			<LabelShuffle v-animate="'reveal-label-shuffle'" :label="blok.question" no-snap reveal />
+			<IconPlusMinus
+				v-animate="{ type: 'scale-up', options: { delay: 0.2, rotate: -90, reset: true } }"
+				ref="iconPlusMinusRef"
+				:active="isToggled"
+			/>
 		</Button>
 		<div class="question-answer-container" :inert="!isToggled">
 			<div class="question-answer-wrapper">
@@ -57,6 +65,9 @@ watch(isToggled, () => {
 }
 
 .question-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
 	padding-block: fluidSize(16px, 12px) fluidSize(20px, 16px);
 
 	.partials-label-shuffle {
