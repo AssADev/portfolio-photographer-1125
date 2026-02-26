@@ -38,7 +38,6 @@ const isGrabbing = ref(false);
 const isDarkTheme = ref(false);
 const currentPictureZoom = ref(1);
 const isZoomSmooth = ref(false);
-const isInitializing = ref(false);
 
 const isDesktop = ref(false);
 
@@ -196,19 +195,14 @@ watch(
 
 			isOpening.value = true;
 			isVisible.value = true;
-			isInitializing.value = true;
 			currentSlide.value = currentIndex;
 			$projectMinimap.setKey('isFlipping', true);
 
 			await nextTick();
+			$global.setKey('lockScroll', true);
 			slideshowRef.value?.scrollToSlide(currentIndex, true);
 
-			if (clickedElement) {
-				await animateFlipOpen(clickedElement as any);
-			}
-
-			isInitializing.value = false;
-			$global.setKey('lockScroll', true);
+			if (clickedElement) await animateFlipOpen(clickedElement as any);
 		} else {
 			$global.setKey('lockScroll', false);
 		}
