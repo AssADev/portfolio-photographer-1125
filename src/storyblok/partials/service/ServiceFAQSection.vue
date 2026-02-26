@@ -11,6 +11,10 @@ defineProps<{
 
 <template>
 	<div class="partials-service-faq-section">
+		<hr
+			v-animate="'scale-from-left'"
+			class="col-start-1 col-end-13 col-start-tb-1 col-end-tb-17 col-start-dk-1 col-end-dk-33 hide-mobile"
+		/>
 		<div class="title-wrapper col-start-tb-1 col-end-tb-4 col-start-dk-1 col-end-dk-6">
 			<h3 v-animate="'reveal-letters'">{{ blok.title }}</h3>
 		</div>
@@ -26,8 +30,12 @@ defineProps<{
 .partials-service-faq-section {
 	@include mq(tablet) {
 		@include grid;
+	}
 
-		border-top: 1px solid $white;
+	hr {
+		width: 100%;
+		height: 1px;
+		background: $white;
 	}
 }
 
@@ -51,7 +59,9 @@ defineProps<{
 
 	@include mq(tablet) {
 		:deep(.partials-service-faq-section-item):first-of-type {
-			border-top: none;
+			hr {
+				display: none;
+			}
 		}
 	}
 }

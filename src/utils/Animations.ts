@@ -300,12 +300,26 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 	'scale-up': (el, options) => {
 		return gsap.from(el, {
 			scale: 0.25,
-			opacity: options.withoutOpacity ? 1 : 0,
+			opacity: 0,
 			rotate: options.rotate || 0,
 			duration: options.duration || 1.2,
 			ease: 'power3.out',
 			delay: options.delay || 0,
 			immediateRender: true,
+			onComplete: () => {
+				if (options.reset) gsap.set(el, { clearProps: 'all' });
+			}
+		});
+	},
+
+	'scale-from-left': (el, options) => {
+		return gsap.from(el, {
+			scale: 0,
+			duration: options.duration || 1.2,
+			ease: 'power3.out',
+			delay: options.delay || 0,
+			immediateRender: true,
+			transformOrigin: 'left center',
 			onComplete: () => {
 				if (options.reset) gsap.set(el, { clearProps: 'all' });
 			}

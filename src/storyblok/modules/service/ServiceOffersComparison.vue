@@ -127,6 +127,10 @@ const getFormattedSuffix = (row: ComparisonRow, value: any) => {
 					</div>
 
 					<div v-for="row in section.rows" :key="row.labelKey" class="items-container">
+						<hr
+							v-animate="'scale-from-left'"
+							class="col-start-1 col-end-13 col-start-tb-1 col-end-tb-17 col-start-dk-1 col-end-dk-33"
+						/>
 						<div
 							class="header-wrapper"
 							:class="
@@ -230,16 +234,30 @@ const getFormattedSuffix = (row: ComparisonRow, value: any) => {
 }
 
 .items-container {
-	border-top: 1px solid $eerieBlack;
-
 	@include mq($until: desktop) {
-		padding-block: fluidSize(18px, 16px) fluidSize(20px, 18px);
+		padding-block-end: fluidSize(20px, 18px);
 	}
 
 	@include mq(desktop) {
 		@include grid;
 
-		padding-block: fluidSize(14px, 12px) fluidSize(16px, 14px);
+		padding-block-end: fluidSize(16px, 14px);
+	}
+
+	hr {
+		height: 1px;
+		width: 100%;
+		background: $eerieBlack;
+
+		@include mq($until: desktop) {
+			margin-block-end: fluidSize(18px, 16px);
+		}
+
+		@include mq(desktop) {
+			@include grid;
+
+			margin-block-end: fluidSize(14px, 12px);
+		}
 	}
 }
 

@@ -570,6 +570,7 @@ button {
 
 					position: relative;
 					opacity: 0.5;
+					pointer-events: all;
 					transition: opacity 0.4s $power2Out;
 				}
 

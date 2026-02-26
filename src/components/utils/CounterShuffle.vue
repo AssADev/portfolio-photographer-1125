@@ -1,12 +1,19 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import gsap from 'gsap';
+import { computed, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
 
 import { formatIndex } from '#utils/formatIndex.ts';
 
 // Props :
-const props = defineProps<{
-	value: string | number;
-}>();
+const props = withDefaults(
+	defineProps<{
+		value: string | number;
+		reveal?: boolean;
+	}>(),
+	{
+		reveal: false
+	}
+);
 
 // Computed :
 const formattedValue = computed(() => {
@@ -17,11 +24,28 @@ const formattedValue = computed(() => {
 const direction = ref<'next' | 'prev'>('next');
 const letters = ref(formattedValue.value.split(''));
 const charWidth = ref<number | null>(null);
-const measureRef = ref<HTMLElement | null>(null);
+
+const rootEl = useTemplateRef('rootEl');
+const measureRef = useTemplateRef('measureRef');
+const charRefs = ref<HTMLElement[]>([]);
 
 // Methods :
 const measure = () => {
 	if (measureRef.value) charWidth.value = measureRef.value.offsetWidth;
+};
+
+// Animations :
+const handleAnimateIn = () => {
+	gsap.killTweensOf(charRefs.value);
+	gsap.to(charRefs.value, {
+		x: '0%',
+		duration: 1.1,
+		stagger: 0.075,
+		ease: 'power4.out',
+		onComplete: () => {
+			gsap.set(charRefs.value, { clearProps: 'transform' });
+		}
+	});
 };
 
 // Watchers :
@@ -38,17 +62,23 @@ watch(
 
 // Attach & Detach :
 onMounted(() => {
+	if (props.reveal) {
+		gsap.set(charRefs.value, { x: '140%' });
+	}
+
 	document.fonts.ready.then(measure);
 	window.addEventListener('resize', measure);
+	rootEl.value?.addEventListener('label-shuffle-reveal', handleAnimateIn);
 });
 
 onUnmounted(() => {
 	window.removeEventListener('resize', measure);
+	rootEl.value?.removeEventListener('label-shuffle-reveal', handleAnimateIn);
 });
 </script>
 
 <template>
-	<div class="counter-shuffle">
+	<div ref="rootEl" class="counter-shuffle">
 		<span ref="measureRef" class="char measure-char" aria-hidden="true">0</span>
 
 		<div
@@ -58,7 +88,7 @@ onUnmounted(() => {
 			:style="{ width: charWidth ? `${charWidth}px` : 'auto' }"
 		>
 			<Transition :name="`slide-${direction}`">
-				<span :key="char" class="char">
+				<span :key="char" ref="charRefs" class="char">
 					{{ char }}
 				</span>
 			</Transition>

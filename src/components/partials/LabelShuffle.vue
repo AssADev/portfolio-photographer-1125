@@ -103,7 +103,7 @@ const onLetterEnter = (index: number) => {
 	startShuffle(neighbors);
 };
 
-// Animation :
+// Animations :
 const animateIn = () => {
 	gsap.killTweensOf(innerRefs.value);
 	gsap.to(innerRefs.value, {

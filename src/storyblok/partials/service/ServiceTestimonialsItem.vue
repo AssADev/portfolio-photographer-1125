@@ -34,13 +34,23 @@ const emit = defineEmits<{
 				/>
 			</div>
 		</div>
+		<hr v-animate="'scale-from-left'" />
 	</div>
 </template>
 
 <style lang="scss" scoped>
 .partials-service-testimonials-item {
-	border-bottom: 1px solid rgba($eerieBlack, 0.4);
+	position: relative;
 	padding-block-end: fluidSize(72px, 48px);
+
+	hr {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		height: 1px;
+		background: rgba($eerieBlack, 0.4);
+	}
 }
 
 .content-container {

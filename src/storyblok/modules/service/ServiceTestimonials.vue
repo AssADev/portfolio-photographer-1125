@@ -29,6 +29,9 @@ const currentSlide = ref(0);
 const isGrabbing = ref(false);
 const isWaiting = ref(false);
 const hoveredIndex = ref<number | null>(null);
+const finishedUids = ref(new Set<string>());
+const inFlightUids = ref(new Set<string>());
+
 let waitingTimeout: ReturnType<typeof setTimeout> | null = null;
 
 const [emblaRef, emblaApi] = emblaCarouselVue({
@@ -37,13 +40,14 @@ const [emblaRef, emblaApi] = emblaCarouselVue({
 
 // Computed :
 const testimonials = computed(() => blok.testimonials || []);
-const hoveredTestimonial = computed(() =>
-	hoveredIndex.value !== null ? testimonials.value[hoveredIndex.value] : null
-);
-const showImages = computed(() => hoveredIndex.value !== null && !isGrabbing.value && !isWaiting.value);
-const displayPictures = computed(() => (showImages.value ? hoveredTestimonial.value?.pictures || [] : []));
+const isVisible = computed(() => hoveredIndex.value !== null && !isGrabbing.value && !isWaiting.value);
 
 // Methods :
+const getDelay = (uid: string, index: number) => {
+	if (inFlightUids.value.has(uid)) return '0s';
+	return `${index * 0.125}s`;
+};
+
 const updateCurrentSlide = () => {
 	if (!emblaApi.value) return;
 
@@ -75,6 +79,27 @@ const onMouseEnter = (index: number) => {
 
 const onMouseLeave = () => {
 	hoveredIndex.value = null;
+};
+
+// Animations :
+const onTransitionStart = (el: any, uid: string) => {
+	if (el.propertyName === 'transform') {
+		inFlightUids.value.add(uid);
+	}
+};
+
+const onTransitionEnd = (el: any, uid: string) => {
+	if (el.propertyName === 'transform') {
+		inFlightUids.value.delete(uid);
+
+		// If the element just finished its exit animation (not active anymore) :
+		if (!el.target.classList.contains('is-active')) {
+			finishedUids.value.delete(uid);
+		} else {
+			// If it just finished its entrance animation :
+			finishedUids.value.add(uid);
+		}
+	}
 };
 
 // Attach & Detach :
@@ -183,10 +208,7 @@ const layouts = [
 							:class="{ disabled: currentSlide !== index }"
 							:style="{
 								opacity:
-									hoveredIndex !== null &&
-									hoveredIndex !== index &&
-									displayPictures.length &&
-									!isGrabbing
+									hoveredIndex !== null && hoveredIndex !== index && isVisible && !isGrabbing
 										? 0.4
 										: 1
 							}"
@@ -197,32 +219,58 @@ const layouts = [
 				</div>
 				<div v-if="(blok.testimonials?.length ?? 0) > 1 && emblaApi" class="slideshow-navigation">
 					<div class="indicator-wrapper">
-						<CounterShuffle :value="currentSlide + 1" />
-						<Icon name="square-small" />
-						<span>{{ formatIndex(blok.testimonials?.length ?? 0) }}</span>
+						<CounterShuffle
+							v-animate="{ type: 'reveal-label-shuffle', options: { delay: 0.035 } }"
+							:value="currentSlide + 1"
+							reveal
+						/>
+						<Icon
+							v-animate="{ type: 'scale-up', options: { delay: 0.05, duration: 0.6, rotate: 90 } }"
+							name="square-small"
+						/>
+						<span v-animate="{ type: 'reveal-letters', options: { delay: 0.065 } }">{{
+							formatIndex(blok.testimonials?.length ?? 0)
+						}}</span>
 					</div>
 					<div class="ctas-wrapper">
 						<Button @click="emblaApi.scrollPrev()" :disabled="!canPrev">
-							<LabelShuffle :label="$t('previous')" :is-active="canPrev" />
+							<LabelShuffle :label="$t('previous')" :is-active="canPrev" reveal />
 						</Button>
 						<Button @click="emblaApi.scrollNext()" :disabled="!canNext">
-							<LabelShuffle :label="$t('next')" :is-active="canNext" />
+							<LabelShuffle
+								v-animate="{ type: 'reveal-label-shuffle', options: { delay: 0.125 } }"
+								:label="$t('next')"
+								:is-active="canNext"
+								reveal
+							/>
 						</Button>
 					</div>
 				</div>
 			</div>
 			<div class="pictures-container hide-mobile-tablet">
-				<TransitionGroup name="picture-anim">
+				<div v-for="(testimonial, tIndex) in testimonials" :key="testimonial._uid" style="display: contents">
 					<div
-						v-for="(item, index) in displayPictures"
+						v-for="(item, pIndex) in testimonial.pictures"
 						:key="item._uid"
 						class="picture-wrapper"
-						:class="layouts[index]?.classes"
-						:style="{ alignSelf: layouts[index]?.align, '--index': index }"
+						:class="[
+							layouts[pIndex]?.classes,
+							{
+								'is-active': isVisible && tIndex === hoveredIndex,
+								'is-finished': finishedUids.has(item._uid)
+							}
+						]"
+						:style="{
+							alignSelf: layouts[pIndex]?.align,
+							'--index': pIndex,
+							'--delay': getDelay(item._uid, pIndex)
+						}"
+						@transitionstart="onTransitionStart($event, item._uid)"
+						@transitionend="onTransitionEnd($event, item._uid)"
 					>
 						<Image :src="item.picture" object-fit="contain" />
 					</div>
-				</TransitionGroup>
+				</div>
 			</div>
 		</div>
 	</section>
@@ -276,9 +324,34 @@ const layouts = [
 		overflow: hidden;
 		max-height: fluidSize(220px, 160px, null, widescreen);
 
+		transform: translate3d(0, 108%, 0);
+		transition: transform 0.6s $power2InOut;
+		transition-delay: var(--delay);
+
 		img {
 			height: auto;
 			max-height: inherit;
+			transform: translate3d(0, -108%, 0);
+			transition: transform 0.6s $power2InOut;
+			transition-delay: var(--delay);
+		}
+
+		&.is-active {
+			transform: translate3d(0, 0, 0);
+			transition-timing-function: $power2Out;
+
+			img {
+				transform: translate3d(0, 0, 0);
+				transition-timing-function: $power2Out;
+			}
+		}
+
+		&.is-finished:not(.is-active) {
+			transform: translate3d(0, -108%, 0);
+
+			img {
+				transform: translate3d(0, 108%, 0);
+			}
 		}
 	}
 }
@@ -354,43 +427,6 @@ const layouts = [
 				inset: -2px -6px -4px;
 			}
 		}
-	}
-}
-
-// Transitions :
-.picture-anim-enter-active {
-	transition: transform 0.6s $power2Out;
-	transition-delay: calc(var(--index) * 0.125s);
-
-	img {
-		transition: transform 0.6s $power2Out;
-		transition-delay: calc(var(--index) * 0.125s);
-	}
-}
-
-.picture-anim-leave-active {
-	transition: transform 0.6s $power2InOut;
-	transition-delay: calc(var(--index) * 0.125s);
-
-	img {
-		transition: transform 0.6s $power2InOut;
-		transition-delay: calc(var(--index) * 0.125s);
-	}
-}
-
-.picture-anim-enter-from {
-	transform: translate3d(0, 105%, 0);
-
-	img {
-		transform: translate3d(0, -105%, 0);
-	}
-}
-
-.picture-anim-leave-to {
-	transform: translate3d(0, -105%, 0);
-
-	img {
-		transform: translate3d(0, 105%, 0);
 	}
 }
 </style>

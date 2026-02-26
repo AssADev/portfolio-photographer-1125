@@ -32,10 +32,11 @@ watch(isToggled, () => {
 
 <template>
 	<div class="partials-service-faq-section-item" :class="{ toggle: isToggled }">
+		<hr v-animate="'scale-from-left'" />
 		<Button class="question-header" @click="isToggled = !isToggled">
 			<LabelShuffle v-animate="'reveal-label-shuffle'" :label="blok.question" no-snap reveal />
 			<IconPlusMinus
-				v-animate="{ type: 'scale-up', options: { delay: 0.2, rotate: -90, reset: true } }"
+				v-animate="{ type: 'scale-up', options: { delay: 0.275, rotate: -90, reset: true } }"
 				ref="iconPlusMinusRef"
 				:active="isToggled"
 			/>
@@ -54,7 +55,12 @@ watch(isToggled, () => {
 .partials-service-faq-section-item {
 	display: flex;
 	flex-direction: column;
-	border-top: 1px solid $white;
+
+	hr {
+		width: 100%;
+		height: 1px;
+		background: $white;
+	}
 
 	&.toggle {
 		.question-answer-container {

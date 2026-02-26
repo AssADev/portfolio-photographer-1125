@@ -34,7 +34,7 @@ const serviceInformations = computed(() => {
 
 <template>
 	<section class="modules services-item" :class="{ 'is-reversed': blok.isReversed }">
-		<hr v-animate="{ type: 'scale-up', options: { withoutOpacity: true } }" />
+		<hr v-animate="'scale-from-left'" />
 		<div class="projects-container">
 			<ServicesService
 				:url="service!.full_slug"
