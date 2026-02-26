@@ -266,10 +266,9 @@ onUnmounted(() => {
 		data-lenis-prevent
 	>
 		<div class="overlay" />
-		<Button class="theme-cta" @click="onToggleDarkTheme">
-			<span>
-				{{ isDarkTheme ? 'Light' : 'Dark' }}
-			</span>
+		<Button class="theme-cta" :class="{ 'is-dark': isDarkTheme }" @click="onToggleDarkTheme">
+			<Icon name="moon" />
+			<Icon name="sun" />
 		</Button>
 		<Button class="close-cta" @click="onClose" :disabled="isClosing">
 			<span>Close</span>
@@ -404,21 +403,46 @@ onUnmounted(() => {
 	position: absolute;
 	z-index: 1;
 	top: var(--gutter);
-	left: var(--gutter);
-	display: flex;
-	align-items: center;
-	justify-content: center;
+	right: var(--gutter);
 	background: $whiteChoco;
 	height: var(--header-height);
 	border-radius: var(--border-radius);
 	aspect-ratio: 1/1;
+	overflow: hidden;
+
+	&.is-dark {
+		:deep(svg) {
+			&:first-child {
+				transform: translate3d(-50%, -275%, 0) rotate(-65deg);
+			}
+
+			&:last-child {
+				transform: translate3d(-50%, -50%, 0);
+			}
+		}
+	}
+
+	:deep(svg) {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transition: transform 0.6s $power2InOut;
+
+		&:first-child {
+			transform: translate3d(-50%, -50%, 0);
+		}
+
+		&:last-child {
+			transform: translate3d(-50%, 175%, 0) rotate(65deg);
+		}
+	}
 }
 
 .close-cta {
 	position: absolute;
 	z-index: 1;
 	top: var(--gutter);
-	right: var(--gutter);
+	left: var(--gutter);
 	display: flex;
 	align-items: center;
 	justify-content: center;
