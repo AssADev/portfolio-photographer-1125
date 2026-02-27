@@ -111,7 +111,7 @@ const updateActiveIndicator = (immediate = false) => {
 };
 
 const scrollToSlide = (index: number, immediate = false) => {
-	if (!slideshowWrapperRef.value || index >= slidesCache.length) return;
+	if (!slideshowWrapperRef.value || index < 0 || index >= slidesCache.length) return;
 
 	// Use cached dimensions (no DOM queries) :
 	const { size, pos } = slidesDimensionsCache[index];
@@ -275,13 +275,17 @@ const onPointerUp = (e: PointerEvent) => {
 	}, 50);
 };
 
-const checkBreakpoint = () => {};
-
 // Expose methods to parent :
 defineExpose({
 	scrollToSlide,
-	next: () => scrollToSlide((modelValue.value + 1) % slidesCache.length),
-	prev: () => scrollToSlide((modelValue.value - 1 + slidesCache.length) % slidesCache.length),
+	next: () => {
+		const nextIndex = modelValue.value + 1;
+		if (nextIndex < slidesCache.length) scrollToSlide(nextIndex);
+	},
+	prev: () => {
+		const prevIndex = modelValue.value - 1;
+		if (prevIndex >= 0) scrollToSlide(prevIndex);
+	},
 	isMoving,
 	refreshCache: initSlidesCache
 });
