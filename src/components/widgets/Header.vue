@@ -251,7 +251,24 @@ watch([isContactToggled, isMenuToggled], async ([contactVal, menuVal], [oldConta
 			}, 0);
 
 			// 2. Expand width :
-			tlHeader.to(interactionsRef.value, { width: '100%', duration: 0.6, ease: 'power2.inOut' }, 0);
+			const currentWidth = interactionsRef.value?.offsetWidth || 0;
+			gsap.set(interactionsRef.value, { width: '100%' });
+
+			const targetWidth = interactionsRef.value?.offsetWidth || 0;
+			gsap.set(interactionsRef.value, { width: currentWidth });
+
+			tlHeader.to(
+				interactionsRef.value,
+				{
+					width: targetWidth,
+					duration: 0.6,
+					ease: 'power2.inOut',
+					onComplete: () => {
+						gsap.set(interactionsRef.value, { width: '100%' });
+					}
+				},
+				0
+			);
 
 			// 3. Open drawer :
 			const drawerTl = activeDrawer.value?.openDrawer?.();
@@ -324,12 +341,17 @@ watch([isContactToggled, isMenuToggled], async ([contactVal, menuVal], [oldConta
 			}
 
 			// 2. Shrink width :
-			tlHeader.to(interactionsRef.value, {
-				width: initialWidth.value,
-				duration: 0.6,
-				ease: 'power2.inOut',
-				clearProps: 'width'
-			});
+			const currentClosingWidth = interactionsRef.value?.offsetWidth || 0;
+			tlHeader.fromTo(
+				interactionsRef.value,
+				{ width: currentClosingWidth },
+				{
+					width: initialWidth.value,
+					duration: 0.6,
+					ease: 'power2.inOut',
+					clearProps: 'width'
+				}
+			);
 
 			// 3. Reveal original Contact Label :
 			if (contactLabelRef.value) {
