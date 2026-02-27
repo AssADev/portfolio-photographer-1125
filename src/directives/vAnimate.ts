@@ -39,6 +39,10 @@ const init = (el: HTMLElement & { _gsapAnim?: gsap.core.Animation }, binding: an
 			containerAnimation: options.containerAnimation,
 			start: options.start || (options.containerAnimation ? 'left bottom' : 'top bottom')
 		});
+
+		// TODO: Put in the loader & interloader (At the end) :
+		// Force a refresh once everything is set to align markers :
+		ScrollTrigger.refresh();
 	}
 };
 

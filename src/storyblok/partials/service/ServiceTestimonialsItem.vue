@@ -25,7 +25,7 @@ const emit = defineEmits<{
 			/>
 			<div v-if="blok.author" class="author-wrapper">
 				<Icon
-					v-animate="{ type: 'scale-up', options: { delay: index * 0.125, rotate: 90 } }"
+					v-animate="{ type: 'scale-up', options: { delay: 0.1 + index * 0.125, rotate: 90 } }"
 					name="square-small"
 				/>
 				<RichText

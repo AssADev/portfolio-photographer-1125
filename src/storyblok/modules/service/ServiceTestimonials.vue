@@ -225,7 +225,7 @@ const layouts = [
 							reveal
 						/>
 						<Icon
-							v-animate="{ type: 'scale-up', options: { delay: 0.05, duration: 0.6, rotate: 90 } }"
+							v-animate="{ type: 'scale-up', options: { delay: 0.085, duration: 0.6, rotate: 90 } }"
 							name="square-small"
 						/>
 						<span v-animate="{ type: 'reveal-letters', options: { delay: 0.065 } }">{{
