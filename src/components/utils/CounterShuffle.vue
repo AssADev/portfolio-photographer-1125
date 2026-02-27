@@ -63,7 +63,7 @@ watch(
 // Attach & Detach :
 onMounted(() => {
 	if (props.reveal) {
-		gsap.set(charRefs.value, { x: '140%' });
+		gsap.set(charRefs.value, { x: '160%' });
 	}
 
 	document.fonts.ready.then(measure);
