@@ -158,6 +158,7 @@ const animateFadeClose = () => {
 const onClose = async () => {
 	if (isClosing.value) return;
 	isClosing.value = true;
+	$projectMinimap.setKey('isFlipping', true);
 
 	const { initialIndex, currentIndex, clickedElement, clickedParentElement } = projectMinimapStore.value;
 	const isSameImage = initialIndex === currentIndex;
@@ -179,6 +180,7 @@ const onClose = async () => {
 		closeMinimap();
 		resetMinimap();
 		isClosing.value = false;
+		$projectMinimap.setKey('isFlipping', false);
 	}
 };
 
@@ -205,6 +207,10 @@ watch(
 			if (clickedElement) await animateFlipOpen(clickedElement as any);
 		} else {
 			$global.setKey('lockScroll', false);
+
+			if (isVisible.value && !isClosing.value) {
+				onClose();
+			}
 		}
 	}
 );
@@ -263,9 +269,6 @@ onUnmounted(() => {
 		<Button class="theme-cta" :class="{ 'is-dark': isDarkTheme }" @click="onToggleDarkTheme">
 			<Icon name="moon" />
 			<Icon name="sun" />
-		</Button>
-		<Button class="close-cta" @click="onClose" :disabled="isClosing">
-			<span>Close</span>
 		</Button>
 		<div class="viewer-container">
 			<div
@@ -359,7 +362,6 @@ onUnmounted(() => {
 
 		.overlay,
 		.minimap-container,
-		.close-cta,
 		.theme-cta,
 		.zoom-container {
 			opacity: 1;
@@ -367,7 +369,6 @@ onUnmounted(() => {
 	}
 
 	.minimap-container,
-	.close-cta,
 	.theme-cta,
 	.zoom-container {
 		opacity: 0;
@@ -430,20 +431,6 @@ onUnmounted(() => {
 			transform: translate3d(-50%, 175%, 0) rotate(65deg);
 		}
 	}
-}
-
-.close-cta {
-	position: absolute;
-	z-index: 1;
-	top: var(--gutter);
-	left: var(--gutter);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background: $whiteChoco;
-	height: var(--header-height);
-	border-radius: var(--border-radius);
-	aspect-ratio: 1/1;
 }
 
 .viewer-container {

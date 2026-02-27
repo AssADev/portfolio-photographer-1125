@@ -18,6 +18,7 @@ import type { LanguageAlternate } from '#types/seo.ts';
 
 import { useTrap } from '#composables/useTrap.ts';
 import { $global } from '#stores/global.ts';
+import { $projectMinimap, closeMinimap } from '#stores/project.ts';
 
 // Props :
 const { siteConfig, language, languageAlternates } = defineProps<{
@@ -28,7 +29,10 @@ const { siteConfig, language, languageAlternates } = defineProps<{
 
 // Providers & Stores :
 provide('siteConfig', siteConfig);
+
 const globalStore = useStore($global);
+const projectMinimapStore = useStore($projectMinimap);
+
 const contactFormId = useVModel($global, 'contactFormId');
 const isContactToggled = useVModel($global, 'isContactToggled');
 const isMenuToggled = useVModel($global, 'isMenuToggled');
@@ -58,6 +62,11 @@ const activeDrawer = computed(() => {
 	if (isContactToggled.value) return contactFormsRef.value;
 	if (isMenuToggled.value) return menuRef.value;
 	return null;
+});
+
+const identityTo = computed(() => {
+	if (projectMinimapStore.value.isOpen) return undefined;
+	return language === locales[0] ? '/' : `/${language}`;
 });
 
 const orderedLocales = computed(() => {
@@ -136,8 +145,31 @@ const handleContactAction = () => {
 	toggleContact();
 };
 
+const handleIdentityAction = (e: MouseEvent) => {
+	if (isAnimating.value || projectMinimapStore.value.isFlipping) {
+		e.preventDefault();
+		return;
+	}
+
+	if (projectMinimapStore.value.isOpen) {
+		e.preventDefault();
+		closeMinimap();
+		return;
+	}
+
+	trackNavigationClick(e);
+};
+
 const onActionLeave = (el: any, done: () => void) => {
 	isAnimating.value = true;
+
+	if (el.classList.contains('label-identity')) {
+		const btn = el.closest('.identity-cta');
+		if (btn) {
+			(btn as any)._lastWidth = btn.offsetWidth;
+		}
+	}
+
 	const label = el.querySelector('span');
 	if (label) {
 		const anim = animations['hide-letters-speed'](label, { onComplete: done });
@@ -149,6 +181,27 @@ const onActionLeave = (el: any, done: () => void) => {
 
 const onActionEnter = (el: any, done: () => void) => {
 	const label = el.querySelector('span');
+
+	if (el.classList.contains('label-identity')) {
+		const btn = el.closest('.identity-cta');
+		if (btn && (btn as any)._lastWidth) {
+			const lastWidth = (btn as any)._lastWidth;
+			gsap.set(btn, { width: 'auto' });
+			const targetWidth = btn.offsetWidth;
+
+			gsap.fromTo(
+				btn,
+				{ width: lastWidth },
+				{
+					width: targetWidth,
+					duration: 0.6,
+					ease: 'power2.inOut',
+					clearProps: 'width'
+				}
+			);
+		}
+	}
+
 	if (label) {
 		const anim = animations['reveal-letters-speed'](label, {
 			onComplete: () => {
@@ -323,11 +376,16 @@ useResizeObserver(interactionsRef, () => {
 	>
 		<div class="header-container">
 			<Button
-				:to="language === locales[0] ? '/' : `/${language}`"
+				:to="identityTo"
 				class="identity-cta"
-				@click="trackNavigationClick"
+				@click="handleIdentityAction"
+				:disabled="isAnimating || projectMinimapStore.isFlipping"
 			>
-				<span>{{ siteConfig.identity }}</span>
+				<transition mode="out-in" :css="false" @leave="onActionLeave" @enter="onActionEnter">
+					<div :key="projectMinimapStore.isOpen ? 'back' : 'identity'" class="label-identity">
+						<span>{{ projectMinimapStore.isOpen ? $t('back') : siteConfig.identity }}</span>
+					</div>
+				</transition>
 			</Button>
 
 			<div
@@ -399,7 +457,7 @@ useResizeObserver(interactionsRef, () => {
 <style scoped lang="scss">
 #header {
 	position: fixed;
-	z-index: 20;
+	z-index: 30;
 	bottom: 0;
 	left: 0;
 	width: 100%;
@@ -430,13 +488,20 @@ button {
 	bottom: 0;
 	left: 0;
 	background: $eerieBlack;
+	justify-content: flex-start;
 	padding-inline: var(--header-padding-inline);
 	border-radius: var(--border-radius);
+	white-space: nowrap;
 
 	span {
 		@include roobert-14-uppercase;
 
 		color: $white;
+	}
+
+	.label-identity {
+		display: flex;
+		white-space: nowrap;
 	}
 }
 
