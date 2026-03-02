@@ -5,6 +5,7 @@ import { gsap } from 'gsap';
 import { Flip } from 'gsap/Flip';
 import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
 
+import { animations } from '#utils/Animations.ts';
 import { breakPointsNoUnits } from '#utils/breakpoints.ts';
 import { sleep } from '#utils/sleep.ts';
 
@@ -164,6 +165,7 @@ const onClose = async () => {
 	const isSameImage = initialIndex === currentIndex;
 
 	try {
+		await slideshowRef.value?.animateOut();
 		isVisible.value = false;
 
 		if (isSameImage && clickedElement && clickedParentElement && viewerWrapperRef.value) {
@@ -180,6 +182,7 @@ const onClose = async () => {
 		closeMinimap();
 		resetMinimap();
 		isClosing.value = false;
+		$global.setKey('lockScroll', false);
 		$projectMinimap.setKey('isFlipping', false);
 	}
 };
@@ -204,13 +207,11 @@ watch(
 			$global.setKey('lockScroll', true);
 			slideshowRef.value?.scrollToSlide(currentIndex, true);
 
+			slideshowRef.value?.animateInto();
+
 			if (clickedElement) await animateFlipOpen(clickedElement as any);
 		} else {
-			$global.setKey('lockScroll', false);
-
-			if (isVisible.value && !isClosing.value) {
-				onClose();
-			}
+			if (isVisible.value && !isClosing.value) onClose();
 		}
 	}
 );
@@ -368,7 +369,10 @@ onUnmounted(() => {
 		}
 	}
 
-	.minimap-container,
+	.minimap-container {
+		opacity: 0;
+	}
+
 	.theme-cta,
 	.zoom-container {
 		opacity: 0;

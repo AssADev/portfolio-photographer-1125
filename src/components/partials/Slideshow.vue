@@ -275,20 +275,58 @@ const onPointerUp = (e: PointerEvent) => {
 	}, 50);
 };
 
-// Expose methods to parent :
-defineExpose({
-	scrollToSlide,
-	next: () => {
-		const nextIndex = modelValue.value + 1;
-		if (nextIndex < slidesCache.length) scrollToSlide(nextIndex);
-	},
-	prev: () => {
-		const prevIndex = modelValue.value - 1;
-		if (prevIndex >= 0) scrollToSlide(prevIndex);
-	},
-	isMoving,
-	refreshCache: initSlidesCache
-});
+// Animations :
+const animateInto = () => {
+	if (!slideshowWrapperRef.value) return;
+
+	const tl = gsap.timeline();
+
+	tl.from(slidesCache, {
+		clipPath: 'inset(100% 0% 0% 0%)',
+		duration: 1.2,
+		stagger: 0.04,
+		ease: 'power3.inOut'
+	});
+
+	if (activeIndicatorRef.value) {
+		tl.fromTo(
+			activeIndicatorRef.value,
+			{ opacity: 0, scale: 0.9 },
+			{ opacity: 1, scale: 1, duration: 0.6, ease: 'power2.inOut' },
+			Math.max(0.8, modelValue.value * 0.4)
+		);
+	}
+
+	return tl;
+};
+
+const animateOut = () => {
+	if (!slideshowWrapperRef.value) return;
+
+	const tl = gsap.timeline({
+		onComplete: () => {
+			gsap.set(slidesCache, { clearProps: 'clipPath' });
+			if (activeIndicatorRef.value) gsap.set(activeIndicatorRef.value, { clearProps: 'opacity' });
+		}
+	});
+
+	if (activeIndicatorRef.value) {
+		tl.to(activeIndicatorRef.value, { opacity: 0, duration: 0.4, ease: 'power2.inOut' }, 0);
+	}
+
+	tl.to(
+		slidesCache,
+		{
+			clipPath: 'inset(0% 0% 100% 0%)',
+			duration: 0.8,
+			stagger: 0.025,
+			ease: 'power3.inOut'
+		},
+		0
+	);
+
+	return tl;
+};
 
 // Resize observers :
 useResizeObserver(slideshowContainerRef, () => {
@@ -323,6 +361,23 @@ onUnmounted(() => {
 
 	window.removeEventListener('pointermove', onPointerMove);
 	window.removeEventListener('pointerup', onPointerUp);
+});
+
+// Expose :
+defineExpose({
+	scrollToSlide,
+	next: () => {
+		const nextIndex = modelValue.value + 1;
+		if (nextIndex < slidesCache.length) scrollToSlide(nextIndex);
+	},
+	prev: () => {
+		const prevIndex = modelValue.value - 1;
+		if (prevIndex >= 0) scrollToSlide(prevIndex);
+	},
+	isMoving,
+	refreshCache: initSlidesCache,
+	animateInto,
+	animateOut
 });
 </script>
 
