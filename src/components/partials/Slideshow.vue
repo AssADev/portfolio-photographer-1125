@@ -279,12 +279,12 @@ const onPointerUp = (e: PointerEvent) => {
 const animateInto = () => {
 	if (!slideshowWrapperRef.value) return;
 
-	const tl = gsap.timeline();
+	const tl = gsap.timeline({ delay: 0.25 });
 
 	tl.from(slidesCache, {
-		clipPath: 'inset(100% 0% 0% 0%)',
+		clipPath: isDesktop.value ? 'inset(0% 0% 100% 0%)' : 'inset(100% 0% 0% 0%)',
 		duration: 1.2,
-		stagger: 0.04,
+		stagger: isDesktop.value ? 0.075 : 0.04,
 		ease: 'power3.inOut'
 	});
 
@@ -317,9 +317,8 @@ const animateOut = () => {
 	tl.to(
 		slidesCache,
 		{
-			clipPath: 'inset(0% 0% 100% 0%)',
+			clipPath: isDesktop.value ? 'inset(100% 0% 0% 0%)' : 'inset(0% 0% 100% 0%)',
 			duration: 0.8,
-			stagger: 0.025,
 			ease: 'power3.inOut'
 		},
 		0
