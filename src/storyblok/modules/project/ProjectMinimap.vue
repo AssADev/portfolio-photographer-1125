@@ -164,6 +164,9 @@ const onClose = async () => {
 	const { initialIndex, currentIndex, clickedElement, clickedParentElement } = projectMinimapStore.value;
 	const isSameImage = initialIndex === currentIndex;
 
+	const containerGrid = (clickedParentElement as HTMLElement)?.closest('.container-grid') as HTMLElement;
+	if (containerGrid) gsap.set(containerGrid, { zIndex: '1' });
+
 	try {
 		await slideshowRef.value?.animateOut();
 		isVisible.value = false;
@@ -184,6 +187,8 @@ const onClose = async () => {
 		isClosing.value = false;
 		$global.setKey('lockScroll', false);
 		$projectMinimap.setKey('isFlipping', false);
+
+		if (containerGrid) gsap.set(containerGrid, { clearProps: 'all' });
 	}
 };
 

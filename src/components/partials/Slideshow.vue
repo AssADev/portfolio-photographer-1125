@@ -311,7 +311,7 @@ const animateOut = () => {
 	});
 
 	if (activeIndicatorRef.value) {
-		tl.to(activeIndicatorRef.value, { opacity: 0, duration: 0.4, ease: 'power2.inOut' }, 0);
+		tl.to(activeIndicatorRef.value, { opacity: 0, duration: 0.4, ease: 'power2.inOut', overwrite: true }, 0);
 	}
 
 	tl.to(
