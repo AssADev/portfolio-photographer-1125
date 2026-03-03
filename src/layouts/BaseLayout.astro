@@ -8,6 +8,7 @@ import Lenis from '#components/providers/Lenis.vue';
 
 import SEO from '#components/widgets/Head/SEO.astro';
 import Head from '#components/widgets/Head/Head.astro';
+import Interloader from '#components/widgets/Interloader.vue';
 import TrackingScripts from '#components/scripts/TrackingScripts.astro';
 
 import Header from '#components/widgets/Header.vue';
@@ -61,6 +62,7 @@ setState('url', Astro.url);
 		<slot name="head" />
 	</Head>
 	<body>
+		<Interloader client:only="vue" />
 		<div id="app">
 			<Cursor client:load />
 			<CursorProjects client:load images={projectImages} />
