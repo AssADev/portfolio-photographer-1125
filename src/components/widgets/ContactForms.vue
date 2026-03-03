@@ -154,7 +154,10 @@ defineExpose({
 	>
 		<template #title>
 			<transition v-if="showTransition" name="fade" mode="out-in">
-				<div :key="selectedForm ? selectedForm.content.id : 'default'" class="text-container">
+				<div
+					:key="selectedForm ? `${selectedForm.content.id}-${formStatus}` : 'default'"
+					class="text-container"
+				>
 					<p ref="titleRef" class="title">{{ currentTitle }}</p>
 					<p
 						v-if="currentDescription"

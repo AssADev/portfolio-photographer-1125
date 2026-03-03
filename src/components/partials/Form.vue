@@ -2,9 +2,11 @@
 import VueHcaptcha from '@hcaptcha/vue3-hcaptcha';
 import { useResizeObserver } from '@vueuse/core';
 import { PUBLIC_HCAPTCHA_SITE_KEY, PUBLIC_WEB3FORMS_ACCESS_KEY } from 'astro:env/client';
+import gsap from 'gsap';
 import { useForm } from 'vee-validate';
 import { computed, ref, useTemplateRef, watch } from 'vue';
 
+import { animations } from '#utils/Animations.ts';
 import { getFieldConfig, mapToProps } from '#utils/form.ts';
 import { formatDateForSubmission } from '#utils/formatDate.ts';
 import { formatIndex } from '#utils/formatIndex.ts';
@@ -53,19 +55,20 @@ const emit = defineEmits<{
 	(e: 'status', value: 'idle' | 'success' | 'error'): void;
 }>();
 
+const isAnimating = ref(false);
 const submitError = ref(false);
 const submitSuccess = ref(false);
 const loading = useDeferredLoading(isSubmitting);
 
-watch(submitSuccess, (val: boolean) => {
-	if (val) emit('status', 'success');
+//// Fields :
+const fields: Record<string, any> = {};
+form.content.inputs.forEach((field: any) => {
+	const config = getFieldConfig(field);
+	const [model, props] = defineField(field.name, mapToProps(field.label, config.options));
+	fields[field.name] = { model, props };
 });
 
-watch(submitError, (val: boolean) => {
-	if (val) emit('status', 'error');
-	else if (!submitSuccess.value) emit('status', 'idle');
-});
-
+//// Computed :
 const formError = form.content.formError[0];
 const formErrorSubtitle = computed(() => {
 	return formError.subtitle.replace('{%i}', `<span class="identity">${fields['identity'].model.value}</span>`);
@@ -76,15 +79,6 @@ const formSuccessSubtitle = computed(() => {
 	return formSuccess.subtitle.replace('{%i}', `<span class="identity">${fields['identity'].model.value}</span>`);
 });
 
-//// Fields :
-const fields: Record<string, any> = {};
-form.content.inputs.forEach((field: any) => {
-	const config = getFieldConfig(field);
-	const [model, props] = defineField(field.name, mapToProps(field.label, config.options));
-	fields[field.name] = { model, props };
-});
-
-// Computed :
 const totalFields = computed(() => Object.keys(fields).length);
 const validFieldsCount = computed(() => {
 	return Object.keys(fields).filter((fieldName) => {
@@ -98,7 +92,7 @@ const validFieldsCount = computed(() => {
 const onSubmit = async () => {
 	await handleSubmit(async (values) => {
 		try {
-			await sleep(1000);
+			await sleep(2000);
 
 			// Prepare form data for Web3Forms :
 			const web3FormData = new FormData();
@@ -155,47 +149,95 @@ useResizeObserver(submitCtaRef, () => {
 	const submitCtaHeight = submitCtaRef.value?.$el?.offsetHeight || 0;
 	formContentContainerRef.value?.style.setProperty('--submit-cta-height', `${submitCtaHeight}px`);
 });
+
+// Watchers :
+watch(submitSuccess, (val: boolean) => {
+	if (val) emit('status', 'success');
+});
+
+watch(submitError, (val: boolean) => {
+	if (val) emit('status', 'error');
+	else if (!submitSuccess.value) emit('status', 'idle');
+});
+
+// Animations :
+const onActionLeave = (el: any, done: () => void) => {
+	isAnimating.value = true;
+
+	const label = el.querySelector('span');
+	if (label) {
+		const anim = animations['hide-letters-speed'](label, { onComplete: done });
+		gsap.delayedCall(Math.max(0, anim.totalDuration() - 0.25), done);
+	} else {
+		done();
+	}
+};
+
+const onActionEnter = (el: any, done: () => void) => {
+	const label = el.querySelector('span');
+	if (label) {
+		const anim = animations['reveal-letters-speed'](label, {
+			onComplete: () => {
+				isAnimating.value = false;
+				done();
+			}
+		});
+		gsap.delayedCall(Math.max(0, anim.totalDuration() - 0.25), () => {
+			isAnimating.value = false;
+			done();
+		});
+	} else {
+		isAnimating.value = false;
+		done();
+	}
+};
 </script>
 
 <template>
 	<div class="form-container">
 		<div class="inner-form-container">
-			<div v-if="submitSuccess" class="form-message success">
-				<p class="title" v-html="formSuccessSubtitle"></p>
-				<p class="description">{{ formSuccess.description }}</p>
-			</div>
-			<div v-else-if="submitError" class="form-message error">
-				<p class="title" v-html="formErrorSubtitle"></p>
-				<p class="description">{{ formError.description }}</p>
-				<Button @click="submitError = false" theme="dot-khaki" :text="$t('tryAgain')" />
-			</div>
-			<form ref="formEl" v-else @submit.prevent="onSubmit">
-				<div ref="formContentContainerRef" class="form-content-container">
-					<component
-						v-for="(field, index) in form.content.inputs"
-						v-bind="fields[field.name].props.value"
-						:key="field.name"
-						:is="formInputs[field.component]"
-						:name="field.name"
-						:placeholder="field.placeholder"
-						:index="Number(index) + 1"
-						:autocomplete="getFieldConfig(field).autocomplete"
-						:items="field.items"
-						v-model="fields[field.name].model.value"
-					/>
+			<transition name="fade" mode="out-in">
+				<div v-if="submitSuccess" key="success" class="form-message success">
+					<p class="title" v-html="formSuccessSubtitle"></p>
+					<p class="description">{{ formSuccess.description }}</p>
 				</div>
-
-				<Button type="submit" class="submit-cta" ref="submitCtaRef" :disabled="loading">
-					<div class="inner-submit-cta">
-						<span>{{ loading ? $t('contactIsSending') : form.content.submitLabel }}</span>
-						<span class="total-wrapper">
-							{{ formatIndex(validFieldsCount) }} /{{ formatIndex(totalFields) }}
-						</span>
+				<div v-else-if="submitError" key="error" class="form-message error">
+					<p class="title" v-html="formErrorSubtitle"></p>
+					<p class="description">{{ formError.description }}</p>
+					<Button @click="submitError = false" theme="dot-khaki" :text="$t('tryAgain')" />
+				</div>
+				<form ref="formEl" v-else key="form" @submit.prevent="onSubmit">
+					<div ref="formContentContainerRef" class="form-content-container">
+						<component
+							v-for="(field, index) in form.content.inputs"
+							v-bind="fields[field.name].props.value"
+							:key="field.name"
+							:is="formInputs[field.component]"
+							:name="field.name"
+							:placeholder="field.placeholder"
+							:index="Number(index) + 1"
+							:autocomplete="getFieldConfig(field).autocomplete"
+							:items="field.items"
+							v-model="fields[field.name].model.value"
+						/>
 					</div>
-				</Button>
 
-				<VueHcaptcha :sitekey="PUBLIC_HCAPTCHA_SITE_KEY" size="invisible" />
-			</form>
+					<Button type="submit" class="submit-cta" ref="submitCtaRef" :disabled="loading || isAnimating">
+						<div class="inner-submit-cta">
+							<transition mode="out-in" :css="false" @leave="onActionLeave" @enter="onActionEnter">
+								<div :key="loading ? 'sending' : 'submit'" class="label-submit">
+									<span>{{ loading ? $t('contactIsSending') : form.content.submitLabel }}</span>
+								</div>
+							</transition>
+							<span class="total-wrapper">
+								{{ formatIndex(validFieldsCount) }} /{{ formatIndex(totalFields) }}
+							</span>
+						</div>
+					</Button>
+
+					<VueHcaptcha :sitekey="PUBLIC_HCAPTCHA_SITE_KEY" size="invisible" />
+				</form>
+			</transition>
 		</div>
 	</div>
 </template>
@@ -270,6 +312,11 @@ useResizeObserver(submitCtaRef, () => {
 		gap: var(--menu-padding-inline);
 		width: 100%;
 		padding: 16px var(--menu-padding-inline);
+
+		.label-submit {
+			display: flex;
+			white-space: nowrap;
+		}
 	}
 
 	.total-wrapper {
