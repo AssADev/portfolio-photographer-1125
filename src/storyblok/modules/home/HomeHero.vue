@@ -29,7 +29,7 @@ const { blok, projects } = defineProps<{
 const containerRef = useTemplateRef('containerRef');
 const dropdownRef = useTemplateRef('dropdownRef');
 const filtersContainerRef = useTemplateRef('filtersContainerRef');
-const richTextRef = useTemplateRef('richTextRef');
+const titleRef = useTemplateRef('titleRef');
 
 // Store :
 const currentFilter = useStore($currentFilter);
@@ -160,7 +160,7 @@ const enterMaskedChars = async (newText: string, charsRef: typeof labelChars, co
 const updateFontSize = async () => {
 	await nextTick();
 	const container = containerRef.value;
-	const textEl = richTextRef.value?.el as HTMLElement | undefined;
+	const textEl = titleRef.value?.el as HTMLElement | undefined;
 
 	if (container && textEl) {
 		textEl.style.fontSize = '100px';
@@ -295,7 +295,7 @@ onUnmounted(() => {
 	<section class="modules home-hero">
 		<div ref="containerRef" class="container">
 			<div class="content-container">
-				<RichText ref="richTextRef" :doc="blok.title" :resolvers="resolvers" />
+				<RichText ref="titleRef" :doc="blok.title" :resolvers="resolvers" />
 				<div
 					ref="filtersContainerRef"
 					class="filters-container hide-desktop"
@@ -382,11 +382,15 @@ onUnmounted(() => {
 		line-height: 1;
 		text-wrap: nowrap;
 		white-space: nowrap;
-		margin-block-end: fluidSize(40px, 24px);
+
+		@include mq($until: desktop) {
+			margin-block-end: fluidSize(48px, 24px, null, desktop);
+		}
 
 		@include mq(desktop) {
 			white-space: nowrap;
 			display: inline-block;
+			margin-block-end: fluidSize(60px, 32px, null, widescreen);
 
 			h1 {
 				display: inline;
