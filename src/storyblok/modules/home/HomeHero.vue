@@ -379,10 +379,11 @@ onUnmounted(() => {
 .content-container {
 	position: relative;
 	z-index: 1;
-	transition: transform 0.8s $power2Out;
+	transition: transform 0.8s $power2InOut;
 
 	&.is-scrolled {
 		transform: translate3d(0, calc(-100% + 40px + var(--gutter)), 0);
+		transition: transform 0.8s $power2Out;
 
 		& > :deep(.partials-rich-text) {
 			transform: translate3d(0, -20px, 0);
@@ -396,7 +397,7 @@ onUnmounted(() => {
 		line-height: 1;
 		text-wrap: nowrap;
 		white-space: nowrap;
-		transition: transform 0.6s $power2Out;
+		transition: transform 1.2s $power2InOut;
 
 		@include mq($until: desktop) {
 			margin-block-end: fluidSize(48px, 24px, null, desktop);
