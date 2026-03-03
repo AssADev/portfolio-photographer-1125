@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useStore } from '@nanostores/vue';
 import type { ISbStoryData } from '@storyblok/js';
-import { useResizeObserver } from '@vueuse/core';
+import { useResizeObserver, useWindowScroll } from '@vueuse/core';
 import gsap from 'gsap';
 import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
 
@@ -10,6 +10,7 @@ import { getRichTextResolvers } from '#utils/getRichTextResolvers.ts';
 import { t } from '#utils/i18n.ts';
 
 import IconPlusMinus from '#components/partials/IconPlusMinus.vue';
+import LabelShuffle from '#components/partials/LabelShuffle.vue';
 import Button from '#components/utils/Button.vue';
 import RichText from '#components/utils/RichText.vue';
 
@@ -48,7 +49,8 @@ const mobileFilters = ref<{ slug: string; name: string; count: number }[]>([]);
 const mobileLabelRef = useTemplateRef('mobileLabelRef');
 const mobileCountRef = useTemplateRef('mobileCountRef');
 
-const stringToChars = (s: string) => s.split('').map((c) => ({ char: c, id: charIdCounter++ }));
+// Composables :
+const { y } = useWindowScroll();
 
 useTrap(filtersContainerRef, {
 	model: isDropdownToggle,
@@ -82,6 +84,8 @@ const allFilters = computed(() => {
 });
 
 // Helper :
+const stringToChars = (s: string) => s.split('').map((c) => ({ char: c, id: charIdCounter++ }));
+
 const extractPlainText = (doc: any): string => {
 	if (!doc) return '';
 	if (typeof doc === 'string') return doc;
@@ -294,7 +298,7 @@ onUnmounted(() => {
 <template>
 	<section class="modules home-hero">
 		<div ref="containerRef" class="container">
-			<div class="content-container">
+			<div class="content-container" :class="{ 'is-scrolled': y > 40 }">
 				<RichText ref="titleRef" :doc="blok.title" :resolvers="resolvers" />
 				<div
 					ref="filtersContainerRef"
@@ -342,7 +346,7 @@ onUnmounted(() => {
 						@click="handleFilterClick('allMyProjects')"
 					>
 						<div class="inner-cta">
-							<span>{{ $t('allMyProjects') }}</span>
+							<LabelShuffle :label="$t('allMyProjects')" no-snap />
 							<span class="number">({{ formatIndex(getProjectCount()) }})</span>
 						</div>
 					</Button>
@@ -354,7 +358,7 @@ onUnmounted(() => {
 						@click="handleFilterClick(service.slug)"
 					>
 						<div class="inner-cta">
-							<span><RichText :doc="service.content.informations?.[0]?.name" /></span>
+							<span><RichText :doc="service.content.informations?.[0]?.name" shuffle no-snap /></span>
 							<span class="number">({{ formatIndex(getProjectCount(service.slug)) }})</span>
 						</div>
 					</Button>
@@ -369,12 +373,22 @@ onUnmounted(() => {
 	position: sticky;
 	z-index: 2;
 	top: 0;
-	margin-block-end: fluidSize(96px, 60px, null, xxlarge);
+	margin-block-end: fluidSize(128px, 56px, null, widescreen);
 }
 
 .content-container {
 	position: relative;
 	z-index: 1;
+	transition: transform 0.8s $power2Out;
+
+	&.is-scrolled {
+		transform: translate3d(0, calc(-100% + 40px + var(--gutter)), 0);
+
+		& > :deep(.partials-rich-text) {
+			transform: translate3d(0, -20px, 0);
+			transition: transform 2.4s $power2Out;
+		}
+	}
 
 	& > :deep(.partials-rich-text) {
 		@include roobert(400, none, -0.02em);
@@ -382,6 +396,7 @@ onUnmounted(() => {
 		line-height: 1;
 		text-wrap: nowrap;
 		white-space: nowrap;
+		transition: transform 0.6s $power2Out;
 
 		@include mq($until: desktop) {
 			margin-block-end: fluidSize(48px, 24px, null, desktop);
@@ -390,7 +405,7 @@ onUnmounted(() => {
 		@include mq(desktop) {
 			white-space: nowrap;
 			display: inline-block;
-			margin-block-end: fluidSize(60px, 32px, null, widescreen);
+			margin-block-end: fluidSize(60px, 42px, null, widescreen);
 
 			h1 {
 				display: inline;

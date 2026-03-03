@@ -50,7 +50,7 @@ const scaledProjects = computed(() => {
 <template>
 	<section class="modules projects-marquee">
 		<div class="circular-star-wrapper">
-			<CircularStar :scroll-speed="0.5" />
+			<CircularStar v-animate="{ type: 'scale-up', options: { delay: 0.85, reset: true } }" :scroll-speed="0.5" />
 		</div>
 		<div class="container-grid">
 			<RichText

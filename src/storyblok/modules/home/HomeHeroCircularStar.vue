@@ -5,7 +5,7 @@ import CircularStar from '#components/utils/CircularStar.vue';
 <template>
 	<div class="modules home-hero-circular-star">
 		<div class="circular-star-wrapper">
-			<CircularStar :scroll-speed="1" />
+			<CircularStar v-animate="{ type: 'scale-up', options: { delay: 0.85, reset: true } }" :scroll-speed="1" />
 		</div>
 	</div>
 </template>
@@ -29,7 +29,7 @@ import CircularStar from '#components/utils/CircularStar.vue';
 		}
 
 		@include mq($until: large) {
-			transform: translate3d(0, -40%, 0);
+			transform: translate3d(0, -50%, 0);
 		}
 
 		@include mq(desktop) {
