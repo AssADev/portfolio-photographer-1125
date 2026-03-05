@@ -3,6 +3,6 @@ export const pageContentTypes = ['Home', 'Biography', 'Services', 'Service', 'Pr
 export const HOME_SLUG = 'home';
 export const configPrefix = 'config';
 export const previewSlugs = [`${configPrefix}/site-config`];
-export const forbiddenSlugs = [configPrefix];
+export const forbiddenSlugs = [configPrefix, 'forms/'];
 
 export const specialApiSlugs = ['api', 'sitemap.xml', 'robots.txt'];

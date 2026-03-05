@@ -2,7 +2,7 @@
 import { useIntersectionObserver, useResizeObserver, useTemplateRefsList } from '@vueuse/core';
 import type Lenis from 'lenis';
 import { useLenis } from 'lenis/vue';
-import { onUnmounted, ref, useTemplateRef, watchEffect } from 'vue';
+import { onUnmounted, ref, useTemplateRef, watch, watchEffect } from 'vue';
 
 import { Motion } from '#utils/Motion.ts';
 
@@ -12,7 +12,7 @@ import Icon from '#components/utils/Icon.vue';
 const { scrollSpeed } = defineProps<{ scrollSpeed?: number }>();
 
 // Refs :
-let inView = false;
+const inView = ref(false);
 let animation: Animation | undefined;
 
 const containerRef = useTemplateRef('containerRef');
@@ -26,14 +26,18 @@ rate.on('change', (r: any) => animation?.updatePlaybackRate(r));
 
 // Methods :
 const onScroll = (instance: Lenis) => {
-	rate.set(instance.velocity * (scrollSpeed || 1) + instance.direction * Math.sign(scrollSpeed || 1));
+	// Ensure we have a direction (default to 1) to avoid stopping the animation when scroll is idle or reset :
+	const direction = instance.direction || 1;
+	rate.set(instance.velocity * (scrollSpeed || 1) + direction * Math.sign(scrollSpeed || 1));
 };
 
 // Watchers :
 watchEffect(() => {
+	if (!innerRef.value) return;
+
 	animation?.cancel();
 
-	animation = innerRef.value?.animate(
+	animation = innerRef.value.animate(
 		[
 			{ transform: `rotate(-${360 * numberOfRotations}deg)` },
 			{ transform: `rotate(${360 * numberOfRotations}deg)` }
@@ -45,30 +49,36 @@ watchEffect(() => {
 		}
 	);
 
-	// Commence au milieu de l'animation (position 0deg)
-	if (animation) {
-		animation.currentTime = (animation.effect?.getTiming().duration as number) / 2;
-	}
+	// Sync current rate immediately :
+	animation.updatePlaybackRate(rate.value);
 
-	if (!inView) animation?.pause();
+	// Commence au milieu de l'animation (position 0deg)
+	animation.currentTime = (animation.effect?.getTiming().duration as number) / 2;
+
+	if (!inView.value) animation.pause();
+});
+
+// Play/Pause animation based on visibility
+watch(inView, (val: boolean) => {
+	if (val) animation?.play();
+	else animation?.pause();
+});
+
+// Manage scroll listener with automatic cleanup
+watchEffect(() => {
+	if (scrollSpeed && lenis.value && inView.value) {
+		lenis.value.on('scroll', onScroll);
+		return () => lenis.value.off('scroll', onScroll);
+	}
 });
 
 useIntersectionObserver(containerRef, ([entry]) => {
-	if (entry.isIntersecting) {
-		inView = true;
-		animation?.play();
-		scrollSpeed && lenis.value?.on('scroll', onScroll);
-	} else {
-		inView = false;
-		animation?.pause();
-		scrollSpeed && lenis.value?.off('scroll', onScroll);
-	}
+	inView.value = entry.isIntersecting;
 });
 
 // Detach :
 onUnmounted(() => {
 	rate.clean();
-	lenis.value?.off('scroll', onScroll);
 });
 </script>
 

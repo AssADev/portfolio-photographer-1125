@@ -31,7 +31,10 @@ export async function getStoryblokLinks(): Promise<ProcessedLink[]> {
 			link.real_path &&
 			!link.is_folder &&
 			!previewSlugs.includes(trimmedPath) &&
-			!forbiddenSlugs.find((slug) => trimmedPath.startsWith(slug))
+			!forbiddenSlugs.some((forbidden) => {
+				const normalizedForbidden = forbidden.replace(/\/$/, '');
+				return trimmedPath.split('/').includes(normalizedForbidden);
+			})
 		) {
 			processedLinks.push({
 				originalPath: link.real_path,
