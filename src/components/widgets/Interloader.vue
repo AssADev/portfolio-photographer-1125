@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 import { breakPointsNoUnits } from '#utils/breakpoints.ts';
@@ -12,6 +13,7 @@ import { $global } from '#stores/global.ts';
 const ANIMATION_DURATION = 0; // ms
 
 // Refs :
+const isTablet = ref(false);
 const isDesktop = ref(false);
 
 // Composables :
@@ -27,6 +29,7 @@ const deferredLoading = useDeferredLoading(loading, {
 
 // Methods :
 const checkBreakpoint = () => {
+	isTablet.value = window.innerWidth >= breakPointsNoUnits.tablet;
 	isDesktop.value = window.innerWidth >= breakPointsNoUnits.desktop;
 };
 
@@ -42,7 +45,7 @@ onUnmounted(() => {
 
 // Computed :
 const visible = computed(() => deferredLoading.value && !isPrevNext.value);
-const panelCount = computed(() => (isDesktop.value ? 6 : 4));
+const panelCount = computed(() => (isDesktop.value ? 9 : isTablet.value ? 7 : 5));
 
 // Animations :
 const onEnter = (el: Element, done: () => void) => {
@@ -51,9 +54,10 @@ const onEnter = (el: Element, done: () => void) => {
 	const panels = (el as HTMLElement).querySelectorAll('.panel-wrapper .panel');
 	gsap.fromTo(
 		panels,
-		{ scaleX: 0, transformOrigin: 'left' },
+		// Un sur deux c'est top sinon c'est bottom :
+		{ scaleY: 0, transformOrigin: (index: number) => (index % 2 === 0 ? 'bottom' : 'top') },
 		{
-			scaleX: 1.05,
+			scaleY: 1.05,
 			duration: 0.8,
 			stagger: 0.1,
 			ease: 'power2.inOut',
@@ -65,13 +69,14 @@ const onEnter = (el: Element, done: () => void) => {
 const onLeave = (el: Element, done: () => void) => {
 	const panels = (el as HTMLElement).querySelectorAll('.panel-wrapper .panel');
 	gsap.to(panels, {
-		scaleX: 0,
+		scaleY: 0,
 		duration: 1,
 		stagger: 0.1,
-		transformOrigin: 'right',
+		transformOrigin: (index: number) => (index % 2 === 0 ? 'top' : 'bottom'),
 		ease: 'power2.inOut',
 		onComplete: () => {
 			$global.setKey('lockScroll', false);
+			ScrollTrigger.refresh();
 			done();
 		}
 	});

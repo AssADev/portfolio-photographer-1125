@@ -1,7 +1,11 @@
 <script setup lang="ts">
+import { computed, inject } from 'vue';
+
 import { getRichTextResolvers } from '#utils/getRichTextResolvers.ts';
+import locales from '#utils/locales.json';
 import { nl2br } from '#utils/nl2br.ts';
 
+import Button from '#components/utils/Button.vue';
 import RichText from '#components/utils/RichText.vue';
 
 import type { StoryblokServiceInformations } from '#types/component-types-sb.js';
@@ -10,6 +14,20 @@ import type { StoryblokServiceInformations } from '#types/component-types-sb.js'
 defineProps<{
 	blok: StoryblokServiceInformations;
 }>();
+
+// Injections :
+const siteConfig = inject<any>('siteConfig');
+const language = inject<string>('language');
+
+// Computed :
+const servicesLink = computed(() => {
+	const servicesMenuItem = siteConfig?.menuLinks?.find((item: any) => item.link?.component === 'Services');
+
+	if (servicesMenuItem) return servicesMenuItem.link.url;
+
+	// Fallback :
+	return language === locales[0] ? '/services' : `/${language}/services`;
+});
 
 // Resolvers (RichText) :
 const resolvers = getRichTextResolvers('h1');
@@ -27,7 +45,12 @@ const resolvers = getRichTextResolvers('h1');
 		<div class="container">
 			<div class="title-wrapper">
 				<RichText v-animate="'reveal-titles'" :doc="blok.name" :resolvers="resolvers" />
-				<p v-animate="{ type: 'reveal-letters', options: { delay: 0.85 } }">/{{ $t('service') }}</p>
+				<Button
+					:to="servicesLink"
+					v-animate="{ type: 'reveal-letters', options: { delay: 0.85 } }"
+					data-cursor-snap
+					>/{{ $t('service') }}</Button
+				>
 			</div>
 		</div>
 	</section>
@@ -44,11 +67,17 @@ const resolvers = getRichTextResolvers('h1');
 	align-items: flex-end;
 	gap: 2px;
 
-	& > p {
+	& > a {
 		@include roobert-12-uppercase;
 
 		margin-block-start: fluidSize(8px, 6px, null, tablet);
 		color: $khaki;
+		transition: color 0.25s $power2Out;
+
+		@include hover {
+			color: $eerieBlack;
+			transition: color 0.4s $power2Out 0.1s;
+		}
 	}
 }
 
