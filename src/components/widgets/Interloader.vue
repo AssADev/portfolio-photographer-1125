@@ -17,7 +17,7 @@ const isTablet = ref(false);
 const isDesktop = ref(false);
 
 // Composables :
-const { loading, isPrevNext } = useRouter({
+const { loading } = useRouter({
 	beforeLoad: () => new Promise((resolve) => setTimeout(resolve, ANIMATION_DURATION))
 });
 
@@ -44,7 +44,7 @@ onUnmounted(() => {
 });
 
 // Computed :
-const visible = computed(() => deferredLoading.value && !isPrevNext.value);
+const visible = computed(() => deferredLoading.value);
 const panelCount = computed(() => (isDesktop.value ? 9 : isTablet.value ? 7 : 5));
 
 // Animations :
