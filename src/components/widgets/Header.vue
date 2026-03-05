@@ -16,6 +16,7 @@ import Menu from '#components/widgets/Menu.vue';
 
 import type { LanguageAlternate } from '#types/seo.ts';
 
+import { useRouter } from '#composables/useRouter.ts';
 import { useTrap } from '#composables/useTrap.ts';
 import { $global } from '#stores/global.ts';
 import { $projectMinimap, closeMinimap } from '#stores/project.ts';
@@ -29,6 +30,8 @@ const { siteConfig, language, languageAlternates } = defineProps<{
 
 // Providers & Stores :
 provide('siteConfig', siteConfig);
+
+const { location } = useRouter();
 
 const globalStore = useStore($global);
 const projectMinimapStore = useStore($projectMinimap);
@@ -67,6 +70,12 @@ const activeDrawer = computed(() => {
 const identityTo = computed(() => {
 	if (projectMinimapStore.value.isOpen) return undefined;
 	return language === locales[0] ? '/' : `/${language}`;
+});
+
+const isHome = computed(() => {
+	const currentPath = location.value.pathname.replace(/\/$/, '') || '/';
+	const targetPath = identityTo.value?.replace(/\/$/, '') || '/';
+	return currentPath === targetPath;
 });
 
 const orderedLocales = computed(() => {
@@ -402,10 +411,10 @@ useResizeObserver(interactionsRef, () => {
 	>
 		<div class="header-container">
 			<Button
-				:to="identityTo"
+				:to="isHome ? undefined : identityTo"
 				class="identity-cta"
 				@click="handleIdentityAction"
-				:disabled="isAnimating || projectMinimapStore.isFlipping"
+				:disabled="isAnimating || projectMinimapStore.isFlipping || isHome"
 			>
 				<transition mode="out-in" :css="false" @leave="onActionLeave" @enter="onActionEnter">
 					<div :key="projectMinimapStore.isOpen ? 'back' : 'identity'" class="label-identity">

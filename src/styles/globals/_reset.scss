@@ -42,7 +42,7 @@ button {
 	cursor: pointer;
 
 	&:disabled {
-		pointer-events: none;
+		pointer-events: none !important;
 	}
 }
 
