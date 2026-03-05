@@ -42,14 +42,14 @@ const resolvers = getRichTextResolvers('h2');
 			<div class="content-wrapper" :class="{ 'is-column': isColumn }">
 				<hr v-animate="{ type: 'scale-up', options: { withoutOpacity: true } }" />
 				<RichText
-					v-animate="{ type: 'reveal-letters', options: { delay: 0.25, start: 'top 110%' } }"
+					v-animate="{ type: 'reveal-letters', options: { delay: 0.1 } }"
 					prefix="/"
 					:resolvers="resolvers"
 					:doc="title"
 				/>
 				<p
 					v-if="summary"
-					v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.25, start: 'top 110%' } }"
+					v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.15 } }"
 					class="summary"
 					v-html="nl2br(summary)"
 				></p>

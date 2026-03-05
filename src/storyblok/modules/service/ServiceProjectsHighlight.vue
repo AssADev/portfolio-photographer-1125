@@ -28,6 +28,8 @@ const isGrabbing = ref(false);
 const progressBars = ref<HTMLElement[]>([]);
 const currentAnim = ref<gsap.core.Tween | null>(null);
 
+let st: ScrollTrigger | null = null;
+
 const [emblaRef, emblaApi] = emblaCarouselVue({
 	active: (blok.projects?.length ?? 0) > 1 ? true : false,
 	loop: true
@@ -149,7 +151,7 @@ onMounted(() => {
 	emblaApi.value.on('pointerUp', onPointerUp);
 
 	// Init :
-	ScrollTrigger.create({
+	st = ScrollTrigger.create({
 		trigger: sectionRef.value,
 		onToggle: (self) => {
 			isVisible.value = self.isActive;
@@ -168,6 +170,7 @@ onMounted(() => {
 
 onUnmounted(() => {
 	killAutoplay();
+	st?.kill();
 });
 </script>
 

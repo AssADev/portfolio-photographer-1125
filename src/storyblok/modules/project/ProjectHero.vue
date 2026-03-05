@@ -2,7 +2,7 @@
 import type { ISbStoryData } from '@storyblok/js';
 import { useElementSize } from '@vueuse/core';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { computed, onMounted, ref, useTemplateRef } from 'vue';
+import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
 
 import { formatDateMonthYear } from '#utils/formatDate.ts';
 import { getRichTextResolvers } from '#utils/getRichTextResolvers.ts';
@@ -29,6 +29,8 @@ const { blok, pictures } = defineProps<{
 const marqueePlaying = ref(true);
 const sectionRef = useTemplateRef('sectionRef');
 const marqueeRef = useTemplateRef('marqueeRef');
+
+let st: ScrollTrigger | null = null;
 
 const { height: marqueeHeight } = useElementSize(marqueeRef);
 
@@ -69,16 +71,22 @@ const informations = computed(() => {
 	];
 });
 
-// Attach :
+// Attach & Detach :
 onMounted(() => {
-	ScrollTrigger.create({
+	st = ScrollTrigger.create({
 		trigger: sectionRef.value,
 		start: 'bottom bottom',
 		end: 'bottom top',
 		onUpdate: (self) => {
-			sectionRef.value!.style.opacity = Number(1 - self.progress).toFixed(2);
+			if (sectionRef.value) {
+				sectionRef.value.style.opacity = Number(1 - self.progress).toFixed(2);
+			}
 		}
 	});
+});
+
+onUnmounted(() => {
+	st?.kill();
 });
 </script>
 
