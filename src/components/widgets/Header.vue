@@ -224,6 +224,10 @@ watchEffect(() => {
 	hidden.value = scrollHide.value;
 });
 
+watch(isContactToggled, (val) => {
+	if (!val) contactFormId.value = undefined;
+});
+
 watch([isContactToggled, isMenuToggled], async ([contactVal, menuVal], [oldContact, oldMenu]) => {
 	if (isAnimating.value) return;
 	isAnimating.value = true;
