@@ -155,7 +155,6 @@ onUnmounted(() => {
 
 		img {
 			transform: scale3d(1.0325, 1.0325, 1);
-			transition: transform 0.6s $elasticOut;
 		}
 	}
 

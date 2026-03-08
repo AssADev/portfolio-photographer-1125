@@ -75,7 +75,7 @@ const resolvers = getRichTextResolvers('h2');
 	.picture-wrapper {
 		position: relative;
 		height: 100%;
-		transition: transform 0.8s $elasticOut;
+		transition: transform 0.8s $power2Out;
 
 		&::before {
 			content: '';

@@ -294,7 +294,7 @@ onUnmounted(() => {
 .picture-wrapper {
 	position: absolute;
 	inset: 0;
-	transition: transform 0.6s $elasticOut;
+	transition: transform 0.8s $power2Out;
 
 	img {
 		@include img-fill;

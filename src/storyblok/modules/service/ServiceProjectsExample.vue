@@ -134,7 +134,7 @@ const projects = computed(() => {
 .picture-wrapper {
 	width: 100%;
 	height: 100%;
-	transition: transform 0.6s $elasticOut;
+	transition: transform 0.8s $power2Out;
 
 	:deep(img) {
 		@include img-fill;
