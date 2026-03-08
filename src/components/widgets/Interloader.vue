@@ -45,41 +45,45 @@ onUnmounted(() => {
 
 // Computed :
 const visible = computed(() => deferredLoading.value);
-const panelCount = computed(() => (isDesktop.value ? 9 : isTablet.value ? 7 : 5));
+const panelCount = computed(() => (isDesktop.value ? 13 : isTablet.value ? 9 : 7));
 
 // Animations :
+const ANIMATION_OPTS = {
+	duration: 1.1,
+	stagger: 0.05,
+	ease: 'power2.inOut'
+};
+
 const onEnter = (el: Element, done: () => void) => {
 	$global.setKey('lockScroll', true);
 
-	const panels = (el as HTMLElement).querySelectorAll('.panel-wrapper .panel');
-	gsap.fromTo(
-		panels,
-		// Un sur deux c'est top sinon c'est bottom :
-		{ scaleY: 0, transformOrigin: (index: number) => (index % 2 === 0 ? 'bottom' : 'top') },
-		{
-			scaleY: 1.05,
-			duration: 0.8,
-			stagger: 0.1,
-			ease: 'power2.inOut',
-			onComplete: done
-		}
-	);
+	const container = el as HTMLElement;
+	const topPanels = container.querySelectorAll('.panel-top');
+	const bottomPanels = container.querySelectorAll('.panel-bottom');
+
+	gsap.timeline({
+		defaults: ANIMATION_OPTS,
+		onComplete: done
+	})
+		.fromTo(topPanels, { scaleY: 0, transformOrigin: 'top' }, { scaleY: 1.05 }, 0)
+		.fromTo(bottomPanels, { scaleY: 0, transformOrigin: 'bottom' }, { scaleY: 1.05 }, 0);
 };
 
 const onLeave = (el: Element, done: () => void) => {
-	const panels = (el as HTMLElement).querySelectorAll('.panel-wrapper .panel');
-	gsap.to(panels, {
-		scaleY: 0,
-		duration: 1,
-		stagger: 0.1,
-		transformOrigin: (index: number) => (index % 2 === 0 ? 'top' : 'bottom'),
-		ease: 'power2.inOut',
+	const container = el as HTMLElement;
+	const topPanels = container.querySelectorAll('.panel-top');
+	const bottomPanels = container.querySelectorAll('.panel-bottom');
+
+	gsap.timeline({
+		defaults: ANIMATION_OPTS,
 		onComplete: () => {
 			$global.setKey('lockScroll', false);
 			ScrollTrigger.refresh();
 			done();
 		}
-	});
+	})
+		.to(topPanels, { scaleY: 0, transformOrigin: 'top' }, 0)
+		.to(bottomPanels, { scaleY: 0, transformOrigin: 'bottom' }, 0);
 };
 </script>
 
@@ -88,7 +92,8 @@ const onLeave = (el: Element, done: () => void) => {
 		<div v-if="visible" aria-hidden="true" class="interloader-container">
 			<div class="interloader">
 				<div v-for="i in panelCount" :key="i" class="panel-wrapper">
-					<div class="panel"></div>
+					<div class="panel-top"></div>
+					<div class="panel-bottom"></div>
 				</div>
 			</div>
 		</div>
@@ -114,12 +119,15 @@ const onLeave = (el: Element, done: () => void) => {
 }
 
 .panel-wrapper {
+	display: flex;
+	flex-direction: column;
 	flex: 1;
 	height: 100%;
 	overflow: hidden;
 }
 
-.panel {
+.panel-top,
+.panel-bottom {
 	width: 100%;
 	height: 100%;
 	background: $whiteChoco;
