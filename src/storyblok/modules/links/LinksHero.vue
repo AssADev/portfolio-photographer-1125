@@ -73,7 +73,7 @@ const resolvers = getRichTextResolvers('h1');
 							:href="`mailto:${email}`"
 							:data-cursor-label="$t('email')"
 							@click="trackNavigationClick"
-							v-animate="{ type: 'reveal-square', options: { delay: 0.45, withoutSvgRotate: true } }"
+							v-animate="{ type: 'reveal-square', options: { delay: 0.45 } }"
 						>
 							<Icon v-animate="{ type: 'scale-up', options: { delay: 1 } }" name="email" />
 						</a>
@@ -83,7 +83,7 @@ const resolvers = getRichTextResolvers('h1');
 							:href="homeUrl"
 							:data-cursor-label="$t('website')"
 							@click="trackNavigationClick"
-							v-animate="{ type: 'reveal-square', options: { delay: 0.5, withoutSvgRotate: true } }"
+							v-animate="{ type: 'reveal-square', options: { delay: 0.5 } }"
 						>
 							<Icon v-animate="{ type: 'scale-up', options: { delay: 1.05 } }" name="website" />
 						</a>

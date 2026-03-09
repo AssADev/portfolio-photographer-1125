@@ -68,13 +68,13 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 				dot,
 				{
 					scale: 0,
-					rotateZ: options.withoutSvgRotate ? 0 : 90,
+					rotateZ: 90,
+					delay: 0.65,
 					duration: 0.4,
 					ease: 'power2.out',
-					delay: 0.65,
-					transformOrigin: options.withTranslate ? 'top left' : 'center center',
-					immediateRender: true,
 					transition: 'none',
+					immediateRender: true,
+					transformOrigin: 'center center',
 					onComplete: () => {
 						gsap.set(dot, { clearProps: 'all' });
 					}
@@ -270,7 +270,7 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 
 		// Animation :
 		tl.from(el, {
-			clipPath: 'inset(0% 100% 100% 0%)',
+			clipPath: options.fromTopRight ? 'inset(0% 0% 100% 100%)' : 'inset(0% 100% 100% 0%)',
 			duration: 1.2,
 			ease: 'power3.inOut',
 			pointerEvents: 'none',
