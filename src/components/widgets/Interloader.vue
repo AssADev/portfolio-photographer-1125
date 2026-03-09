@@ -128,7 +128,7 @@ const onLeave = (el: Element, done: () => void) => {
 
 .panel-top,
 .panel-bottom {
-	width: 100%;
+	width: 105%;
 	height: 100%;
 	background: $whiteChoco;
 }

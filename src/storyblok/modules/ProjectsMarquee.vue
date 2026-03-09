@@ -152,7 +152,13 @@ const scaledProjects = computed(() => {
 		text-wrap: balance;
 
 		@include mq(desktop) {
+			display: flex;
+			justify-content: flex-end;
 			text-align: right;
+
+			.reveal-titles-line-wrapper {
+				width: auto;
+			}
 		}
 
 		em {

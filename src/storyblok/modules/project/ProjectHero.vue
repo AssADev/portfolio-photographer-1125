@@ -292,6 +292,7 @@ onUnmounted(() => {
 	& > :deep(.partials-rich-text) {
 		@include roobert-96;
 
+		display: inline-block;
 		max-width: fluidSize(960px, 420px);
 		margin-inline: auto;
 
