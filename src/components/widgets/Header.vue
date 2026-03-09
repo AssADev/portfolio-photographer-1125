@@ -428,25 +428,25 @@ useResizeObserver(interactionsRef, () => {
 				class="interactions-container"
 				:class="{ 'is-contact-open': isContactToggled, 'is-menu-open': isMenuToggled }"
 			>
-				<Button class="contact-cta" :disabled="isMenuToggled" @click="handleContactAction">
+				<div class="contact-cta-wrapper" :class="{ 'is-disabled': isMenuToggled }">
+					<Button class="contact-trigger" :disabled="isMenuToggled" @click="handleContactAction"></Button>
 					<span ref="contactLabelRef" class="label-contact">{{ $t('contactLabel') }}</span>
-
 					<div ref="languagesRef" class="languages-wrapper">
 						<ul class="languages-selector-container">
 							<template v-for="(locale, index) in orderedLocales" :key="locale">
 								<li>
 									<span v-if="locale === language" ref="languageItemsRef">{{ locale }}</span>
-									<a
+									<Button
 										v-else
 										ref="languageItemsRef"
-										:href="
+										:to="
 											languageAlternates
 												?.find((alt) => alt.hrefLang.split('-')[0] === locale)
 												?.href.toString() || (locale === locales[0] ? '/' : `/${locale}`)
 										"
 									>
 										<span>{{ locale }}</span>
-									</a>
+									</Button>
 								</li>
 								<Icon
 									v-if="index < orderedLocales.length - 1"
@@ -464,7 +464,7 @@ useResizeObserver(interactionsRef, () => {
 							</div>
 						</transition>
 					</div>
-				</Button>
+				</div>
 
 				<Button class="menu-cta" @click="toggleMenu" :aria-label="$t(isMenuToggled ? 'closeMenu' : 'openMenu')">
 					<IconPlusMinus ref="iconPlusMinusRef" />
@@ -586,7 +586,7 @@ button {
 	}
 
 	&.is-menu-open {
-		.contact-cta {
+		.contact-cta-wrapper {
 			background: $eerieBlack;
 			transition: background 0.3s $power2InOut 0.5125s;
 
@@ -602,11 +602,14 @@ button {
 		}
 	}
 
-	.contact-cta {
+	.contact-cta-wrapper {
 		position: relative;
-		width: 100%;
-		background: $whiteChoco;
+		display: flex;
+		align-items: center;
 		justify-content: flex-start;
+		width: 100%;
+		height: 100%;
+		background: $whiteChoco;
 		border-radius: var(--border-radius);
 		padding-inline: var(--header-padding-inline) 54px;
 		transition: background 0.3s $power2Out;
@@ -621,6 +624,12 @@ button {
 			pointer-events: none;
 			transform: translate3d(100%, 0, 0);
 			transition: transform 0.85s $power2InOut;
+		}
+
+		.contact-trigger {
+			position: absolute;
+			z-index: 1;
+			inset: 0;
 		}
 
 		.label-contact,
@@ -683,6 +692,7 @@ button {
 
 	.menu-cta {
 		position: absolute;
+		z-index: 2;
 		right: 0;
 		background: $eerieBlack;
 		border-radius: var(--border-radius);
