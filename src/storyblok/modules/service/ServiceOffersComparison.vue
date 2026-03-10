@@ -16,6 +16,11 @@ const { blok, offers } = defineProps<{
 	offers: StoryblokServiceOffer[];
 }>();
 
+// Computed :
+const hasBlackAndWhitePhotos = computed(() =>
+	offers.some((offer) => offer.numberOfBlackAndWhitePhotos && offer.numberOfBlackAndWhitePhotos !== '0')
+);
+
 // Resolvers (RichText) :
 const resolvers = getRichTextResolvers('h2');
 
@@ -50,7 +55,14 @@ const comparisonConfig = computed<ComparisonSection[]>(() => [
 				suffixKeySingular: 'offersComparisonHour'
 			},
 			{ labelKey: 'offersComparisonOffersNumberOfEditedPhotos', field: 'numberOfEditedPhotos' },
-			{ labelKey: 'offersComparisonOffersNumberOfBlackAndWhitePhotos', field: 'numberOfBlackAndWhitePhotos' }
+			...(hasBlackAndWhitePhotos.value
+				? [
+						{
+							labelKey: 'offersComparisonOffersNumberOfBlackAndWhitePhotos',
+							field: 'numberOfBlackAndWhitePhotos' as keyof StoryblokServiceOffer
+						}
+					]
+				: [])
 		]
 	},
 	{
@@ -59,7 +71,9 @@ const comparisonConfig = computed<ComparisonSection[]>(() => [
 		rows: [
 			{ labelKey: 'offersComparisonAdditionalPhoto', staticValue: '8€' },
 			{ labelKey: 'offersComparisonAdditionalPhotosPack', staticValue: '35€' },
-			{ labelKey: 'offersComparisonAllBlackAndWhitePhotos', staticValue: '+25%' }
+			...(hasBlackAndWhitePhotos.value
+				? [{ labelKey: 'offersComparisonAllBlackAndWhitePhotos', staticValue: '+25%' }]
+				: [])
 		]
 	},
 	{

@@ -251,7 +251,7 @@ const resolvers = getRichTextResolvers('h1');
 	}
 
 	@include mq(desktop) {
-		max-width: fluidSize(620px, 480px);
+		max-width: fluidSize(720px, 480px);
 	}
 
 	& > :deep(.partials-rich-text) {
