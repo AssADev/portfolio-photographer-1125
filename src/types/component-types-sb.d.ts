@@ -452,7 +452,6 @@ export interface StoryblokService {
 	moduleOffersComparison: StoryblokServiceOffersComparison[];
 	moduleFAQ: StoryblokServiceFAQ[];
 	moduleOtherServices: StoryblokOtherServices[];
-	moduleProjectsMarquee: StoryblokProjectsMarquee[];
 	SEO: StoryblokSEO[];
 	informations: StoryblokServiceInformations[];
 	offers?: StoryblokServiceOffer[];
@@ -626,10 +625,13 @@ export interface StoryblokSiteConfig {
 	defaultImage: StoryblokAsset;
 	favicon: StoryblokAsset;
 	formsContact: (ISbStoryData<StoryblokForms> | string)[];
-	projectMarqueeTitle?: StoryblokRichtext;
-	projectMarqueeDescription?: string;
+	projectMarqueeTitle: StoryblokRichtext;
+	projectMarqueeDescription: string;
 	projectMarqueeLink?: StoryblokLabelLink[];
 	errorAuthor?: StoryblokRichtext;
+	servicesMarqueeTitle: StoryblokRichtext;
+	servicesMarqueeDescription: string;
+	servicesMarqueeLink?: StoryblokLabelLink[];
 	component: 'SiteConfig';
 	_uid: string;
 }

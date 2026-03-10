@@ -1,14 +1,17 @@
 ---
 import { storyblokEditable } from '#storyblok/helpers/storyblokEditable.ts';
 import ProjectsMarqueeVue from '#storyblok/modules/ProjectsMarquee.vue';
-import type { StoryblokProjectsMarquee } from '#types/component-types-sb.js';
+import type { StoryblokProjectsMarquee, StoryblokRichtext, StoryblokLabelLink } from '#types/component-types-sb.js';
 import { getProjects } from '#storyblok/helpers/getProjects.ts';
 
 import locales from '#utils/locales.json';
 import parseUrl from '#utils/parseUrl.ts';
 
 type Props = {
-	blok: StoryblokProjectsMarquee;
+	blok?: StoryblokProjectsMarquee;
+	title?: StoryblokRichtext;
+	description?: string;
+	link?: StoryblokLabelLink[];
 };
 
 const { blok } = Astro.props;

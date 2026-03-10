@@ -13,11 +13,19 @@ import CircularStar from '#components/utils/CircularStar.vue';
 import Marquee from '#components/utils/Marquee.vue';
 import RichText from '#components/utils/RichText.vue';
 
-import type { StoryblokProject, StoryblokProjectsMarquee } from '#types/component-types-sb.js';
+import type {
+	StoryblokLabelLink,
+	StoryblokProject,
+	StoryblokProjectsMarquee,
+	StoryblokRichtext
+} from '#types/component-types-sb.js';
 
 // Props :
 const { projects, excludeUuid } = defineProps<{
-	blok: StoryblokProjectsMarquee;
+	blok?: StoryblokProjectsMarquee;
+	title?: StoryblokRichtext;
+	description?: string;
+	link?: StoryblokLabelLink[];
 	projects: ISbStoryData<StoryblokProject>[];
 	excludeUuid?: string;
 }>();
@@ -54,29 +62,32 @@ const scaledProjects = computed(() => {
 		</div>
 		<div class="container-grid">
 			<RichText
+				v-if="blok?.title || title"
 				v-animate="'reveal-titles'"
-				:doc="blok.title"
+				:doc="(blok?.title || title)!"
 				class="col-start-1 col-end-13 col-start-tb-1 col-end-tb-12 col-start-dk-21 col-end-dk-33 col-start-xxlg-24 col-end-xxlg-33"
 			/>
 			<div
 				class="description-wrapper col-start-1 col-end-13 col-start-tb-1 col-end-tb-11 col-start-dk-1 col-end-dk-14 col-start-mlg-1 col-end-mlg-12 col-start-xxlg-1 col-end-xxlg-9"
 			>
 				<p
-					v-if="blok.description"
+					v-if="blok?.description || description"
 					v-animate="'reveal-paragraphs'"
 					class="description"
-					v-html="blok.description"
+					v-html="blok?.description || description"
 				/>
 				<Button
-					v-if="blok.link?.[0]"
+					v-if="blok?.link?.[0] || link?.[0]"
 					v-animate="{ type: 'reveal-button-dot', options: { delay: 0.035 } }"
-					v-bind="getLinkAttributes(blok.link[0])"
+					v-bind="getLinkAttributes((blok?.link?.[0] || link?.[0])!)"
 					theme="dot-dark"
-					:text="blok.link[0].label || $t('bookYourPhotoSession')"
-					:link="blok.link[0].link"
+					:text="(blok?.link?.[0] || link?.[0])!.label || $t('bookYourPhotoSession')"
+					:link="(blok?.link?.[0] || link?.[0])!.link"
 					@click="
-						blok.link[0].link.component === 'Forms'
-							? trackFormOpenClick($event, { formId: (blok.link[0].link.story as any)?.content?.id })
+						(blok?.link?.[0] || link?.[0])!.link.component === 'Forms'
+							? trackFormOpenClick($event, {
+									formId: ((blok?.link?.[0] || link?.[0])!.link.story as any)?.content?.id
+								})
 							: trackNavigationClick
 					"
 				/>
