@@ -496,6 +496,7 @@ export interface StoryblokServiceOffer {
 	isPopular?: boolean;
 	numberOfEditedPhotos: string;
 	numberOfBlackAndWhitePhotos: string;
+	additionalOption?: string;
 	component: 'ServiceOffer';
 	_uid: string;
 }

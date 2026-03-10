@@ -69,10 +69,16 @@ defineProps<{
 					$t('offersPrivateGallery')
 				}}</span>
 			</li>
-			<li>
+			<li v-if="blok.numberOfBlackAndWhitePhotos.length">
 				<Icon v-animate="{ type: 'scale-up', options: { delay: 0.4 + index * 0.125 } }" name="checkmark" />
 				<span v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.275 + index * 0.125 } }">{{
 					$t('offersBlackAndWhitePhotos', { n: blok.numberOfBlackAndWhitePhotos })
+				}}</span>
+			</li>
+			<li v-if="blok.additionalOption">
+				<Icon v-animate="{ type: 'scale-up', options: { delay: 0.4 + index * 0.125 } }" name="checkmark" />
+				<span v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.275 + index * 0.125 } }">{{
+					blok.additionalOption
 				}}</span>
 			</li>
 		</ul>
