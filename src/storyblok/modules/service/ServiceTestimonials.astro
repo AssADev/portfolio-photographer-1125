@@ -8,6 +8,14 @@ type Props = {
 };
 
 const { blok } = Astro.props;
+const { serviceTestimonialsTitle, serviceTestimonialsDescription, serviceTestimonialsLink } = Astro.locals.siteConfig;
 ---
 
-<ServiceTestimonialsVue {...storyblokEditable(blok, Astro.locals.isPreviewMode)} {...Astro.props} client:visible />
+<ServiceTestimonialsVue
+	{...storyblokEditable(blok, Astro.locals.isPreviewMode)}
+	{...Astro.props}
+	title={serviceTestimonialsTitle}
+	description={serviceTestimonialsDescription}
+	link={serviceTestimonialsLink}
+	client:visible
+/>

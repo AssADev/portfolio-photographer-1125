@@ -8,11 +8,16 @@ import { trackNavigationClick } from '#utils/tracking.ts';
 import Button from '#components/utils/Button.vue';
 import RichText from '#components/utils/RichText.vue';
 
-import type { StoryblokServiceOffer, StoryblokServiceOffersComparison } from '#types/component-types-sb.js';
+import type {
+	StoryblokRichtext,
+	StoryblokServiceOffer,
+	StoryblokServiceOffersComparison
+} from '#types/component-types-sb.js';
 
 // Props :
-const { blok, offers } = defineProps<{
+const { blok, title, offers } = defineProps<{
 	blok: StoryblokServiceOffersComparison;
+	title: StoryblokRichtext;
 	offers: StoryblokServiceOffer[];
 }>();
 
@@ -93,13 +98,15 @@ const getFormattedSuffix = (row: ComparisonRow, value: any) => {
 	const key = row.suffixKeySingular && String(value) === '1' ? row.suffixKeySingular : row.suffixKey;
 	return ` ${t(key)}`;
 };
+
+// TODO : Add additional hours
 </script>
 
 <template>
 	<section class="modules service-offers-comparison">
 		<div class="container">
 			<div class="title-container">
-				<RichText v-animate="'reveal-titles'" :doc="blok.title" :resolvers="resolvers" />
+				<RichText v-animate="'reveal-titles'" :doc="title" :resolvers="resolvers" />
 				<Button
 					v-if="blok.brochure.filename"
 					v-animate="{ type: 'reveal-button-dot', options: { delay: 0.25 } }"

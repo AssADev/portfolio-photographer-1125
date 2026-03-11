@@ -9,11 +9,13 @@ type Props = {
 };
 
 const { blok, offers } = Astro.props;
+const { serviceOffersComparisonTitle } = Astro.locals.siteConfig;
 ---
 
 <ServiceOffersComparisonVue
 	{...storyblokEditable(blok, Astro.locals.isPreviewMode)}
 	{...Astro.props}
+	title={serviceOffersComparisonTitle}
 	offers={offers}
 	client:visible
 />

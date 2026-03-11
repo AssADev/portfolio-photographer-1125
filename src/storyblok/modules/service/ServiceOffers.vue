@@ -4,13 +4,14 @@ import { nl2br } from '#utils/nl2br.ts';
 
 import RichText from '#components/utils/RichText.vue';
 
-import type { StoryblokLabelLink, StoryblokServiceOffer, StoryblokServiceOffers } from '#types/component-types-sb.js';
+import type { StoryblokLabelLink, StoryblokRichtext, StoryblokServiceOffer } from '#types/component-types-sb.js';
 
 import ServiceOffer from '#storyblok/partials/service/ServiceOffer.vue';
 
 // Props :
 defineProps<{
-	blok: StoryblokServiceOffers;
+	title: StoryblokRichtext;
+	description: string;
 	offers: StoryblokServiceOffer[];
 	serviceBookingFormLink: StoryblokLabelLink[];
 }>();
@@ -23,8 +24,8 @@ const resolvers = getRichTextResolvers('h2');
 	<section id="service-offers" class="modules service-offers">
 		<div class="container">
 			<div class="title-wrapper">
-				<RichText v-animate="'reveal-titles'" :doc="blok.title" :resolvers="resolvers" />
-				<p v-animate="'reveal-paragraphs'" v-html="nl2br(blok.description)" />
+				<RichText v-animate="'reveal-titles'" :doc="title" :resolvers="resolvers" />
+				<p v-animate="'reveal-paragraphs'" v-html="nl2br(description)" />
 			</div>
 			<div class="offers-container">
 				<ServiceOffer

@@ -13,13 +13,16 @@ import CounterShuffle from '#components/utils/CounterShuffle.vue';
 import Icon from '#components/utils/Icon.vue';
 import Image from '#components/utils/Image.vue';
 
-import type { StoryblokServiceTestimonials } from '#types/component-types-sb.js';
+import type { StoryblokLabelLink, StoryblokServiceTestimonials } from '#types/component-types-sb.js';
 
 import ServiceTestimonialsItem from '#storyblok/partials/service/ServiceTestimonialsItem.vue';
 
 // Props :
-const { blok } = defineProps<{
+const { blok, title, description, link } = defineProps<{
 	blok: StoryblokServiceTestimonials;
+	title: string;
+	description: string;
+	link?: StoryblokLabelLink[];
 }>();
 
 // Refs :
@@ -168,22 +171,22 @@ const layouts = [
 	<section v-if="testimonials?.length" id="service-testimonials" class="modules service-testimonials">
 		<div class="container-grid">
 			<h2 v-animate="'reveal-letters'" class="col-start-1 col-end-13 col-start-tb-1 col-end-tb-4">
-				{{ blok.title }}
+				{{ title }}
 			</h2>
 			<div
 				class="description-wrapper col-start-1 col-end-13 col-start-tb-4 col-end-tb-13 col-start-dk-6 col-end-dk-17 col-start-lg-6 col-end-lg-15 col-start-xxlg-6 col-end-xxlg-14 col-start-wd-6 col-end-wd-13"
 			>
-				<p v-animate="'reveal-paragraphs'" v-html="nl2br(blok.description)" />
+				<p v-animate="'reveal-paragraphs'" v-html="nl2br(description)" />
 				<Button
-					v-if="blok.link?.[0]"
+					v-if="link?.[0]"
 					v-animate="{ type: 'reveal-button-dot', options: { delay: 0.035 } }"
-					v-bind="getLinkAttributes(blok.link[0])"
+					v-bind="getLinkAttributes(link[0])"
 					theme="dot-dark"
-					:text="blok.link[0].label"
-					:link="blok.link[0].link"
+					:text="link[0].label"
+					:link="link[0].link"
 					@click="
-						blok.link[0].link.component === 'Forms'
-							? trackFormOpenClick($event, { formId: (blok.link[0].link.story as any)?.content?.id })
+						link[0].link.component === 'Forms'
+							? trackFormOpenClick($event, { formId: (link[0].link.story as any)?.content?.id })
 							: trackNavigationClick
 					"
 				/>

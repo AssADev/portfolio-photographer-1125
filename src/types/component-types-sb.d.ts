@@ -19,7 +19,6 @@ export interface StoryblokBiography {
 		| StoryblokProjectTestimonial
 		| StoryblokQuotes
 		| StoryblokServiceFAQ
-		| StoryblokServiceOffers
 		| StoryblokServiceOffersComparison
 		| StoryblokServiceProjectsExample
 		| StoryblokServiceProjectsHighlight
@@ -134,7 +133,6 @@ export interface StoryblokHome {
 		| StoryblokProjectTestimonial
 		| StoryblokQuotes
 		| StoryblokServiceFAQ
-		| StoryblokServiceOffers
 		| StoryblokServiceOffersComparison
 		| StoryblokServiceProjectsExample
 		| StoryblokServiceProjectsHighlight
@@ -250,7 +248,6 @@ export interface StoryblokLinks {
 		| StoryblokProjectTestimonial
 		| StoryblokQuotes
 		| StoryblokServiceFAQ
-		| StoryblokServiceOffers
 		| StoryblokServiceOffersComparison
 		| StoryblokServiceProjectsExample
 		| StoryblokServiceProjectsHighlight
@@ -344,7 +341,6 @@ export interface StoryblokProject {
 		| StoryblokProjectTestimonial
 		| StoryblokQuotes
 		| StoryblokServiceFAQ
-		| StoryblokServiceOffers
 		| StoryblokServiceOffersComparison
 		| StoryblokServiceProjectsExample
 		| StoryblokServiceProjectsHighlight
@@ -448,7 +444,6 @@ export interface StoryblokService {
 	moduleSteps: StoryblokSteps[];
 	moduleTestimonials: StoryblokServiceTestimonials[];
 	moduleProjectsExample: StoryblokServiceProjectsExample[];
-	moduleOffers: StoryblokServiceOffers[];
 	moduleOffersComparison: StoryblokServiceOffersComparison[];
 	moduleFAQ: StoryblokServiceFAQ[];
 	moduleOtherServices: StoryblokOtherServices[];
@@ -500,15 +495,7 @@ export interface StoryblokServiceOffer {
 	_uid: string;
 }
 
-export interface StoryblokServiceOffers {
-	title: StoryblokRichtext;
-	description: string;
-	component: 'ServiceOffers';
-	_uid: string;
-}
-
 export interface StoryblokServiceOffersComparison {
-	title: StoryblokRichtext;
 	brochure: StoryblokAsset;
 	component: 'ServiceOffersComparison';
 	_uid: string;
@@ -542,7 +529,6 @@ export interface StoryblokServices {
 		| StoryblokProjectTestimonial
 		| StoryblokQuotes
 		| StoryblokServiceFAQ
-		| StoryblokServiceOffers
 		| StoryblokServiceOffersComparison
 		| StoryblokServiceProjectsExample
 		| StoryblokServiceProjectsHighlight
@@ -581,9 +567,6 @@ export interface StoryblokServicesItem {
 }
 
 export interface StoryblokServiceTestimonials {
-	title: string;
-	description: string;
-	link?: StoryblokLabelLink[];
 	testimonials?: StoryblokServiceTestimonialsItem[];
 	component: 'ServiceTestimonials';
 	_uid: string;
@@ -604,10 +587,19 @@ export interface StoryblokServiceTestimonialsItemPicture {
 }
 
 export interface StoryblokSiteConfig {
+	serviceBookingFormLink: StoryblokLabelLink[];
+	serviceTestimonialsTitle: string;
+	serviceTestimonialsDescription: string;
+	serviceTestimonialsLink?: StoryblokLabelLink[];
+	serviceOffersTitle: StoryblokRichtext;
+	serviceOffersDescription: string;
+	serviceOffersComparisonTitle: StoryblokRichtext;
+	projectMarqueeTitle: StoryblokRichtext;
+	projectMarqueeDescription: string;
+	projectMarqueeLink?: StoryblokLabelLink[];
 	errorTitle: StoryblokRichtext;
 	errorLink: StoryblokLabelLink[];
 	errorDescription: StoryblokRichtext;
-	serviceBookingFormLink: StoryblokLabelLink[];
 	identity: string;
 	email: string;
 	socials: StoryblokLabelLink[];
@@ -625,9 +617,6 @@ export interface StoryblokSiteConfig {
 	defaultImage: StoryblokAsset;
 	favicon: StoryblokAsset;
 	formsContact: (ISbStoryData<StoryblokForms> | string)[];
-	projectMarqueeTitle: StoryblokRichtext;
-	projectMarqueeDescription: string;
-	projectMarqueeLink?: StoryblokLabelLink[];
 	errorAuthor?: StoryblokRichtext;
 	servicesMarqueeTitle: StoryblokRichtext;
 	servicesMarqueeDescription: string;

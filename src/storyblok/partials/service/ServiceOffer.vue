@@ -57,7 +57,7 @@ defineProps<{
 			</div>
 		</div>
 		<ul class="items-container">
-			<li>
+			<li v-if="Number(blok.numberOfEditedPhotos) > 0">
 				<Icon v-animate="{ type: 'scale-up', options: { delay: 0.4 + index * 0.125 } }" name="checkmark" />
 				<span v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.275 + index * 0.125 } }">{{
 					$t('offersEditedPhotos', { n: blok.numberOfEditedPhotos })
@@ -69,7 +69,7 @@ defineProps<{
 					$t('offersPrivateGallery')
 				}}</span>
 			</li>
-			<li v-if="blok.numberOfBlackAndWhitePhotos.length">
+			<li v-if="Number(blok.numberOfBlackAndWhitePhotos) > 0">
 				<Icon v-animate="{ type: 'scale-up', options: { delay: 0.4 + index * 0.125 } }" name="checkmark" />
 				<span v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.275 + index * 0.125 } }">{{
 					$t('offersBlackAndWhitePhotos', { n: blok.numberOfBlackAndWhitePhotos })

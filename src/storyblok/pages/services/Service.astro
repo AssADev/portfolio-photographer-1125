@@ -2,10 +2,8 @@
 import type {
 	StoryblokService,
 	StoryblokServiceInformations,
-	StoryblokServiceOffers,
 	StoryblokServiceFAQ,
 	StoryblokOtherServices,
-	StoryblokProjectsMarquee,
 	StoryblokSteps,
 	StoryblokServiceTestimonials,
 	StoryblokServiceOffersComparison,
@@ -41,7 +39,7 @@ const {
 <ServiceBreadcrumb
 	client:load
 	hasTestimonials={!!blok.moduleTestimonials?.length}
-	hasOffers={!!blok.moduleOffers?.length}
+	hasOffers={!!blok.offers?.length}
 	hasFAQ={!!blok.moduleFAQ?.length}
 />
 
@@ -80,15 +78,7 @@ const {
 	)
 }
 
-{
-	blok.moduleOffers?.length && (
-		<ServiceOffers
-			blok={blok.moduleOffers[0] as StoryblokServiceOffers}
-			offers={blok.offers ?? []}
-			data-component-name="ServiceOffers"
-		/>
-	)
-}
+<ServiceOffers offers={blok.offers ?? []} data-component-name="ServiceOffers" />
 
 {
 	blok.moduleOffersComparison?.length && (
