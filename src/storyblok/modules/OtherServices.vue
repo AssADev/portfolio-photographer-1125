@@ -164,7 +164,7 @@ useGSAP(() => {
 </template>
 
 <style lang="scss" scoped>
-$serviceHeight: fluidSize(440px, 280px, null, xxlarge);
+$serviceHeight: min(fluidSize(440px, 280px, null, xxlarge), calc(50svh - (var(--gutter) * 3)));
 
 .other-services {
 	z-index: 1;
