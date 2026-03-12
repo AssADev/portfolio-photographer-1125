@@ -6,6 +6,7 @@ import locales from '#utils/locales.json';
 import type { StoryblokService } from '#types/component-types-sb.js';
 
 import logger from '#lib/logger.ts';
+import normalizeStory from '#storyblok/helpers/normalizeStory';
 
 /**
  * Fetches all services from Storyblok.
@@ -31,7 +32,7 @@ export async function getServices(
 	try {
 		const pageSpecificResponse = await storyblokApi.get('cdn/stories', queryBaseParams);
 
-		const allServices: ISbStoryData<StoryblokService>[] = pageSpecificResponse.data.stories || [];
+		const allServices: ISbStoryData<StoryblokService>[] = normalizeStory(pageSpecificResponse.data.stories || []);
 
 		if (!excludedServices || excludedServices.length === 0) {
 			return allServices;

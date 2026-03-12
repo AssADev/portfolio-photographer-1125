@@ -6,6 +6,7 @@ import locales from '#utils/locales.json';
 import type { StoryblokProject } from '#types/component-types-sb.js';
 
 import logger from '#lib/logger.ts';
+import normalizeStory from '#storyblok/helpers/normalizeStory';
 import resolvedRelations from '#storyblok/helpers/resolvedRelations';
 
 /**
@@ -34,14 +35,14 @@ export async function getProjects(language = locales[0], isPreviewMode: boolean,
 			} as any);
 
 			if (taggedResponse.data.stories?.length > 0) {
-				return taggedResponse.data.stories as ISbStoryData<StoryblokProject>[];
+				return normalizeStory(taggedResponse.data.stories as ISbStoryData<StoryblokProject>[]);
 			}
 		}
 
 		// Fallback to all projects if no tags or no projects found with tags :
 		const pageSpecificResponse = await storyblokApi.get('cdn/stories', queryBaseParams);
 
-		const allProjects: ISbStoryData<StoryblokProject>[] = pageSpecificResponse.data.stories || [];
+		const allProjects: ISbStoryData<StoryblokProject>[] = normalizeStory(pageSpecificResponse.data.stories || []);
 
 		return allProjects;
 	} catch (error) {
