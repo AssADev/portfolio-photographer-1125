@@ -91,15 +91,8 @@ const resolvers = getRichTextResolvers('h1');
 					/>
 				</div>
 
-				<div class="description-container">
+				<div v-if="errorDescription" class="description-container">
 					<RichText v-animate="'reveal-paragraphs'" :doc="errorDescription" />
-					<div v-if="errorAuthor" class="author-wrapper">
-						<Icon v-animate="{ type: 'scale-up', options: { rotate: 90 } }" name="square-small" />
-						<RichText
-							v-animate="{ type: 'reveal-letters', options: { delay: 0.175 } }"
-							:doc="errorAuthor"
-						/>
-					</div>
 				</div>
 			</div>
 		</div>
@@ -255,29 +248,10 @@ const resolvers = getRichTextResolvers('h1');
 	}
 
 	& > :deep(.partials-rich-text) {
-		@include roobert-28;
+		@include roobert-24;
 
 		em {
-			@include romie-28-italic;
-		}
-	}
-}
-
-.author-wrapper {
-	display: flex;
-	align-items: center;
-	gap: fluidSize(8px, 6px);
-	color: $khaki;
-
-	svg {
-		margin-block-start: fluidSize(4px, 2px);
-	}
-
-	& > :deep(.partials-rich-text) {
-		@include roobert-18;
-
-		em {
-			@include romie-18;
+			@include romie-24-italic;
 		}
 	}
 }

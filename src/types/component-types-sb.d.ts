@@ -617,7 +617,6 @@ export interface StoryblokSiteConfig {
 	defaultImage: StoryblokAsset;
 	favicon: StoryblokAsset;
 	formsContact: (ISbStoryData<StoryblokForms> | string)[];
-	errorAuthor?: StoryblokRichtext;
 	servicesMarqueeTitle: StoryblokRichtext;
 	servicesMarqueeDescription: string;
 	servicesMarqueeLink?: StoryblokLabelLink[];

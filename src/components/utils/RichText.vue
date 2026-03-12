@@ -71,6 +71,10 @@ defineExpose({ el });
 	<div ref="el" class="partials-rich-text">
 		<span v-if="prefix">{{ prefix }}</span>
 		<LabelShuffle v-if="shuffle" :label="plaintext" :no-snap :reveal :speed />
-		<StoryblokRichText v-else :doc :resolvers="mergedResolvers" />
+		<StoryblokRichText
+			v-else-if="doc && Array.isArray(doc.content)"
+			:doc="doc"
+			:resolvers="mergedResolvers"
+		/>
 	</div>
 </template>

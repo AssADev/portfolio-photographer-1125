@@ -87,6 +87,13 @@
 	line-height: 1.25;
 }
 
+@mixin roobert-24 {
+	@include roobert(500);
+
+	font-size: fluidFontSize(24px, 20px);
+	line-height: 1.25;
+}
+
 @mixin roobert-20 {
 	@include roobert(500);
 
@@ -219,6 +226,19 @@
 
 @mixin romie-28-italic {
 	@include romie-28;
+
+	font-style: italic;
+}
+
+@mixin romie-24 {
+	@include romie(500);
+
+	font-size: fluidFontSize(24px, 20px);
+	line-height: 1.25;
+}
+
+@mixin romie-24-italic {
+	@include romie-24;
 
 	font-style: italic;
 }
