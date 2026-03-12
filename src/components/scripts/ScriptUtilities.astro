@@ -10,6 +10,15 @@
 		});
 	});
 
+	/* ----- Scroll management ----- */
+	if ('scrollRestoration' in history) {
+		history.scrollRestoration = 'manual';
+	}
+
+	document.addEventListener('astro:after-swap', () => {
+		window.scrollTo(0, 0);
+	});
+
 	/* ----- Custom swap ----- */
 	function customSwap(doc: Document) {
 		swapFunctions.deselectScripts(doc);

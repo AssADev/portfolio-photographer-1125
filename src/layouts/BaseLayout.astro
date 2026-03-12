@@ -34,7 +34,7 @@ const siteConfig = Astro.locals.siteConfig;
 const { language, story, noindex, nofollow } = Astro.props;
 
 // SEO :
-const seoRaw: StoryblokSEO | undefined = (story?.content as any)?.seo;
+const seoRaw: StoryblokSEO[] | undefined = (story?.content as any)?.SEO;
 const seo = Array.isArray(seoRaw) ? seoRaw[0] : seoRaw;
 
 // Languages :
