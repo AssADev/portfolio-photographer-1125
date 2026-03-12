@@ -15,6 +15,7 @@ defineProps<{
 	summary?: string;
 	hoverScale?: number;
 	isColumn?: boolean;
+	animationDirection?: 'up' | 'down';
 }>();
 
 // Resolvers :
@@ -23,7 +24,7 @@ const resolvers = getRichTextResolvers('h2');
 
 <template>
 	<Button
-		v-animate="{ type: 'mask-reveal', options: { direction: 'down' } }"
+		v-animate="{ type: 'mask-reveal', options: { direction: animationDirection || 'down' } }"
 		:to="url"
 		class="partials-services-service"
 		:data-cursor-label="$t('discoverService')"

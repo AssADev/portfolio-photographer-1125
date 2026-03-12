@@ -33,6 +33,7 @@ const service = computed(() => {
 			:title="service!.content.informations![0].name"
 			:summary="service!.content.informations![0].summary"
 			:hover-scale="1.0125"
+			:animation-direction="'up'"
 		>
 			<template #image>
 				<Image
@@ -54,14 +55,14 @@ const service = computed(() => {
 				/>
 			</template>
 			<template #info>
-				<div class="informations-label" v-animate="{ type: 'reveal-button-dot', options: { delay: 0.025 } }">
+				<div class="informations-label" v-animate="{ type: 'reveal-button-dot', options: { delay: 0.65 } }">
 					<span>{{
 						numberOfProjects > 1
 							? $t('projectsNumber', { n: numberOfProjects })
 							: $t('projectNumber', { n: numberOfProjects })
 					}}</span>
 				</div>
-				<div class="informations-label" v-animate="{ type: 'reveal-button-dot', options: { delay: 0.175 } }">
+				<div class="informations-label" v-animate="{ type: 'reveal-button-dot', options: { delay: 0.775 } }">
 					<span>{{ $t('serviceStartPrice', { price: serviceStartPrice }) }}</span>
 				</div>
 			</template>
