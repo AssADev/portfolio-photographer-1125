@@ -299,6 +299,10 @@ onUnmounted(() => {
 		em {
 			@include romie-96-italic;
 		}
+
+		.reveal-titles-line-wrapper {
+			margin-inline: auto;
+		}
 	}
 }
 
