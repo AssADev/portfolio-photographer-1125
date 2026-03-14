@@ -291,7 +291,7 @@ const animateInto = () => {
 	if (activeIndicatorRef.value) {
 		tl.fromTo(
 			activeIndicatorRef.value,
-			{ opacity: 0, scale: 0.9 },
+			{ opacity: 0, scale: 0.975 },
 			{ opacity: 1, scale: 1, duration: 0.6, ease: 'power2.inOut' },
 			Math.max(0.8, modelValue.value * 0.4)
 		);
@@ -311,7 +311,11 @@ const animateOut = () => {
 	});
 
 	if (activeIndicatorRef.value) {
-		tl.to(activeIndicatorRef.value, { opacity: 0, duration: 0.4, ease: 'power2.inOut', overwrite: true }, 0);
+		tl.to(
+			activeIndicatorRef.value,
+			{ opacity: 0, scale: 0.975, duration: 0.4, ease: 'power2.inOut', overwrite: true },
+			0
+		);
 	}
 
 	tl.to(
