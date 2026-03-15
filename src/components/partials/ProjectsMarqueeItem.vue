@@ -5,6 +5,7 @@ import gsap from 'gsap';
 import { SplitText } from 'gsap/SplitText';
 import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
 
+import { isTouchDevice } from '#utils/device.ts';
 import { trackNavigationClick } from '#utils/tracking.ts';
 
 import Image from '#components/utils/Image.vue';
@@ -95,11 +96,13 @@ const debounceResize = useDebounceFn(refreshAnimation);
 
 // Events :
 const onPointerEnter = () => {
+	if (isTouchDevice()) return;
 	isHovered.value = true;
 	tl?.play();
 };
 
 const onPointerLeave = () => {
+	if (isTouchDevice()) return;
 	isHovered.value = false;
 	tl?.reverse();
 };
@@ -134,7 +137,7 @@ onUnmounted(() => {
 		<div class="cover-wrapper" :style="width ? { width: `${width}px` } : {}">
 			<Image :src="informations.coverSmall" object-fit="contain" />
 		</div>
-		<div class="content-container">
+		<div v-if="!isTouchDevice()" class="content-container">
 			<RichText ref="titleRef" class="title" :doc="informations.name" />
 			<RichText ref="serviceRef" class="service" :doc="service!.name" />
 		</div>

@@ -2,6 +2,8 @@
 import gsap from 'gsap';
 import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
 
+import { isTouchDevice } from '#utils/device.ts';
+
 // Props :
 const props = withDefaults(
 	defineProps<{
@@ -66,7 +68,7 @@ const resetLetters = () => {
 };
 
 const startShuffle = (indices: number[]) => {
-	if (!props.isActive) return;
+	if (!props.isActive || isTouchDevice()) return;
 	activeIndices = indices;
 
 	// Init shuffle :

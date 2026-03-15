@@ -200,7 +200,6 @@ const handleFilterClick = (filterSlug: string) => {
 
 const handleToggleDropdown = () => {
 	isDropdownToggle.value = !isDropdownToggle.value;
-	$global.setKey('lockScroll', isDropdownToggle.value);
 };
 
 // Events :
@@ -266,6 +265,8 @@ const onDropdownTransitionEnd = (e: TransitionEvent) => {
 
 // Watchers :
 watch(isDropdownToggle, (val) => {
+	$global.setKey('lockScroll', val);
+
 	if (!val && pendingSwap) {
 		// Ensure any pending swap is done if closed via click-outside/escape :
 		performMobileFilterSwap(pendingSwap.newSlug, pendingSwap.oldSlug);
@@ -276,7 +277,7 @@ watch(isDropdownToggle, (val) => {
 // Resolvers (RichText) :
 const resolvers = getRichTextResolvers('h1');
 
-// Attach :
+// Attach & Detach :
 onMounted(() => {
 	updateFontSize();
 
@@ -292,6 +293,7 @@ onMounted(() => {
 
 onUnmounted(() => {
 	dropdownRef.value?.removeEventListener('transitionend', onDropdownTransitionEnd);
+	$global.setKey('lockScroll', false);
 });
 </script>
 

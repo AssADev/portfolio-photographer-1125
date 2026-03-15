@@ -273,10 +273,33 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 			clipPath: options.fromTopRight ? 'inset(0% 0% 100% 100%)' : 'inset(0% 100% 100% 0%)',
 			duration: 1.2,
 			ease: 'power3.inOut',
-			pointerEvents: 'none',
 			immediateRender: true,
+			onStart: () => {
+				gsap.set(el, { transition: 'none', pointerEvents: 'none' });
+			},
 			onComplete: () => {
 				gsap.set(el, { clearProps: 'all' });
+			}
+		});
+
+		return tl;
+	},
+
+	'hide-square': (el, options) => {
+		const tl = gsap.timeline({
+			delay: options.delay || 0
+		});
+
+		tl.to(el, {
+			clipPath: options.toTopRight ? 'inset(0% 0% 100% 100%)' : 'inset(100% 100% 0% 0%)',
+			duration: 1.2,
+			ease: 'power3.inOut',
+			onStart: () => {
+				gsap.set(el, { transition: 'none', pointerEvents: 'none' });
+			},
+			onComplete: () => {
+				gsap.set(el, { clearProps: 'all' });
+				options.onComplete?.();
 			}
 		});
 
@@ -289,7 +312,7 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 			opacity: 0,
 			rotate: options.rotate || 0,
 			duration: options.duration || 0.8,
-			ease: 'power3.out',
+			ease: options.ease || 'power3.out',
 			delay: options.delay || 0,
 			onComplete: () => {
 				if (options.reset) gsap.set(el, { clearProps: 'all' });
@@ -303,9 +326,12 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 			opacity: 0,
 			rotate: options.rotate || 0,
 			duration: options.duration || 1.2,
-			ease: 'power3.out',
+			ease: options.ease || 'power3.out',
 			delay: options.delay || 0,
 			immediateRender: true,
+			onStart: () => {
+				gsap.set(el, { transition: 'none' });
+			},
 			onComplete: () => {
 				if (options.reset) gsap.set(el, { clearProps: 'all' });
 			}

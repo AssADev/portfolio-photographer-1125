@@ -5,6 +5,7 @@ import gsap from 'gsap';
 import { VueLenis } from 'lenis/vue';
 import { onMounted, onUnmounted, useTemplateRef, watchEffect } from 'vue';
 
+import { isTouchDevice } from '#utils/device.ts';
 import { preventScrollMobileSafari } from '#utils/preventScrollSafari.ts';
 
 import { $global } from '#stores/global.ts';
@@ -18,18 +19,18 @@ const attrs = !root ? { class: className } : {};
 const globalStore = useStore($global);
 const lenisRef = useTemplateRef<typeof VueLenis>('lenis');
 
-let restoreScroll: () => void;
-
 if (root) {
 	// Only lock the root scroll :
-	watchEffect(() => {
+	watchEffect((onCleanup) => {
 		if (globalStore.value.lockScroll) {
 			lenisRef.value?.lenis?.stop();
-			// Makes sure we really can't scroll on iOS :
-			if (isIOS) restoreScroll = preventScrollMobileSafari();
+			// Makes sure we really can't scroll on mobile :
+			if (isTouchDevice()) {
+				const cleanup = preventScrollMobileSafari();
+				onCleanup(cleanup);
+			}
 		} else {
 			lenisRef.value?.lenis?.start();
-			restoreScroll?.();
 		}
 	});
 }
@@ -44,7 +45,9 @@ onMounted(() => {
 	gsap.ticker.add(update);
 });
 
-onUnmounted(() => gsap.ticker.remove(update));
+onUnmounted(() => {
+	gsap.ticker.remove(update);
+});
 </script>
 
 <template>

@@ -49,11 +49,7 @@ const matchesFilter = (project: ISbStoryData<StoryblokProject>, filter: string) 
 };
 
 const updateVisibility = (animate = true) => {
-	const tl = gsap.timeline({
-		onComplete: () => {
-			ScrollTrigger.refresh();
-		}
-	});
+	const tl = gsap.timeline();
 
 	containerRefs.value.forEach((el, index) => {
 		const project = limitedProjects.value[index];
@@ -88,6 +84,7 @@ const updateVisibility = (animate = true) => {
 // Watchers :
 watch(currentFilter, () => {
 	updateVisibility();
+	ScrollTrigger.refresh();
 });
 
 // Lifecycle :

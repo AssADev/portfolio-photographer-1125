@@ -64,8 +64,15 @@ const resolvers = getRichTextResolvers('h1');
 .title-wrapper {
 	display: flex;
 	flex-wrap: wrap;
-	align-items: flex-end;
 	gap: 2px;
+
+	@include mq($until: tablet) {
+		flex-direction: column;
+	}
+
+	@include mq(tablet) {
+		align-items: flex-end;
+	}
 
 	& > a {
 		@include roobert-12-uppercase;

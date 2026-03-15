@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useResizeObserver } from '@vueuse/core';
 import gsap from 'gsap';
-import { useTemplateRef, watch } from 'vue';
+import { onUnmounted, useTemplateRef, watch } from 'vue';
 
 import { animations } from '#utils/Animations.ts';
 
@@ -98,6 +98,12 @@ useResizeObserver(titleContainerRef, () => {
 useResizeObserver(socialsRef, () => {
 	const socialsHeight = socialsRef.value?.$el?.offsetHeight || 0;
 	drawerRef.value!.style.setProperty('--drawer-socials-height', `${socialsHeight}px`);
+});
+
+// Detach :
+onUnmounted(() => {
+	tl?.kill();
+	$global.setKey('lockScroll', false);
 });
 
 // Expose :

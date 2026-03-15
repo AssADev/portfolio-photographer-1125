@@ -1,6 +1,7 @@
 let _isTouchDevice: boolean;
 
 export const isTouchDevice = () => {
+	if (import.meta.env.SSR) return false;
 	if (_isTouchDevice !== undefined) return _isTouchDevice;
 
 	_isTouchDevice = !!(

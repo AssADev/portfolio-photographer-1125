@@ -7,6 +7,7 @@ import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch 
 
 import { animations } from '#utils/Animations.ts';
 import { breakPointsNoUnits } from '#utils/breakpoints.ts';
+import { parseImageData, transform } from '#utils/image.ts';
 import { sleep } from '#utils/sleep.ts';
 
 import Slideshow from '#components/partials/Slideshow.vue';
@@ -19,6 +20,7 @@ import type { StoryblokAsset } from '#types/component-types-sb.js';
 import { $global } from '#stores/global.ts';
 import { $projectMinimap, closeMinimap } from '#stores/project.ts';
 
+// TODO : Remove Flick when the transition animation is finished
 // Props :
 const { pictures } = defineProps<{
 	pictures: StoryblokAsset[];
@@ -27,15 +29,14 @@ const { pictures } = defineProps<{
 // Refs :
 const projectMinimapStore = useStore($projectMinimap);
 
-const rootRef = useTemplateRef('rootRef');
 const viewerWrapperRef = useTemplateRef('viewerWrapperRef');
 const slideshowRef = useTemplateRef('slideshowRef');
+const themeCtaRef = useTemplateRef('themeCtaRef');
 
 const isOpening = ref(false);
 const isClosing = ref(false);
 const isVisible = ref(false);
 const currentSlide = ref(0);
-const isGrabbing = ref(false);
 const isDarkTheme = ref(false);
 const currentPictureZoom = ref(1);
 const isZoomSmooth = ref(false);
@@ -46,6 +47,7 @@ const isDesktop = ref(false);
 const formattedZoom = computed(() => currentPictureZoom.value.toFixed(1));
 const isSlideshowHidden = computed(() => currentPictureZoom.value > 1.25);
 
+// Methods :
 const goToNext = () => {
 	slideshowRef.value?.next();
 };
@@ -79,6 +81,15 @@ const onKeyDown = (e: KeyboardEvent) => {
 	} else if (e.key === 'Escape') {
 		onClose();
 	}
+};
+
+const preloadImage = (url: string) => {
+	return new Promise((resolve, reject) => {
+		const img = new window.Image();
+		img.src = url;
+		img.onload = resolve;
+		img.onerror = reject;
+	});
 };
 
 // Animations :
@@ -168,6 +179,20 @@ const onClose = async () => {
 	if (containerGrid) gsap.set(containerGrid, { zIndex: '1' });
 
 	try {
+		// Animation of the Theme CTA :
+		animations['hide-square'](themeCtaRef.value?.$el, {
+			toTopRight: true
+		});
+
+		themeCtaRef.value?.$el.querySelectorAll('svg').forEach((svg: HTMLElement) => {
+			animations['scale-down'](svg, {
+				delay: 0.1,
+				ease: 'power3.inOut',
+				reset: true,
+				rotate: -25
+			});
+		});
+
 		await slideshowRef.value?.animateOut();
 		isVisible.value = false;
 
@@ -213,6 +238,30 @@ watch(
 			slideshowRef.value?.scrollToSlide(currentIndex, true);
 
 			slideshowRef.value?.animateInto();
+
+			// Preload the current image with the same transformations as the Image component
+			const currentPic = pictures[currentIndex];
+			if (currentPic) {
+				const { bind, operations } = parseImageData({ src: currentPic, objectFit: 'contain' });
+				const transformer = transform(bind);
+				// We target a high-res version (1920px) which is likely to be used by unpic in the viewer
+				const currentUrl = transformer(bind.src, { ...operations, width: 1920 });
+				preloadImage(currentUrl).catch(() => {});
+			}
+
+			// Animation of the Theme CTA :
+			animations['reveal-square'](themeCtaRef.value?.$el, {
+				fromTopRight: true
+			});
+
+			themeCtaRef.value?.$el.querySelectorAll('svg').forEach((svg: HTMLElement) => {
+				animations['scale-up'](svg, {
+					delay: 0.15,
+					ease: 'power3.inOut',
+					reset: true,
+					rotate: 35
+				});
+			});
 
 			if (clickedElement) await animateFlipOpen(clickedElement as any);
 		} else {
@@ -272,9 +321,13 @@ onUnmounted(() => {
 		data-lenis-prevent
 	>
 		<div class="overlay" />
-		<Button class="theme-cta" :class="{ 'is-dark': isDarkTheme }" @click="onToggleDarkTheme">
-			<Icon name="moon" />
-			<Icon name="sun" />
+		<Button ref="themeCtaRef" class="theme-cta" :class="{ 'is-dark': isDarkTheme }" @click="onToggleDarkTheme">
+			<div class="icon-wrapper">
+				<Icon name="moon" />
+			</div>
+			<div class="icon-wrapper">
+				<Icon name="sun" />
+			</div>
 		</Button>
 		<div class="viewer-container">
 			<div
@@ -415,18 +468,18 @@ onUnmounted(() => {
 	overflow: hidden;
 
 	&.is-dark {
-		:deep(svg) {
+		.icon-wrapper {
 			&:first-child {
 				transform: translate3d(-50%, -275%, 0) rotate(-65deg);
 			}
 
 			&:last-child {
-				transform: translate3d(-50%, -50%, 0);
+				transform: translate3d(-50%, -45%, 0);
 			}
 		}
 	}
 
-	:deep(svg) {
+	.icon-wrapper {
 		position: absolute;
 		top: 50%;
 		left: 50%;
@@ -437,7 +490,7 @@ onUnmounted(() => {
 		}
 
 		&:last-child {
-			transform: translate3d(-50%, 175%, 0) rotate(65deg);
+			transform: translate3d(-50%, 175%, 0) rotate(80deg);
 		}
 	}
 }
