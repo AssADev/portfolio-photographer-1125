@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { ISbStoryData } from '@storyblok/js';
 import { useElementSize } from '@vueuse/core';
-import { computed, ref } from 'vue';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { computed, nextTick, ref, watch } from 'vue';
 
 import { getLinkAttributes } from '#utils/link.ts';
 import { getMarqueeImageWidth } from '#utils/marquee.ts';
@@ -35,6 +36,13 @@ const marqueePlaying = ref(true);
 const marqueeRef = ref<HTMLElement | null>(null);
 
 const { height: marqueeHeight } = useElementSize(marqueeRef);
+
+// Watchers :
+watch(marqueeHeight, () => {
+	nextTick(() => {
+		ScrollTrigger.refresh();
+	});
+});
 
 // Computed :
 const filteredProjects = computed(() => {
