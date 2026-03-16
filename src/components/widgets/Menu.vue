@@ -132,6 +132,7 @@ $border: 1px solid rgba($white, 0.08);
 .links-container {
 	display: flex;
 	flex-direction: column;
+	border-top: $border;
 
 	@include hover-child-not-self('li.active') {
 		&::before {

@@ -181,10 +181,6 @@ defineExpose({
 		color: $white;
 		background: $eerieBlack;
 
-		.drawer-title-container {
-			border-bottom: $border;
-		}
-
 		:deep(.menu-socials-container) {
 			border-top: $border;
 			border-bottom: $border;
@@ -196,10 +192,6 @@ defineExpose({
 
 		color: $eerieBlack;
 		background: $whiteChoco;
-
-		.drawer-title-container {
-			border-bottom: $border;
-		}
 
 		:deep(.menu-socials-container) {
 			border-top: $border;

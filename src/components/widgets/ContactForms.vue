@@ -158,9 +158,10 @@ defineExpose({
 					:key="selectedForm ? `${selectedForm.content.id}-${formStatus}` : 'default'"
 					class="text-container"
 				>
-					<p ref="titleRef" class="title">{{ currentTitle }}</p>
+					<p key="title" ref="titleRef" class="title">{{ currentTitle }}</p>
 					<p
 						v-if="currentDescription"
+						key="description"
 						ref="descriptionRef"
 						class="description"
 						v-html="nl2br(currentDescription)"
@@ -218,11 +219,13 @@ $border: 1px solid rgba($eerieBlack, 0.08);
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
+	transform: translate3d(0, 0, 0);
 }
 
 .forms-container {
 	display: flex;
 	flex-direction: column;
+	border-top: $border;
 
 	li {
 		position: relative;

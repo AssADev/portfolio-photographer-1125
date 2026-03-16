@@ -276,6 +276,7 @@ const onActionEnter = (el: any, done: () => void) => {
 			(var(--gutter) * 2)
 	);
 	overflow-y: auto;
+	border-top: 1px solid rgba($eerieBlack, 0.08);
 
 	:deep(.field-container:last-child .field-wrapper) {
 		border-bottom: none;
