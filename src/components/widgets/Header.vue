@@ -558,6 +558,13 @@ button {
 	}
 
 	&.is-contact-open {
+		.contact-cta-wrapper {
+			border-radius: 0 0 var(--border-radius) var(--border-radius);
+			transition:
+				background 0.3s $power2InOut,
+				border-radius 0.3s $power2InOut 0.5125s;
+		}
+
 		.menu-cta {
 			background: $whiteChoco;
 			transition: background 0.3s $power2InOut 0.275s;
@@ -588,7 +595,10 @@ button {
 	&.is-menu-open {
 		.contact-cta-wrapper {
 			background: $eerieBlack;
-			transition: background 0.3s $power2InOut 0.5125s;
+			transition:
+				background 0.3s $power2InOut 0.5125s,
+				border-radius 0.3s $power2InOut 0.5125s;
+			border-radius: 0 0 var(--border-radius) var(--border-radius);
 
 			&::before {
 				transform: translate3d(0, 0, 0);
@@ -612,7 +622,9 @@ button {
 		background: $whiteChoco;
 		border-radius: var(--border-radius);
 		padding-inline: var(--header-padding-inline) 54px;
-		transition: background 0.3s $power2Out;
+		transition:
+			background 0.3s $power2Out,
+			border-radius 0.3s $power2Out 0.5125s;
 		overflow: hidden;
 
 		&::before {
