@@ -28,6 +28,7 @@ const isMoving = ref(false);
 let slidesCache: HTMLElement[] = [];
 let slidesDimensionsCache: Array<{ size: number; pos: number }> = [];
 let containerSizeCache = 0;
+let wrapperSizeCache = 0;
 
 // Carousel logic:
 let startPos = 0;
@@ -50,7 +51,7 @@ let tickerActive = false;
 const velocityTicker = () => {
 	if (!isDragging) return;
 
-	const pos = isDesktop.value ? lastPos : lastPos;
+	const pos = lastPos;
 	const delta = pos - tickerLastPos;
 
 	// Moving average for smooth velocity :
@@ -78,6 +79,12 @@ const updateSlideDimensionsCache = () => {
 	containerSizeCache = isDesktop.value
 		? slideshowContainerRef.value.offsetHeight
 		: slideshowContainerRef.value.offsetWidth;
+
+	if (slideshowWrapperRef.value) {
+		wrapperSizeCache = isDesktop.value
+			? slideshowWrapperRef.value.scrollHeight
+			: slideshowWrapperRef.value.scrollWidth;
+	}
 
 	// Pre-calculate all slide dimensions and positions :
 	slidesDimensionsCache = slidesCache.map((slide) => ({
@@ -162,7 +169,8 @@ const onPointerDown = (e: PointerEvent) => {
 	startPos = isDesktop.value ? e.clientY : e.clientX;
 
 	// Read actual position to avoid jumps from unfinished animations :
-	currentTranslate = gsap.getProperty(slideshowWrapperRef.value, axis) as number;
+	const currentX = gsap.getProperty(slideshowWrapperRef.value, axis) as number;
+	currentTranslate = isNaN(currentX) ? 0 : currentX;
 	startTranslate = currentTranslate;
 	lastPos = startPos;
 	lastTime = performance.now();
@@ -179,6 +187,7 @@ const onPointerDown = (e: PointerEvent) => {
 	}
 
 	gsap.killTweensOf(slideshowWrapperRef.value);
+	updateSlideDimensionsCache(); // Re-read dimensions just in case before drag
 
 	// Events:
 	window.addEventListener('pointermove', onPointerMove, { passive: false });
@@ -192,18 +201,20 @@ const onPointerMove = (e: PointerEvent) => {
 	const pos = isDesktop.value ? e.clientY : e.clientX;
 	const delta = pos - startPos;
 
+	// Prevent default browser behavior (scroll) during drag :
+	if (e.cancelable) e.preventDefault();
+
 	if (!didMove && Math.abs(delta) > dragThreshold) {
 		didMove = true;
 		isMoving.value = true;
 	}
 
+	if (!didMove) return;
+
 	const targetTranslate = startTranslate + delta;
 
-	// Update currentTranslate with resistance if out of bounds :
-	const wrapperSize = isDesktop.value
-		? slideshowWrapperRef.value.offsetHeight
-		: slideshowWrapperRef.value.offsetWidth;
-	const minTranslate = containerSizeCache / 2 - (wrapperSize - 50);
+	// Update currentTranslate with resistance if out of bounds (using cached wrapper size) :
+	const minTranslate = containerSizeCache / 2 - (wrapperSizeCache - 50);
 	const maxTranslate = containerSizeCache / 2 + 50;
 
 	if (targetTranslate > maxTranslate) {
@@ -333,9 +344,12 @@ const animateOut = () => {
 
 // Resize observers :
 useResizeObserver(slideshowContainerRef, () => {
+	const wasDesktop = isDesktop.value;
 	isDesktop.value = window.innerWidth >= breakPointsNoUnits.desktop;
 
-	if (slideshowWrapperRef.value) {
+	if (isDragging) return; // Prevent clearing properties while dragging
+
+	if (slideshowWrapperRef.value && wasDesktop !== isDesktop.value) {
 		gsap.set(slideshowWrapperRef.value, { clearProps: 'all' });
 	}
 
@@ -425,7 +439,9 @@ defineExpose({
 
 	@include mq($until: desktop) {
 		align-items: center;
+		width: max-content;
 		min-height: fluidSize(150px, 125px, null, desktop);
+		height: 100%;
 	}
 
 	@include mq(desktop) {
