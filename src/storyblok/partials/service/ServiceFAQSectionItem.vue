@@ -107,29 +107,10 @@ watch(isToggled, () => {
 		a {
 			position: relative;
 			transition: color 0.4s $power2Out;
+			text-decoration: underline;
 
 			@include hover {
 				color: $white;
-
-				&::before {
-					background: $white;
-					transform: scale3d(0, 1, 1);
-					transform-origin: right center;
-				}
-			}
-
-			&::before {
-				content: '';
-				position: absolute;
-				bottom: 0;
-				left: 0;
-				width: 100%;
-				height: 1px;
-				background: $grey;
-				transform-origin: left center;
-				transition:
-					transform 0.4s $power2Out,
-					background 0.4s $power2Out;
 			}
 		}
 

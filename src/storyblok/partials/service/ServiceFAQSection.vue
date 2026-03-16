@@ -43,6 +43,8 @@ defineProps<{
 	& > h3 {
 		@include roobert-16-uppercase;
 
+		text-wrap: balance;
+
 		@include mq($until: tablet) {
 			margin-block-end: fluidSize(24px, 20px);
 		}

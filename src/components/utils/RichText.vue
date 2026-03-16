@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { StoryblokRichText, type StoryblokRichTextNode } from '@storyblok/vue';
-import { type VNode, computed, useTemplateRef } from 'vue';
+import { type VNode, computed, h, useTemplateRef } from 'vue';
 
 import LabelShuffle from '#components/partials/LabelShuffle.vue';
 
 import type { StoryblokRichtext } from '#types/component-types-sb.js';
+
+import { useRouter } from '#composables/useRouter.ts';
+import { $global } from '#stores/global.ts';
 
 // Props :
 const {
@@ -28,6 +31,9 @@ const {
 // Refs :
 const el = useTemplateRef('el');
 
+// Router :
+const { location } = useRouter();
+
 // Computed :
 const plaintext = computed(() => {
 	if (!shuffle || !doc) return '';
@@ -50,11 +56,64 @@ const markResolvers = {
 
 		if (!color) return node.text;
 
-		return {
-			type: 'span',
-			attrs: { style: `color:${color}` },
-			children: node.text
-		};
+		return h('span', { style: `color:${color}` }, node.text);
+	},
+	link: (node: any) => {
+		const { href, target, story } = node.attrs;
+
+		const currentPath = location.value.pathname.replace(/\/$/, '') || '/';
+		let targetPath = href;
+		let isInternal = !href.startsWith('http') && !href.startsWith('//');
+
+		if (!isInternal) {
+			try {
+				const url = new URL(href, location.value.origin);
+				if (url.origin === location.value.origin) {
+					targetPath = url.pathname;
+					isInternal = true;
+				}
+			} catch (e) {
+				console.error(e);
+			}
+		}
+
+		targetPath = targetPath.replace(/\/$/, '') || '/';
+
+		const isCurrentPage = isInternal && currentPath === targetPath;
+		const isForm =
+			isInternal &&
+			(story?.content?.component === 'Forms' || targetPath.includes('/forms/') || targetPath.endsWith('/forms'));
+
+		return h(
+			'a',
+			{
+				href: href,
+				target: isForm ? undefined : target,
+				onClick: (e: MouseEvent) => {
+					if (isCurrentPage) {
+						e.preventDefault();
+						return;
+					}
+
+					if (isForm) {
+						e.preventDefault();
+						$global.setKey('isContactToggled', true);
+
+						const formId = story?.content?.id;
+						if (formId) {
+							$global.setKey('contactFormId', formId);
+						} else {
+							const parts = targetPath.split('/');
+							const formsIndex = parts.indexOf('forms');
+							if (formsIndex !== -1 && parts[formsIndex + 1]) {
+								$global.setKey('contactFormId', parts[formsIndex + 1]);
+							}
+						}
+					}
+				}
+			},
+			node.text
+		);
 	}
 };
 
@@ -74,7 +133,7 @@ defineExpose({ el });
 		<StoryblokRichText
 			v-else-if="doc && Array.isArray(doc.content)"
 			:doc="doc"
-			:resolvers="mergedResolvers"
+			:resolvers="(mergedResolvers as any)"
 		/>
 	</div>
 </template>
