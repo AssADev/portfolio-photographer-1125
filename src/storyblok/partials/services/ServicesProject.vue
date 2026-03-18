@@ -97,7 +97,7 @@ defineProps<{
 	border-radius: 3px;
 	color: $white;
 	background: $eerieBlack;
-	padding: 5px 8px fluidSize(7px, 6px);
+	padding: fluidSize(5px, 2px) 8px fluidSize(7px, 6px);
 	overflow: hidden;
 
 	span {

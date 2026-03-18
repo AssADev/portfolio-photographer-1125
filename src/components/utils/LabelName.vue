@@ -41,6 +41,10 @@ defineProps<{
 
 			text-wrap: nowrap;
 			transition: transform 0.4s $power2Out 0.1s;
+
+			br {
+				display: none;
+			}
 		}
 
 		svg {

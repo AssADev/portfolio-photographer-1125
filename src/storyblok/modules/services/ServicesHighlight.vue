@@ -17,9 +17,6 @@ const { blok } = defineProps<{
 }>();
 
 // Refs :
-const project = computed(() => {
-	return blok.project?.find((p): p is ISbStoryData<StoryblokProject> => typeof p !== 'string') || null;
-});
 const service = computed(() => {
 	const s = blok.service[0];
 	return s && typeof s !== 'string' ? (s as ISbStoryData<StoryblokService>) : null;
@@ -43,7 +40,7 @@ const service = computed(() => {
 					layout="fullWidth"
 					:aspect-ratio="1440 / 720"
 					:sizes="[{ widescreen: '2560px' }, '100vw']"
-					:src="project!.content.informations![0].cover"
+					:src="blok.cover"
 				/>
 				<Image
 					v-parallax="6"
@@ -51,7 +48,7 @@ const service = computed(() => {
 					layout="fullWidth"
 					:aspect-ratio="375 / 720"
 					:sizes="[{ tablet: '768px' }, '100vw']"
-					:src="project!.content.informations![0].cover"
+					:src="blok.coverMobile"
 				/>
 			</template>
 			<template #info>

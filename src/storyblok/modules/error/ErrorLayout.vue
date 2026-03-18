@@ -34,7 +34,7 @@ const { height: marqueeHeight } = useElementSize(marqueeRef);
 // Computed :
 const scaledProjects = computed(() => {
 	return projects.map((project) => {
-		const cover = project.content.informations?.[0]?.coverSmall;
+		const cover = project.content.informations?.[0]?.coverMarquee;
 		const url = typeof cover === 'string' ? cover : cover?.filename || '';
 
 		return {

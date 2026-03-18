@@ -60,7 +60,13 @@ const serviceInformations = computed(() => {
 						:src="blok.cover"
 						:sizes="projects.length === 2 ? [{ desktop: '50vw' }, '100vw'] : [{ desktop: '80vw' }, '100vw']"
 					/>
-					<Image v-parallax="6" unstyled layout="fullWidth" :aspect-ratio="335 / 438" :src="blok.cover" />
+					<Image
+						v-parallax="6"
+						unstyled
+						layout="fullWidth"
+						:aspect-ratio="335 / 438"
+						:src="blok.coverMobile"
+					/>
 				</template>
 				<template #info>
 					<div
@@ -129,7 +135,7 @@ const serviceInformations = computed(() => {
 							unstyled
 							layout="fullWidth"
 							:aspect-ratio="220 / 328"
-							:src="projects[index].content.informations![0].cover"
+							:src="projects[index].content.informations![0].coverMobile"
 						/>
 					</template>
 				</ServicesProject>

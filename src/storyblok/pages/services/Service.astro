@@ -44,13 +44,13 @@ const {
 />
 
 {
-	blok.informations?.length && (
+	!!blok.informations?.length && (
 		<ServiceHero blok={blok.informations[0] as StoryblokServiceInformations} data-component-name="ServiceHero" />
 	)
 }
 
 {
-	blok.moduleProjectsHighlight?.length && (
+	!!blok.moduleProjectsHighlight?.length && (
 		<ServiceProjectsHighlight
 			blok={blok.moduleProjectsHighlight[0] as StoryblokServiceProjectsHighlight}
 			data-component-name="ServiceProjectsHighlight"
@@ -58,10 +58,10 @@ const {
 	)
 }
 
-{blok.moduleSteps?.length && <Steps blok={blok.moduleSteps[0] as StoryblokSteps} data-component-name="Steps" />}
+{!!blok.moduleSteps?.length && <Steps blok={blok.moduleSteps[0] as StoryblokSteps} data-component-name="Steps" />}
 
 {
-	blok.moduleTestimonials?.length && (
+	!!blok.moduleTestimonials?.length && (
 		<ServiceTestimonials
 			blok={blok.moduleTestimonials[0] as StoryblokServiceTestimonials}
 			data-component-name="ServiceTestimonials"
@@ -70,7 +70,7 @@ const {
 }
 
 {
-	blok.moduleProjectsExample?.length && (
+	!!blok.moduleProjectsExample?.length && (
 		<ServiceProjectsExample
 			blok={blok.moduleProjectsExample[0] as StoryblokServiceProjectsExample}
 			data-component-name="ServiceProjectsExample"
@@ -81,7 +81,7 @@ const {
 <ServiceOffers offers={blok.offers ?? []} data-component-name="ServiceOffers" />
 
 {
-	blok.moduleOffersComparison?.length && (
+	!!blok.moduleOffersComparison?.length && (
 		<ServiceOffersComparison
 			blok={blok.moduleOffersComparison[0] as StoryblokServiceOffersComparison}
 			offers={blok.offers ?? []}
@@ -91,7 +91,7 @@ const {
 }
 
 {
-	blok.moduleFAQ?.length && (
+	!!blok.moduleFAQ?.length && (
 		<ServiceFAQ
 			blok={blok.moduleFAQ[0] as StoryblokServiceFAQ}
 			faqTitle={faqTitle}
@@ -104,7 +104,7 @@ const {
 }
 
 {
-	blok.moduleOtherServices?.length && (
+	!!blok.moduleOtherServices?.length && (
 		<OtherServices
 			blok={blok.moduleOtherServices[0] as StoryblokOtherServices}
 			data-component-name="OtherServices"

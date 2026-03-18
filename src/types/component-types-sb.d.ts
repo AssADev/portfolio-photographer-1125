@@ -357,7 +357,8 @@ export interface StoryblokProject {
 export interface StoryblokProjectInformations {
 	name: StoryblokRichtext;
 	cover: StoryblokAsset;
-	coverSmall: StoryblokAsset;
+	coverMobile: StoryblokAsset;
+	coverMarquee: StoryblokAsset;
 	date: string;
 	location: string;
 	service: (ISbStoryData<StoryblokService> | string)[];
@@ -443,7 +444,7 @@ export interface StoryblokService {
 	moduleProjectsHighlight: StoryblokServiceProjectsHighlight[];
 	moduleSteps: StoryblokSteps[];
 	moduleTestimonials: StoryblokServiceTestimonials[];
-	moduleProjectsExample: StoryblokServiceProjectsExample[];
+	moduleProjectsExample?: StoryblokServiceProjectsExample[];
 	moduleOffersComparison: StoryblokServiceOffersComparison[];
 	moduleFAQ: StoryblokServiceFAQ[];
 	moduleOtherServices: StoryblokOtherServices[];
@@ -552,7 +553,8 @@ export interface StoryblokServicesHero {
 
 export interface StoryblokServicesHighlight {
 	service: (ISbStoryData<StoryblokService> | string)[];
-	project: (ISbStoryData<StoryblokProject> | string)[];
+	cover: StoryblokAsset;
+	coverMobile: StoryblokAsset;
 	component: 'ServicesHighlight';
 	_uid: string;
 }
@@ -560,6 +562,7 @@ export interface StoryblokServicesHighlight {
 export interface StoryblokServicesItem {
 	service: (ISbStoryData<StoryblokService> | string)[];
 	cover: StoryblokAsset;
+	coverMobile: StoryblokAsset;
 	projects: (ISbStoryData<StoryblokProject> | string)[];
 	isReversed?: boolean;
 	component: 'ServicesItem';

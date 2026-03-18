@@ -217,6 +217,9 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 		const splitTarget = targets.length > 0 ? Array.from(targets) : [el];
 
 		const split = new SplitText(splitTarget, { type: 'lines', linesClass: 'line', tag: 'span' });
+		split.lines.forEach((line) => {
+			line.innerHTML = line.innerHTML.replace(/^[\s\u200B]+|[\s\u200B]+$/g, '');
+		});
 		const lines = split.lines;
 
 		const tl = gsap.timeline({

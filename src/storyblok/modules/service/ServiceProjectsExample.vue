@@ -66,13 +66,25 @@ const projects = computed(() => {
 				>
 					<div class="picture-container">
 						<div class="picture-wrapper">
-							<Image
-								v-if="projects[index].content.informations?.[0]?.cover"
-								v-parallax="4"
-								object-fit="contain"
-								:sizes="[{ desktop: '50vw' }, '80vw']"
-								:src="projects[index].content.informations[0].cover"
-							/>
+							<picture>
+								<Image
+									v-if="projects[index].content.informations?.[0]?.cover"
+									v-parallax="4"
+									source
+									media="tablet"
+									object-fit="contain"
+									:sizes="[{ desktop: '50vw' }, '80vw']"
+									:src="projects[index].content.informations[0].cover"
+								/>
+								<Image
+									v-if="projects[index].content.informations?.[0]?.coverMobile"
+									v-parallax="4"
+									unstyled
+									layout="fullWidth"
+									:sizes="[{ tablet: '768px' }, '100vw']"
+									:src="projects[index].content.informations[0].coverMobile"
+								/>
+							</picture>
 						</div>
 					</div>
 					<LabelName

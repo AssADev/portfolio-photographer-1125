@@ -135,7 +135,7 @@ onUnmounted(() => {
 		@click="trackNavigationClick"
 	>
 		<div class="cover-wrapper" :style="width ? { width: `${width}px` } : {}">
-			<Image :src="informations.coverSmall" object-fit="contain" />
+			<Image :src="informations.coverMarquee" object-fit="contain" />
 		</div>
 		<div v-if="!isTouchDevice()" class="content-container">
 			<RichText ref="titleRef" class="title" :doc="informations.name" />

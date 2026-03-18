@@ -197,23 +197,23 @@ onUnmounted(() => {
 					@click="trackNavigationClick"
 				>
 					<div class="picture-wrapper">
-						<Image
-							v-parallax="{ value: 12 }"
-							source
-							media="tablet"
-							layout="fullWidth"
-							:aspect-ratio="1440 / 720"
-							:sizes="[{ widescreen: '2560px' }, '100vw']"
-							:src="project.content.informations![0].cover"
-						/>
-						<Image
-							v-parallax="{ value: 14 }"
-							unstyled
-							layout="fullWidth"
-							:aspect-ratio="375 / 720"
-							:sizes="[{ tablet: '768px' }, '100vw']"
-							:src="project.content.informations![0].cover"
-						/>
+						<picture v-parallax="{ desktop: 12, tablet: 10, mobile: 8 }">
+							<Image
+								source
+								media="tablet"
+								layout="fullWidth"
+								:aspect-ratio="1440 / 720"
+								:sizes="[{ widescreen: '2560px' }, '100vw']"
+								:src="project.content.informations![0].cover"
+							/>
+							<Image
+								unstyled
+								layout="fullWidth"
+								:aspect-ratio="375 / 720"
+								:sizes="[{ tablet: '768px' }, '100vw']"
+								:src="project.content.informations![0].coverMobile"
+							/>
+						</picture>
 					</div>
 					<LabelName
 						v-if="project.content.informations?.[0]?.name"
@@ -222,7 +222,7 @@ onUnmounted(() => {
 					/>
 				</a>
 			</div>
-			<div class="slideshow-navigation">
+			<div v-if="projects.length > 1" class="slideshow-navigation">
 				<button
 					v-for="(project, index) in projects"
 					:key="index"
@@ -255,6 +255,23 @@ onUnmounted(() => {
 
 	&.can-grab {
 		cursor: grab;
+
+		.project-slide {
+			&::before {
+				content: '';
+				position: absolute;
+				z-index: 1;
+				bottom: 0;
+				left: 0;
+				width: 100%;
+				height: fluidSize(125px, 100px);
+				background: linear-gradient(180deg, rgba($black, 0), rgba($black, 0.4));
+			}
+
+			& > :deep(.partials-label-name) {
+				bottom: calc(var(--gutter) * 2);
+			}
+		}
 	}
 
 	&.is-grabbing {
@@ -274,21 +291,6 @@ onUnmounted(() => {
 			transform: scale3d(1.025, 1.025, 1);
 		}
 	}
-
-	&::before {
-		content: '';
-		position: absolute;
-		z-index: 1;
-		bottom: 0;
-		left: 0;
-		width: 100%;
-		height: fluidSize(125px, 100px);
-		background: linear-gradient(180deg, rgba($black, 0), rgba($black, 0.4));
-	}
-
-	& > :deep(.partials-label-name) {
-		bottom: calc(var(--gutter) * 2);
-	}
 }
 
 .picture-wrapper {
@@ -296,7 +298,13 @@ onUnmounted(() => {
 	inset: 0;
 	transition: transform 0.8s $power2Out;
 
-	img {
+	picture {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	:deep(img) {
 		@include img-fill;
 	}
 }

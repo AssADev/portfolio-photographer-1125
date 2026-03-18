@@ -52,7 +52,7 @@ const filteredProjects = computed(() => {
 
 const scaledProjects = computed(() => {
 	return filteredProjects.value.map((project) => {
-		const cover = project.content.informations?.[0]?.coverSmall;
+		const cover = project.content.informations?.[0]?.coverMarquee;
 		const url = typeof cover === 'string' ? cover : cover?.filename || '';
 
 		return {
@@ -115,7 +115,7 @@ const scaledProjects = computed(() => {
 					<ProjectsMarqueeItem
 						v-animate="{
 							type: 'mask-reveal',
-							options: { direction: 'up', delay: index * 0.125, withTranslate: true }
+							options: { direction: 'up', delay: index * 0.125, withTranslate: true, start: 'top 110%' }
 						}"
 						:project="item.project"
 						:width="item.width"
@@ -182,6 +182,12 @@ const scaledProjects = computed(() => {
 
 		em {
 			@include romie-48-italic;
+		}
+
+		@include mq($until: tablet) {
+			br {
+				display: none;
+			}
 		}
 	}
 }

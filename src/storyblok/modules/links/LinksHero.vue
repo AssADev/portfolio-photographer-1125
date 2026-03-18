@@ -32,9 +32,8 @@ const resolvers = getRichTextResolvers('h1');
 <template>
 	<section v-animate="{ type: 'mask-reveal', options: { direction: 'up' } }" class="modules links-hero">
 		<div class="background-container">
-			<picture>
+			<picture v-parallax="{ startAtZero: true, desktop: 12, tablet: 12, mobile: 14 }">
 				<Image
-					v-parallax="{ startAtZero: true, value: 12 }"
 					source
 					media="tablet"
 					layout="fullWidth"
@@ -44,7 +43,6 @@ const resolvers = getRichTextResolvers('h1');
 					:alt="blok.backgroundDesktop.alt || 'Links Hero - Background (Desktop)'"
 				/>
 				<Image
-					v-parallax="{ startAtZero: true, value: 14 }"
 					unstyled
 					layout="fullWidth"
 					:aspect-ratio="375 / 810"
@@ -119,6 +117,12 @@ const resolvers = getRichTextResolvers('h1');
 .background-container {
 	position: absolute;
 	inset: 0;
+
+	picture {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
 
 	img {
 		@include img-fill;
