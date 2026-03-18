@@ -252,6 +252,7 @@ onUnmounted(() => {
 .slideshow-wrapper {
 	display: flex;
 	height: 100%;
+	cursor: pointer;
 
 	&.can-grab {
 		cursor: grab;
