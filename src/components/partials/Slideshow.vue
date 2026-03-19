@@ -295,7 +295,6 @@ const animateInto = () => {
 	tl.from(slidesCache, {
 		clipPath: isDesktop.value ? 'inset(0% 0% 100% 0%)' : 'inset(100% 0% 0% 0%)',
 		duration: 1.2,
-		stagger: isDesktop.value ? 0.075 : 0.04,
 		ease: 'power3.inOut'
 	});
 
@@ -304,7 +303,7 @@ const animateInto = () => {
 			activeIndicatorRef.value,
 			{ opacity: 0, scale: 0.975 },
 			{ opacity: 1, scale: 1, duration: 0.6, ease: 'power2.inOut' },
-			Math.max(0.8, modelValue.value * 0.4)
+			0.8
 		);
 	}
 
