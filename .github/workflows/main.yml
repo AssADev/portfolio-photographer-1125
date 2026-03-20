@@ -14,6 +14,12 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
       - name: Install dependencies
         run: npm install
 
@@ -30,6 +36,7 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: dist/
           server-dir: /public_html/preprod/
+          dangerous-clean-slate: true
 
       # 🟢 PROD :
       - name: Deploy to Production
@@ -41,3 +48,4 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: dist/
           server-dir: /public_html/
+          dangerous-clean-slate: true
