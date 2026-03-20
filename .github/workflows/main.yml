@@ -1,0 +1,43 @@
+name: Deploy (Prod & Preprod)
+
+on:
+  push:
+    branches:
+      - preprod
+      - production
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      # 🔵 PREPROD :
+      - name: Deploy to Preprod
+        if: github.ref == 'refs/heads/preproduction'
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ftp.ton-domaine.com
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: dist/
+          server-dir: /public_html/preprod/
+
+      # 🟢 PROD :
+      - name: Deploy to Production
+        if: github.ref == 'refs/heads/production'
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ftp.ton-domaine.com
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: dist/
+          server-dir: /public_html/
