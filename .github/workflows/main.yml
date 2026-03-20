@@ -1,56 +1,60 @@
 name: Deploy (Preprod & Production)
 
 on:
-  push:
-    branches:
-      - env/preprod
-      - env/production
+    push:
+        branches:
+            - env/preprod
+            - env/production
 
 jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
+    build-and-deploy:
+        runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+        steps:
+            - name: Checkout repo
+              uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 22
 
-      - name: Install dependencies
-        run: npm install
+            - name: Install dependencies
+              run: npm install
 
-      - name: Create env file
-        run: |
-          echo "PUBLIC_HCAPTCHA_SITE_KEY=${{ secrets.PUBLIC_HCAPTCHA_SITE_KEY }}" >> .env
-          echo "PUBLIC_WEB3FORMS_ACCESS_KEY=${{ secrets.PUBLIC_WEB3FORMS_ACCESS_KEY }}" >> .env
-          echo "SITE_URL=${{ secrets.SITE_URL }}" >> .env
+            - name: Create env file
+              run: |
+                  echo "SITE_URL=${{ secrets.SITE_URL }}" >> .env
+                  echo "STORYBLOK_TOKEN=${{ secrets.STORYBLOK_TOKEN }}" >> .env
+                  echo "STORYBLOK_OAUTH_TOKEN=${{ secrets.STORYBLOK_OAUTH_TOKEN }}" >> .env
+                  echo "STORYBLOK_SPACE_ID=${{ secrets.STORYBLOK_SPACE_ID }}" >> .env
+                  echo "STORYBLOK_ASSETS_DOMAIN=${{ secrets.SITE_URL }}" >> .env
+                  echo "PUBLIC_HCAPTCHA_SITE_KEY=${{ secrets.PUBLIC_HCAPTCHA_SITE_KEY }}" >> .env
+                  echo "PUBLIC_WEB3FORMS_ACCESS_KEY=${{ secrets.PUBLIC_WEB3FORMS_ACCESS_KEY }}" >> .env
 
-      - name: Build
-        run: npm run build
+            - name: Build
+              run: npm run build
 
-      # 🔵 PREPROD :
-      - name: Deploy to Preprod
-        if: github.ref_name == 'env/preprod'
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: dist/
-          server-dir: /public_html/preprod/
-          dangerous-clean-slate: true
+            # 🔵 PREPROD :
+            - name: Deploy to Preprod
+              if: github.ref_name == 'env/preprod'
+              uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+              with:
+                  server: ${{ secrets.FTP_SERVER }}
+                  username: ${{ secrets.FTP_USERNAME }}
+                  password: ${{ secrets.FTP_PASSWORD }}
+                  local-dir: dist/
+                  server-dir: /public_html/preprod/
+                  dangerous-clean-slate: true
 
-      # 🟢 PROD :
-      - name: Deploy to Production
-        if: github.ref_name == 'env/production'
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: dist/
-          server-dir: /public_html/
-          dangerous-clean-slate: true
+            # 🟢 PRODUCTION :
+            - name: Deploy to Production
+              if: github.ref_name == 'env/production'
+              uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+              with:
+                  server: ${{ secrets.FTP_SERVER }}
+                  username: ${{ secrets.FTP_USERNAME }}
+                  password: ${{ secrets.FTP_PASSWORD }}
+                  local-dir: dist/
+                  server-dir: /public_html/
+                  dangerous-clean-slate: true
