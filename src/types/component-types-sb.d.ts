@@ -590,6 +590,11 @@ export interface StoryblokServiceTestimonialsItemPicture {
 }
 
 export interface StoryblokSiteConfig {
+	marqueeTitleWithProjects: StoryblokRichtext;
+	marqueeDescriptionWithProjects: string;
+	marqueeTitleWithoutProjects: StoryblokRichtext;
+	marqueeDescriptionWithoutProjects: string;
+	marqueeLink?: StoryblokLabelLink[];
 	serviceBookingFormLink: StoryblokLabelLink[];
 	serviceTestimonialsTitle: string;
 	serviceTestimonialsDescription: string;
@@ -597,9 +602,6 @@ export interface StoryblokSiteConfig {
 	serviceOffersTitle: StoryblokRichtext;
 	serviceOffersDescription: string;
 	serviceOffersComparisonTitle: StoryblokRichtext;
-	projectMarqueeTitle: StoryblokRichtext;
-	projectMarqueeDescription: string;
-	projectMarqueeLink?: StoryblokLabelLink[];
 	errorTitle: StoryblokRichtext;
 	errorLink: StoryblokLabelLink[];
 	errorDescription: StoryblokRichtext;
@@ -620,9 +622,6 @@ export interface StoryblokSiteConfig {
 	defaultImage: StoryblokAsset;
 	favicon: StoryblokAsset;
 	formsContact: (ISbStoryData<StoryblokForms> | string)[];
-	servicesMarqueeTitle: StoryblokRichtext;
-	servicesMarqueeDescription: string;
-	servicesMarqueeLink?: StoryblokLabelLink[];
 	component: 'SiteConfig';
 	_uid: string;
 }

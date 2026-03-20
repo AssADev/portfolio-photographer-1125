@@ -18,12 +18,37 @@ const { blok } = Astro.props;
 const { language = locales[0] } = parseUrl(Astro.url.pathname);
 
 // Fetch the projects :
-const projects = await getProjects(language, Astro.locals.isPreviewMode, Astro.locals.story?.tag_list);
+let projects = await getProjects(language, Astro.locals.isPreviewMode, Astro.locals.story?.tag_list);
+
+let isFallback = false;
+if (projects.filter((p) => p.uuid !== Astro.locals.story?.uuid).length < 2) {
+	projects = await getProjects(language, Astro.locals.isPreviewMode);
+	isFallback = true;
+}
+
+const {
+	marqueeTitleWithProjects,
+	marqueeDescriptionWithProjects,
+	marqueeTitleWithoutProjects,
+	marqueeDescriptionWithoutProjects,
+	marqueeLink
+} = Astro.locals.siteConfig;
+
+const finalTitle =
+	Astro.props.title || blok?.title || (isFallback ? marqueeTitleWithoutProjects : marqueeTitleWithProjects);
+const finalDescription =
+	Astro.props.description ||
+	blok?.description ||
+	(isFallback ? marqueeDescriptionWithoutProjects : marqueeDescriptionWithProjects);
+const finalLink = Astro.props.link || blok?.link || marqueeLink;
 ---
 
 <ProjectsMarqueeVue
 	{...storyblokEditable(blok, Astro.locals.isPreviewMode)}
 	{...Astro.props}
+	title={finalTitle}
+	description={finalDescription}
+	link={finalLink}
 	projects={projects}
 	excludeUuid={Astro.locals.story?.uuid}
 	client:visible

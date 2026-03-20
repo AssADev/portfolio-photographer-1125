@@ -15,7 +15,6 @@ import ProjectsMarquee from '#storyblok/modules/ProjectsMarquee.astro';
 type Props = { blok: StoryblokProject };
 
 const { blok } = Astro.props;
-const { projectMarqueeTitle, projectMarqueeDescription, projectMarqueeLink } = Astro.locals.siteConfig;
 
 // Find all pictures :
 const pictures =
@@ -28,10 +27,7 @@ const pictures =
 // Create a marquee blok :
 const marqueeBlok = {
 	_uid: `${blok._uid}-marquee`,
-	component: 'ProjectsMarquee',
-	title: projectMarqueeTitle,
-	description: projectMarqueeDescription,
-	link: projectMarqueeLink
+	component: 'ProjectsMarquee'
 } as any as StoryblokProjectsMarquee;
 ---
 
