@@ -33,7 +33,7 @@ const limitedProjects = computed(() => {
 
 // Methods :
 const getGlobalIndex = (project: ISbStoryData<StoryblokProject>) => {
-	return projects.findIndex((p) => p.id === project.id);
+	return projects.findIndex((p) => p.id === project.id) + 1;
 };
 
 const matchesFilter = (project: ISbStoryData<StoryblokProject>, filter: string) => {

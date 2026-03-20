@@ -24,11 +24,11 @@ export const HOME_LAYOUT_CONFIGS: Record<string, string[][]> = {
 			'col-start-3',
 			'col-end-12',
 			'col-start-dk-10',
-			'col-end-dk-21',
+			'col-end-dk-22',
 			'col-start-lg-10',
-			'col-end-lg-22',
+			'col-end-lg-23',
 			'col-start-xxlg-10',
-			'col-end-xxlg-23'
+			'col-end-xxlg-24'
 		]
 	],
 	'layout-two': [

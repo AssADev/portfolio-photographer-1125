@@ -64,7 +64,7 @@ const scaledProjects = computed(() => {
 </script>
 
 <template>
-	<section class="modules projects-marquee">
+	<section v-if="scaledProjects.length > 2" class="modules projects-marquee">
 		<div class="circular-star-wrapper">
 			<CircularStar v-animate="{ type: 'scale-up', options: { delay: 0.85, reset: true } }" :scroll-speed="0.5" />
 		</div>
