@@ -5,6 +5,16 @@ on:
         branches:
             - env/preprod
             - env/production
+    workflow_dispatch:
+        inputs:
+            target:
+                description: "Environment to deploy"
+                required: true
+                default: "preprod"
+                type: choice
+                options:
+                    - preprod
+                    - production
 
 jobs:
     build-and-deploy:
