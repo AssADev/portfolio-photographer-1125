@@ -590,10 +590,14 @@ export interface StoryblokServiceTestimonialsItemPicture {
 }
 
 export interface StoryblokSiteConfig {
-	marqueeTitleWithProjects: StoryblokRichtext;
-	marqueeDescriptionWithProjects: string;
-	marqueeTitleWithoutProjects: StoryblokRichtext;
-	marqueeDescriptionWithoutProjects: string;
+	marqueeTitleServiceWithProjects: StoryblokRichtext;
+	marqueeTitleServiceWithoutProjects: StoryblokRichtext;
+	marqueeDescriptionServiceWithProjects: string;
+	marqueeDescriptionSericeWithoutProjects: string;
+	marqueeTitleProjectWithProjects: StoryblokRichtext;
+	marqueeTitleProjectWithoutProjects: StoryblokRichtext;
+	marqueeDescriptionProjectWithProjects: string;
+	marqueeDescriptionProjectWithoutProjects: string;
 	marqueeLink?: StoryblokLabelLink[];
 	serviceBookingFormLink: StoryblokLabelLink[];
 	serviceTestimonialsTitle: string;

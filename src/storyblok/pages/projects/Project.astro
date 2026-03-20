@@ -15,6 +15,12 @@ import ProjectsMarquee from '#storyblok/modules/ProjectsMarquee.astro';
 type Props = { blok: StoryblokProject };
 
 const { blok } = Astro.props;
+const {
+	marqueeTitleProjectWithProjects,
+	marqueeTitleProjectWithoutProjects,
+	marqueeDescriptionProjectWithProjects,
+	marqueeDescriptionProjectWithoutProjects
+} = Astro.locals.siteConfig;
 
 // Find all pictures :
 const pictures =
@@ -55,7 +61,13 @@ const marqueeBlok = {
 			})
 		}
 	</div>
-	<ProjectsMarquee blok={marqueeBlok} />
+	<ProjectsMarquee
+		titleWithProjects={marqueeTitleProjectWithProjects}
+		titleWithoutProjects={marqueeTitleProjectWithoutProjects}
+		descriptionWithProjects={marqueeDescriptionProjectWithProjects}
+		descriptionWithoutProjects={marqueeDescriptionProjectWithoutProjects}
+		blok={marqueeBlok}
+	/>
 </div>
 
 {pictures.length && <ProjectMinimap pictures={pictures} />}

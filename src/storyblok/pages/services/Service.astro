@@ -25,7 +25,16 @@ import ServiceBreadcrumb from '#storyblok/partials/service/ServiceBreadcrumb.vue
 type Props = { blok: StoryblokService };
 
 const { blok } = Astro.props;
-const { faqTitle, faqDescription, faqLink, faqSections } = Astro.locals.siteConfig;
+const {
+	faqTitle,
+	faqDescription,
+	faqLink,
+	faqSections,
+	marqueeTitleServiceWithProjects,
+	marqueeTitleServiceWithoutProjects,
+	marqueeDescriptionServiceWithProjects,
+	marqueeDescriptionSericeWithoutProjects
+} = Astro.locals.siteConfig;
 ---
 
 <ServiceBreadcrumb
@@ -104,4 +113,10 @@ const { faqTitle, faqDescription, faqLink, faqSections } = Astro.locals.siteConf
 	)
 }
 
-<ProjectsMarquee data-component-name="ProjectsMarquee" />
+<ProjectsMarquee
+	titleWithProjects={marqueeTitleServiceWithProjects}
+	titleWithoutProjects={marqueeTitleServiceWithoutProjects}
+	descriptionWithProjects={marqueeDescriptionServiceWithProjects}
+	descriptionWithoutProjects={marqueeDescriptionSericeWithoutProjects}
+	data-component-name="ProjectsMarquee"
+/>

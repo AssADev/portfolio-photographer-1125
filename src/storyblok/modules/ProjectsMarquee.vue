@@ -22,13 +22,26 @@ import type {
 } from '#types/component-types-sb.js';
 
 // Props :
-const { projects, excludeUuid } = defineProps<{
+const {
+	blok,
+	titleWithProjects,
+	titleWithoutProjects,
+	descriptionWithProjects,
+	descriptionWithoutProjects,
+	link,
+	projects,
+	excludeUuid,
+	isFallback
+} = defineProps<{
 	blok?: StoryblokProjectsMarquee;
-	title?: StoryblokRichtext;
-	description?: string;
+	titleWithProjects?: StoryblokRichtext;
+	titleWithoutProjects?: StoryblokRichtext;
+	descriptionWithProjects?: string;
+	descriptionWithoutProjects?: string;
 	link?: StoryblokLabelLink[];
 	projects: ISbStoryData<StoryblokProject>[];
 	excludeUuid?: string;
+	isFallback?: boolean;
 }>();
 
 // Variables :
@@ -61,6 +74,14 @@ const scaledProjects = computed(() => {
 		};
 	});
 });
+
+const activeTitle = computed(() => {
+	return (!isFallback ? titleWithProjects : titleWithoutProjects) || blok?.title;
+});
+
+const activeDescription = computed(() => {
+	return (!isFallback ? descriptionWithProjects : descriptionWithoutProjects) || blok?.description;
+});
 </script>
 
 <template>
@@ -70,19 +91,19 @@ const scaledProjects = computed(() => {
 		</div>
 		<div class="container-grid">
 			<RichText
-				v-if="blok?.title || title"
+				v-if="activeTitle"
 				v-animate="'reveal-titles'"
-				:doc="(blok?.title || title)!"
+				:doc="activeTitle!"
 				class="col-start-1 col-end-13 col-start-tb-1 col-end-tb-12 col-start-dk-17 col-end-dk-33 col-start-xxlg-22 col-end-xxlg-33"
 			/>
 			<div
 				class="description-wrapper col-start-1 col-end-13 col-start-tb-1 col-end-tb-11 col-start-dk-1 col-end-dk-14 col-start-mlg-1 col-end-mlg-12 col-start-xxlg-1 col-end-xxlg-9"
 			>
 				<p
-					v-if="blok?.description || description"
+					v-if="activeDescription"
 					v-animate="'reveal-paragraphs'"
 					class="description"
-					v-html="blok?.description || description"
+					v-html="activeDescription"
 				/>
 				<Button
 					v-if="blok?.link?.[0] || link?.[0]"

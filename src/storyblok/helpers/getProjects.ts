@@ -34,8 +34,11 @@ export async function getProjects(language = locales[0], isPreviewMode: boolean,
 				with_tag: tags.join(',')
 			} as any);
 
-			if (taggedResponse.data.stories?.length > 0) {
-				return normalizeStory(taggedResponse.data.stories as ISbStoryData<StoryblokProject>[]);
+			if (taggedResponse.data.stories?.length > 2) {
+				return {
+					projects: normalizeStory(taggedResponse.data.stories as ISbStoryData<StoryblokProject>[]),
+					isFallback: false
+				};
 			}
 		}
 
@@ -44,9 +47,15 @@ export async function getProjects(language = locales[0], isPreviewMode: boolean,
 
 		const allProjects: ISbStoryData<StoryblokProject>[] = normalizeStory(pageSpecificResponse.data.stories || []);
 
-		return allProjects;
+		return {
+			projects: allProjects,
+			isFallback: tags && tags.length > 0 ? true : false
+		};
 	} catch (error) {
 		logger.error('Error fetching projects', error);
-		return [];
+		return {
+			projects: [],
+			isFallback: true
+		};
 	}
 }
