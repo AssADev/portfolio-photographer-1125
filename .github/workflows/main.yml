@@ -3,8 +3,8 @@ name: Deploy (Preprod & Production)
 on:
   push:
     branches:
-      - preprod
-      - production
+      - env/preprod
+      - env/production
 
 jobs:
   build-and-deploy:
@@ -22,7 +22,7 @@ jobs:
 
       # 🔵 PREPROD :
       - name: Deploy to Preprod
-        if: github.ref == 'refs/heads/preprod'
+        if: github.ref_name == 'env/preprod'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -33,7 +33,7 @@ jobs:
 
       # 🟢 PROD :
       - name: Deploy to Production
-        if: github.ref == 'refs/heads/production'
+        if: github.ref_name == 'env/production'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
