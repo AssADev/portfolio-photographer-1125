@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useStore } from '@nanostores/vue';
-import { isIOS } from '@vueuse/core';
 import gsap from 'gsap';
 import { VueLenis } from 'lenis/vue';
 import { onMounted, onUnmounted, useTemplateRef, watchEffect } from 'vue';
