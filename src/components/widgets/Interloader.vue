@@ -10,7 +10,7 @@ import { useRouter } from '#composables/useRouter.ts';
 import { $global } from '#stores/global.ts';
 
 // Constants :
-const ANIMATION_DURATION = 0; // ms
+const ANIMATION_DURATION = 1500; // ms
 
 // Refs :
 const isTablet = ref(false);

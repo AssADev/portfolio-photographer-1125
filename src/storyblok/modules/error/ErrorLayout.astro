@@ -5,11 +5,11 @@ import { getProjects } from '#storyblok/helpers/getProjects.ts';
 import locales from '#utils/locales.json';
 import parseUrl from '#utils/parseUrl.ts';
 
-const { errorTitle, errorLink, errorDescription, errorAuthor } = Astro.locals.siteConfig;
+const { errorTitle, errorLink, errorDescription } = Astro.locals.siteConfig;
 const { language = locales[0] } = parseUrl(Astro.url.pathname);
 
 // Fetch the projects :
-const projects = await getProjects(language, Astro.locals.isPreviewMode);
+const { projects } = await getProjects(language, Astro.locals.isPreviewMode);
 ---
 
 <ErrorLayoutVue
@@ -17,7 +17,6 @@ const projects = await getProjects(language, Astro.locals.isPreviewMode);
 	errorTitle={errorTitle}
 	errorLink={errorLink}
 	errorDescription={errorDescription}
-	errorAuthor={errorAuthor}
 	projects={projects}
 	client:visible
 />

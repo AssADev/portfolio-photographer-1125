@@ -10,7 +10,6 @@ import { getMarqueeImageWidth } from '#utils/marquee.ts';
 import ProjectsMarqueeItem from '#components/partials/ProjectsMarqueeItem.vue';
 import Button from '#components/utils/Button.vue';
 import CircularStar from '#components/utils/CircularStar.vue';
-import Icon from '#components/utils/Icon.vue';
 import Marquee from '#components/utils/Marquee.vue';
 import RichText from '#components/utils/RichText.vue';
 
@@ -21,7 +20,6 @@ const { projects } = defineProps<{
 	errorTitle: StoryblokRichtext;
 	errorLink: StoryblokLabelLink[];
 	errorDescription: StoryblokRichtext;
-	errorAuthor?: StoryblokRichtext;
 	projects: ISbStoryData<StoryblokProject>[];
 }>();
 
