@@ -1,4 +1,4 @@
-name: Deploy (Prod & Preprod)
+name: Deploy (Preprod & Production)
 
 on:
   push:
@@ -22,10 +22,10 @@ jobs:
 
       # 🔵 PREPROD :
       - name: Deploy to Preprod
-        if: github.ref == 'refs/heads/preproduction'
+        if: github.ref == 'refs/heads/preprod'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          server: ftp.ton-domaine.com
+          server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: dist/
@@ -36,7 +36,7 @@ jobs:
         if: github.ref == 'refs/heads/production'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          server: ftp.ton-domaine.com
+          server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: dist/
