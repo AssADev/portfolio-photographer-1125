@@ -13,38 +13,6 @@ const fisherYatesShuffle = (arr: StoryblokAsset[]): StoryblokAsset[] => {
 	return shuffled;
 };
 
-const ensureNoAdjacentDuplicates = (arr: StoryblokAsset[]): StoryblokAsset[] => {
-	if (arr.length <= 1) return arr;
-
-	let result = [...arr];
-	let hasAdjacent = true;
-
-	while (hasAdjacent) {
-		hasAdjacent = false;
-		for (let i = 0; i < result.length - 1; i++) {
-			if (result[i].filename === result[i + 1].filename) {
-				hasAdjacent = true;
-				let swapIdx;
-				let attempts = 0;
-				do {
-					swapIdx = Math.floor(Math.random() * result.length);
-					attempts++;
-				} while (
-					(swapIdx === i || swapIdx === i + 1 || result[swapIdx].filename === result[i].filename) &&
-					attempts < 20
-				);
-
-				if (attempts < 20) {
-					[result[i + 1], result[swapIdx]] = [result[swapIdx], result[i + 1]];
-				}
-				break;
-			}
-		}
-	}
-
-	return result;
-};
-
 const fetchFromStoryblok = async (endpoint: string, spaceId: string, token: string): Promise<any> => {
 	const response = await fetch(`https://mapi.storyblok.com/v1/spaces/${spaceId}/${endpoint}`, {
 		method: 'GET',
