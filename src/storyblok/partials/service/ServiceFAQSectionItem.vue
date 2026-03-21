@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ref, useTemplateRef, watch } from 'vue';
+import { ref, watch } from 'vue';
 
 import IconPlusMinus from '#components/partials/IconPlusMinus.vue';
-import LabelShuffle from '#components/partials/LabelShuffle.vue';
 import Button from '#components/utils/Button.vue';
 import RichText from '#components/utils/RichText.vue';
 
@@ -15,8 +14,6 @@ defineProps<{
 }>();
 
 // Refs :
-const iconPlusMinusRef = useTemplateRef('iconPlusMinusRef');
-
 const isToggled = ref(false);
 
 // Variables :
@@ -34,10 +31,9 @@ watch(isToggled, () => {
 	<div class="partials-service-faq-section-item" :class="{ toggle: isToggled }">
 		<hr v-animate="'scale-from-left'" />
 		<Button class="question-header" @click="isToggled = !isToggled">
-			<LabelShuffle v-animate="'reveal-label-shuffle'" :label="blok.question" no-snap reveal />
+			<p v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.1 } }">{{ blok.question }}</p>
 			<IconPlusMinus
 				v-animate="{ type: 'scale-up', options: { delay: 0.275, rotate: -90, reset: true } }"
-				ref="iconPlusMinusRef"
 				:active="isToggled"
 			/>
 		</Button>
@@ -76,7 +72,7 @@ watch(isToggled, () => {
 	justify-content: space-between;
 	padding-block: fluidSize(16px, 12px) fluidSize(20px, 16px);
 
-	.partials-label-shuffle {
+	& > p {
 		@include roobert-14-uppercase;
 	}
 }
