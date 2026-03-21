@@ -31,6 +31,7 @@ const { SITE_URL, STORYBLOK_TOKEN, PREVIEW_HOSTS } = loadEnv(env.NODE_ENV, cwd()
 export default defineConfig({
 	// Set the site URL from environment variables :
 	site: SITE_URL,
+
 	// Configure integrations :
 	integrations: [
 		storyblok({
@@ -56,6 +57,7 @@ export default defineConfig({
 		}),
 		vue({ appEntrypoint: '/src/scripts/_vueApp.ts', devtools: false })
 	],
+
 	// Configure server-side rendering :
 	output: 'server',
 	adapter: vercel(),
@@ -93,6 +95,9 @@ export default defineConfig({
 
 	// Vite configuration :
 	vite: {
+		ssr: {
+			noExternal: ['gsap']
+		},
 		plugins: [
 			basicSsl(),
 			svgLoader({
