@@ -36,6 +36,12 @@ My own photography portfolio, which I both **designed** and **developed** from s
 npx pnpm storyblok login
 ```
 
+### Logout
+
+```bash
+npx pnpm storyblok logout
+```
+
 ### Types
 
 ```bash
