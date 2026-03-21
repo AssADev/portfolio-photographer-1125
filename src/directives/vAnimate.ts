@@ -30,6 +30,9 @@ const init = (el: HTMLElement & { _gsapAnim?: gsap.core.Animation }, binding: an
 	const anim = animationFn(el, options);
 	el._gsapAnim = anim;
 
+	// Once the animation is initialized, hide the trigger attribute :
+	el.removeAttribute('data-v-animate');
+
 	if (anim instanceof gsap.core.Timeline || anim instanceof gsap.core.Tween) {
 		ScrollTrigger.create({
 			trigger: el,
@@ -44,7 +47,7 @@ const init = (el: HTMLElement & { _gsapAnim?: gsap.core.Animation }, binding: an
 
 const vAnimate: Directive<HTMLElement & { _gsapAnim?: gsap.core.Animation }, string | AnimateBinding> = {
 	mounted(el, binding) {
-		nextTick(() => init(el, binding));
+		init(el, binding);
 	},
 	updated(el, binding) {
 		init(el, binding);

@@ -1,4 +1,10 @@
 @use '../tools/colors' as *;
+ 
+ // Global animations :
+ [data-v-animate] {
+ 	opacity: 0;
+ 	pointer-events: none;
+ }
 
 // Reveal titles :
 .reveal-titles-line-wrapper {

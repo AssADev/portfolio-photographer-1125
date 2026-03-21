@@ -99,6 +99,16 @@ export default defineConfig({
 			noExternal: ['gsap']
 		},
 		plugins: [
+			{
+				name: 'v-animate-ssr-support',
+				transform(code, id) {
+					if (!id.endsWith('.vue')) return;
+
+					// Find 'v-animate="..."' and add 'data-v-animate="..."' BEFORE it :
+					// This ensures the attribute is exported in SSR for initial CSS styling
+					return code.replace(/(v-animate(\.[\w]+)*\s*=\s*['"]([^'"]*)['"])/g, 'data-v-animate="$3" $1');
+				}
+			},
 			basicSsl(),
 			svgLoader({
 				svgoConfig: {
