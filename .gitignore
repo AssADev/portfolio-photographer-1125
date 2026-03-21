@@ -32,3 +32,6 @@ pnpm-debug.log*
 # generated locales
 src/utils/locales.json
 src/assets/locales/*.json
+
+# Vercel
+.vercel
