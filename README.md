@@ -28,6 +28,20 @@ My own photography portfolio, which I both **designed** and **developed** from s
     npx pnpm run dev
     ```
 
+### Build
+
+1. **Generate build:**
+
+    ```bash
+    npx pnpm build
+    ```
+
+2. **Start preview:**
+
+    ```bash
+    npx pnpm preview
+    ```
+
 ## Storyblok
 
 ### Login
