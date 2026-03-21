@@ -1,4 +1,4 @@
-import node from '@astrojs/node';
+import vercel from '@astrojs/vercel';
 import vue from '@astrojs/vue';
 import { storyblok } from '@storyblok/astro';
 import basicSsl from '@vitejs/plugin-basic-ssl';
@@ -58,7 +58,7 @@ export default defineConfig({
 	],
 	// Configure server-side rendering :
 	output: 'server',
-	adapter: node({ mode: 'standalone' }),
+	adapter: vercel(),
 
 	// Define environment variable schema :
 	env: {
