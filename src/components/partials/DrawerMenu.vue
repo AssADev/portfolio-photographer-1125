@@ -46,7 +46,7 @@ const openDrawer = () => {
 	tl.to(
 		containerRef.value,
 		{
-			clipPath: 'inset(0% 0 0 0)',
+			clipPath: 'inset(0% 0% 0% 0%)',
 			duration: 0.8,
 			ease: 'power2.inOut'
 		},
@@ -79,7 +79,7 @@ const closeDrawer = () => {
 		}
 	});
 
-	tl.to(containerRef.value, { clipPath: 'inset(100% 0 0 0)', duration: 0.6, ease: 'power2.inOut' });
+	tl.to(containerRef.value, { clipPath: 'inset(100% 0% 0% 0%)', duration: 0.6, ease: 'power2.inOut' });
 
 	return tl;
 };
@@ -165,7 +165,7 @@ defineExpose({
 	height: fit-content;
 	border-radius: var(--border-radius);
 	overflow: hidden;
-	clip-path: inset(100% 0 0 0);
+	clip-path: inset(100% 0% 0% 0%);
 
 	@include mq($until: tablet) {
 		max-width: calc(100vw - var(--gutter) * 2);

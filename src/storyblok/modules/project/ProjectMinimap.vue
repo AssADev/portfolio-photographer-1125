@@ -32,6 +32,7 @@ const projectMinimapStore = useStore($projectMinimap);
 const viewerWrapperRef = useTemplateRef('viewerWrapperRef');
 const slideshowRef = useTemplateRef('slideshowRef');
 const themeCtaRef = useTemplateRef('themeCtaRef');
+const zoomContainer = useTemplateRef('zoomContainer');
 
 const isOpening = ref(false);
 const isClosing = ref(false);
@@ -193,6 +194,13 @@ const onClose = async () => {
 			});
 		});
 
+		// Animation of the Zoom container :
+		gsap.to(zoomContainer.value, {
+			clipPath: 'inset(100% 0% 0% 0%)',
+			duration: 0.8,
+			ease: 'power3.inOut'
+		});
+
 		await slideshowRef.value?.animateOut();
 		isVisible.value = false;
 
@@ -214,6 +222,7 @@ const onClose = async () => {
 		$projectMinimap.setKey('isFlipping', false);
 
 		if (containerGrid) gsap.set(containerGrid, { clearProps: 'all' });
+		if (zoomContainer.value) gsap.set(zoomContainer.value, { clearProps: 'all' });
 	}
 };
 
@@ -262,6 +271,31 @@ watch(
 					rotate: 35
 				});
 			});
+
+			// Animation of the Zoom container :
+			const zoomInnerCtn = zoomContainer.value?.querySelector('.zoom-inner-container');
+			const zoomDots = zoomInnerCtn?.querySelectorAll('button');
+			const zoomThumb = zoomContainer.value?.querySelector('.custom-thumb');
+
+			const tlZoom = gsap.timeline();
+
+			tlZoom.from(
+				zoomContainer.value,
+				{ clipPath: 'inset(100% 0% 0% 0%)', duration: 1.2, ease: 'power3.inOut' },
+				0
+			);
+
+			if (zoomInnerCtn) {
+				tlZoom.from(zoomInnerCtn, { opacity: 0, duration: 0.6, ease: 'power2.out' }, 0.4);
+			}
+
+			if (zoomDots) {
+				tlZoom.from(zoomDots, { scale: 0, stagger: 0.1, duration: 0.8, ease: 'power2.inOut' }, 0.45);
+			}
+
+			if (zoomThumb) {
+				tlZoom.from(zoomThumb, { scale: 0.85, opacity: 0, duration: 0.6, ease: 'power2.inOut' }, 0.575);
+			}
 
 			if (clickedElement) await animateFlipOpen(clickedElement as any);
 		} else {
@@ -366,7 +400,7 @@ onUnmounted(() => {
 				</Button>
 			</Slideshow>
 		</div>
-		<div class="zoom-container hide-mobile-tablet">
+		<div ref="zoomContainer" class="zoom-container hide-mobile-tablet">
 			<div class="zoom-inner-container">
 				<Button
 					v-for="value in [0.5, 1, 1.5, 2]"
