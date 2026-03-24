@@ -72,14 +72,14 @@ useGSAP(() => {
 		(context) => {
 			const { conditions } = context;
 
-			const startTitlePercent = conditions?.isMobile ? '65%' : '80%';
-			const endTitlePercent = conditions?.isMobile ? '-65%' : '-40%';
+			const startTitlePercent = conditions?.isMobile ? '75%' : '80%';
+			const endTitlePercent = conditions?.isMobile ? '-55%' : '-40%';
 
 			// Animation :
 			const tl = gsap.timeline({
 				scrollTrigger: {
 					trigger: sectionRef.value,
-					start: `top bottom`,
+					start: conditions?.isMobile ? 'top center' : 'top bottom',
 					end: `bottom center`,
 					scrub: 1,
 					invalidateOnRefresh: true
@@ -188,7 +188,7 @@ $serviceHeight: min(fluidSize(440px, 280px, null, xxlarge), calc(50svh - (var(--
 	align-items: center;
 	justify-content: center;
 	width: 100%;
-	height: 100lvh;
+	height: 100svh;
 	overflow: hidden;
 
 	@include mq(tablet) {

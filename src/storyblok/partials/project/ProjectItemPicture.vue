@@ -44,7 +44,7 @@ const onOpenMinimap = () => {
 		<div class="picture-viewer-container">
 			<div class="picture-container">
 				<div
-					v-animate="{ type: 'mask-reveal', options: { direction: 'down' } }"
+					v-animate="{ type: 'mask-reveal', options: { direction: 'down', start: 'top 120%' } }"
 					class="picture-wrapper"
 					ref="imageRef"
 				>

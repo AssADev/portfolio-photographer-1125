@@ -24,7 +24,10 @@ const resolvers = getRichTextResolvers('h2');
 
 <template>
 	<Button
-		v-animate="{ type: 'mask-reveal', options: { direction: animationDirection || 'down' } }"
+		v-animate="{
+			type: 'mask-reveal',
+			options: { direction: animationDirection || 'down', start: 'top 110%' }
+		}"
 		:to="url"
 		class="partials-services-service"
 		:data-cursor-label="$t('discoverService')"

@@ -31,7 +31,10 @@ const resolvers = getRichTextResolvers('h2');
 
 <template>
 	<section id="service-faq" class="modules service-faq">
-		<div v-animate="{ type: 'mask-reveal', options: { direction: 'down' } }" class="inner-container">
+		<div
+			v-animate="{ type: 'mask-reveal', options: { direction: 'down', start: 'top 110%' } }"
+			class="inner-container"
+		>
 			<div class="container-grid">
 				<div
 					class="title-wrapper col-start-1 col-end-13 col-start-tb-1 col-end-tb-6 col-start-dk-1 col-end-dk-10 col-start-lg-1 col-end-lg-8"

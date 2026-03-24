@@ -26,7 +26,7 @@ const getSocialLink = (label?: string) => {
 <template>
 	<div class="partials-project-item-video">
 		<Video
-			v-animate="{ type: 'mask-reveal', options: { direction: 'down' } }"
+			v-animate="{ type: 'mask-reveal', options: { direction: 'down', start: 'top 120%' } }"
 			:video="blok.video"
 			:thumbnail="blok.thumbnail"
 			:link="blok.link_instagram"

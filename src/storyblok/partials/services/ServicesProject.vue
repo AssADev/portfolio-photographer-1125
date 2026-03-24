@@ -16,7 +16,7 @@ defineProps<{
 
 <template>
 	<a
-		v-animate="{ type: 'mask-reveal', options: { direction: 'down' } }"
+		v-animate="{ type: 'mask-reveal', options: { direction: 'down', start: 'top 110%' } }"
 		:href="url"
 		class="partials-services-project"
 		:data-cursor-label="cursorLabel || $t('discoverProject')"

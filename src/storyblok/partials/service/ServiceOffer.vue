@@ -19,7 +19,7 @@ defineProps<{
 
 <template>
 	<div
-		v-animate="{ type: 'mask-reveal', options: { direction: 'down', delay: index * 0.125 } }"
+		v-animate="{ type: 'mask-reveal', options: { direction: 'down', delay: index * 0.125, start: 'top 110%' } }"
 		class="partials-service-offer"
 		:class="{ 'is-popular': blok.isPopular }"
 	>
