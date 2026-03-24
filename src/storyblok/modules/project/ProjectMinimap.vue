@@ -20,7 +20,6 @@ import type { StoryblokAsset } from '#types/component-types-sb.js';
 import { $global } from '#stores/global.ts';
 import { $projectMinimap, closeMinimap } from '#stores/project.ts';
 
-// TODO : Remove Flick when the transition animation is finished
 // Props :
 const { pictures } = defineProps<{
 	pictures: StoryblokAsset[];
