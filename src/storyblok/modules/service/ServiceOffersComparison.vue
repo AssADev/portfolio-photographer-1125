@@ -15,10 +15,11 @@ import type {
 } from '#types/component-types-sb.js';
 
 // Props :
-const { blok, title, offers } = defineProps<{
+const { blok, title, offers, isEvents } = defineProps<{
 	blok: StoryblokServiceOffersComparison;
 	title: StoryblokRichtext;
 	offers: StoryblokServiceOffer[];
+	isEvents?: boolean;
 }>();
 
 // Computed :
@@ -74,6 +75,7 @@ const comparisonConfig = computed<ComparisonSection[]>(() => [
 		titleKey: 'offersComparisonTitleAdditionalServices',
 		descriptionKey: 'offersComparisonDescriptionAdditionalServices',
 		rows: [
+			...(isEvents ? [{ labelKey: 'offersComparisonAdditionalHour', staticValue: '60€' }] : []),
 			{ labelKey: 'offersComparisonAdditionalPhoto', staticValue: '8€' },
 			{ labelKey: 'offersComparisonAdditionalPhotosPack', staticValue: '35€' },
 			...(hasBlackAndWhitePhotos.value
@@ -98,8 +100,6 @@ const getFormattedSuffix = (row: ComparisonRow, value: any) => {
 	const key = row.suffixKeySingular && String(value) === '1' ? row.suffixKeySingular : row.suffixKey;
 	return ` ${t(key)}`;
 };
-
-// TODO : Add additional hours
 </script>
 
 <template>

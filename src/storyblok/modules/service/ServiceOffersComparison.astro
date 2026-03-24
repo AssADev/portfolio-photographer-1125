@@ -10,6 +10,7 @@ type Props = {
 
 const { blok, offers } = Astro.props;
 const { serviceOffersComparisonTitle } = Astro.locals.siteConfig;
+const isEvents = (Astro.locals.story?.full_slug ?? '').toLowerCase().includes('events');
 ---
 
 <ServiceOffersComparisonVue
@@ -17,5 +18,6 @@ const { serviceOffersComparisonTitle } = Astro.locals.siteConfig;
 	{...Astro.props}
 	title={serviceOffersComparisonTitle}
 	offers={offers}
+	isEvents={isEvents}
 	client:visible
 />
