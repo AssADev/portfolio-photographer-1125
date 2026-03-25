@@ -65,7 +65,7 @@ watch(currentFilter, async (newVal, oldVal) => {
 
 	// 1. Fade out the layout smoothly while keeping scroll positions stable :
 	if (layoutRef.value) {
-		gsap.to(layoutRef.value, { opacity: 0, duration: 0.4, ease: 'power2.inOut' });
+		gsap.to(layoutRef.value, { opacity: 0, duration: 0.6, ease: 'power2.inOut' });
 	}
 
 	// 2. Scroll to Top smoothly :
@@ -85,7 +85,7 @@ watch(currentFilter, async (newVal, oldVal) => {
 		await new Promise((r) => setTimeout(r, 1200));
 	} else {
 		// Wait for fade out duration since there's no scroll :
-		await new Promise((r) => setTimeout(r, 400));
+		await new Promise((r) => setTimeout(r, 600));
 	}
 
 	// 3. Change the key & remount strictly filtered items :
@@ -93,7 +93,7 @@ watch(currentFilter, async (newVal, oldVal) => {
 	activeFilterKey.value = newVal;
 	await nextTick();
 
-	// 4. Give GSAP an instant to initialize the v-animate 'from' hidden states 
+	// 4. Give GSAP an instant to initialize the v-animate 'from' hidden states
 	// before bringing the wrapper's opacity back to 1. This prevents any raw DOM flashing.
 	await new Promise((r) => setTimeout(r, 50));
 
