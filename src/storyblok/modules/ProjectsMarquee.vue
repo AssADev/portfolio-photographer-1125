@@ -50,13 +50,6 @@ const marqueeRef = ref<HTMLElement | null>(null);
 
 const { height: marqueeHeight } = useElementSize(marqueeRef);
 
-// Watchers :
-watch(marqueeHeight, () => {
-	nextTick(() => {
-		ScrollTrigger.refresh();
-	});
-});
-
 // Computed :
 const filteredProjects = computed(() => {
 	if (!excludeUuid) return projects;
@@ -87,7 +80,10 @@ const activeDescription = computed(() => {
 <template>
 	<section class="modules projects-marquee">
 		<div class="circular-star-wrapper">
-			<CircularStar v-animate="{ type: 'scale-up', options: { delay: 0.85, reset: true } }" :scroll-speed="0.5" />
+			<CircularStar
+				v-animate="{ type: 'scale-up', options: { delay: 0.85, reset: true, start: 'top 140%' } }"
+				:scroll-speed="0.5"
+			/>
 		</div>
 		<div class="container-grid">
 			<RichText
