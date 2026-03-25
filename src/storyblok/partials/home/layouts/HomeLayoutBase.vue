@@ -3,7 +3,8 @@ import { useStore } from '@nanostores/vue';
 import type { ISbStoryData } from '@storyblok/js';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { computed, onMounted, ref, watch } from 'vue';
+import { useLenis } from 'lenis/vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 
 import type { StoryblokHomeLayout, StoryblokProject } from '#types/component-types-sb.js';
 
@@ -18,7 +19,11 @@ const { blok, layouts, projects } = defineProps<{
 }>();
 
 // Refs :
-const containerRefs = ref<HTMLElement[]>([]);
+const lenis = useLenis();
+let isTransitioning = false;
+
+const layoutRef = ref<HTMLElement | null>(null);
+const activeFilterKey = ref('allMyProjects');
 
 // Store :
 const currentFilter = useStore($currentFilter);
@@ -31,11 +36,11 @@ const limitedProjects = computed(() => {
 	);
 });
 
-// Methods :
-const getGlobalIndex = (project: ISbStoryData<StoryblokProject>) => {
-	return projects.findIndex((p) => p.id === project.id) + 1;
-};
+const displayedProjects = computed(() => {
+	return limitedProjects.value.filter((p) => matchesFilter(p, activeFilterKey.value));
+});
 
+// Methods :
 const matchesFilter = (project: ISbStoryData<StoryblokProject>, filter: string) => {
 	if (filter === 'allMyProjects') return true;
 
@@ -48,58 +53,75 @@ const matchesFilter = (project: ISbStoryData<StoryblokProject>, filter: string) 
 	});
 };
 
-const updateVisibility = (animate = true) => {
-	const tl = gsap.timeline();
-
-	containerRefs.value.forEach((el, index) => {
-		const project = limitedProjects.value[index];
-		const isMatch = matchesFilter(project, currentFilter.value);
-
-		if (animate) {
-			tl.to(
-				el,
-				{
-					scale: isMatch ? 1 : 0,
-					height: isMatch ? 'auto' : 0,
-					opacity: isMatch ? 1 : 0,
-					duration: 0.6,
-					ease: 'power2.inOut',
-					overflow: 'hidden',
-					pointerEvents: isMatch ? 'all' : 'none'
-				},
-				0
-			);
-		} else {
-			gsap.set(el, {
-				scale: isMatch ? 1 : 0,
-				height: isMatch ? 'auto' : 0,
-				opacity: isMatch ? 1 : 0,
-				overflow: isMatch ? 'visible' : 'hidden',
-				pointerEvents: isMatch ? 'all' : 'none'
-			});
-		}
-	});
+const getFilteredIndex = (project: ISbStoryData<StoryblokProject>) => {
+	const filteredAllProjects = projects.filter((p) => matchesFilter(p, activeFilterKey.value));
+	return filteredAllProjects.findIndex((p) => p.id === project.id) + 1;
 };
 
 // Watchers :
-watch(currentFilter, () => {
-	updateVisibility();
+watch(currentFilter, async (newVal, oldVal) => {
+	if (newVal === oldVal || isTransitioning) return;
+	isTransitioning = true;
+
+	// 1. Fade out the layout smoothly while keeping scroll positions stable :
+	if (layoutRef.value) {
+		gsap.to(layoutRef.value, { opacity: 0, duration: 0.4, ease: 'power2.inOut' });
+	}
+
+	// 2. Scroll to Top smoothly :
+	if (window.scrollY > 10) {
+		if (lenis.value) {
+			lenis.value.scrollTo(0, {
+				duration: 1,
+				easing: (t) => {
+					return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+				}
+			});
+		} else {
+			window.scrollTo({ top: 0, behavior: 'instant' });
+		}
+
+		// Wait for scroll duration :
+		await new Promise((r) => setTimeout(r, 1200));
+	} else {
+		// Wait for fade out duration since there's no scroll :
+		await new Promise((r) => setTimeout(r, 400));
+	}
+
+	// 3. Change the key & remount strictly filtered items :
+	// We do this while opacity is still 0 so we don't see the DOM swap.
+	activeFilterKey.value = newVal;
+	await nextTick();
+
+	// 4. Give GSAP an instant to initialize the v-animate 'from' hidden states 
+	// before bringing the wrapper's opacity back to 1. This prevents any raw DOM flashing.
+	await new Promise((r) => setTimeout(r, 50));
+
+	if (layoutRef.value) {
+		gsap.set(layoutRef.value, { opacity: 1, clearProps: 'opacity' });
+	}
+
 	ScrollTrigger.refresh();
+	isTransitioning = false;
 });
 
-// Lifecycle :
+// Attach :
 onMounted(() => {
-	updateVisibility(false);
+	activeFilterKey.value = currentFilter.value;
 });
 </script>
 
 <template>
-	<div :class="['partials-home-layout-base', { 'is-reversed': blok.isReversed }]">
-		<div v-for="(project, index) in limitedProjects" :key="project.id" ref="containerRefs" class="container-grid">
+	<div ref="layoutRef" :class="['partials-home-layout-base', { 'is-reversed': blok.isReversed }]">
+		<div
+			v-for="(project, index) in displayedProjects"
+			:key="`${project.id}-${activeFilterKey}`"
+			class="container-grid"
+		>
 			<HomeItemProject
 				:project="project"
 				:class="layouts[index % layouts.length]"
-				:index="getGlobalIndex(project)"
+				:index="getFilteredIndex(project)"
 			/>
 		</div>
 	</div>

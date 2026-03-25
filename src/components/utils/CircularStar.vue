@@ -28,7 +28,11 @@ rate.on('change', (r: any) => animation?.updatePlaybackRate(r));
 const onScroll = (instance: Lenis) => {
 	// Ensure we have a direction (default to 1) to avoid stopping the animation when scroll is idle or reset :
 	const direction = instance.direction || 1;
-	rate.set(instance.velocity * (scrollSpeed || 1) + direction * Math.sign(scrollSpeed || 1));
+
+	// Clamp velocity to prevent insane rotation speeds during a programmatic scrollTo :
+	const clampedVelocity = Math.max(-10, Math.min(10, instance.velocity));
+
+	rate.set(clampedVelocity * (scrollSpeed || 1) + direction * Math.sign(scrollSpeed || 1));
 };
 
 // Watchers :

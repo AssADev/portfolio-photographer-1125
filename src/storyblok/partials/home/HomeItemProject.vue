@@ -59,7 +59,10 @@ const aspectRatio = computed(() => {
 		</div>
 		<Button class="project-link" :data-cursor-label="$t('discoverProject')" :to="`${project.full_slug}`">
 			<div class="picture-container">
-				<div v-animate="{ type: 'mask-reveal', options: { direction: 'down' } }" class="picture-wrapper">
+				<div
+					v-animate="{ type: 'mask-reveal', options: { direction: 'down', start: 'top 120%' } }"
+					class="picture-wrapper"
+				>
 					<Image
 						v-if="cover"
 						:src="cover"
