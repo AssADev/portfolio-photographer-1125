@@ -132,7 +132,7 @@ const activeDescription = computed(() => {
 					<ProjectsMarqueeItem
 						v-animate="{
 							type: 'mask-reveal',
-							options: { direction: 'up', delay: index * 0.125, withTranslate: true, start: 'top 110%' }
+							options: { direction: 'up', delay: index * 0.125, withTranslate: true, start: 'top 120%' }
 						}"
 						:project="item.project"
 						:width="item.width"

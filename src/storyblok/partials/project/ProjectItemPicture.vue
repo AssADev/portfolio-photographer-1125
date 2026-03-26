@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { gsap } from 'gsap';
 import { computed, ref } from 'vue';
 
 import { getAspectRatio } from '#utils/image.ts';
@@ -26,6 +27,9 @@ const aspectRatio = computed(() => getAspectRatio(blok.picture));
 // Methods :
 const onOpenMinimap = () => {
 	if (!imageRef.value || typeof index === 'undefined') return;
+
+	// Prevent opening if the picture wrapper itself is still animating :
+	if (gsap.isTweening(imageRef.value)) return;
 
 	openMinimap(index, imageRef.value);
 };

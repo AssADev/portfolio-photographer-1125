@@ -29,12 +29,12 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 		return gsap.from(el, {
 			clipPath:
 				direction === 'up'
-					? 'inset(100% 0% 0% 0%)'
+					? 'inset(101% 0% 0% 0%)'
 					: direction === 'down'
-						? 'inset(0% 0% 100% 0%)'
+						? 'inset(0% 0% 101% 0%)'
 						: direction === 'left'
-							? 'inset(0% 0% 0% 100%)'
-							: 'inset(0% 100% 0% 0%)',
+							? 'inset(0% 0% 0% 101%)'
+							: 'inset(0% 101% 0% 0%)',
 			y: axis === 'Y' && options.withTranslate ? (direction === 'up' ? 75 : -75) : 0,
 			x: axis === 'X' && options.withTranslate ? (direction === 'left' ? 75 : -75) : 0,
 			duration: 1.6,

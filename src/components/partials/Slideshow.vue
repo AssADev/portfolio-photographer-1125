@@ -104,7 +104,7 @@ const updateActiveIndicator = (immediate = false) => {
 	const slideWidth = activeSlide.offsetWidth;
 	const slideHeight = activeSlide.offsetHeight;
 
-	gsap.killTweensOf(activeIndicatorRef.value);
+	gsap.killTweensOf(activeIndicatorRef.value, 'width,height,x,y');
 
 	gsap.to(activeIndicatorRef.value, {
 		width: slideWidth + 12,
@@ -258,9 +258,9 @@ const onPointerUp = (e: PointerEvent) => {
 
 	if (slidesCache.length === 0) return;
 
-	// Kill all animations:
+	// Kill all positional animations:
 	gsap.killTweensOf(slideshowWrapperRef.value);
-	gsap.killTweensOf(activeIndicatorRef.value);
+	gsap.killTweensOf(activeIndicatorRef.value, 'width,height,x,y');
 
 	let targetIndex = findNearestSlide();
 

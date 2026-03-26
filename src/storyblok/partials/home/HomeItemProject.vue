@@ -74,7 +74,7 @@ const aspectRatio = computed(() => {
 			<div class="title-container">
 				<RichText
 					v-if="projectName"
-					v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.175 } }"
+					v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.2 } }"
 					:doc="projectName"
 				/>
 			</div>

@@ -40,6 +40,7 @@ const currentSlide = ref(0);
 const isDarkTheme = ref(false);
 const currentPictureZoom = ref(1);
 const isZoomSmooth = ref(false);
+const isWheelLocked = ref(false);
 
 const isDesktop = ref(false);
 
@@ -62,10 +63,15 @@ const goToSlide = (index: number) => {
 };
 
 const onWheel = (e: WheelEvent) => {
-	if (!isVisible.value || pictures.length <= 1) return;
+	if (!isVisible.value || pictures.length <= 1 || isWheelLocked.value) return;
 	if (Math.abs(e.deltaY) > 20) {
 		if (e.deltaY > 0) goToNext();
 		else goToPrev();
+
+		isWheelLocked.value = true;
+		setTimeout(() => {
+			isWheelLocked.value = false;
+		}, 50);
 	}
 };
 
@@ -352,6 +358,7 @@ onUnmounted(() => {
 		class="partials-project-minimap"
 		:class="{ 'is-dark': isDarkTheme, 'is-visible': isVisible }"
 		data-lenis-prevent
+		@wheel.passive="onWheel"
 	>
 		<div class="overlay" />
 		<Button ref="themeCtaRef" class="theme-cta" :class="{ 'is-dark': isDarkTheme }" @click="onToggleDarkTheme">
@@ -385,7 +392,6 @@ onUnmounted(() => {
 				class="col-start-dk-5 col-end-dk-8 col-start-mlg-4 col-end-mlg-7 col-start-xlg-3 col-end-xlg-6"
 				:enabled="pictures.length > 1"
 				:is-hidden="isSlideshowHidden"
-				@wheel.passive="onWheel"
 			>
 				<Button
 					class="picture-wrapper"
