@@ -3,13 +3,40 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { type Directive, nextTick } from 'vue';
 
 import { type AnimationOptions, animations } from '#utils/Animations.ts';
+import { $global } from '#stores/global.ts';
 
 interface AnimateBinding {
 	type: string;
 	options?: AnimationOptions;
 }
 
+const pendingElements = new Map<HTMLElement, any>();
+let unsubscribe: (() => void) | null = null;
+
+const processPendingElements = () => {
+	if ($global.get().isSiteLoaded) {
+		pendingElements.forEach((binding, el) => {
+			init(el, binding);
+		});
+		pendingElements.clear();
+		if (unsubscribe) {
+			unsubscribe();
+			unsubscribe = null;
+		}
+	}
+};
+
 const init = (el: HTMLElement & { _gsapAnim?: gsap.core.Animation }, binding: any) => {
+	if (!$global.get().isSiteLoaded) {
+		pendingElements.set(el, binding);
+		if (!unsubscribe) {
+			unsubscribe = $global.listen(() => {
+				processPendingElements();
+			});
+		}
+		return;
+	}
+
 	const value = binding.value;
 	const type = typeof value === 'string' ? value : value.type;
 	const options = typeof value === 'string' ? {} : value.options || {};
@@ -53,6 +80,7 @@ const vAnimate: Directive<HTMLElement & { _gsapAnim?: gsap.core.Animation }, str
 		init(el, binding);
 	},
 	unmounted(el) {
+		pendingElements.delete(el);
 		ScrollTrigger.getAll().forEach((st) => {
 			if (st.trigger === el) st.kill();
 		});

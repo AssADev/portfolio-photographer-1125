@@ -9,6 +9,7 @@ import Lenis from '#components/providers/Lenis.vue';
 import SEO from '#components/widgets/Head/SEO.astro';
 import Head from '#components/widgets/Head/Head.astro';
 import Interloader from '#components/widgets/Interloader.vue';
+import Loader from '#components/widgets/Loader.vue';
 import TrackingScripts from '#components/scripts/TrackingScripts.astro';
 
 import Header from '#components/widgets/Header.vue';
@@ -58,10 +59,28 @@ setState('url', Astro.url);
 			nofollow={nofollow}
 			noindex={noindex}
 		/>
+		<script is:inline>
+			(function() {
+				const skipLoader = new URLSearchParams(window.location.search).has('skipLoader');
+				if (!window.isSiteLoaded && !skipLoader) {
+					document.documentElement.classList.add('is-site-loading');
+				}
+				if (!skipLoader) {
+					if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+					window.scrollTo(0, 0);
+				}
+			})();
+		</script>
+		<style is:global>
+			html.is-site-loading #app {
+				visibility: hidden !important;
+			}
+		</style>
 		<TrackingScripts />
 		<slot name="head" />
 	</Head>
 	<body>
+		<Loader client:only="vue" identity={siteConfig.identity} />
 		<Interloader client:only="vue" />
 		<div id="app">
 			<Cursor client:load />

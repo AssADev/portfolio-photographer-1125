@@ -8,6 +8,7 @@ export type GlobalStore = {
 	isHeaderAnimating: boolean;
 	isContactFormActive: boolean;
 	contactFormId?: string;
+	isSiteLoaded: boolean;
 };
 
 export const $global = map<GlobalStore>({
@@ -17,5 +18,6 @@ export const $global = map<GlobalStore>({
 	isMenuToggled: false,
 	isHeaderAnimating: false,
 	isContactFormActive: false,
-	contactFormId: undefined
+	contactFormId: undefined,
+	isSiteLoaded: false
 });

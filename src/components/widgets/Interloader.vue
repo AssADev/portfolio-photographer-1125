@@ -33,16 +33,6 @@ const checkBreakpoint = () => {
 	isDesktop.value = window.innerWidth >= breakPointsNoUnits.desktop;
 };
 
-// Attach & Detach :
-onMounted(() => {
-	checkBreakpoint();
-	window.addEventListener('resize', checkBreakpoint);
-});
-
-onUnmounted(() => {
-	window.removeEventListener('resize', checkBreakpoint);
-});
-
 // Computed :
 const visible = computed(() => deferredLoading.value);
 const panelCount = computed(() => (isDesktop.value ? 13 : isTablet.value ? 9 : 7));
@@ -56,6 +46,7 @@ const ANIMATION_OPTS = {
 
 const onEnter = (el: Element, done: () => void) => {
 	$global.setKey('lockScroll', true);
+	$global.setKey('isSiteLoaded', false);
 
 	const container = el as HTMLElement;
 	const topPanels = container.querySelectorAll('.panel-top');
@@ -74,6 +65,10 @@ const onLeave = (el: Element, done: () => void) => {
 	const topPanels = container.querySelectorAll('.panel-top');
 	const bottomPanels = container.querySelectorAll('.panel-bottom');
 
+	setTimeout(() => {
+		$global.setKey('isSiteLoaded', true);
+	}, 200);
+
 	gsap.timeline({
 		defaults: ANIMATION_OPTS,
 		onComplete: () => {
@@ -85,6 +80,16 @@ const onLeave = (el: Element, done: () => void) => {
 		.to(topPanels, { scaleY: 0, transformOrigin: 'top' }, 0)
 		.to(bottomPanels, { scaleY: 0, transformOrigin: 'bottom' }, 0);
 };
+
+// Attach & Detach :
+onMounted(() => {
+	checkBreakpoint();
+	window.addEventListener('resize', checkBreakpoint);
+});
+
+onUnmounted(() => {
+	window.removeEventListener('resize', checkBreakpoint);
+});
 </script>
 
 <template>
@@ -104,7 +109,7 @@ const onLeave = (el: Element, done: () => void) => {
 .interloader-container {
 	position: fixed;
 	inset: 0;
-	z-index: 100;
+	z-index: 40;
 	overflow: hidden;
 	touch-action: none;
 }
