@@ -438,14 +438,13 @@ useResizeObserver(interactionsRef, () => {
 									<span v-if="locale === language" ref="languageItemsRef">{{ locale }}</span>
 									<Button
 										v-else
-										ref="languageItemsRef"
 										:to="
 											languageAlternates
 												?.find((alt) => alt.hrefLang.split('-')[0] === locale)
 												?.href.toString() || (locale === locales[0] ? '/' : `/${locale}`)
 										"
 									>
-										<span>{{ locale }}</span>
+										<span ref="languageItemsRef">{{ locale }}</span>
 									</Button>
 								</li>
 								<Icon
