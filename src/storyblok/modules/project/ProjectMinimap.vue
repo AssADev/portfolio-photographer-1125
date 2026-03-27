@@ -281,6 +281,7 @@ watch(
 			const zoomInnerCtn = zoomContainer.value?.querySelector('.zoom-inner-container');
 			const zoomDots = zoomInnerCtn?.querySelectorAll('button');
 			const zoomThumb = zoomContainer.value?.querySelector('.custom-thumb');
+			const zoomIndicator = zoomContainer.value?.querySelector('.indicator');
 
 			const tlZoom = gsap.timeline();
 
@@ -296,6 +297,10 @@ watch(
 
 			if (zoomDots) {
 				tlZoom.from(zoomDots, { scale: 0, stagger: 0.1, duration: 0.8, ease: 'power2.inOut' }, 0.45);
+			}
+
+			if (zoomIndicator) {
+				tlZoom.from(zoomIndicator, { scaleX: 0, duration: 0.8, ease: 'power2.inOut' }, 0.5);
 			}
 
 			if (zoomThumb) {
@@ -407,6 +412,7 @@ onUnmounted(() => {
 		</div>
 		<div ref="zoomContainer" class="zoom-container hide-mobile-tablet">
 			<div class="zoom-inner-container">
+				<div class="indicator"></div>
 				<Button
 					v-for="value in [0.5, 1, 1.5, 2]"
 					:key="value"
@@ -660,8 +666,7 @@ onUnmounted(() => {
 	width: 100%;
 	pointer-events: none;
 
-	&::before {
-		content: '';
+	.indicator {
 		position: absolute;
 		top: 50%;
 		left: 0;
