@@ -102,7 +102,6 @@ const resolvers = getRichTextResolvers('h1');
 	width: 100%;
 	height: 100vh;
 	overflow: hidden;
-	background: $white;
 }
 
 .inner-container {

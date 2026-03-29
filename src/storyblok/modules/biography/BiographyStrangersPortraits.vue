@@ -148,7 +148,13 @@ useGSAP(() => {
 $sectionsHeight: fluidSize(680px, 540px);
 
 .biography-strangers-portraits {
-	background: linear-gradient(180deg, $white 0%, $ivory 25%, $ivory 75%, $white 100%);
+	background: linear-gradient(
+		180deg,
+		rgba($white, 0) 0%,
+		rgba($ivory, 1) 25%,
+		rgba($ivory, 1) 75%,
+		rgba($white, 0) 100%
+	);
 	padding-block-start: fluidSize(180px, 120px);
 }
 

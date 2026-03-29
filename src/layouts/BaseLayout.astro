@@ -22,6 +22,7 @@ import { setState } from '#utils/astro-state.ts';
 import localesRegions from '#utils/localesRegions.ts';
 import getAlternatesForStory from '#storyblok/helpers/getAlternatesForStory.ts';
 import { fetchProjectImagesServer } from '#storyblok/helpers/getProjectImages.ts';
+import Grainient from '#components/widgets/Grainient.vue';
 
 type Props = {
 	language: string;
@@ -60,7 +61,7 @@ setState('url', Astro.url);
 			noindex={noindex}
 		/>
 		<script is:inline>
-			(function() {
+			(function () {
 				const skipLoader = new URLSearchParams(window.location.search).has('skipLoader');
 				if (!window.isSiteLoaded && !skipLoader) {
 					document.documentElement.classList.add('is-site-loading');
@@ -80,6 +81,7 @@ setState('url', Astro.url);
 		<slot name="head" />
 	</Head>
 	<body>
+		<Grainient client:only="vue" />
 		<Loader client:only="vue" identity={siteConfig.identity} />
 		<Interloader client:only="vue" />
 		<div id="app">
