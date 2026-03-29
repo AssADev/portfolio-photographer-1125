@@ -30,13 +30,13 @@ const resolvers = getRichTextResolvers('h1');
 			>
 				<p
 					v-if="blok.subtitle"
-					v-animate="{ type: 'reveal-letters-speed', options: { delay: 0.3 } }"
+					v-animate="{ type: 'reveal-letters-speed', options: { delay: 0.4 } }"
 					class="subtitle"
 					v-html="nl2br(blok.subtitle)"
 				/>
 				<p
 					v-if="blok.description"
-					v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.3 } }"
+					v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.45 } }"
 					class="description"
 					v-html="nl2br(blok.description)"
 				/>

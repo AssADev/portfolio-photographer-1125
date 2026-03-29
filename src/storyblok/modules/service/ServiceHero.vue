@@ -37,7 +37,7 @@ const resolvers = getRichTextResolvers('h1');
 	<section class="modules service-hero">
 		<div class="container-grid">
 			<p
-				v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.125 } }"
+				v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.6 } }"
 				class="summary col-start-3 col-end-13 col-start-tb-11 col-end-tb-15 col-start-dk-20 col-end-dk-28 col-start-lg-20 col-end-lg-27 col-start-xlg-20 col-end-xlg-26 col-start-xxlg-20 col-end-xxlg-25"
 				v-html="nl2br(blok.summary)"
 			></p>

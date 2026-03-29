@@ -340,7 +340,7 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 		tl.add(animations['reveal-square'](el as HTMLElement, { fromBottomRight: true }), 0);
 
 		if (menuIcon) {
-			tl.add(animations['scale-up'](menuIcon as HTMLElement, { delay: 0.45, rotate: 90 }), 0);
+			tl.add(animations['scale-up'](menuIcon as HTMLElement, { delay: 0.45, rotate: -90 }), 0);
 		}
 
 		if (contactLabel) {
