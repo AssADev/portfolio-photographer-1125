@@ -271,9 +271,14 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 			delay: options.delay || 0
 		});
 
-		// Animation :
+		// Calculate starting inset based on origin :
+		let startInset = 'inset(0% 100% 100% 0%)'; // default: Top-Left
+		if (options.fromTopRight) startInset = 'inset(0% 0% 100% 100%)';
+		if (options.fromBottomLeft) startInset = 'inset(100% 100% 0% 0%)';
+		if (options.fromBottomRight) startInset = 'inset(100% 0% 0% 100%)';
+
 		tl.from(el, {
-			clipPath: options.fromTopRight ? 'inset(0% 0% 100% 100%)' : 'inset(0% 100% 100% 0%)',
+			clipPath: startInset,
 			duration: 1.2,
 			ease: 'power3.inOut',
 			immediateRender: true,
@@ -305,6 +310,42 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 				options.onComplete?.();
 			}
 		});
+
+		return tl;
+	},
+
+	'reveal-header-identity': (el, options) => {
+		const tl = gsap.timeline({
+			delay: options.delay || 0
+		});
+
+		tl.add(animations['reveal-square'](el, { ...options, fromBottomLeft: true }), 0);
+
+		const span = el.querySelector('span');
+		if (span) {
+			tl.add(animations['reveal-letters'](span, { ...options, delay: (options.delay || 0) + 0.45 }), 0);
+		}
+
+		return tl;
+	},
+
+	'reveal-header-interactions': (el, options) => {
+		const tl = gsap.timeline({
+			delay: options.delay || 0
+		});
+
+		const contactLabel = el.querySelector('.label-contact');
+		const menuIcon = el.querySelector('.menu-cta svg, .menu-cta .partials-icon-plus-minus');
+
+		tl.add(animations['reveal-square'](el as HTMLElement, { fromBottomRight: true }), 0);
+
+		if (menuIcon) {
+			tl.add(animations['scale-up'](menuIcon as HTMLElement, { delay: 0.45, rotate: 90 }), 0);
+		}
+
+		if (contactLabel) {
+			tl.add(animations['reveal-letters'](contactLabel as HTMLElement, { delay: 0.5 }), 0);
+		}
 
 		return tl;
 	},

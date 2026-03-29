@@ -413,6 +413,7 @@ useResizeObserver(interactionsRef, () => {
 			<Button
 				:to="isHome ? undefined : identityTo"
 				class="identity-cta"
+				v-animate="{ type: 'reveal-header-identity', options: { delay: 0.05 } }"
 				@click="handleIdentityAction"
 				:disabled="isAnimating || projectMinimapStore.isFlipping || isHome"
 			>
@@ -427,6 +428,7 @@ useResizeObserver(interactionsRef, () => {
 				ref="interactionsRef"
 				class="interactions-container"
 				:class="{ 'is-contact-open': isContactToggled, 'is-menu-open': isMenuToggled }"
+				v-animate="{ type: 'reveal-header-interactions', options: { delay: 0.6 } }"
 			>
 				<div class="contact-cta-wrapper" :class="{ 'is-disabled': isMenuToggled }">
 					<Button class="contact-trigger" :disabled="isMenuToggled" @click="handleContactAction"></Button>
