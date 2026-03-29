@@ -56,28 +56,32 @@
 
 	/* ----- Legacy viewport height ----- */
 	const WEB_VIEW_OFFSET = 115;
-	let svh = 0;
-	let lvh = 0;
 
 	if (isWebView) {
 		const savedHeight = sessionStorage.getItem('webview-lvh');
-		lvh = savedHeight ? parseInt(savedHeight) : window.innerHeight + WEB_VIEW_OFFSET;
+		const lvh = savedHeight ? parseInt(savedHeight) : window.innerHeight + WEB_VIEW_OFFSET;
 		document.documentElement.style.setProperty('--lvh', `${lvh * 0.01}px`);
 
-		// This is the only time we'll update the svh
 		const savedSvh = sessionStorage.getItem('webview-svh');
-		svh = savedSvh ? parseInt(savedSvh) : document.documentElement.clientHeight;
-		sessionStorage.setItem('webview-svh', svh.toString());
-		document.documentElement.style.setProperty('--svh', `${svh * 0.01}px`);
+		const svh = savedSvh ? parseInt(savedSvh) : document.documentElement.clientHeight || window.innerHeight;
+
+		if (svh > 0) {
+			sessionStorage.setItem('webview-svh', svh.toString());
+			document.documentElement.style.setProperty('--svh', `${svh * 0.01}px`);
+		}
 
 		window.addEventListener('resize', () => {
 			const newHeight = window.innerHeight;
-			if (newHeight > lvh) {
-				lvh = newHeight;
-				sessionStorage.setItem('webview-lvh', lvh.toString());
+			const currentLvh = parseInt(sessionStorage.getItem('webview-lvh') || '0');
+			if (newHeight > currentLvh) {
+				sessionStorage.setItem('webview-lvh', newHeight.toString());
+				document.documentElement.style.setProperty('--lvh', `${newHeight * 0.01}px`);
 			}
-
-			document.documentElement.style.setProperty('--lvh', `${lvh * 0.01}px`);
 		});
+	} else {
+		// On regular Safari, we MUST NOT set --svh to 0 or even define it if we want the CSS fallback to work.
+		// However, for consistency with the mixin, we can set it to the native unit.
+		document.documentElement.style.setProperty('--svh', '1svh');
+		document.documentElement.style.setProperty('--lvh', '1lvh');
 	}
 </script>

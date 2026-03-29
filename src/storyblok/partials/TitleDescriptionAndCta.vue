@@ -22,18 +22,18 @@ const resolvers = getRichTextResolvers('h2');
 	<div class="partials-title-description-and-cta">
 		<RichText
 			v-if="data.title?.content"
-			v-animate="{ type: 'reveal-titles', options: { start: 'top 105%' } }"
+			v-animate="{ type: 'reveal-titles', options: { start: 'top 110%' } }"
 			:doc="data.title"
 			:resolvers="resolvers"
 		/>
 		<p
 			v-if="data.description"
-			v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.0175, start: 'top 105%' } }"
+			v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.0175, start: 'top 110%' } }"
 			v-html="nl2br(data.description)"
 		/>
 		<Button
 			v-if="data.cta?.[0]"
-			v-animate="{ type: 'reveal-button-dot', options: { delay: 0.035 } }"
+			v-animate="{ type: 'reveal-button-dot', options: { delay: 0.035, start: 'top 110%' } }"
 			v-bind="getLinkAttributes(data.cta[0])"
 			theme="dot-dark"
 			:text="data.cta[0].label"

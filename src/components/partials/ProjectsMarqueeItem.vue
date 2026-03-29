@@ -3,7 +3,7 @@ import type { ISbStoryData } from '@storyblok/js';
 import { useDebounceFn } from '@vueuse/core';
 import gsap from 'gsap';
 import { SplitText } from 'gsap/SplitText';
-import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
 
 import { isTouchDevice } from '#utils/device.ts';
 import { trackNavigationClick } from '#utils/tracking.ts';
@@ -39,7 +39,7 @@ const service = computed(() => {
 });
 
 // Animation :
-const refreshAnimation = () => {
+const refreshAnimation = async () => {
 	if (!elRef.value || !titleRef.value?.el || !serviceRef.value?.el) return;
 
 	// 1. Cleanup previous splits & timeline :
@@ -47,13 +47,22 @@ const refreshAnimation = () => {
 	splitTitle?.revert();
 	splitService?.revert();
 
+	// Wait for layout to be stable :
+	await nextTick();
+
 	// 2. Create new splits :
-	splitTitle = SplitText.create(titleRef.value!.el.querySelector('p') || titleRef.value!.el, {
+	const titleEl = titleRef.value!.el.querySelector('p') || titleRef.value!.el;
+	const serviceEl = serviceRef.value!.el.querySelector('p') || serviceRef.value!.el;
+
+	// Help GSAP detect lines with <br> tags :
+	titleEl.innerHTML = titleEl.innerHTML.replace(/<br\s*\/?>/gi, '\u200B<br>\u200B');
+
+	splitTitle = SplitText.create(titleEl, {
 		type: 'lines, words',
 		mask: 'lines',
 		autoSplit: true
 	});
-	splitService = SplitText.create(serviceRef.value!.el.querySelector('p') || serviceRef.value!.el, {
+	splitService = SplitText.create(serviceEl, {
 		type: 'chars',
 		autoSplit: true
 	});

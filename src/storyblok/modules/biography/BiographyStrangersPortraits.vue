@@ -181,14 +181,17 @@ $sectionsHeight: fluidSize(680px, 540px);
 		position: absolute;
 		top: 50%;
 		left: 50%;
-		transform: translate3d(-50%, -50%, 0) scale3d(0, 0, 1);
 
 		@include mq($until: desktop) {
 			@include svh(125, height);
+
+			transform: translate3d(-50%, 0, 0) scale3d(0, 0, 1);
 		}
 
 		@include mq(desktop) {
 			width: var(--ctn-w);
+
+			transform: translate3d(-50%, -50%, 0) scale3d(0, 0, 1);
 		}
 	}
 }

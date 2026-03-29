@@ -52,6 +52,7 @@ const pos = {
 };
 
 let idCounter = 0;
+let imageIndex = 0;
 let lastSpawnTime = 0;
 let isHovering = false;
 let hasMouseMoved = false;
@@ -83,16 +84,12 @@ const handleVisibilityChange = () => {
 	isWindowFocused = !document.hidden;
 };
 
-const getRandomImage = (images: StoryblokAsset[]): StoryblokAsset | undefined => {
-	if (!Array.isArray(images) || images.length === 0) return undefined;
-	const randomIdx = Math.floor(Math.random() * images.length);
-	return images[randomIdx];
-};
-
 const spawnItem = (images: StoryblokAsset[]) => {
 	const id = idCounter++;
 	const rotation = Math.random() * config.maxRotation * 2 - config.maxRotation;
-	const randomImage = getRandomImage(images);
+	const currentImage = images[imageIndex];
+
+	imageIndex = (imageIndex + 1) % images.length;
 
 	items.value = [
 		...items.value,
@@ -101,7 +98,7 @@ const spawnItem = (images: StoryblokAsset[]) => {
 			x: mouse.x,
 			y: mouse.y + window.scrollY,
 			rotation,
-			image: randomImage
+			image: currentImage
 		}
 	];
 
