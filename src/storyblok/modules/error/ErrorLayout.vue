@@ -102,6 +102,8 @@ const resolvers = getRichTextResolvers('h1');
 	width: 100%;
 	height: 100vh;
 	overflow: hidden;
+	touch-action: none;
+	overscroll-behavior: none;
 }
 
 .inner-container {
@@ -230,7 +232,7 @@ const resolvers = getRichTextResolvers('h1');
 
 .description-container {
 	position: absolute;
-	bottom: fluidSize(96px, 84px);
+	bottom: calc(fluidSize(96px, 84px) + var(--header-height));
 	left: 0;
 	display: flex;
 	flex-direction: column;

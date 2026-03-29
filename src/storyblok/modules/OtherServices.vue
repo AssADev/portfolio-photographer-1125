@@ -122,7 +122,7 @@ useGSAP(() => {
 						options: {
 							direction: 'left',
 							containerAnimation: horizontalTl,
-							start: 'left 120%',
+							start: 'left 125%',
 							withTranslate: true
 						}
 					}"

@@ -21,7 +21,7 @@ const { blok } = defineProps<{
 // Config :
 const PROJECT_LAYOUTS = [
 	{
-		classes: 'col-start-1 col-end-9 col-start-tb-1 col-end-tb-12 col-start-dk-1 col-end-dk-17',
+		classes: 'col-start-1 col-end-13 col-start-tb-1 col-end-tb-12 col-start-dk-1 col-end-dk-17',
 		parallax: { scale: false, mobile: -10, tablet: -8, desktop: 4 },
 		hasDescription: false
 	},
