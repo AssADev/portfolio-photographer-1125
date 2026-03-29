@@ -118,6 +118,22 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 		return tl;
 	},
 
+	'reveal-chars': (el, options) => {
+		const chars = el.querySelectorAll('.char');
+
+		return gsap.from(chars, {
+			x: '120%',
+			duration: options.duration || 1.1,
+			stagger: options.staggers || 0.075,
+			ease: 'power4.out',
+			delay: options.delay || 0,
+			immediateRender: true,
+			onComplete: () => {
+				options.onComplete?.();
+			}
+		});
+	},
+
 	'reveal-letters': (el, options) => {
 		const split = new SplitText(el, { type: 'words,chars', mask: 'chars', autoSplit: true });
 		const chars = split.chars;
@@ -393,18 +409,6 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 			onComplete: () => {
 				if (options.reset) gsap.set(el, { clearProps: 'all' });
 			}
-		});
-	},
-
-	'stagger-list': (el, options) => {
-		const children = el.children;
-		return gsap.from(children, {
-			y: 40,
-			opacity: 0,
-			duration: 1,
-			stagger: 0.1,
-			ease: 'power3.out',
-			immediateRender: true
 		});
 	}
 };

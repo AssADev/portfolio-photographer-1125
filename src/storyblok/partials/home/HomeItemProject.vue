@@ -50,7 +50,7 @@ const aspectRatio = computed(() => {
 			<span v-animate="{ type: 'reveal-letters', options: { delay: 0.2 } }">/{{ formatIndex(index ?? 0) }}</span>
 			<Button v-if="service" :to="`${service?.full_slug}`" data-cursor-snap @click="trackNavigationClick">
 				<RichText
-					v-animate="{ type: 'reveal-label-shuffle', options: { delay: 0.2 } }"
+					v-animate="{ type: 'reveal-label-shuffle', options: { delay: 0.4 } }"
 					:doc="service.content.informations?.[0]?.name"
 					shuffle
 					reveal

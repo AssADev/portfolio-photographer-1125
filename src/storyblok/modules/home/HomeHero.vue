@@ -307,22 +307,33 @@ onUnmounted(() => {
 					class="filters-container hide-desktop"
 					:class="{ toggle: isDropdownToggle }"
 				>
-					<Button @click="handleToggleDropdown">
+					<Button @click="handleToggleDropdown" v-animate="{ type: 'reveal-square' }">
 						<div class="inner-cta">
-							<span ref="mobileLabelRef" class="mobile-label">
+							<span
+								ref="mobileLabelRef"
+								class="mobile-label"
+								v-animate="{ type: 'reveal-chars', options: { delay: 0.4 } }"
+							>
 								<span v-for="char in labelChars" :key="char.id" class="char-wrapper">
 									<span class="char" :data-char-id="char.id">{{
 										char.char === ' ' ? '\u00A0' : char.char
 									}}</span>
 								</span>
 							</span>
-							<span ref="mobileCountRef" class="number mobile-number">
+							<span
+								ref="mobileCountRef"
+								class="number mobile-number"
+								v-animate="{ type: 'reveal-chars', options: { delay: 1.1 } }"
+							>
 								<span v-for="char in countChars" :key="char.id" class="char-wrapper">
 									<span class="char" :data-char-id="char.id">{{ char.char }}</span>
 								</span>
 							</span>
 						</div>
-						<IconPlusMinus :active="isDropdownToggle" />
+						<IconPlusMinus
+							:active="isDropdownToggle"
+							v-animate="{ type: 'scale-up', options: { delay: 0.725, rotate: 90 } }"
+						/>
 					</Button>
 
 					<div ref="dropdownRef" class="dropdown-container" :class="{ toggle: isDropdownToggle }">
@@ -346,22 +357,50 @@ onUnmounted(() => {
 					<Button
 						:class="{ active: currentFilter === 'allMyProjects' }"
 						@click="handleFilterClick('allMyProjects')"
+						v-animate="{ type: 'reveal-square' }"
 					>
 						<div class="inner-cta">
-							<LabelShuffle :label="$t('allMyProjects')" no-snap />
-							<span class="number">({{ formatIndex(getProjectCount()) }})</span>
+							<LabelShuffle
+								:label="$t('allMyProjects')"
+								no-snap
+								reveal
+								speed="normal"
+								v-animate="{ type: 'reveal-label-shuffle', options: { delay: 0.4 } }"
+							/>
+							<span class="number" v-animate="{ type: 'reveal-letters', options: { delay: 1.1 } }">
+								({{ formatIndex(getProjectCount()) }})
+							</span>
 						</div>
 					</Button>
 
 					<Button
-						v-for="service in visibleServices"
+						v-for="(service, index) in visibleServices"
 						:key="service.uuid"
 						:class="{ active: currentFilter === service.slug }"
 						@click="handleFilterClick(service.slug)"
+						v-animate="{
+							type: 'reveal-square',
+							options: { delay: (index + 1) * 0.175, fromBottomLeft: (index + 1) % 2 === 1 }
+						}"
 					>
 						<div class="inner-cta">
-							<span><RichText :doc="service.content.informations?.[0]?.name" shuffle no-snap /></span>
-							<span class="number">({{ formatIndex(getProjectCount(service.slug)) }})</span>
+							<span
+								v-animate="{
+									type: 'reveal-label-shuffle',
+									options: { delay: (index + 1) * 0.175 + 0.4 }
+								}"
+							>
+								<RichText
+									:doc="service.content.informations?.[0]?.name"
+									shuffle
+									no-snap
+									reveal
+									speed="normal"
+								/>
+							</span>
+							<span class="number" v-animate="{ type: 'reveal-letters', options: { delay: 1.1 } }">
+								({{ formatIndex(getProjectCount(service.slug)) }})
+							</span>
 						</div>
 					</Button>
 				</div>
