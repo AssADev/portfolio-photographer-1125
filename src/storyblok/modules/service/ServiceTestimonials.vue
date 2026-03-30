@@ -137,8 +137,8 @@ const layouts = [
 			'col-end-dk-25',
 			'col-start-lg-20',
 			'col-end-lg-25',
-			'col-start-xxlg-20',
-			'col-end-xxlg-25'
+			'col-start-xxlg-18',
+			'col-end-xxlg-23'
 		],
 		align: 'start'
 	},
@@ -159,8 +159,8 @@ const layouts = [
 			'col-end-dk-33',
 			'col-start-lg-27',
 			'col-end-lg-33',
-			'col-start-xxlg-27',
-			'col-end-xxlg-33'
+			'col-start-xxlg-25',
+			'col-end-xxlg-31'
 		],
 		align: 'end'
 	}
