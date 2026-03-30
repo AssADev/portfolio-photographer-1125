@@ -71,9 +71,9 @@ const resolvers = getRichTextResolvers('h1');
 							:href="`mailto:${email}`"
 							:data-cursor-label="$t('email')"
 							@click="trackNavigationClick"
-							v-animate="{ type: 'reveal-square', options: { delay: 0.45 } }"
+							v-animate="{ type: 'reveal-square', options: { delay: 0.4 } }"
 						>
-							<Icon v-animate="{ type: 'scale-up', options: { delay: 1 } }" name="email" />
+							<Icon v-animate="{ type: 'scale-up', options: { delay: 0.95 } }" name="email" />
 						</a>
 					</li>
 					<li class="small-item">
@@ -81,19 +81,22 @@ const resolvers = getRichTextResolvers('h1');
 							:href="homeUrl"
 							:data-cursor-label="$t('website')"
 							@click="trackNavigationClick"
-							v-animate="{ type: 'reveal-square', options: { delay: 0.5 } }"
+							v-animate="{ type: 'reveal-square', options: { delay: 0.625, fromBottomLeft: true } }"
 						>
-							<Icon v-animate="{ type: 'scale-up', options: { delay: 1.05 } }" name="website" />
+							<Icon v-animate="{ type: 'scale-up', options: { delay: 1.175 } }" name="website" />
 						</a>
 					</li>
 					<li v-for="(social, index) in socials" :key="social._uid">
 						<a
 							v-bind="getLinkAttributes(social.link)"
 							@click="trackNavigationClick"
-							v-animate="{ type: 'reveal-square', options: { delay: 0.55 + index * 0.05 } }"
+							v-animate="{
+								type: 'reveal-square',
+								options: { delay: 0.8 + index * 0.175, fromBottomLeft: index % 2 === 1 }
+							}"
 						>
 							<LabelShuffle
-								v-animate="{ type: 'reveal-label-shuffle', options: { delay: 1.15 + index * 0.05 } }"
+								v-animate="{ type: 'reveal-label-shuffle', options: { delay: 1.35 + index * 0.175 } }"
 								:label="social.label!"
 								no-snap
 								reveal
