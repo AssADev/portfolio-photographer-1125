@@ -135,7 +135,7 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 	},
 
 	'reveal-letters': (el, options) => {
-		const split = new SplitText(el, { type: 'words,chars', mask: 'chars', autoSplit: true });
+		const split = new SplitText(el, { type: 'words,chars', mask: 'chars', charsClass: 'char', autoSplit: true });
 		const chars = split.chars;
 
 		return gsap.from(chars, {

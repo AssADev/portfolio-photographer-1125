@@ -301,7 +301,12 @@ onUnmounted(() => {
 	<section class="modules home-hero">
 		<div ref="containerRef" class="container">
 			<div class="content-container" :class="{ 'is-scrolled': y > 40 }">
-				<RichText ref="titleRef" :doc="blok.title" :resolvers="resolvers" />
+				<RichText
+					v-animate="{ type: 'reveal-letters', options: { delay: 0.125 } }"
+					ref="titleRef"
+					:doc="blok.title"
+					:resolvers="resolvers"
+				/>
 				<div
 					ref="filtersContainerRef"
 					class="filters-container hide-desktop"
@@ -462,6 +467,10 @@ onUnmounted(() => {
 
 		p {
 			margin: 0;
+		}
+
+		.char-mask {
+			overflow-y: visible !important;
 		}
 	}
 }
