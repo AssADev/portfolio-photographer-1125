@@ -431,7 +431,14 @@ useResizeObserver(interactionsRef, () => {
 				v-animate="{ type: 'reveal-header-interactions', options: { delay: 0.6 } }"
 			>
 				<div class="contact-cta-wrapper" :class="{ 'is-disabled': isMenuToggled }">
-					<Button class="contact-trigger" :disabled="isMenuToggled" @click="handleContactAction"></Button>
+					<Button
+						class="contact-trigger"
+						:disabled="isMenuToggled"
+						@click="handleContactAction"
+						:aria-label="
+							!isContactToggled ? $t('contactLabel') : isContactFormActive ? $t('backToChoices') : $t('close')
+						"
+					></Button>
 					<span ref="contactLabelRef" class="label-contact">{{ $t('contactLabel') }}</span>
 					<div ref="languagesRef" class="languages-wrapper">
 						<ul class="languages-selector-container">

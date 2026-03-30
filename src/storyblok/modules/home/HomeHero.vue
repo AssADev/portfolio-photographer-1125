@@ -312,7 +312,15 @@ onUnmounted(() => {
 					class="filters-container hide-desktop"
 					:class="{ toggle: isDropdownToggle }"
 				>
-					<Button @click="handleToggleDropdown" v-animate="{ type: 'reveal-square' }">
+					<Button
+						@click="handleToggleDropdown"
+						v-animate="{ type: 'reveal-square' }"
+						:aria-label="
+							$t('filterBy', {
+								n: allFilters.find((f) => f.slug === currentFilter)?.name || ''
+							})
+						"
+					>
 						<div class="inner-cta">
 							<span
 								ref="mobileLabelRef"
@@ -363,6 +371,7 @@ onUnmounted(() => {
 						:class="{ active: currentFilter === 'allMyProjects' }"
 						@click="handleFilterClick('allMyProjects')"
 						v-animate="{ type: 'reveal-square' }"
+						:aria-label="$t('filterBy') + ' ' + $t('allMyProjects')"
 					>
 						<div class="inner-cta">
 							<LabelShuffle
@@ -387,6 +396,7 @@ onUnmounted(() => {
 							type: 'reveal-square',
 							options: { delay: (index + 1) * 0.175, fromBottomLeft: (index + 1) % 2 === 1 }
 						}"
+						:aria-label="$t('filterBy') + ' ' + extractPlainText(service.content.informations?.[0]?.name)"
 					>
 						<div class="inner-cta">
 							<span

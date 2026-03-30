@@ -231,6 +231,7 @@ onUnmounted(() => {
 					@click="goToSlide(index)"
 					:disabled="currentSlide === index"
 					:aria-disabled="currentSlide === index"
+					:aria-label="$t('goToSlide', { n: index + 1 })"
 				/>
 			</div>
 		</div>

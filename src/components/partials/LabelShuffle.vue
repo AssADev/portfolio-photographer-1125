@@ -181,6 +181,7 @@ onUnmounted(() => {
 		class="partials-label-shuffle"
 		@mouseleave="resetLetters"
 		:data-cursor-snap="!noSnap ? true : null"
+		:aria-label="label"
 	>
 		<span
 			v-for="(letter, index) in originalLetters"
@@ -188,6 +189,7 @@ onUnmounted(() => {
 			ref="letterRefs"
 			class="letter-wrapper"
 			:style="{ width: letterWidths[index] ? `${letterWidths[index]}px` : 'auto' }"
+			aria-hidden="true"
 		>
 			<span ref="innerRefs" class="letter" @mouseenter="onLetterEnter(index)">
 				{{ displayedLetters[index] === ' ' ? '\u00A0' : displayedLetters[index] }}

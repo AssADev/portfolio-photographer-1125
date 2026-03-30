@@ -236,10 +236,10 @@ const layouts = [
 						}}</span>
 					</div>
 					<div class="ctas-wrapper">
-						<Button @click="emblaApi.scrollPrev()" :disabled="!canPrev">
+						<Button @click="emblaApi.scrollPrev()" :disabled="!canPrev" :aria-label="$t('previous')">
 							<LabelShuffle :label="$t('previous')" :is-active="canPrev" reveal />
 						</Button>
-						<Button @click="emblaApi.scrollNext()" :disabled="!canNext">
+						<Button @click="emblaApi.scrollNext()" :disabled="!canNext" :aria-label="$t('next')">
 							<LabelShuffle
 								v-animate="{ type: 'reveal-label-shuffle', options: { delay: 0.125 } }"
 								:label="$t('next')"

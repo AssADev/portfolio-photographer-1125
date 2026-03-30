@@ -366,7 +366,13 @@ onUnmounted(() => {
 		@wheel.passive="onWheel"
 	>
 		<div class="overlay" />
-		<Button ref="themeCtaRef" class="theme-cta" :class="{ 'is-dark': isDarkTheme }" @click="onToggleDarkTheme">
+		<Button
+			ref="themeCtaRef"
+			class="theme-cta"
+			:class="{ 'is-dark': isDarkTheme }"
+			@click="onToggleDarkTheme"
+			:aria-label="$t(isDarkTheme ? 'switchToLightTheme' : 'switchToDarkTheme')"
+		>
 			<div class="icon-wrapper">
 				<Icon name="moon" />
 			</div>
@@ -418,6 +424,7 @@ onUnmounted(() => {
 					:key="value"
 					@click="onHandlePictureZoom(value)"
 					:class="{ 'is-active': currentPictureZoom === value }"
+					:aria-label="`${$t('zoom')} x${value}`"
 				>
 					<Icon name="square-small" />
 				</Button>
