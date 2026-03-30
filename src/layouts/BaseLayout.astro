@@ -3,7 +3,7 @@ import type { StoryblokSEO } from '#types/component-types-sb.js';
 import type { PageContentTypes } from '#types/utils.ts';
 import type { LanguageAlternate } from '#types/seo.ts';
 import type { ISbStoryData } from '@storyblok/astro';
-
+import Analytics from '@vercel/analytics/astro';
 import Lenis from '#components/providers/Lenis.vue';
 
 import SEO from '#components/widgets/Head/SEO.astro';
@@ -77,6 +77,7 @@ setState('url', Astro.url);
 				visibility: hidden !important;
 			}
 		</style>
+		<Analytics />
 		<TrackingScripts />
 		<slot name="head" />
 	</Head>
