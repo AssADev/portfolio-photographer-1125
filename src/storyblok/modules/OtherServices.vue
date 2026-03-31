@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ISbStoryData } from '@storyblok/js';
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
 import { computed, shallowRef, useTemplateRef } from 'vue';
 
 import { breakPointsNoUnits } from '#utils/breakpoints.ts';

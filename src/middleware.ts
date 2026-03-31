@@ -7,8 +7,6 @@ import parseUrl from '#utils/parseUrl.ts';
 import { isPreviewMode } from '#lib/previewMode.ts';
 import { getRouteList } from '#storyblok/helpers/routeList';
 
-const noop = defineMiddleware((_context, next) => next());
-
 /**
  * Validate if the requested route exists in Storyblok
  * Optimized to skip validation for static assets and known routes
@@ -63,5 +61,16 @@ const previewMiddleware = defineMiddleware((context, next) => {
 	return next();
 });
 
+const robotsMiddleware = defineMiddleware(async (context, next) => {
+	const response = await next();
+
+	// If we're in preview mode, we don't want the page to be indexed :
+	if (context.locals.isPreviewMode) {
+		response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+	}
+
+	return response;
+});
+
 // Run the middleware sequence :
-export const onRequest = sequence(noop, previewMiddleware, validateRoute);
+export const onRequest = sequence(previewMiddleware, robotsMiddleware, validateRoute);

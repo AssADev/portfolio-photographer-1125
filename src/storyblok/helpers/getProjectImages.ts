@@ -1,5 +1,20 @@
 import type { StoryblokAsset } from '#types/component-types-sb.js';
 
+interface StoryblokAssetFolder {
+	id: number;
+	name: string;
+	parent_id: number | null;
+}
+
+interface AssetFoldersResponse {
+	asset_folders: StoryblokAssetFolder[];
+}
+
+interface AssetsResponse {
+	assets: StoryblokAsset[];
+}
+
+
 let isFetched = false;
 let imagesCache: StoryblokAsset[] = [];
 
@@ -13,7 +28,7 @@ const fisherYatesShuffle = (arr: StoryblokAsset[]): StoryblokAsset[] => {
 	return shuffled;
 };
 
-const fetchFromStoryblok = async (endpoint: string, spaceId: string, token: string): Promise<any> => {
+const fetchFromStoryblok = async <T>(endpoint: string, spaceId: string, token: string): Promise<T> => {
 	const response = await fetch(`https://mapi.storyblok.com/v1/spaces/${spaceId}/${endpoint}`, {
 		method: 'GET',
 		headers: {
@@ -43,10 +58,11 @@ export const fetchProjectImagesServer = async (): Promise<StoryblokAsset[]> => {
 		}
 
 		// Get all folders :
-		const foldersData = await fetchFromStoryblok('asset_folders', spaceId, token);
+		const foldersData = await fetchFromStoryblok<AssetFoldersResponse>('asset_folders', spaceId, token);
 		const folders = foldersData.asset_folders || [];
 
-		const projectFolder = folders.find((folder: any) => folder.name === folderName);
+		const projectFolder = folders.find((folder) => folder.name === folderName);
+
 
 		if (!projectFolder) {
 			console.warn(`Folder "${folderName}" not found`);
@@ -54,20 +70,17 @@ export const fetchProjectImagesServer = async (): Promise<StoryblokAsset[]> => {
 		}
 
 		// Get all assets of the desired folder :
-		const assetsData = await fetchFromStoryblok(`assets?in_folder=${projectFolder.id}`, spaceId, token);
+		const assetsData = await fetchFromStoryblok<AssetsResponse>(`assets?in_folder=${projectFolder.id}`, spaceId, token);
 
 		const assets = assetsData.assets || [];
+
 
 		if (assets.length === 0) {
 			console.warn(`No images found in folder "${folderName}"`);
 			return [];
 		}
 
-		// Shuffle the assets :
-		const projectImages = assets.map((asset: any) => asset);
-
-		const shuffled = fisherYatesShuffle(projectImages);
-		// shuffled = ensureNoAdjacentDuplicates(shuffled);
+		const shuffled = fisherYatesShuffle(assets);
 
 		imagesCache = shuffled;
 		isFetched = true;

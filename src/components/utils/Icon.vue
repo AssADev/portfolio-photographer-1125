@@ -37,12 +37,6 @@ const AsyncIcon = computed(() => {
 	return ASYNC_ICONS_CACHE.get(name);
 });
 
-if (!AsyncIcon.value) {
-	// retrieve server logs
-	// eslint-disable-next-line no-console
-	console.log(`[icon] "${name}" not found in ICONS.`);
-}
-
 // Computed :
 const style = computed(() => {
 	if (!mirrorX && !mirrorY) return undefined;
