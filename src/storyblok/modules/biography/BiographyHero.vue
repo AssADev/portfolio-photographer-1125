@@ -77,10 +77,10 @@ defineProps<{
 				</div>
 			</div>
 			<div
-				class="picture-secondary-container col-start-1 col-end-11 col-start-tb-10 col-end-tb-16 col-start-dk-24 col-end-dk-33"
 				v-parallax="{ scale: false, tablet: 10 }"
+				class="picture-secondary-container col-start-1 col-end-11 col-start-tb-10 col-end-tb-16 col-start-dk-24 col-end-dk-33"
 			>
-				<p v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.55 } }" v-if="blok.description">
+				<p v-if="blok.description" v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.55 } }">
 					{{ blok.description }}
 				</p>
 				<div

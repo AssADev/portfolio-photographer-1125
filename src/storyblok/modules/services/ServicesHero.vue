@@ -12,7 +12,7 @@ defineProps<{
 }>();
 
 // Resolvers (RichText) :
-const resolvers = getRichTextResolvers('h1');
+const resolvers = getRichTextResolvers('span');
 </script>
 
 <template>
@@ -23,6 +23,7 @@ const resolvers = getRichTextResolvers('h1');
 				class="col-start-1 col-end-13 col-start-tb-1 col-end-tb-15 col-start-dk-1 col-end-dk-29 col-start-xlg-1 col-end-xlg-27 col-end-xxlg-1 col-end-xxlg-24"
 				:doc="blok.title"
 				:resolvers="resolvers"
+				tag="h1"
 			/>
 			<div
 				v-if="blok.subtitle || blok.description"

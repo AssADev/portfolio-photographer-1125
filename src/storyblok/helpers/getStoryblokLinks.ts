@@ -5,7 +5,8 @@ import { storyblokApiInstance as storyblokApi } from 'virtual:storyblok-init';
 import locales from '#utils/locales.json';
 import localesRegions from '#utils/localesRegions.ts';
 
-import { HOME_SLUG, forbiddenSlugs, previewSlugs } from './specialSlugs';
+import { extractImagesFromStory } from '#storyblok/helpers/extractImagesFromStory';
+import { HOME_SLUG, forbiddenSlugs, previewSlugs } from '#storyblok/helpers/specialSlugs';
 
 export interface ProcessedLink {
 	originalPath: string;
@@ -116,15 +117,35 @@ export interface SitemapEntry {
 		lang: string;
 		url: string;
 	}>;
+	lastmod?: string;
+	changefreq?: string;
+	priority?: number;
+	images?: Array<{
+		url: string;
+		title?: string;
+		caption?: string;
+	}>;
 }
 
 /**
- * Generates sitemap entries with alternate language links from Storyblok :
+ * Generates sitemap entries with alternate language links and automated image metadata from Storyblok.
  */
 export async function getSitemapEntries(): Promise<SitemapEntry[]> {
 	const links = await getStoryblokLinks();
 	const entries: SitemapEntry[] = [];
 	const processedPaths = new Set<string>();
+
+	// Fetch all stories to extract images and metadata :
+	const allStories = await storyblokApi.getAll('cdn/stories', {
+		version: 'published'
+	});
+
+	// Create a map for quick access :
+	const storiesByPath = new Map();
+	allStories.forEach((story: any) => {
+		const path = story.full_slug.replace(/\/$/, '');
+		storiesByPath.set(path, story);
+	});
 
 	for (const link of links) {
 		if (!processedPaths.has(link.trimmedPath)) {
@@ -132,9 +153,11 @@ export async function getSitemapEntries(): Promise<SitemapEntry[]> {
 
 			// Create the main entry for the default language :
 			const defaultUrl = link.trimmedPath;
+			const story = storiesByPath.get(defaultUrl) || storiesByPath.get(defaultUrl === '' ? 'home' : defaultUrl);
 
 			const entry: SitemapEntry = {
-				url: defaultUrl
+				url: defaultUrl,
+				images: story ? extractImagesFromStory(story) : []
 			};
 
 			// Add alternate language links if they exist :

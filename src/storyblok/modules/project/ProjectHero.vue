@@ -43,7 +43,7 @@ const scaledPictures = computed(() => {
 });
 
 // Resolvers (RichText) :
-const resolvers = getRichTextResolvers('h1');
+const resolvers = getRichTextResolvers('span');
 
 // Informations :
 const informations = computed(() => {
@@ -99,13 +99,13 @@ onUnmounted(() => {
 					:scroll-speed="1"
 				/>
 			</div>
-			<div class="marquee-container" ref="marqueeRef">
+			<div ref="marqueeRef" class="marquee-container">
 				<Marquee
+					v-model:playing="marqueePlaying"
 					:speed="40"
 					:items="scaledPictures"
 					:scroll-speed="0.35"
 					align-items="flex-start"
-					v-model:playing="marqueePlaying"
 				>
 					<template #item="{ item, index }">
 						<div
@@ -123,7 +123,7 @@ onUnmounted(() => {
 			</div>
 			<div class="container">
 				<div class="title-container">
-					<RichText v-animate="'reveal-titles'" :doc="blok.name" :resolvers="resolvers" />
+					<RichText v-animate="'reveal-titles'" :doc="blok.name" :resolvers="resolvers" tag="h1" />
 					<div class="informations-container">
 						<div v-for="information in informations" :key="information.label" class="information-wrapper">
 							<Label :label="$t(information.label)" :initial-delay="0.55" />
@@ -136,9 +136,9 @@ onUnmounted(() => {
 									@click="trackNavigationClick"
 								>
 									<RichText
+										v-animate="{ type: 'reveal-label-shuffle', options: { delay: 0.55 } }"
 										reveal
 										speed="normal"
-										v-animate="{ type: 'reveal-label-shuffle', options: { delay: 0.55 } }"
 										class="value"
 										:doc="information.value.content.informations[0].name"
 										shuffle

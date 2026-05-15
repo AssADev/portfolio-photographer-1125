@@ -30,7 +30,7 @@ const servicesLink = computed(() => {
 });
 
 // Resolvers (RichText) :
-const resolvers = getRichTextResolvers('h1');
+const resolvers = getRichTextResolvers('span');
 </script>
 
 <template>
@@ -44,10 +44,10 @@ const resolvers = getRichTextResolvers('h1');
 		</div>
 		<div class="container">
 			<div class="title-wrapper">
-				<RichText v-animate="'reveal-titles'" :doc="blok.name" :resolvers="resolvers" />
+				<RichText v-animate="'reveal-titles'" :doc="blok.name" :resolvers="resolvers" tag="h1" />
 				<Button
-					:to="servicesLink"
 					v-animate="{ type: 'reveal-letters', options: { delay: 0.85 } }"
+					:to="servicesLink"
 					data-cursor-snap
 					>/{{ $t('service') }}</Button
 				>

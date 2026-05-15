@@ -179,9 +179,9 @@ onUnmounted(() => {
 	<div
 		ref="rootEl"
 		class="partials-label-shuffle"
-		@mouseleave="resetLetters"
 		:data-cursor-snap="!noSnap ? true : null"
 		:aria-label="label"
+		@mouseleave="resetLetters"
 	>
 		<span
 			v-for="(letter, index) in originalLetters"

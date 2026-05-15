@@ -18,7 +18,7 @@ defineProps<{
 	animationDirection?: 'up' | 'down';
 }>();
 
-// Resolvers :
+// Resolvers (RichText) :
 const resolvers = getRichTextResolvers('h2');
 </script>
 
