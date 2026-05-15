@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ISbStoryData } from '@storyblok/js';
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 
 import { formatIndex } from '#utils/formatIndex.ts';
 import { getAspectRatio } from '#utils/image.ts';
@@ -40,11 +40,11 @@ const aspectRatio = computed(() => {
 
 <template>
 	<div
-		class="partials-home-item-project"
 		v-magnetic="{
 			strength: 0.1,
 			parallax: { target: 'img', strength: 0.025 }
 		}"
+		class="partials-home-item-project"
 	>
 		<div class="informations-container">
 			<span v-animate="{ type: 'reveal-letters', options: { delay: 0.2 } }">/{{ formatIndex(index ?? 0) }}</span>
@@ -76,6 +76,7 @@ const aspectRatio = computed(() => {
 					v-if="projectName"
 					v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.2 } }"
 					:doc="projectName"
+					tag="h2"
 				/>
 			</div>
 		</Button>

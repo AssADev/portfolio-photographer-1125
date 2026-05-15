@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { StoryblokRichText, type StoryblokRichTextNode } from '@storyblok/vue';
-import { type VNode, computed, h, useTemplateRef } from 'vue';
+import { type VNode, computed, createTextVNode, h, useTemplateRef } from 'vue';
 
 import LabelShuffle from '#components/partials/LabelShuffle.vue';
 
@@ -17,7 +17,8 @@ const {
 	noSnap = false,
 	reveal = false,
 	prefix = '',
-	speed = 'fast'
+	speed = 'fast',
+	tag = 'div'
 } = defineProps<{
 	doc: StoryblokRichtext;
 	resolvers?: Record<string, (node: StoryblokRichTextNode<VNode>) => VNode>;
@@ -26,6 +27,7 @@ const {
 	reveal?: boolean;
 	prefix?: string;
 	speed?: 'normal' | 'fast';
+	tag?: string;
 }>();
 
 // Refs :
@@ -38,7 +40,7 @@ const { location } = useRouter();
 const plaintext = computed(() => {
 	if (!shuffle || !doc) return '';
 
-	const extractText = (node: any): string => {
+	const extractText = (node: StoryblokRichtext): string => {
 		if (node.text) return node.text;
 		if (node.content && Array.isArray(node.content)) {
 			return node.content.map(extractText).join('');
@@ -51,15 +53,15 @@ const plaintext = computed(() => {
 
 // Resolvers :
 const markResolvers = {
-	textStyle: (node: any) => {
+	textStyle: (node: StoryblokRichTextNode<VNode>) => {
 		const color = node.attrs?.color?.trim();
 
-		if (!color) return node.text;
+		if (!color) return createTextVNode(node.text || '');
 
-		return h('span', { style: `color:${color}` }, node.text);
+		return h('span', { style: `color:${color}` }, node.text || '');
 	},
-	link: (node: any) => {
-		const { href, target, story } = node.attrs;
+	link: (node: StoryblokRichTextNode<VNode>) => {
+		const { href, target, story } = node.attrs || {};
 
 		const currentPath = location.value.pathname.replace(/\/$/, '') || '/';
 		let targetPath = href;
@@ -112,12 +114,12 @@ const markResolvers = {
 					}
 				}
 			},
-			node.text
+			node.text || ''
 		);
 	}
 };
 
-const mergedResolvers = {
+const mergedResolvers: Record<string, (node: StoryblokRichTextNode<VNode>) => VNode> = {
 	...markResolvers,
 	...resolvers
 };
@@ -127,13 +129,13 @@ defineExpose({ el });
 </script>
 
 <template>
-	<div ref="el" class="partials-rich-text">
+	<component :is="tag" ref="el" class="partials-rich-text">
 		<span v-if="prefix">{{ prefix }}</span>
 		<LabelShuffle v-if="shuffle" :label="plaintext" :no-snap :reveal :speed />
 		<StoryblokRichText
 			v-else-if="doc && Array.isArray(doc.content)"
 			:doc="doc"
-			:resolvers="(mergedResolvers as any)"
+			:resolvers="mergedResolvers"
 		/>
-	</div>
+	</component>
 </template>

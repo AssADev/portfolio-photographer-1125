@@ -3,15 +3,12 @@ import gsap from 'gsap';
 import { computed, inject, ref, useTemplateRef } from 'vue';
 
 import { animations } from '#utils/Animations.ts';
-import locales from '#utils/locales.json';
 import { nl2br } from '#utils/nl2br.ts';
 import { trackNavigationClick } from '#utils/tracking.ts';
 
 import DrawerMenu from '#components/partials/DrawerMenu.vue';
-import Icon from '#components/utils/Icon.vue';
 
 import type { StoryblokLabelLink } from '#types/component-types-sb.js';
-import type { LanguageAlternate } from '#types/seo.ts';
 
 import { useRouter } from '#composables/useRouter.ts';
 
@@ -19,11 +16,6 @@ import { useRouter } from '#composables/useRouter.ts';
 const siteConfig = inject<any>('siteConfig');
 
 // Props & Model :
-const { language, languageAlternates } = defineProps<{
-	language: string;
-	languageAlternates?: LanguageAlternate[];
-}>();
-
 const toggled = defineModel<boolean>('toggled', { default: false });
 
 const { identity, menuDescription, menuLinks } = siteConfig;
@@ -53,11 +45,6 @@ const menuItems = computed(() => {
 const activeMenuItems = computed(() => {
 	const activeItem = findActiveMenuItem(menuItems.value, location.value.pathname);
 	return menuItems.value.map((i: StoryblokLabelLink) => ({ ...i, active: i === activeItem }));
-});
-
-const orderedLocales = computed(() => {
-	// Place current language first, followed by other locales :
-	return [language, ...locales.filter((locale) => locale !== language)];
 });
 
 // Methods :

@@ -14,7 +14,12 @@ import LabelShuffle from '#components/partials/LabelShuffle.vue';
 import Button from '#components/utils/Button.vue';
 import RichText from '#components/utils/RichText.vue';
 
-import type { StoryblokHomeHero, StoryblokProject, StoryblokService } from '#types/component-types-sb.js';
+import type {
+	StoryblokHomeHero,
+	StoryblokProject,
+	StoryblokRichtext,
+	StoryblokService
+} from '#types/component-types-sb.js';
 
 import { useTrap } from '#composables/useTrap.ts';
 import { $currentFilter, setCurrentFilter } from '#stores/filter.ts';
@@ -83,14 +88,14 @@ const allFilters = computed(() => {
 	return all;
 });
 
-// Helper :
+// Helpers :
 const stringToChars = (s: string) => s.split('').map((c) => ({ char: c, id: charIdCounter++ }));
 
-const extractPlainText = (doc: any): string => {
+const extractPlainText = (doc: string | StoryblokRichtext | null | undefined): string => {
 	if (!doc) return '';
 	if (typeof doc === 'string') return doc;
 
-	const walk = (node: any): string => {
+	const walk = (node: StoryblokRichtext): string => {
 		if (node.text) return node.text;
 		if (node.content && Array.isArray(node.content)) {
 			return node.content.map(walk).join('');
@@ -275,7 +280,7 @@ watch(isDropdownToggle, (val) => {
 });
 
 // Resolvers (RichText) :
-const resolvers = getRichTextResolvers('h1');
+const resolvers = getRichTextResolvers('span');
 
 // Attach & Detach :
 onMounted(() => {
@@ -302,8 +307,9 @@ onUnmounted(() => {
 		<div ref="containerRef" class="container">
 			<div class="content-container" :class="{ 'is-scrolled': y > 40 }">
 				<RichText
-					v-animate="{ type: 'reveal-letters', options: { delay: 0.125 } }"
 					ref="titleRef"
+					v-animate="{ type: 'reveal-letters', options: { delay: 0.125 } }"
+					tag="h1"
 					:doc="blok.title"
 					:resolvers="resolvers"
 				/>
@@ -313,19 +319,19 @@ onUnmounted(() => {
 					:class="{ toggle: isDropdownToggle }"
 				>
 					<Button
-						@click="handleToggleDropdown"
 						v-animate="{ type: 'reveal-square' }"
 						:aria-label="
 							$t('filterBy', {
 								n: allFilters.find((f) => f.slug === currentFilter)?.name || ''
 							})
 						"
+						@click="handleToggleDropdown"
 					>
 						<div class="inner-cta">
 							<span
 								ref="mobileLabelRef"
-								class="mobile-label"
 								v-animate="{ type: 'reveal-chars', options: { delay: 0.4 } }"
+								class="mobile-label"
 							>
 								<span v-for="char in labelChars" :key="char.id" class="char-wrapper">
 									<span class="char" :data-char-id="char.id">{{
@@ -335,8 +341,8 @@ onUnmounted(() => {
 							</span>
 							<span
 								ref="mobileCountRef"
-								class="number mobile-number"
 								v-animate="{ type: 'reveal-chars', options: { delay: 1.1 } }"
+								class="number mobile-number"
 							>
 								<span v-for="char in countChars" :key="char.id" class="char-wrapper">
 									<span class="char" :data-char-id="char.id">{{ char.char }}</span>
@@ -344,8 +350,8 @@ onUnmounted(() => {
 							</span>
 						</div>
 						<IconPlusMinus
-							:active="isDropdownToggle"
 							v-animate="{ type: 'scale-up', options: { delay: 0.725, rotate: 90 } }"
+							:active="isDropdownToggle"
 						/>
 					</Button>
 
@@ -368,20 +374,20 @@ onUnmounted(() => {
 				</div>
 				<div class="filters-container hide-mobile-tablet">
 					<Button
-						:class="{ active: currentFilter === 'allMyProjects' }"
-						@click="handleFilterClick('allMyProjects')"
 						v-animate="{ type: 'reveal-square' }"
+						:class="{ active: currentFilter === 'allMyProjects' }"
 						:aria-label="$t('filterBy') + ' ' + $t('allMyProjects')"
+						@click="handleFilterClick('allMyProjects')"
 					>
 						<div class="inner-cta">
 							<LabelShuffle
+								v-animate="{ type: 'reveal-label-shuffle', options: { delay: 0.4 } }"
 								:label="$t('allMyProjects')"
 								no-snap
 								reveal
 								speed="normal"
-								v-animate="{ type: 'reveal-label-shuffle', options: { delay: 0.4 } }"
 							/>
-							<span class="number" v-animate="{ type: 'reveal-letters', options: { delay: 1.1 } }">
+							<span v-animate="{ type: 'reveal-letters', options: { delay: 1.1 } }" class="number">
 								({{ formatIndex(getProjectCount()) }})
 							</span>
 						</div>
@@ -390,13 +396,13 @@ onUnmounted(() => {
 					<Button
 						v-for="(service, index) in visibleServices"
 						:key="service.uuid"
-						:class="{ active: currentFilter === service.slug }"
-						@click="handleFilterClick(service.slug)"
 						v-animate="{
 							type: 'reveal-square',
 							options: { delay: (index + 1) * 0.175, fromBottomLeft: (index + 1) % 2 === 1 }
 						}"
+						:class="{ active: currentFilter === service.slug }"
 						:aria-label="$t('filterBy') + ' ' + extractPlainText(service.content.informations?.[0]?.name)"
+						@click="handleFilterClick(service.slug)"
 					>
 						<div class="inner-cta">
 							<span
@@ -413,7 +419,7 @@ onUnmounted(() => {
 									speed="normal"
 								/>
 							</span>
-							<span class="number" v-animate="{ type: 'reveal-letters', options: { delay: 1.1 } }">
+							<span v-animate="{ type: 'reveal-letters', options: { delay: 1.1 } }" class="number">
 								({{ formatIndex(getProjectCount(service.slug)) }})
 							</span>
 						</div>
@@ -464,7 +470,7 @@ onUnmounted(() => {
 			display: inline-block;
 			margin-block-end: fluidSize(60px, 42px, null, widescreen);
 
-			h1 {
+			span {
 				display: inline;
 			}
 		}
