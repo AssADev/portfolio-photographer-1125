@@ -51,7 +51,7 @@ const plaintext = computed(() => {
 	return extractText(doc);
 });
 
-// Resolvers :
+// Resolvers (RichText) :
 const markResolvers = {
 	textStyle: (node: StoryblokRichTextNode<VNode>) => {
 		const color = node.attrs?.color?.trim();
@@ -132,10 +132,6 @@ defineExpose({ el });
 	<component :is="tag" ref="el" class="partials-rich-text">
 		<span v-if="prefix">{{ prefix }}</span>
 		<LabelShuffle v-if="shuffle" :label="plaintext" :no-snap :reveal :speed />
-		<StoryblokRichText
-			v-else-if="doc && Array.isArray(doc.content)"
-			:doc="doc"
-			:resolvers="mergedResolvers"
-		/>
+		<StoryblokRichText v-else-if="doc && Array.isArray(doc.content)" :doc="doc" :resolvers="mergedResolvers" />
 	</component>
 </template>

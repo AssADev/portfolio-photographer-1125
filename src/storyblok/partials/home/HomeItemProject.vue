@@ -3,6 +3,7 @@ import type { ISbStoryData } from '@storyblok/js';
 import { computed } from 'vue';
 
 import { formatIndex } from '#utils/formatIndex.ts';
+import { getRichTextResolvers } from '#utils/getRichTextResolvers.ts';
 import { getAspectRatio } from '#utils/image.ts';
 import { trackNavigationClick } from '#utils/tracking.ts';
 
@@ -36,6 +37,9 @@ const service = computed(() => {
 const aspectRatio = computed(() => {
 	return cover.value ? getAspectRatio(cover.value) : undefined;
 });
+
+// Resolvers (RichText) :
+const resolvers = getRichTextResolvers('span');
 </script>
 
 <template>
@@ -77,6 +81,7 @@ const aspectRatio = computed(() => {
 					v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.2 } }"
 					:doc="projectName"
 					tag="h2"
+					:resolvers="resolvers"
 				/>
 			</div>
 		</Button>
