@@ -113,6 +113,7 @@ useGSAP(() => {
 				v-animate="'reveal-titles'"
 				:doc="blok.title"
 				class="col-start-1 col-end-13 col-start-tb-1 col-end-tb-15 col-start-dk-1 col-end-dk-23 col-start-xlg-1 col-end-xlg-21 col-start-xxlg-1 col-end-xxlg-19"
+				tag="h2"
 			/>
 		</div>
 

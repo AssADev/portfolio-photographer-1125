@@ -91,6 +91,7 @@ const activeDescription = computed(() => {
 				v-animate="'reveal-titles'"
 				:doc="activeTitle!"
 				class="col-start-1 col-end-13 col-start-tb-1 col-end-tb-12 col-start-dk-17 col-end-dk-33 col-start-xxlg-22 col-end-xxlg-33"
+				tag="h2"
 			/>
 			<div
 				class="description-wrapper col-start-1 col-end-13 col-start-tb-1 col-end-tb-11 col-start-dk-1 col-end-dk-14 col-start-mlg-1 col-end-mlg-12 col-start-xxlg-1 col-end-xxlg-9"
@@ -119,14 +120,14 @@ const activeDescription = computed(() => {
 			</div>
 		</div>
 
-		<div class="marquee-container" ref="marqueeRef">
+		<div ref="marqueeRef" class="marquee-container">
 			<Marquee
+				v-model:playing="marqueePlaying"
 				:speed="40"
 				pause-on-hover
 				:items="scaledProjects"
 				:scroll-speed="0.35"
 				align-items="flex-end"
-				v-model:playing="marqueePlaying"
 			>
 				<template #item="{ item, index }">
 					<ProjectsMarqueeItem

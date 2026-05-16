@@ -63,14 +63,11 @@ setState('url', Astro.url);
 		/>
 		<script is:inline>
 			(function () {
-				const skipLoader = new URLSearchParams(window.location.search).has('skipLoader');
-				if (!window.isSiteLoaded && !skipLoader) {
+				if (!window.isSiteLoaded) {
 					document.documentElement.classList.add('is-site-loading');
 				}
-				if (!skipLoader) {
-					if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-					window.scrollTo(0, 0);
-				}
+				if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+				window.scrollTo(0, 0);
 			})();
 		</script>
 		<style is:global>

@@ -470,7 +470,7 @@ onUnmounted(() => {
 			display: inline-block;
 			margin-block-end: fluidSize(60px, 42px, null, widescreen);
 
-			span {
+			p {
 				display: inline;
 			}
 		}

@@ -73,9 +73,7 @@ onMounted(() => {
 	window.addEventListener('resize', checkBreakpoint);
 	document.addEventListener('astro:page-load', clearAppVisibility);
 
-	const skipLoader = new URLSearchParams(window.location.search).has('skipLoader');
-
-	if (skipLoader || $global.get().isSiteLoaded) {
+	if ($global.get().isSiteLoaded) {
 		isVisible.value = false;
 		showApp();
 		setTimeout(() => {

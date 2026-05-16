@@ -56,9 +56,9 @@ const markResolvers = {
 	textStyle: (node: StoryblokRichTextNode<VNode>) => {
 		const color = node.attrs?.color?.trim();
 
-		if (!color) return createTextVNode(node.text || '');
+		if (!color) return h('span', {}, node.children);
 
-		return h('span', { style: `color:${color}` }, node.text || '');
+		return h('span', { style: `color:${color}` }, node.children);
 	},
 	link: (node: StoryblokRichTextNode<VNode>) => {
 		const { href, target, story } = node.attrs || {};
@@ -114,14 +114,21 @@ const markResolvers = {
 					}
 				}
 			},
-			node.text || ''
+			node.children
 		);
 	}
 };
 
-const mergedResolvers: Record<string, (node: StoryblokRichTextNode<VNode>) => VNode> = {
-	...markResolvers,
-	...resolvers
+const nodeResolvers = {
+	text: (node: StoryblokRichTextNode<VNode>) => createTextVNode(node.text || '')
+};
+
+const mergedResolvers = {
+	marks: markResolvers,
+	nodes: {
+		...nodeResolvers,
+		...resolvers
+	}
 };
 
 // Expose :

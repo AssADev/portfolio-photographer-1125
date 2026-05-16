@@ -225,7 +225,7 @@ export const PROJECT_LAYOUT_CONFIGS: Record<string, string[][]> = {
 			'col-start-tb-5',
 			'col-end-tb-13',
 			'col-start-dk-14',
-			'col-end-dk-22',
+			'col-end-dk-23',
 			'col-start-lg-15',
 			'col-end-lg-23',
 			'col-start-xxlg-13',
