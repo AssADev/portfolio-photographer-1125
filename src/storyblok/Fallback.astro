@@ -7,8 +7,15 @@ type Props = {
 };
 
 const props = Astro.props;
+
+// Only displayed in development (or in the Storyblok preview), never to the visitors :
+const showDebug = import.meta.env.DEV || Astro.locals.isPreviewMode;
 ---
 
-<div>
-	<Debug props={props} />
-</div>
+{
+	showDebug && (
+		<div>
+			<Debug props={props} />
+		</div>
+	)
+}

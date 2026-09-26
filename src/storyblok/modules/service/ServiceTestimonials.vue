@@ -194,7 +194,7 @@ const layouts = [
 			<div
 				class="testimonials-container col-start-1 col-end-13 col-start-tb-4 col-end-tb-15 col-start-dk-6 col-end-dk-27 col-start-lg-6 col-end-lg-26 col-start-xxlg-6 col-end-xxlg-23"
 			>
-				<div class="slideshow-container" ref="emblaRef">
+				<div ref="emblaRef" class="slideshow-container">
 					<div
 						class="slideshow-wrapper"
 						:class="{
@@ -236,10 +236,10 @@ const layouts = [
 						}}</span>
 					</div>
 					<div class="ctas-wrapper">
-						<Button @click="emblaApi.scrollPrev()" :disabled="!canPrev" :aria-label="$t('previous')">
+						<Button :disabled="!canPrev" :aria-label="$t('previous')" @click="emblaApi.scrollPrev()">
 							<LabelShuffle :label="$t('previous')" :is-active="canPrev" reveal />
 						</Button>
-						<Button @click="emblaApi.scrollNext()" :disabled="!canNext" :aria-label="$t('next')">
+						<Button :disabled="!canNext" :aria-label="$t('next')" @click="emblaApi.scrollNext()">
 							<LabelShuffle
 								v-animate="{ type: 'reveal-label-shuffle', options: { delay: 0.125 } }"
 								:label="$t('next')"
@@ -271,7 +271,7 @@ const layouts = [
 						@transitionstart="onTransitionStart($event, item._uid)"
 						@transitionend="onTransitionEnd($event, item._uid)"
 					>
-						<Image :src="item.picture" object-fit="contain" />
+						<Image :src="item.picture" object-fit="contain" sizes="20vw" />
 					</div>
 				</div>
 			</div>

@@ -1,5 +1,6 @@
 ---
 import { storyblokEditable } from '#storyblok/helpers/storyblokEditable.ts';
+import { slimRelations, slimStory } from '#storyblok/helpers/slimStory.ts';
 import ProjectsMarqueeVue from '#storyblok/modules/ProjectsMarquee.vue';
 import type { StoryblokProjectsMarquee, StoryblokRichtext, StoryblokLabelLink } from '#types/component-types-sb.js';
 import { getProjects } from '#storyblok/helpers/getProjects.ts';
@@ -29,9 +30,10 @@ const finalLink = Astro.props.link || blok?.link || marqueeLink;
 <ProjectsMarqueeVue
 	{...storyblokEditable(blok, Astro.locals.isPreviewMode)}
 	{...Astro.props}
+	blok={slimRelations(blok)}
 	isFallback={isFallback}
-	link={finalLink}
-	projects={projects}
+	link={slimRelations(finalLink)}
+	projects={projects.map(slimStory)}
 	excludeUuid={Astro.locals.story?.uuid}
 	client:visible
 />

@@ -8,6 +8,14 @@ type Props = {
 };
 
 const { blok } = Astro.props;
+
+// The link to the services page is taken from the menu (already localized) :
+const servicesLink = Astro.locals.siteConfig.menuLinks?.find((item) => item.link?.component === 'Services')?.link.url;
 ---
 
-<ServiceHeroVue {...storyblokEditable(blok, Astro.locals.isPreviewMode)} {...Astro.props} client:visible />
+<ServiceHeroVue
+	{...storyblokEditable(blok, Astro.locals.isPreviewMode)}
+	{...Astro.props}
+	servicesLink={servicesLink}
+	client:visible
+/>

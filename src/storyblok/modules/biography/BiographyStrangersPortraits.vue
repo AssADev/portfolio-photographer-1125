@@ -125,7 +125,11 @@ useGSAP(() => {
 			</div>
 		</div>
 
-		<div ref="sectionsContainerRef" class="sections-container" :style="{ height: sectionHeight }">
+		<div
+			ref="sectionsContainerRef"
+			class="sections-container"
+			:style="{ '--sections-scroll-height': sectionHeight }"
+		>
 			<div ref="sectionsStickyContainerRef" class="sections-sticky-container">
 				<div ref="sectionsWrapperRef" class="sections-wrapper">
 					<StoryblokComponent
@@ -146,9 +150,13 @@ useGSAP(() => {
 </template>
 
 <style lang="scss" scoped>
-$sectionsHeight: fluidSize(680px, 540px);
+// On the short screens, the sections are stacked instead of scrolled horizontally :
+$stackedMedia: '(max-height: 500px) and (orientation: landscape)';
 
 .biography-strangers-portraits {
+	// Height of the sections, limited so they (and the header) always fit in the screen :
+	--sections-height: min(#{fluidSize(680px, 540px)}, calc(100svh - (var(--header-height) * 2) - (var(--gutter) * 3)));
+
 	background: linear-gradient(
 		180deg,
 		rgba($white, 0) 0%,
@@ -213,18 +221,32 @@ $sectionsHeight: fluidSize(680px, 540px);
 .sections-container {
 	position: relative;
 	z-index: 1;
+	height: var(--sections-scroll-height);
+
+	@media #{$stackedMedia} {
+		height: auto;
+	}
 }
 
 .sections-sticky-container {
 	position: sticky;
-	top: calc(50% - (#{$sectionsHeight} / 2));
+
+	// Vertically centered (the height is the real one, even when limited by the screen) :
+	top: calc(50% - (var(--sections-height) / 2));
 	width: 100%;
 	display: flex;
 	align-items: center;
 	overflow: hidden;
 
+	// Not the `container` mixin, as it sets a relative position (which breaks the sticky) :
 	@include mq(widescreen) {
-		@include container;
+		width: var(--ctn-w);
+		margin-inline: auto;
+	}
+
+	@media #{$stackedMedia} {
+		position: relative;
+		top: auto;
 	}
 }
 
@@ -232,8 +254,23 @@ $sectionsHeight: fluidSize(680px, 540px);
 	display: flex;
 	gap: $gap;
 	width: fit-content;
-	height: $sectionsHeight;
-	max-height: calc(100svh - (var(--header-height) * 4));
+	height: var(--sections-height);
 	padding-inline: var(--gutter);
+
+	@media #{$stackedMedia} {
+		flex-direction: column;
+		align-items: center;
+		width: 100%;
+		height: auto;
+
+		:deep(.partials-biography-strangers-portraits-explanation) {
+			width: min(100%, 560px);
+			container-type: normal;
+		}
+
+		:deep(.partials-biography-strangers-portraits-video) {
+			width: min(100%, 300px);
+		}
+	}
 }
 </style>

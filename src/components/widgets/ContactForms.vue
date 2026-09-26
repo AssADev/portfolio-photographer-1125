@@ -1,16 +1,19 @@
 <script setup lang="ts">
 import gsap from 'gsap';
-import { computed, inject, nextTick, ref, useTemplateRef, watch } from 'vue';
+import { computed, defineAsyncComponent, inject, nextTick, ref, useTemplateRef, watch } from 'vue';
 
 import { animations } from '#utils/Animations.ts';
 import { formatIndex } from '#utils/formatIndex.ts';
 import { nl2br } from '#utils/nl2br.ts';
 
 import DrawerMenu from '#components/partials/DrawerMenu.vue';
-import Form from '#components/partials/Form.vue';
 import Button from '#components/utils/Button.vue';
 
 import { $global } from '#stores/global.ts';
+
+// The form (validation, captcha, inputs...) is only loaded when needed, as the header is in every page :
+const loadForm = () => import('#components/partials/Form.vue');
+const Form = defineAsyncComponent(loadForm);
 
 // Injections :
 const siteConfig = inject<any>('siteConfig');
@@ -86,6 +89,9 @@ const closeDrawer = () => {
 
 // Watchers :
 watch(toggled, async (val) => {
+	// Preload the form while the drawer opens :
+	if (val) loadForm().catch(() => {});
+
 	if (!val) {
 		selectedForm.value = null;
 		$global.setKey('isContactFormActive', false);

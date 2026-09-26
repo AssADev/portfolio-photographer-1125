@@ -4,7 +4,7 @@ import { arrayAt } from '#utils/polyfills.ts';
 // --- Types ---
 
 type CommonEvent = {
-	languageCode: typeof LANGUAGE_CODE;
+	languageCode: string;
 	pageType: string;
 	pageName: string;
 };
@@ -40,7 +40,9 @@ type FormOpenClickParams = {
 };
 
 const isBrowser = typeof window !== 'undefined';
-const LANGUAGE_CODE = isBrowser ? arrayAt(document.documentElement.lang.split('-'), 0)! : locales[0];
+
+// Read on each event, as the language can change during a client side navigation :
+const getLanguageCode = () => (isBrowser ? arrayAt(document.documentElement.lang.split('-'), 0)! : locales[0]);
 
 // --- Helpers ---
 function pushToDataLayer(
@@ -61,7 +63,7 @@ export function initTracking() {
 	const { pageType, pageName } = getProps();
 
 	const event: CommonEvent = {
-		languageCode: LANGUAGE_CODE,
+		languageCode: getLanguageCode(),
 		pageType,
 		pageName
 	};
@@ -75,7 +77,7 @@ export function trackPageView() {
 
 	const event: PageViewEvent = {
 		event: 'virtualPageView',
-		languageCode: LANGUAGE_CODE,
+		languageCode: getLanguageCode(),
 		pageType,
 		pageName
 	};
@@ -93,7 +95,7 @@ export function trackNavigationClick(e: MouseEvent, params?: NavigationClickPara
 
 	const event: NavigationClickEvent = {
 		event: 'navigationClick',
-		languageCode: LANGUAGE_CODE,
+		languageCode: getLanguageCode(),
 		pageType,
 		buttonText: buttonText.replace(/\r?\n/g, ' ').replace(/\s+/g, ' ').trim(),
 		destination,
@@ -115,7 +117,7 @@ export function trackFormOpenClick(e: MouseEvent, params?: FormOpenClickParams) 
 
 	const event: FormOpenClickEvent = {
 		event: 'formOpenClick',
-		languageCode: LANGUAGE_CODE,
+		languageCode: getLanguageCode(),
 		pageType,
 		buttonText: buttonText.replace(/\r?\n/g, ' ').replace(/\s+/g, ' ').trim(),
 		formId,

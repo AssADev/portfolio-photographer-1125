@@ -1,56 +1,50 @@
 import { onRequest as storyblokMiddleware } from '@storyblok/astro/middleware.ts';
 import { defineMiddleware, sequence } from 'astro:middleware';
+import { AsyncLocalStorage } from 'node:async_hooks';
 
 import locales from '#utils/locales.json';
 import parseUrl from '#utils/parseUrl.ts';
 
 import { isPreviewMode } from '#lib/previewMode.ts';
 import { getRouteList } from '#storyblok/helpers/routeList';
+import { specialApiSlugs } from '#storyblok/helpers/specialSlugs';
+
+const DEFAULT_LOCALE = locales[0];
+
+// Per request state used by `src/utils/astro-state.ts` (the requests can be rendered concurrently) :
+const globalForState = globalThis as { __astroStateStorage?: AsyncLocalStorage<Record<string, unknown>> };
+const stateStorage = (globalForState.__astroStateStorage ??= new AsyncLocalStorage());
 
 /**
- * Validate if the requested route exists in Storyblok
- * Optimized to skip validation for static assets and known routes
+ * Routes which are not handled by the Storyblok catch-all page :
  */
-const validateRoute = defineMiddleware(async ({ request, url, locals }, next) => {
-	// Early return for static assets and server islands to avoid expensive route validation :
-	if (url.pathname.startsWith('/_astro/') || url.pathname.includes('/_server-islands/')) {
-		return next();
-	}
+const isInternalRoute = (pathname: string) =>
+	pathname.startsWith('/_astro/') ||
+	pathname.startsWith('/_image') ||
+	pathname.startsWith('/_vercel/') ||
+	pathname.includes('/_server-islands/') ||
+	specialApiSlugs.some((slug) => pathname === `/${slug}` || pathname.startsWith(`/${slug}/`));
 
-	// 404 and 500 are **known** routes, so we can skip validation :
-	if (requestIs404Or500(request)) {
-		return next();
-	}
+/**
+ * 404 and 500 are known routes :
+ */
+const isErrorRoute = (pathname: string) => /^\/(?:[a-z]{2}\/)?(?:404|500)\/?$/.test(pathname);
 
-	const response = await next();
-	const type = response.headers.get('X-Astro-Route-Type');
-
-	// If the route we're processing is not a page, then we ignore it :
-	if (type !== 'page' && type !== 'fallback') {
+/**
+ * Set headers on a response, even if its headers are immutable (e.g. `Response.redirect()`) :
+ */
+const withHeaders = (response: Response, headers: Record<string, string>) => {
+	try {
+		for (const [key, value] of Object.entries(headers)) response.headers.set(key, value);
 		return response;
+	} catch {
+		const clone = new Response(response.body, response);
+		for (const [key, value] of Object.entries(headers)) clone.headers.set(key, value);
+		return clone;
 	}
+};
 
-	// Get all valid routes - this is the expensive operation :
-	const routes = await getRouteList();
-
-	const currentPath = url.pathname.replace(/^\/*|\/*$/g, '');
-
-	// Return 404 if the route doesn't exist
-	if (currentPath && !routes.includes(currentPath)) {
-		const { language } = parseUrl(url.pathname);
-		const target = language && language !== locales[0] ? `/${language}/404` : '/404';
-		return next(target);
-	}
-
-	return response;
-});
-
-function requestIs404Or500(request: Request, base = '') {
-	const url = new URL(request.url);
-	const pathname = url.pathname.slice(base.length);
-
-	return /^\/(?:[a-z]{2}\/)?404\/?$/.test(pathname) || /^\/(?:[a-z]{2}\/)?500\/?$/.test(pathname);
-}
+const stateMiddleware = defineMiddleware((_context, next) => stateStorage.run({ language: DEFAULT_LOCALE }, next));
 
 const previewMiddleware = defineMiddleware((context, next) => {
 	const isPreview = isPreviewMode(context.request);
@@ -61,16 +55,59 @@ const previewMiddleware = defineMiddleware((context, next) => {
 	return next();
 });
 
-const robotsMiddleware = defineMiddleware(async (context, next) => {
+const headersMiddleware = defineMiddleware(async (context, next) => {
 	const response = await next();
+	const isPreview = context.locals.isPreviewMode;
 
-	// If we're in preview mode, we don't want the page to be indexed :
-	if (context.locals.isPreviewMode) {
-		response.headers.set('X-Robots-Tag', 'noindex, nofollow');
-	}
+	return withHeaders(response, {
+		'X-Content-Type-Options': 'nosniff',
+		'Referrer-Policy': 'strict-origin-when-cross-origin',
+		'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=()',
+		// The preview is displayed in the Storyblok Visual Editor, the production site must not be framed :
+		'Content-Security-Policy': isPreview
+			? "frame-ancestors 'self' https://app.storyblok.com"
+			: "frame-ancestors 'self'",
+		// The preview must never be indexed nor cached (the content changes all the time) :
+		...(isPreview ? { 'X-Robots-Tag': 'noindex, nofollow', 'Cache-Control': 'no-store' } : {})
+	});
+});
 
-	return response;
+/**
+ * The default locale is never prefixed (e.g. `/fr/biography` -> `/biography`) :
+ */
+const defaultLocaleMiddleware = defineMiddleware(({ url, redirect }, next) => {
+	const match = url.pathname.match(new RegExp(`^/${DEFAULT_LOCALE}(/.*)?$`));
+	if (match) return redirect(`${match[1] || '/'}${url.search}`, 301);
+
+	return next();
+});
+
+/**
+ * Validate that the requested route exists in Storyblok before rendering it,
+ * so unknown URLs (bots, typos...) don't trigger any Storyblok request for the story.
+ */
+const validateRoute = defineMiddleware(async ({ url, locals }, next) => {
+	if (isInternalRoute(url.pathname) || isErrorRoute(url.pathname)) return next();
+
+	// The preview can display unpublished stories, the page itself will return a 404 if needed :
+	if (locals.isPreviewMode) return next();
+
+	const currentPath = url.pathname.replace(/^\/*|\/*$/g, '');
+	if (!currentPath) return next();
+
+	// Get all valid routes (cached by the Storyblok client) :
+	const routes = await getRouteList();
+	if (routes.includes(currentPath)) return next();
+
+	const { language } = parseUrl(url.pathname);
+	return next(language && language !== DEFAULT_LOCALE ? `/${language}/404` : '/404');
 });
 
 // Run the middleware sequence :
-export const onRequest = sequence(previewMiddleware, robotsMiddleware, validateRoute);
+export const onRequest = sequence(
+	stateMiddleware,
+	previewMiddleware,
+	headersMiddleware,
+	defaultLocaleMiddleware,
+	validateRoute
+);

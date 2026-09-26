@@ -39,8 +39,8 @@ defineProps<{
 		<div class="inner-container">
 			<div class="content-container">
 				<div
-					class="number-wrapper hide-mobile"
 					v-animate="{ type: 'reveal-button-dot', options: { delay: delay + 0.25 } }"
+					class="number-wrapper hide-mobile"
 				>
 					<span>{{ formatIndex(index + 1) }}</span>
 				</div>
@@ -69,9 +69,9 @@ defineProps<{
 					}"
 				>
 					<a
+						v-magnetic="{ strength: 0.1 }"
 						v-bind="getLinkAttributes(social.link)"
 						@click="trackNavigationClick"
-						v-magnetic="{ strength: 0.1 }"
 					>
 						<LabelShuffle :label="social.label!" no-snap />
 					</a>
@@ -85,7 +85,8 @@ defineProps<{
 .partials-biography-strangers-portraits-explanation {
 	position: relative;
 	flex: 0 0 auto;
-	width: fluidSize(680px, 360px, null, desktop);
+	width: min(#{fluidSize(680px, 360px, null, desktop)}, calc(100vw - (var(--gutter) * 2)));
+	container-type: size;
 	overflow: hidden;
 	border: 1px solid rgba($eerieBlack, 0.1);
 
@@ -164,6 +165,39 @@ defineProps<{
 
 	& > p {
 		@include roobert-18;
+	}
+}
+
+// Short cards (small screens) : the texts use the whole width of the card, then get smaller, so they always fit :
+@container (max-height: 560px) {
+	.content-container {
+		max-width: none;
+	}
+}
+
+@container (max-height: 480px) or ((max-width: 400px) and (max-height: 560px)) {
+	.inner-container {
+		gap: 12px;
+	}
+
+	.number-wrapper {
+		display: none;
+	}
+
+	.content-container {
+		:deep(.partials-rich-text) {
+			margin-block-end: 12px;
+			font-size: clamp(22px, min(6.5cqh, 9cqw), 32px);
+
+			em {
+				font-size: inherit;
+			}
+		}
+
+		& > p {
+			font-size: clamp(12.5px, min(3.3cqh, 4.4cqw), 16px);
+			line-height: 1.3;
+		}
 	}
 }
 

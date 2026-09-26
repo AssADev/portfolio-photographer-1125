@@ -1,10 +1,14 @@
 <script>
-	import { isWebView } from '#utils/iosWebViewDetector.ts';
+	import { ScrollTrigger } from 'gsap/ScrollTrigger';
 	import { type TransitionBeforeSwapEvent, swapFunctions } from 'astro:transitions/client';
+
+	import { isWebView } from '#utils/iosWebViewDetector.ts';
 
 	/* ----- Keyboard focus ----- */
 	document.addEventListener('keydown', (e) => {
-		if (e.key === 'Tab') document.body.classList.add('keyboard-focus');
+		if (e.key !== 'Tab' || document.body.classList.contains('keyboard-focus')) return;
+
+		document.body.classList.add('keyboard-focus');
 		document.addEventListener('mousemove', () => document.body.classList.remove('keyboard-focus'), {
 			once: true
 		});
@@ -42,6 +46,14 @@
 
 		const oldApp = document.body.querySelector('#app')!;
 		const newApp = doc.body.querySelector('#app')!;
+
+		// Astro islands inside #app aren't unmounted by the swap (their DOM node is simply
+		// discarded), so any ScrollTrigger they created is never killed. Left alone, these stale
+		// triggers can pile up across navigations and corrupt GSAP's internal ScrollTrigger
+		// bookkeeping, making ScrollTrigger.create() throw on the new page :
+		ScrollTrigger.getAll().forEach((st) => {
+			if (st.trigger && oldApp.contains(st.trigger)) st.kill();
+		});
 
 		oldApp.replaceWith(newApp);
 

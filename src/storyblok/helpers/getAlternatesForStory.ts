@@ -1,33 +1,34 @@
 import type { ISbStoryData } from '@storyblok/astro';
-import { join } from 'node:path';
 
 import locales from '#utils/locales.json';
-import localesRegions from '#utils/localesRegions.ts';
 
-import { HOME_SLUG } from '#storyblok/helpers/specialSlugs';
+import type { LanguageAlternate } from '#types/seo.ts';
 
-export default function (base: string, story: Partial<ISbStoryData>, currentLocale: string) {
-	const localizedSlugs: { hrefLang: string; href: URL | string }[] = [];
-	const normalizedSlug =
-		story.full_slug
-			?.replace(/^\//, '')
-			.replace(new RegExp(`^${currentLocale}\/?`), '')
-			.replace(HOME_SLUG, '') || '';
+import { removeHomeSlug } from '#storyblok/helpers/specialSlugs';
 
-	for (const locale of locales) {
-		if (locale === currentLocale) continue;
+/**
+ * Build the absolute URL of a slug in a given locale (the default locale isn't prefixed, no trailing slash) :
+ */
+export const getLocalizedUrl = (base: string | URL, locale: string, slug: string) => {
+	const path = [locale === locales[0] ? '' : locale, slug].filter(Boolean).join('/');
+	return new URL(path, base).toString();
+};
 
-		// If target locale is default, do not prefix with locale :
-		const href =
-			locale === locales[0]
-				? new URL(normalizedSlug, base).toString()
-				: new URL(join(locale, normalizedSlug), base).toString();
+/**
+ * Get the URLs of a story in every locale, for the `hreflang` tags (the current locale included, as required by
+ * Google) and the language switcher. The `x-default` version is the default locale.
+ */
+export default function (base: string, story: Partial<ISbStoryData>, currentLocale: string): LanguageAlternate[] {
+	const normalizedSlug = removeHomeSlug(
+		(story.full_slug ?? '').replace(/^\/*|\/*$/g, '').replace(new RegExp(`^${currentLocale}(/|$)`), '')
+	);
 
-		localizedSlugs.push({
-			hrefLang: localesRegions[locale],
-			href
-		});
-	}
+	const alternates: LanguageAlternate[] = locales.map((locale) => ({
+		hrefLang: locale,
+		href: getLocalizedUrl(base, locale, normalizedSlug)
+	}));
 
-	return localizedSlugs.filter((entry, idx, arr) => idx === arr.findIndex((e) => e.hrefLang === entry.hrefLang));
+	alternates.push({ hrefLang: 'x-default', href: getLocalizedUrl(base, locales[0], normalizedSlug) });
+
+	return alternates;
 }

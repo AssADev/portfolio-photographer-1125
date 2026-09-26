@@ -16,9 +16,10 @@ import type { StoryblokProject } from '#types/component-types-sb.js';
 import vMagnetic from '#directives/vMagnetic.ts';
 
 // Props :
-const { project, index } = defineProps<{
+const { project, index, sizes } = defineProps<{
 	project: ISbStoryData<StoryblokProject>;
 	index?: number;
+	sizes?: string;
 }>();
 
 // Computed :
@@ -71,7 +72,7 @@ const resolvers = getRichTextResolvers('span');
 						v-if="cover"
 						:src="cover"
 						object-fit="contain"
-						:sizes="[{ widescreen: '2560px' }, '100vw']"
+						:sizes="sizes || [{ widescreen: '2560px' }, '100vw']"
 					/>
 				</div>
 			</div>

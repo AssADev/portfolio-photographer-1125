@@ -22,9 +22,10 @@ if (!Astro.locals.siteConfig) {
 
 setState('language', language);
 
-Astro.response.headers.set('Cache-Control', 'max-age=300');
+// Short CDN cache, so the bots probing random URLs don't hit Storyblok each time :
+Astro.response.headers.set('Cache-Control', 'public, max-age=300, s-maxage=600');
 ---
 
-<BaseLayout language={language} story={{ name: t('pageNotFound') }}>
+<BaseLayout language={language} story={{ name: t('pageNotFound') }} noindex>
 	<ErrorLayout />
 </BaseLayout>

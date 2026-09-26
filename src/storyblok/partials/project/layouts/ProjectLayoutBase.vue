@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
+import { getGridSizes } from '#utils/image.ts';
+
 import StoryblokComponent from '#components/utils/StoryblokComponent.vue';
 
 import type { StoryblokAsset, StoryblokLabelLink, StoryblokProjectLayout } from '#types/component-types-sb.js';
@@ -41,6 +43,9 @@ const getGlobalIndex = (item: any) => {
 				:socials="socials"
 				:class="layouts[index % layouts.length]"
 				:index="getGlobalIndex(item)"
+				:sizes="
+					item.component === 'ProjectItemPicture' ? getGridSizes(layouts[index % layouts.length]) : undefined
+				"
 			/>
 		</div>
 	</div>

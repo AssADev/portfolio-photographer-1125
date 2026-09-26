@@ -1,0 +1,257 @@
+---
+import type { ISbStoryData } from '@storyblok/astro';
+import { transform as sbTransform } from 'unpic/providers/storyblok';
+
+import { business } from '#utils/business.ts';
+import locales from '#utils/locales.json';
+import { richTextToPlainText } from '#utils/richTextToPlainText.ts';
+
+import type {
+	StoryblokAsset,
+	StoryblokLabelLink,
+	StoryblokProject,
+	StoryblokProjectItemPicture,
+	StoryblokProjectLayout,
+	StoryblokService,
+	StoryblokServiceFAQSection
+} from '#types/component-types-sb.js';
+import type { PageContentTypes } from '#types/utils.ts';
+
+import { getLocalizedUrl } from '#storyblok/helpers/getAlternatesForStory.ts';
+
+/**
+ * Structured data (JSON-LD) describing the business, the photographer and the current page,
+ * so search engines can understand the site (local SEO, services & prices, FAQ, galleries, breadcrumbs).
+ * Validate with https://search.google.com/test/rich-results
+ */
+
+type Props = {
+	story?: Partial<ISbStoryData<PageContentTypes>>;
+	language: string;
+	/** Current locale with its region (e.g. `fr-FR`) : */
+	locale: string;
+};
+
+type Node = Record<string, unknown>;
+
+const { story, language, locale } = Astro.props;
+const { identity, email, socials, menuLinks, defaultDescription, defaultImage, favicon, faqSections } =
+	Astro.locals.siteConfig;
+
+const site = Astro.site ?? new URL(Astro.url.origin);
+const homeUrl = getLocalizedUrl(site, language, '');
+const pageUrl = new URL(Astro.url.pathname.replace(/\/+$/, '') || '/', site).href;
+
+// The ids are the same in every language, as they describe the same entities :
+const rootUrl = getLocalizedUrl(site, locales[0], '');
+const ids = {
+	website: `${rootUrl}#website`,
+	business: `${rootUrl}#business`,
+	person: `${rootUrl}#person`
+};
+
+// Utils :
+const isDefined = <T,>(value: T | null | undefined | ''): value is T =>
+	value !== undefined && value !== null && value !== '';
+const absoluteUrl = (path?: string) => (path ? new URL(path, site).href : undefined);
+const imageUrl = (asset?: StoryblokAsset | null, width = 1600) =>
+	asset?.filename ? (sbTransform(asset.filename, { width }) ?? asset.filename) : undefined;
+
+const getMenuLabel = (component: string) =>
+	(menuLinks as StoryblokLabelLink[] | undefined)?.find((item) => item.link?.component === component);
+
+const breadcrumb = (items: { name?: string; url?: string }[]): Node => ({
+	'@type': 'BreadcrumbList',
+	itemListElement: items
+		.filter((item) => item.name && item.url)
+		.map((item, index) => ({ '@type': 'ListItem', position: index + 1, name: item.name, item: item.url }))
+});
+
+// Common entities :
+const sameAs = [
+	...((socials as StoryblokLabelLink[] | undefined) ?? []).map((social) => social.link?.url),
+	business.googleBusinessProfile
+].filter((url): url is string => !!url && url.startsWith('http'));
+
+const areaServed = business.areaServed.map((name) => ({ '@type': 'City', name }));
+
+const graph: Node[] = [
+	{
+		'@type': 'WebSite',
+		'@id': ids.website,
+		url: homeUrl,
+		name: identity,
+		inLanguage: locale,
+		publisher: { '@id': ids.business }
+	},
+	{
+		'@type': 'ProfessionalService',
+		'@id': ids.business,
+		name: identity,
+		description: defaultDescription,
+		url: homeUrl,
+		email: email || undefined,
+		image: defaultImage?.filename ? sbTransform(defaultImage.filename, { width: 1200, height: 630 }) : undefined,
+		logo: favicon?.filename ? `${favicon.filename}/m/512x512/filters:format(png)` : undefined,
+		sameAs,
+		areaServed,
+		address: { '@type': 'PostalAddress', addressRegion: business.region, addressCountry: business.country },
+		currenciesAccepted: business.currency,
+		knowsLanguage: locales,
+		founder: { '@id': ids.person }
+	},
+	{
+		'@type': 'Person',
+		'@id': ids.person,
+		name: identity,
+		jobTitle: language === locales[0] ? 'Photographe' : 'Photographer',
+		url: homeUrl,
+		email: email || undefined,
+		sameAs,
+		worksFor: { '@id': ids.business }
+	}
+];
+
+// Page specific entities :
+const content = story?.content;
+const homeItem = { name: getMenuLabel('Home')?.label || identity, url: homeUrl };
+
+if (content?.component === 'Service') {
+	const service = content as StoryblokService;
+	const informations = service.informations?.[0];
+	const name = richTextToPlainText(informations?.name);
+	const servicesLink = getMenuLabel('Services');
+
+	graph.push({
+		'@type': 'Service',
+		'@id': `${pageUrl}#service`,
+		name,
+		serviceType: name,
+		description: informations?.summary,
+		url: pageUrl,
+		image: imageUrl(informations?.cover),
+		provider: { '@id': ids.business },
+		areaServed,
+		offers: service.offers?.map((offer) => ({
+			'@type': 'Offer',
+			name: offer.title,
+			description: offer.description,
+			price: Number(offer.price) || undefined,
+			priceCurrency: business.currency,
+			url: pageUrl
+		}))
+	});
+
+	graph.push(
+		breadcrumb([
+			homeItem,
+			{ name: servicesLink?.label || servicesLink?.link?.name, url: absoluteUrl(servicesLink?.link?.url) },
+			{ name, url: pageUrl }
+		])
+	);
+
+	// The FAQ module displays the sections of the service and the ones of the site config :
+	if (service.moduleFAQ?.length) {
+		const sections: StoryblokServiceFAQSection[] = [
+			...(service.moduleFAQ[0].sections ?? []),
+			...((faqSections as StoryblokServiceFAQSection[] | undefined) ?? [])
+		];
+
+		const questions = sections
+			.flatMap((section) => section.questions ?? [])
+			.map((item) => ({ question: item.question, answer: richTextToPlainText(item.answer) }))
+			.filter((item) => item.question && item.answer);
+
+		if (questions.length) {
+			graph.push({
+				'@type': 'FAQPage',
+				'@id': `${pageUrl}#faq`,
+				url: pageUrl,
+				mainEntity: questions.map((item) => ({
+					'@type': 'Question',
+					name: item.question,
+					acceptedAnswer: { '@type': 'Answer', text: item.answer }
+				}))
+			});
+		}
+	}
+}
+
+if (content?.component === 'Project') {
+	const project = content as StoryblokProject;
+	const informations = project.informations?.[0];
+	const name = richTextToPlainText(informations?.name);
+	const service = informations?.service?.find(
+		(item): item is ISbStoryData<StoryblokService> => typeof item !== 'string'
+	);
+	const serviceName = richTextToPlainText(service?.content?.informations?.[0]?.name);
+
+	const pictures = (project.body ?? [])
+		.filter((item): item is StoryblokProjectLayout => item.component === 'ProjectLayout')
+		.flatMap((layout) => layout.items ?? [])
+		.filter((item): item is StoryblokProjectItemPicture => item.component === 'ProjectItemPicture')
+		.map((item) => item.picture)
+		.filter((picture) => picture?.filename);
+
+	graph.push({
+		'@type': 'ImageGallery',
+		'@id': `${pageUrl}#gallery`,
+		name,
+		url: pageUrl,
+		inLanguage: locale,
+		dateCreated: informations?.date?.split(' ')[0] || undefined,
+		contentLocation: informations?.location ? { '@type': 'Place', name: informations.location } : undefined,
+		about: serviceName || undefined,
+		creator: { '@id': ids.person },
+		image: pictures.slice(0, 30).map((picture) => ({
+			'@type': 'ImageObject',
+			contentUrl: imageUrl(picture, 2048),
+			caption: picture.alt || undefined,
+			creator: { '@id': ids.person },
+			creditText: identity,
+			copyrightNotice: `© ${identity}`
+		}))
+	});
+
+	graph.push(
+		breadcrumb([homeItem, { name: serviceName, url: absoluteUrl(service?.full_slug) }, { name, url: pageUrl }])
+	);
+}
+
+if (content?.component === 'Biography') {
+	graph.push({
+		'@type': 'AboutPage',
+		'@id': `${pageUrl}#page`,
+		url: pageUrl,
+		inLanguage: locale,
+		mainEntity: { '@id': ids.person }
+	});
+}
+
+if (content?.component === 'Services') {
+	const servicesLink = getMenuLabel('Services');
+	graph.push(breadcrumb([homeItem, { name: servicesLink?.label || servicesLink?.link?.name, url: pageUrl }]));
+}
+
+// Remove the empty values to keep the output light :
+const clean = (value: unknown): unknown => {
+	if (Array.isArray(value)) {
+		const items = value.map(clean).filter(isDefined);
+		return items.length ? items : undefined;
+	}
+
+	if (value && typeof value === 'object') {
+		const entries = Object.entries(value)
+			.map(([key, item]) => [key, clean(item)] as const)
+			.filter(([, item]) => isDefined(item));
+		return entries.length ? Object.fromEntries(entries) : undefined;
+	}
+
+	return value;
+};
+
+// Escape `<` so the content can't close the script tag :
+const json = JSON.stringify(clean({ '@context': 'https://schema.org', '@graph': graph })).replace(/</g, '\\u003c');
+---
+
+<script is:inline type="application/ld+json" set:html={json} />

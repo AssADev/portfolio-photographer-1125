@@ -463,26 +463,23 @@ onUnmounted(() => {
 
 		@include mq($until: desktop) {
 			margin-block-end: fluidSize(48px, 24px, null, desktop);
+
+			// One line per paragraph on mobile :
+			& > span {
+				display: block;
+			}
 		}
 
 		@include mq(desktop) {
 			white-space: nowrap;
 			display: inline-block;
 			margin-block-end: fluidSize(60px, 42px, null, widescreen);
-
-			p {
-				display: inline;
-			}
 		}
 
 		em {
 			@include romie(500, none, -0.02em);
 
 			font-style: italic;
-		}
-
-		p {
-			margin: 0;
 		}
 
 		.char-mask {

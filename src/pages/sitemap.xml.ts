@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { EnumChangefreq, type SitemapItemLoose, SitemapStream, streamToPromise } from 'sitemap';
+import { type SitemapItemLoose, SitemapStream, streamToPromise } from 'sitemap';
 
 import { getSitemapEntries } from '#storyblok/helpers/getStoryblokLinks.ts';
 
@@ -7,26 +7,20 @@ import { handleUnexpectedError } from './api/_utils';
 
 export const GET: APIRoute = async ({ request, site }) => {
 	try {
-		const stream = new SitemapStream({ hostname: site?.toString() });
+		const stream = new SitemapStream({
+			hostname: site?.toString(),
+			xmlns: { news: false, video: false, xhtml: true, image: true }
+		});
 		const sitemapPromise = streamToPromise(stream);
-		const responseHeaders = new Headers({ 'Content-Type': 'application/xml' });
 
 		const sitemapEntries = await getSitemapEntries();
 
 		for (const entry of sitemapEntries) {
-			if (entry.url === 'links' || entry.url.endsWith('/links')) continue;
-
-			const isHome = entry.url === '/' || entry.url === '';
-			const isService = entry.url.includes('services');
-			const isProject = entry.url.includes('projects');
-
 			const item: SitemapItemLoose = {
 				url: entry.url,
 				links: entry.links,
 				img: entry.images ?? [],
-				lastmod: entry.lastmod ?? new Date().toISOString(),
-				changefreq: isProject ? EnumChangefreq.YEARLY : EnumChangefreq.MONTHLY,
-				priority: isHome ? 1.0 : isService ? 0.9 : isProject ? 0.7 : 0.8
+				lastmod: entry.lastmod
 			};
 
 			stream.write(item);
@@ -34,7 +28,13 @@ export const GET: APIRoute = async ({ request, site }) => {
 
 		stream.end();
 		const sitemap = await sitemapPromise;
-		return new Response(sitemap.toString(), { headers: responseHeaders });
+
+		return new Response(sitemap.toString(), {
+			headers: {
+				'Content-Type': 'application/xml; charset=utf-8',
+				'Cache-Control': 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800'
+			}
+		});
 	} catch (error) {
 		return handleUnexpectedError(request, error);
 	}

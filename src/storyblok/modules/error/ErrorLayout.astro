@@ -1,6 +1,7 @@
 ---
 import ErrorLayoutVue from '#storyblok/modules/error/ErrorLayout.vue';
 import { getProjects } from '#storyblok/helpers/getProjects.ts';
+import { slimRelations, slimStory } from '#storyblok/helpers/slimStory.ts';
 
 import locales from '#utils/locales.json';
 import parseUrl from '#utils/parseUrl.ts';
@@ -15,8 +16,8 @@ const { projects } = await getProjects(language, Astro.locals.isPreviewMode);
 <ErrorLayoutVue
 	{...Astro.props}
 	errorTitle={errorTitle}
-	errorLink={errorLink}
+	errorLink={slimRelations(errorLink)}
 	errorDescription={errorDescription}
-	projects={projects}
+	projects={projects.map(slimStory)}
 	client:visible
 />

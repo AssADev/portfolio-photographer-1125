@@ -24,6 +24,12 @@ uniform float uZoom;
 uniform vec3 uColor1;
 uniform vec3 uColor2;
 uniform vec3 uColor3;
+uniform vec2 uMouse;
+uniform vec2 uMouseVelocity;
+uniform float uMouseInfluence;
+uniform float uMouseRadius;
+uniform float uMouseStrength;
+uniform float uColorIntensity;
 
 out vec4 fragColor;
 
@@ -64,6 +70,34 @@ void mainImage(out vec4 o, vec2 C) {
   float warpTime = t * uWarpSpeed;
   tuv.x += sin(tuv.y * frequency + warpTime) / amplitude;
   tuv.y += sin(tuv.x * (frequency * 1.5) + warpTime) / (amplitude * 0.5);
+  // A slower, wider secondary wave keeps the base motion feeling like a liquid swell rather than a fixed ripple :
+  tuv.x += sin(tuv.y * frequency * 0.35 - warpTime * 0.6) / (amplitude * 2.2);
+  tuv.y += sin(tuv.x * frequency * 0.4 + warpTime * 0.5) / (amplitude * 2.2);
+
+  // Cursor interaction (desktop only, uMouseInfluence stays 0 elsewhere) : the sand is dragged along the
+  // pointer's motion and curls slightly around it, then relaxes back to rest as soon as it stops moving :
+  vec2 suv = uv - 0.5;
+  suv.y /= ratio;
+  vec2 mouseP = uMouse - 0.5;
+  mouseP.y /= ratio;
+  float mouseDist = length(suv - mouseP);
+  float mouseRadius = max(uMouseRadius, 0.001);
+  // smoothstep(edge0, edge1, x) is only defined for edge0 < edge1, so the falloff is built the
+  // right way round (0 -> 1 going outward) and then inverted, instead of swapping the arguments :
+  float mouseFalloff = (1.0 - S(0.0, mouseRadius, mouseDist)) * uMouseInfluence;
+
+  // The raw per-frame velocity is clamped first so a sudden pointer jump (window re-entry, a fast
+  // flick) can't spike the displacement before it even reaches the falloff/strength scaling :
+  vec2 vel = clamp(uMouseVelocity, vec2(-0.05), vec2(0.05));
+  float mouseSpeed = length(vel);
+  vec2 mouseDir = mouseSpeed > 0.00001 ? vel / mouseSpeed : vec2(0.0);
+  vec2 mouseCurl = vec2(-mouseDir.y, mouseDir.x) * mouseSpeed;
+  vec2 mouseDisplace = (vel * 4.0 + mouseCurl * 2.2) * mouseFalloff * uMouseStrength;
+  // Kept close to the order of magnitude of the ambient warp above, so it reads as an extra ripple :
+  float dispLen = length(mouseDisplace);
+  float maxDisp = 0.15;
+  if (dispLen > maxDisp) mouseDisplace *= maxDisp / dispLen;
+  tuv += mouseDisplace / max(uZoom, 0.001);
 
   vec3 colLav = uColor1;
   vec3 colOrg = uColor2;
@@ -79,6 +113,10 @@ void mainImage(out vec4 o, vec2 C) {
   vec3 layer1 = mix(colDark, colOrg, S(edge0, edge1, blendX));
   vec3 layer2 = mix(colOrg, colLav, S(edge0, edge1, blendX));
   vec3 col = mix(layer1, layer2, S(v0, v1, tuv.y));
+
+  // Intensity variation : patches of the gradient catch more or less "light", like grains of sand :
+  float intensityNoise = noise(tuv * 1.4 - t * 0.12);
+  col *= 1.0 + (intensityNoise - 0.5) * uColorIntensity;
 
   vec2 grainUv = uv * max(uGrainScale, 0.001);
   if (uGrainAnimated > 0.5) {

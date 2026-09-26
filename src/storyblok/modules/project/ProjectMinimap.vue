@@ -7,7 +7,7 @@ import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch 
 
 import { animations } from '#utils/Animations.ts';
 import { breakPointsNoUnits } from '#utils/breakpoints.ts';
-import { parseImageData, transform } from '#utils/image.ts';
+import { getAspectRatio, parseImageData, transform } from '#utils/image.ts';
 import { sleep } from '#utils/sleep.ts';
 
 import Slideshow from '#components/partials/Slideshow.vue';
@@ -36,6 +36,9 @@ const zoomContainer = useTemplateRef('zoomContainer');
 const isOpening = ref(false);
 const isClosing = ref(false);
 const isVisible = ref(false);
+
+// The pictures are only loaded once the minimap has been opened :
+const hasBeenOpened = ref(false);
 const currentSlide = ref(0);
 const isDarkTheme = ref(false);
 const currentPictureZoom = ref(1);
@@ -78,13 +81,15 @@ const onWheel = (e: WheelEvent) => {
 const onKeyDown = (e: KeyboardEvent) => {
 	if (!isVisible.value) return;
 
-	e.preventDefault();
-
+	// Only prevent the keys we handle (keep Tab, browser shortcuts...) :
 	if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+		e.preventDefault();
 		goToPrev();
 	} else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+		e.preventDefault();
 		goToNext();
 	} else if (e.key === 'Escape') {
+		e.preventDefault();
 		onClose();
 	}
 };
@@ -107,6 +112,17 @@ const animateFlipOpen = async (clickedElement: HTMLElement) => {
 	viewerWrapperRef.value.style.opacity = '1';
 	viewerWrapperRef.value.style.display = 'flex';
 	viewerWrapperRef.value.appendChild(clickedElement);
+
+	// The clicked picture can still be loading (it's lazy-loaded in the grid). Its wrapper has no
+	// explicit width, so its size in the viewer is derived from the image's own intrinsic size; if
+	// it isn't loaded yet, Flip reads a collapsed width and the scale animation breaks :
+	const clickedImg = clickedElement.querySelector('img');
+	if (clickedImg && !clickedImg.complete) {
+		await new Promise<void>((resolve) => {
+			clickedImg.addEventListener('load', () => resolve(), { once: true });
+			clickedImg.addEventListener('error', () => resolve(), { once: true });
+		});
+	}
 
 	return new Promise<void>((resolve) => {
 		Flip.from(state, {
@@ -238,6 +254,7 @@ watch(
 		if (isOpen) {
 			const { clickedElement, currentIndex } = projectMinimapStore.value;
 
+			hasBeenOpened.value = true;
 			viewerWrapperRef.value!.style.display = 'flex';
 
 			await nextTick();
@@ -370,8 +387,8 @@ onUnmounted(() => {
 			ref="themeCtaRef"
 			class="theme-cta"
 			:class="{ 'is-dark': isDarkTheme }"
-			@click="onToggleDarkTheme"
 			:aria-label="$t(isDarkTheme ? 'switchToLightTheme' : 'switchToDarkTheme')"
+			@click="onToggleDarkTheme"
 		>
 			<div class="icon-wrapper">
 				<Icon name="moon" />
@@ -384,9 +401,9 @@ onUnmounted(() => {
 			<div
 				class="picture-viewer-container col-start-dk-10 col-end-dk-24 col-start-mlg-9 col-end-mlg-25 col-start-xlg-8 col-end-xlg-26"
 			>
-				<div class="picture-inner-wrapper" ref="viewerWrapperRef">
+				<div ref="viewerWrapperRef" class="picture-inner-wrapper">
 					<div
-						v-if="!isOpening"
+						v-if="!isOpening && hasBeenOpened"
 						class="picture-wrapper"
 						:class="{ 'is-smooth': isZoomSmooth }"
 						:style="{ transform: `scale3d(${currentPictureZoom}, ${currentPictureZoom}, 1)` }"
@@ -405,14 +422,20 @@ onUnmounted(() => {
 				:is-hidden="isSlideshowHidden"
 			>
 				<Button
-					class="picture-wrapper"
 					v-for="(picture, index) in pictures"
 					:key="index"
+					class="picture-wrapper"
 					:data-cursor-label="$t('visualize')"
-					@click="goToSlide(index)"
 					:class="{ 'is-current': index === currentSlide }"
+					:style="{ aspectRatio: getAspectRatio(picture) }"
+					@click="goToSlide(index)"
 				>
-					<Image :src="picture" object-fit="contain" />
+					<Image
+						v-if="hasBeenOpened"
+						:src="picture"
+						object-fit="contain"
+						:sizes="[{ desktop: '10vw' }, '150px']"
+					/>
 				</Button>
 			</Slideshow>
 		</div>
@@ -422,19 +445,19 @@ onUnmounted(() => {
 				<Button
 					v-for="value in [0.5, 1, 1.5, 2]"
 					:key="value"
-					@click="onHandlePictureZoom(value)"
 					:class="{ 'is-active': currentPictureZoom === value }"
 					:aria-label="`${$t('zoom')} x${value}`"
+					@click="onHandlePictureZoom(value)"
 				>
 					<Icon name="square-small" />
 				</Button>
 			</div>
 			<div class="range-wrapper">
 				<input
+					v-model.number="currentPictureZoom"
 					type="range"
 					min="0.5"
 					max="2.0"
-					v-model.number="currentPictureZoom"
 					step="0.001"
 					@pointerdown="isZoomSmooth = false"
 				/>
@@ -586,6 +609,7 @@ onUnmounted(() => {
 		display: none;
 		align-items: center;
 		justify-content: center;
+		width: 100%;
 		height: 100%;
 	}
 

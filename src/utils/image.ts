@@ -99,8 +99,66 @@ export function parseSizesFromBreakpoints(sizes: ImgSize) {
 }
 
 export function parseDimensionsFromUrl(url: string) {
-	const [width, height] = url.split('/')[5].split('x');
+	const [width, height] = (url.split('/')[5] ?? '').split('x');
 	return { width: Number(width), height: Number(height) };
+}
+
+// Grid configuration (see `src/styles/tools/_grid.scss`) :
+const GRID_BREAKPOINTS = [
+	{ key: '', minWidth: 0, columns: 12 },
+	{ key: 'tb', minWidth: 768, columns: 16 },
+	{ key: 'dk', minWidth: 1024, columns: 32 },
+	{ key: 'mlg', minWidth: 1280, columns: 32 },
+	{ key: 'lg', minWidth: 1440, columns: 32 },
+	{ key: 'xlg', minWidth: 1680, columns: 32 },
+	{ key: 'xxlg', minWidth: 1920, columns: 32 },
+	{ key: 'wd', minWidth: 2560, columns: 32 }
+];
+
+const GRID_MAX_WIDTH = 2560;
+
+/**
+ * Build the `sizes` attribute of an image from the grid classes of its container
+ * (e.g. `col-start-1 col-end-13 col-start-dk-3 col-end-dk-16`), so the browser doesn't load
+ * a full width image for an element which only takes a part of the screen.
+ */
+export function getGridSizes(classes: string | string[] = []) {
+	const list = Array.isArray(classes) ? classes : classes.split(/\s+/);
+	const sizes: string[] = [];
+
+	let start = 1;
+	let end: number | undefined;
+	let span: number | undefined;
+
+	for (const { key, minWidth, columns } of GRID_BREAKPOINTS) {
+		const infix = key ? `-${key}` : '';
+		const find = (prefix: string) => {
+			const match = list.map((c) => c.match(new RegExp(`^${prefix}${infix}-(\\d+)$`))).find(Boolean);
+			return match ? Number(match[1]) : undefined;
+		};
+
+		// Values cascade from the smaller breakpoints (like the CSS classes) :
+		start = find('col-start') ?? start;
+		end = find('col-end') ?? end;
+		span = find('col') ?? span;
+
+		const columnsCount = Math.min(columns, span ?? (end ? end - start : columns));
+		const ratio = Math.max(0, Math.min(1, columnsCount / columns));
+
+		sizes.unshift(
+			minWidth >= GRID_MAX_WIDTH
+				? `(min-width: ${minWidth}px) ${Math.ceil(ratio * GRID_MAX_WIDTH)}px`
+				: `${minWidth ? `(min-width: ${minWidth}px) ` : ''}${Math.ceil(ratio * 100)}vw`
+		);
+	}
+
+	// Remove the consecutive duplicates (the smaller breakpoint is enough) :
+	return sizes
+		.filter(
+			(size, index) =>
+				size.replace(/^\(min-width: \d+px\) /, '') !== sizes[index + 1]?.replace(/^\(min-width: \d+px\) /, '')
+		)
+		.join(', ');
 }
 
 // We need to override the transform function to add the height so that Storyblok can

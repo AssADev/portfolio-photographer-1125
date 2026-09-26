@@ -58,6 +58,8 @@ let isHovering = false;
 let hasMouseMoved = false;
 let isWindowFocused = true;
 let currentElement: Element | null = null;
+let needsHoverUpdate = true;
+let lastScrollY = NaN;
 
 // Methods :
 const updateHoverState = () => {
@@ -68,6 +70,7 @@ const updateHoverState = () => {
 const handleMouseMove = (e: MouseEvent) => {
 	mouse.x = e.clientX;
 	mouse.y = e.clientY;
+	needsHoverUpdate = true;
 
 	if (!hasMouseMoved) hasMouseMoved = true;
 };
@@ -136,10 +139,19 @@ const spawnItem = (images: StoryblokAsset[]) => {
 };
 
 const tick = () => {
-	if (spawnerEl.value) gsap.set(spawnerEl.value, { y: -window.scrollY });
+	const scrollY = window.scrollY;
 
-	// Update hover state even if mouse hasn't moved
-	updateHoverState();
+	if (scrollY !== lastScrollY) {
+		if (spawnerEl.value) gsap.set(spawnerEl.value, { y: -scrollY });
+		lastScrollY = scrollY;
+		needsHoverUpdate = true;
+	}
+
+	// The hit test is only needed when the mouse or the page moved (even if the mouse hasn't moved) :
+	if (needsHoverUpdate) {
+		updateHoverState();
+		needsHoverUpdate = false;
+	}
 
 	if (
 		!isWindowFocused ||

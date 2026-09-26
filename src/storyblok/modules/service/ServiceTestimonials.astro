@@ -1,4 +1,5 @@
 ---
+import { slimRelations } from '#storyblok/helpers/slimStory.ts';
 import { storyblokEditable } from '#storyblok/helpers/storyblokEditable.ts';
 import ServiceTestimonialsVue from '#storyblok/modules/service/ServiceTestimonials.vue';
 import type { StoryblokServiceTestimonials } from '#types/component-types-sb.js';
@@ -14,8 +15,9 @@ const { serviceTestimonialsTitle, serviceTestimonialsDescription, serviceTestimo
 <ServiceTestimonialsVue
 	{...storyblokEditable(blok, Astro.locals.isPreviewMode)}
 	{...Astro.props}
+	blok={slimRelations(blok)}
 	title={serviceTestimonialsTitle}
 	description={serviceTestimonialsDescription}
-	link={serviceTestimonialsLink}
+	link={slimRelations(serviceTestimonialsLink)}
 	client:visible
 />

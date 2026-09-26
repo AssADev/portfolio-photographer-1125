@@ -18,6 +18,9 @@ export type OpenGraphBasicTagsType = {
 	title: string;
 	type?: string;
 	image?: string | null;
+	imageWidth?: number;
+	imageHeight?: number;
+	imageAlt?: string;
 	url?: URL | string;
 };
 

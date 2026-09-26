@@ -31,6 +31,9 @@ interface GrainientProps {
 	color2?: string;
 	color3?: string;
 	className?: string;
+	mouseRadius?: number;
+	mouseStrength?: number;
+	colorIntensity?: number;
 }
 
 // Refs :
@@ -57,15 +60,46 @@ const props = withDefaults(defineProps<GrainientProps>(), {
 	color1: colors.dust,
 	color2: colors.white,
 	color3: colors.dust,
-	className: ''
+	className: '',
+	mouseRadius: 0.4,
+	mouseStrength: 1.0,
+	colorIntensity: 0.4
 });
 
 const canvasRef = ref<HTMLCanvasElement | null>(null);
+
+// The gradient moves very slowly, so 30fps is enough (it halves the GPU usage, or more on 120Hz screens) :
+const FRAME_INTERVAL = 1000 / 30;
 
 let raf = 0;
 let gl: any;
 let renderer: Renderer;
 let program: Program;
+let lastWidth = 0;
+let lastHeight = 0;
+let resizeTimeout: ReturnType<typeof setTimeout> | undefined;
+
+// Cursor interaction (desktop only) : the target is set on pointer events, then eased every frame
+// so the sand drags and settles smoothly instead of snapping to the cursor :
+const MOUSE_EASE = 0.08;
+const INFLUENCE_EASE = 0.06;
+let isDesktopPointer = false;
+const mouseTarget = { x: 0.5, y: 0.5 };
+const mouseSmooth = { x: 0.5, y: 0.5 };
+const mousePrevSmooth = { x: 0.5, y: 0.5 };
+let mouseInfluence = 0;
+let mouseInfluenceTarget = 0;
+
+const onPointerMove = (e: PointerEvent) => {
+	if (e.pointerType !== 'mouse') return;
+	mouseTarget.x = e.clientX / window.innerWidth;
+	mouseTarget.y = 1.0 - e.clientY / window.innerHeight;
+	mouseInfluenceTarget = 1;
+};
+
+const onPointerLeave = () => {
+	mouseInfluenceTarget = 0;
+};
 
 // Methods :
 const hexToRgb = (hex: string): [number, number, number] => {
@@ -75,18 +109,36 @@ const hexToRgb = (hex: string): [number, number, number] => {
 };
 
 const setSize = () => {
-	if (!canvasRef.value || !renderer) return;
+	const canvas = canvasRef.value;
+	if (!canvas || !renderer) return;
 
-	const width = window.innerWidth;
-	const height = window.innerHeight;
+	// The canvas is sized in CSS (it covers the largest viewport), its resolution follows its size :
+	canvas.style.removeProperty('width');
+	canvas.style.removeProperty('height');
 
-	renderer.setSize(width, height);
+	lastWidth = window.innerWidth;
+	lastHeight = window.innerHeight;
+
+	renderer.setSize(canvas.clientWidth || lastWidth, canvas.clientHeight || lastHeight);
+
+	canvas.style.removeProperty('width');
+	canvas.style.removeProperty('height');
 
 	if (program) {
 		const res = (program.uniforms.iResolution as { value: Float32Array }).value;
 		res[0] = gl.drawingBufferWidth;
 		res[1] = gl.drawingBufferHeight;
 	}
+};
+
+const onResize = () => {
+	// On mobile, the address bar changes the height while scrolling : resizing the canvas would clear it (flickering)
+	// and cost a lot, so only the width changes (e.g. rotation) and the big height changes are handled :
+	const heightDelta = Math.abs(window.innerHeight - lastHeight) / (lastHeight || 1);
+	if (window.innerWidth === lastWidth && heightDelta < 0.25) return;
+
+	clearTimeout(resizeTimeout);
+	resizeTimeout = setTimeout(setSize, 150);
 };
 
 // Attach & Detach :
@@ -130,27 +182,77 @@ onMounted(() => {
 			uZoom: { value: props.zoom },
 			uColor1: { value: new Float32Array(hexToRgb(props.color1)) },
 			uColor2: { value: new Float32Array(hexToRgb(props.color2)) },
-			uColor3: { value: new Float32Array(hexToRgb(props.color3)) }
+			uColor3: { value: new Float32Array(hexToRgb(props.color3)) },
+			uMouse: { value: new Float32Array([0.5, 0.5]) },
+			uMouseVelocity: { value: new Float32Array([0, 0]) },
+			uMouseInfluence: { value: 0 },
+			uMouseRadius: { value: props.mouseRadius },
+			uMouseStrength: { value: props.mouseStrength },
+			uColorIntensity: { value: props.colorIntensity }
 		}
 	});
 
 	const mesh = new Mesh(gl, { geometry, program });
 
-	window.addEventListener('resize', setSize);
+	window.addEventListener('resize', onResize);
 	setSize();
 
-	const t0 = performance.now();
-	const loop = (t: number) => {
-		(program.uniforms.iTime as { value: number }).value = (t - t0) * 0.001;
+	// The pointer can be tracked fluidly only on devices with a real mouse (no touch, no hover-less trackpads) :
+	isDesktopPointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+	if (isDesktopPointer) {
+		window.addEventListener('pointermove', onPointerMove, { passive: true });
+		window.addEventListener('pointerleave', onPointerLeave);
+		window.addEventListener('blur', onPointerLeave);
+	}
+
+	// Reduced motion : a single (static) frame is rendered :
+	if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
 		renderer.render({ scene: mesh });
+		return;
+	}
+
+	const t0 = performance.now();
+	let lastRender = -Infinity;
+
+	const loop = (t: number) => {
 		raf = requestAnimationFrame(loop);
+
+		if (t - lastRender < FRAME_INTERVAL) return;
+		lastRender = t;
+
+		(program.uniforms.iTime as { value: number }).value = (t - t0) * 0.001;
+
+		if (isDesktopPointer) {
+			mouseSmooth.x += (mouseTarget.x - mouseSmooth.x) * MOUSE_EASE;
+			mouseSmooth.y += (mouseTarget.y - mouseSmooth.y) * MOUSE_EASE;
+			mouseInfluence += (mouseInfluenceTarget - mouseInfluence) * INFLUENCE_EASE;
+
+			const mouse = (program.uniforms.uMouse as { value: Float32Array }).value;
+			mouse[0] = mouseSmooth.x;
+			mouse[1] = mouseSmooth.y;
+
+			const velocity = (program.uniforms.uMouseVelocity as { value: Float32Array }).value;
+			velocity[0] = mouseSmooth.x - mousePrevSmooth.x;
+			velocity[1] = mouseSmooth.y - mousePrevSmooth.y;
+			mousePrevSmooth.x = mouseSmooth.x;
+			mousePrevSmooth.y = mouseSmooth.y;
+
+			(program.uniforms.uMouseInfluence as { value: number }).value = mouseInfluence;
+		}
+
+		renderer.render({ scene: mesh });
 	};
 	raf = requestAnimationFrame(loop);
 });
 
 onBeforeUnmount(() => {
 	cancelAnimationFrame(raf);
-	window.removeEventListener('resize', setSize);
+	clearTimeout(resizeTimeout);
+	window.removeEventListener('resize', onResize);
+	window.removeEventListener('pointermove', onPointerMove);
+	window.removeEventListener('pointerleave', onPointerLeave);
+	window.removeEventListener('blur', onPointerLeave);
+	gl?.getExtension('WEBGL_lose_context')?.loseContext();
 });
 </script>
 
@@ -160,9 +262,13 @@ onBeforeUnmount(() => {
 
 <style lang="scss" scoped>
 .grainient-canvas {
+	@include lvh(100);
+
 	position: fixed;
-	inset: 0;
+	top: 0;
+	left: 0;
 	z-index: -1;
+	width: 100%;
 	pointer-events: none;
 }
 </style>

@@ -23,7 +23,8 @@ export async function getProjects(language = locales[0], isPreviewMode: boolean,
 		language,
 		version: isPreviewMode ? 'draft' : 'published',
 		content_type: 'Project',
-		resolve_relations: resolvedRelations
+		resolve_relations: resolvedRelations,
+		per_page: 100
 	};
 
 	try {

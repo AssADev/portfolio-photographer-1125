@@ -30,7 +30,7 @@ watch(isToggled, () => {
 <template>
 	<div class="partials-service-faq-section-item" :class="{ toggle: isToggled }">
 		<hr v-animate="'scale-from-left'" />
-		<Button class="question-header" @click="isToggled = !isToggled">
+		<Button class="question-header" :aria-expanded="isToggled" @click="isToggled = !isToggled">
 			<p v-animate="{ type: 'reveal-paragraphs', options: { delay: 0.1 } }">{{ blok.question }}</p>
 			<IconPlusMinus
 				v-animate="{ type: 'scale-up', options: { delay: 0.275, rotate: -90, reset: true } }"

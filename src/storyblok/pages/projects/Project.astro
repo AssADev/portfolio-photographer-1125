@@ -38,7 +38,7 @@ const marqueeBlok = {
 ---
 
 {
-	blok.informations?.length && (
+	!!blok.informations?.length && (
 		<ProjectHero
 			blok={blok.informations[0] as StoryblokProjectInformations}
 			pictures={pictures.map((p) => p.filename).filter((f): f is string => !!f)}
@@ -70,7 +70,7 @@ const marqueeBlok = {
 	/>
 </div>
 
-{pictures.length && <ProjectMinimap pictures={pictures} />}
+{pictures.length > 0 && <ProjectMinimap pictures={pictures} />}
 
 <style lang="scss" scoped>
 	.modules-container {

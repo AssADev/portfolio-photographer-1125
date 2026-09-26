@@ -1,4 +1,5 @@
 ---
+import { slimRelations } from '#storyblok/helpers/slimStory.ts';
 import ServiceOffersVue from '#storyblok/modules/service/ServiceOffers.vue';
 import type { StoryblokServiceOffer } from '#types/component-types-sb.js';
 
@@ -14,6 +15,6 @@ const { serviceOffersTitle, serviceOffersDescription, serviceBookingFormLink } =
 	offers={offers}
 	title={serviceOffersTitle}
 	description={serviceOffersDescription}
-	serviceBookingFormLink={serviceBookingFormLink}
+	serviceBookingFormLink={slimRelations(serviceBookingFormLink)}
 	client:visible
 />

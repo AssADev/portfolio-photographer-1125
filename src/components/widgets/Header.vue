@@ -2,7 +2,7 @@
 import { useStore, useVModel } from '@nanostores/vue';
 import { useEventListener, useResizeObserver } from '@vueuse/core';
 import gsap from 'gsap';
-import { computed, provide, ref, useTemplateRef, watch, watchEffect } from 'vue';
+import { computed, onMounted, onUnmounted, provide, ref, useTemplateRef, watch, watchEffect } from 'vue';
 
 import { animations } from '#utils/Animations.ts';
 import locales from '#utils/locales.json';
@@ -45,6 +45,7 @@ const isAnimating = useVModel($global, 'isHeaderAnimating');
 const interactionsRef = useTemplateRef('interactionsRef');
 const contactLabelRef = useTemplateRef('contactLabelRef');
 const iconPlusMinusRef = useTemplateRef('iconPlusMinusRef');
+const menuIconRef = useTemplateRef('menuIconRef');
 
 const scrollHide = ref(false);
 const hidden = ref(false);
@@ -54,6 +55,11 @@ const menuRef = ref<any>(null);
 
 const initialWidth = ref(0);
 let tlHeader: gsap.core.Timeline | null = null;
+let tlMenuIconSpin: gsap.core.Timeline | null = null;
+
+// Variables :
+const MENU_ICON_SPIN_INTERVAL = 8;
+const MENU_ICON_SPIN_DURATION = 1.6;
 
 const contactActionRef = useTemplateRef('contactActionRef');
 const languagesRef = useTemplateRef('languagesRef');
@@ -228,10 +234,54 @@ const onActionEnter = (el: any, done: () => void) => {
 	}
 };
 
+// Animation (Menu CTA idle spin) :
+// While the menu is closed, the "+" icon does a half turn every 10s to invite the user to click on it.
+const startMenuIconSpin = () => {
+	if (tlMenuIconSpin || !menuIconRef.value) return;
+	if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+	tlMenuIconSpin = gsap.timeline({
+		delay: MENU_ICON_SPIN_INTERVAL,
+		repeat: -1,
+		repeatDelay: MENU_ICON_SPIN_INTERVAL - MENU_ICON_SPIN_DURATION
+	});
+
+	// The icon is symmetrical, so going back to 0deg on each repeat is invisible :
+	tlMenuIconSpin.fromTo(
+		menuIconRef.value,
+		{ rotation: 0 },
+		{ rotation: 180, duration: MENU_ICON_SPIN_DURATION, ease: 'power3.inOut' }
+	);
+};
+
+const stopMenuIconSpin = () => {
+	if (!tlMenuIconSpin) return;
+
+	tlMenuIconSpin.kill();
+	tlMenuIconSpin = null;
+
+	// If a spin is in progress, finish the half turn instead of jumping back :
+	const rotation = Number(gsap.getProperty(menuIconRef.value, 'rotation')) || 0;
+	gsap.to(menuIconRef.value, {
+		rotation: Math.ceil(rotation / 180) * 180,
+		duration: rotation % 180 ? 0.4 : 0,
+		ease: 'power2.out',
+		overwrite: true,
+		onComplete: () => {
+			gsap.set(menuIconRef.value, { rotation: 0 });
+		}
+	});
+};
+
 // Watchers :
 watchEffect(() => {
 	hidden.value = scrollHide.value;
 });
+
+watch(
+	() => !isInteractionToggled.value && globalStore.value.isSiteLoaded,
+	(canSpin) => (canSpin ? startMenuIconSpin() : stopMenuIconSpin())
+);
 
 watch(isContactToggled, (val) => {
 	if (!val) contactFormId.value = undefined;
@@ -401,6 +451,16 @@ useResizeObserver(interactionsRef, () => {
 		if (width > 0) initialWidth.value = width;
 	}
 });
+
+// Attach & Detach :
+onMounted(() => {
+	if (!isInteractionToggled.value && globalStore.value.isSiteLoaded) startMenuIconSpin();
+});
+
+onUnmounted(() => {
+	tlMenuIconSpin?.kill();
+	tlMenuIconSpin = null;
+});
 </script>
 
 <template>
@@ -411,11 +471,11 @@ useResizeObserver(interactionsRef, () => {
 	>
 		<div class="header-container">
 			<Button
+				v-animate="{ type: 'reveal-header-identity', options: { delay: 0.05 } }"
 				:to="isHome ? undefined : identityTo"
 				class="identity-cta"
-				v-animate="{ type: 'reveal-header-identity', options: { delay: 0.05 } }"
-				@click="handleIdentityAction"
 				:disabled="isAnimating || projectMinimapStore.isFlipping || isHome"
+				@click="handleIdentityAction"
 			>
 				<transition mode="out-in" :css="false" @leave="onActionLeave" @enter="onActionEnter">
 					<div :key="projectMinimapStore.isOpen ? 'back' : 'identity'" class="label-identity">
@@ -426,18 +486,22 @@ useResizeObserver(interactionsRef, () => {
 
 			<div
 				ref="interactionsRef"
+				v-animate="{ type: 'reveal-header-interactions', options: { delay: 0.6 } }"
 				class="interactions-container"
 				:class="{ 'is-contact-open': isContactToggled, 'is-menu-open': isMenuToggled }"
-				v-animate="{ type: 'reveal-header-interactions', options: { delay: 0.6 } }"
 			>
 				<div class="contact-cta-wrapper" :class="{ 'is-disabled': isMenuToggled }">
 					<Button
 						class="contact-trigger"
 						:disabled="isMenuToggled"
-						@click="handleContactAction"
 						:aria-label="
-							!isContactToggled ? $t('contactLabel') : isContactFormActive ? $t('backToChoices') : $t('close')
+							!isContactToggled
+								? $t('contactLabel')
+								: isContactFormActive
+									? $t('backToChoices')
+									: $t('close')
 						"
+						@click="handleContactAction"
 					></Button>
 					<span ref="contactLabelRef" class="label-contact">{{ $t('contactLabel') }}</span>
 					<div ref="languagesRef" class="languages-wrapper">
@@ -474,23 +538,25 @@ useResizeObserver(interactionsRef, () => {
 					</div>
 				</div>
 
-				<Button class="menu-cta" @click="toggleMenu" :aria-label="$t(isMenuToggled ? 'closeMenu' : 'openMenu')">
-					<IconPlusMinus ref="iconPlusMinusRef" />
+				<Button class="menu-cta" :aria-label="$t(isMenuToggled ? 'closeMenu' : 'openMenu')" @click="toggleMenu">
+					<span ref="menuIconRef" class="menu-icon">
+						<IconPlusMinus ref="iconPlusMinusRef" />
+					</span>
 				</Button>
 
 				<Menu
 					ref="menuRef"
 					:toggled="isMenuToggled"
-					@update:toggled="onMenuToggled"
 					:language="language"
-					:languageAlternates="languageAlternates"
+					:language-alternates="languageAlternates"
+					@update:toggled="onMenuToggled"
 				/>
 				<ContactForms
 					ref="contactFormsRef"
 					:toggled="globalStore.isContactToggled"
-					@update:toggled="onContactToggled"
 					:language="language"
-					:formId="globalStore.contactFormId"
+					:form-id="globalStore.contactFormId"
+					@update:toggled="onContactToggled"
 				/>
 			</div>
 		</div>
@@ -736,6 +802,10 @@ button {
 			position: relative;
 			color: $white;
 			transition: color 0.25s $power2Out 0.8s;
+		}
+
+		.menu-icon {
+			display: flex;
 		}
 
 		:deep(.partials-icon-plus-minus) {
