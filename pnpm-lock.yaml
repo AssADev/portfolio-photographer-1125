@@ -14,9 +14,6 @@ importers:
       '@astrojs/vue':
         specifier: ^7.0.3
         version: 7.0.3(@types/node@24.10.1)(astro@7.3.5(@types/node@24.10.1)(@vercel/functions@3.4.3)(sass-embedded@1.93.3)(sass@1.93.3)(yaml@2.9.1))(esbuild@0.28.2)(sass-embedded@1.93.3)(sass@1.93.3)(supports-color@8.1.1)(vue@3.5.24(typescript@5.9.3))(yaml@2.9.1)
-      '@hcaptcha/vue3-hcaptcha':
-        specifier: ^1.3.0
-        version: 1.3.0(vue@3.5.24(typescript@5.9.3))
       '@nanostores/vue':
         specifier: ^1.0.1
         version: 1.0.1(@vue/devtools-api@7.7.9)(nanostores@1.1.0)(vue@3.5.24(typescript@5.9.3))
@@ -905,11 +902,6 @@ packages:
 
   '@floating-ui/utils@0.2.12':
     resolution: {integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==}
-
-  '@hcaptcha/vue3-hcaptcha@1.3.0':
-    resolution: {integrity: sha512-IEonS6JiYdU7uy6aeib8cYtMO4nj8utwStbA9bWHyYbOvOvhpkV+AW8vfSKh6SntYxqle/TRwhv+kU9p92CfsA==}
-    peerDependencies:
-      vue: ^3.0.0
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -6400,10 +6392,6 @@ snapshots:
       '@floating-ui/utils': 0.2.12
 
   '@floating-ui/utils@0.2.12': {}
-
-  '@hcaptcha/vue3-hcaptcha@1.3.0(vue@3.5.24(typescript@5.9.3))':
-    dependencies:
-      vue: 3.5.24(typescript@5.9.3)
 
   '@humanfs/core@0.19.1': {}
 
