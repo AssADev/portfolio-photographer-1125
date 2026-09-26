@@ -1,5 +1,4 @@
 import { join } from 'node:path';
-// @ts-expect-error storyblokApiInstance is a virtual module
 import { storyblokApiInstance as storyblokApi } from 'virtual:storyblok-init';
 
 import locales from '#utils/locales.json';

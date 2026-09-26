@@ -16,7 +16,7 @@ const isEvents = (Astro.locals.story?.full_slug ?? '').toLowerCase().includes('e
 <ServiceOffersComparisonVue
 	{...storyblokEditable(blok, Astro.locals.isPreviewMode)}
 	{...Astro.props}
-	title={serviceOffersComparisonTitle}
+	heading={serviceOffersComparisonTitle}
 	offers={offers}
 	isEvents={isEvents}
 	client:visible

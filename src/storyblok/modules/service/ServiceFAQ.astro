@@ -22,7 +22,7 @@ const { blok, faqTitle, faqDescription, faqLink, faqSections } = Astro.props;
 <ServiceFAQVue
 	{...storyblokEditable(blok, Astro.locals.isPreviewMode)}
 	{...Astro.props}
-	title={faqTitle}
+	heading={faqTitle}
 	description={faqDescription}
 	link={faqLink}
 	sections={faqSections}

@@ -15,9 +15,9 @@ import type {
 } from '#types/component-types-sb.js';
 
 // Props :
-const { blok, title, offers, isEvents } = defineProps<{
+const { blok, heading, offers, isEvents } = defineProps<{
 	blok: StoryblokServiceOffersComparison;
-	title: StoryblokRichtext;
+	heading: StoryblokRichtext;
 	offers: StoryblokServiceOffer[];
 	isEvents?: boolean;
 }>();
@@ -106,7 +106,7 @@ const getFormattedSuffix = (row: ComparisonRow, value: any) => {
 	<section class="modules service-offers-comparison">
 		<div class="container">
 			<div class="title-container">
-				<RichText v-animate="'reveal-titles'" :doc="title" :resolvers="resolvers" />
+				<RichText v-animate="'reveal-titles'" :doc="heading" :resolvers="resolvers" />
 				<Button
 					v-if="blok.brochure.filename"
 					v-animate="{ type: 'reveal-button-dot', options: { delay: 0.25 } }"

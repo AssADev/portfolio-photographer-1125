@@ -11,7 +11,7 @@ import { getRouteList } from '#storyblok/helpers/routeList';
  * Validate if the requested route exists in Storyblok
  * Optimized to skip validation for static assets and known routes
  */
-const validateRoute = defineMiddleware(async ({ request, url, locals }, next) => {
+const validateRoute = defineMiddleware(async ({ request, url, routePattern }, next) => {
 	// Early return for static assets and server islands to avoid expensive route validation :
 	if (url.pathname.startsWith('/_astro/') || url.pathname.includes('/_server-islands/')) {
 		return next();
@@ -23,10 +23,10 @@ const validateRoute = defineMiddleware(async ({ request, url, locals }, next) =>
 	}
 
 	const response = await next();
-	const type = response.headers.get('X-Astro-Route-Type');
 
-	// If the route we're processing is not a page, then we ignore it :
-	if (type !== 'page' && type !== 'fallback') {
+	// If the route we're processing is not a Storyblok page, then we ignore it :
+	// (Astro >= 6 doesn't set the internal `X-Astro-Route-Type` header anymore)
+	if (routePattern !== '/[...slug]') {
 		return response;
 	}
 

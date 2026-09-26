@@ -62,6 +62,9 @@ export default defineConfig({
 	output: 'server',
 	adapter: vercel(),
 
+	// Keep the HTML-aware whitespace handling (Astro 7 defaults to 'jsx', which strips spaces between elements) :
+	compressHTML: true,
+
 	// Define environment variable schema :
 	env: {
 		schema: {
@@ -133,7 +136,6 @@ export default defineConfig({
 			},
 			preprocessorOptions: {
 				scss: {
-					api: 'modern-compiler',
 					additionalData: (source, id) => {
 						let prepend = '';
 

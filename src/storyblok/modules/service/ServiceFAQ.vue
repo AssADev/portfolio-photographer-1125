@@ -19,7 +19,7 @@ import ServiceFAQSection from '#storyblok/partials/service/ServiceFAQSection.vue
 // Props :
 defineProps<{
 	blok: StoryblokServiceFAQ;
-	title: StoryblokRichtext;
+	heading: StoryblokRichtext;
 	description: string;
 	link?: StoryblokLabelLink[];
 	sections?: StoryblokServiceFAQSection[];
@@ -39,7 +39,7 @@ const resolvers = getRichTextResolvers('h2');
 				<div
 					class="title-wrapper col-start-1 col-end-13 col-start-tb-1 col-end-tb-6 col-start-dk-1 col-end-dk-10 col-start-lg-1 col-end-lg-8"
 				>
-					<RichText v-animate="'reveal-titles'" :doc="title" :resolvers="resolvers" />
+					<RichText v-animate="'reveal-titles'" :doc="heading" :resolvers="resolvers" />
 				</div>
 				<div
 					class="description-wrapper col-start-1 col-end-13 col-start-tb-10 col-end-tb-16 col-start-dk-22 col-end-dk-32 col-start-lg-23 col-end-lg-32 col-start-xxlg-24 col-end-xxlg-31"

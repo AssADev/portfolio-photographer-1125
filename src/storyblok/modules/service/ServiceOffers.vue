@@ -10,7 +10,7 @@ import ServiceOffer from '#storyblok/partials/service/ServiceOffer.vue';
 
 // Props :
 defineProps<{
-	title: StoryblokRichtext;
+	heading: StoryblokRichtext;
 	description: string;
 	offers: StoryblokServiceOffer[];
 	serviceBookingFormLink: StoryblokLabelLink[];
@@ -24,7 +24,7 @@ const resolvers = getRichTextResolvers('h2');
 	<section id="service-offers" class="modules service-offers">
 		<div class="container">
 			<div class="title-wrapper">
-				<RichText v-animate="'reveal-titles'" :doc="title" :resolvers="resolvers" />
+				<RichText v-animate="'reveal-titles'" :doc="heading" :resolvers="resolvers" />
 				<p v-animate="'reveal-paragraphs'" v-html="nl2br(description)" />
 			</div>
 			<div class="offers-container">
