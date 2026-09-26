@@ -103,6 +103,20 @@ const preloadImage = (url: string) => {
 	});
 };
 
+// Preload a picture with the same transformations as the Image component, so the browser already
+// has it cached by the time the user navigates to it (no fetch delay, no jump) :
+const preloadPictureAt = (index: number) => {
+	const picture = pictures[index];
+	if (!picture) return Promise.resolve();
+
+	const { bind, operations } = parseImageData({ src: picture, objectFit: 'contain' });
+	const transformer = transform(bind);
+
+	// We target a high-res version (1920px) which is likely to be used by unpic in the viewer
+	const url = transformer(bind.src, { ...operations, width: 1920 });
+	return preloadImage(url).catch(() => {});
+};
+
 // Animations :
 const animateFlipOpen = async (clickedElement: HTMLElement) => {
 	if (!viewerWrapperRef.value) return;
@@ -270,15 +284,12 @@ watch(
 
 			slideshowRef.value?.animateInto();
 
-			// Preload the current image with the same transformations as the Image component
-			const currentPic = pictures[currentIndex];
-			if (currentPic) {
-				const { bind, operations } = parseImageData({ src: currentPic, objectFit: 'contain' });
-				const transformer = transform(bind);
-				// We target a high-res version (1920px) which is likely to be used by unpic in the viewer
-				const currentUrl = transformer(bind.src, { ...operations, width: 1920 });
-				preloadImage(currentUrl).catch(() => {});
-			}
+			// Preload the current image first, then the rest of the gallery in the background so that
+			// navigating between slides doesn't cause a network fetch delay :
+			preloadPictureAt(currentIndex);
+			pictures.forEach((_, index) => {
+				if (index !== currentIndex) preloadPictureAt(index);
+			});
 
 			// Animation of the Theme CTA :
 			animations['reveal-square'](themeCtaRef.value?.$el, {

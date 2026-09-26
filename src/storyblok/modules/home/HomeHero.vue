@@ -39,6 +39,7 @@ const titleRef = useTemplateRef('titleRef');
 
 // Store :
 const currentFilter = useStore($currentFilter);
+const activeFilterKey = ref('allMyProjects');
 
 // Animation & Sync :
 let charIdCounter = 0;
@@ -213,6 +214,8 @@ useResizeObserver(containerRef, updateFontSize);
 watch(
 	() => currentFilter.value,
 	async (newSlug, oldSlug) => {
+		activeFilterKey.value = newSlug;
+
 		const newFilter = allFilters.value.find((f) => f.slug === newSlug);
 		const oldFilter = allFilters.value.find((f) => f.slug === oldSlug);
 
@@ -285,6 +288,8 @@ const resolvers = getRichTextResolvers('span');
 // Attach & Detach :
 onMounted(() => {
 	updateFontSize();
+
+	activeFilterKey.value = currentFilter.value;
 
 	// Init (Mobile filters) :
 	const current = allFilters.value.find((f) => f.slug === currentFilter.value) || allFilters.value[0];
@@ -375,7 +380,7 @@ onUnmounted(() => {
 				<div class="filters-container hide-mobile-tablet">
 					<Button
 						v-animate="{ type: 'reveal-square' }"
-						:class="{ active: currentFilter === 'allMyProjects' }"
+						:class="{ active: activeFilterKey === 'allMyProjects' }"
 						:aria-label="$t('filterBy') + ' ' + $t('allMyProjects')"
 						@click="handleFilterClick('allMyProjects')"
 					>
@@ -400,7 +405,7 @@ onUnmounted(() => {
 							type: 'reveal-square',
 							options: { delay: (index + 1) * 0.175, fromBottomLeft: (index + 1) % 2 === 1 }
 						}"
-						:class="{ active: currentFilter === service.slug }"
+						:class="{ active: activeFilterKey === service.slug }"
 						:aria-label="$t('filterBy') + ' ' + extractPlainText(service.content.informations?.[0]?.name)"
 						@click="handleFilterClick(service.slug)"
 					>
