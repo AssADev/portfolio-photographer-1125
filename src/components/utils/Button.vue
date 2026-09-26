@@ -21,8 +21,26 @@ const { to, is, type, disabled, target, rel, theme, link, text } = defineProps<{
 const isFormLink = link?.component === 'Forms' || link?.story?.content?.component === 'Forms';
 const isAnchor = (is === 'a' || !!to || !!link) && !isFormLink;
 
+// Methods :
+const getLinkHref = (value: {
+	linktype?: string;
+	url?: string;
+	cached_url?: string;
+	email?: string;
+	anchor?: string;
+}) => {
+	if (value.linktype === 'email') return `mailto:${value.email || value.url}`;
+	if (value.linktype === 'url' || value.linktype === 'asset') return value.url || value.cached_url || '';
+
+	// The story links can already start with a slash (e.g. the localized ones) :
+	const path: string = value.cached_url || value.url || '';
+	const href = /^(https?:)?\/\//.test(path) ? path : `/${path.replace(/^\/+/, '')}`;
+
+	return value.anchor ? `${href}#${value.anchor}` : href;
+};
+
 // Computed :
-const href = computed(() => (link ? `/${link.cached_url || link.url || ''}` : to));
+const href = computed(() => (link ? getLinkHref(link) : to));
 
 const attrs = computed(() => ({
 	href: isAnchor ? href.value : undefined,

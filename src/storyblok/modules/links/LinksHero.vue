@@ -68,32 +68,34 @@ const resolvers = getRichTextResolvers('h1');
 				<ul class="socials-container">
 					<li v-if="email" class="small-item">
 						<a
+							v-animate="{ type: 'reveal-square', options: { delay: 0.4 } }"
 							:href="`mailto:${email}`"
+							:aria-label="$t('email')"
 							:data-cursor-label="$t('email')"
 							@click="trackNavigationClick"
-							v-animate="{ type: 'reveal-square', options: { delay: 0.4 } }"
 						>
 							<Icon v-animate="{ type: 'scale-up', options: { delay: 0.95 } }" name="email" />
 						</a>
 					</li>
 					<li class="small-item">
 						<a
+							v-animate="{ type: 'reveal-square', options: { delay: 0.625, fromBottomLeft: true } }"
 							:href="homeUrl"
+							:aria-label="$t('website')"
 							:data-cursor-label="$t('website')"
 							@click="trackNavigationClick"
-							v-animate="{ type: 'reveal-square', options: { delay: 0.625, fromBottomLeft: true } }"
 						>
 							<Icon v-animate="{ type: 'scale-up', options: { delay: 1.175 } }" name="website" />
 						</a>
 					</li>
 					<li v-for="(social, index) in socials" :key="social._uid">
 						<a
-							v-bind="getLinkAttributes(social.link)"
-							@click="trackNavigationClick"
 							v-animate="{
 								type: 'reveal-square',
 								options: { delay: 0.8 + index * 0.175, fromBottomLeft: index % 2 === 1 }
 							}"
+							v-bind="getLinkAttributes(social.link)"
+							@click="trackNavigationClick"
 						>
 							<LabelShuffle
 								v-animate="{ type: 'reveal-label-shuffle', options: { delay: 1.35 + index * 0.175 } }"

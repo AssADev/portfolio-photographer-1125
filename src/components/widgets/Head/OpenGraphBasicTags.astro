@@ -3,13 +3,16 @@ import type { OpenGraphBasicTagsType } from '#types/seo.ts';
 
 type Props = OpenGraphBasicTagsType;
 
-const { title, type, image, url } = Astro.props;
+const { title, type, image, imageWidth, imageHeight, imageAlt, url } = Astro.props;
 
 const baseUrl = Astro.site ?? Astro.url;
-const defaultCanonicalUrl = new URL(Astro.url.pathname + Astro.url.search, baseUrl);
+const defaultCanonicalUrl = new URL(Astro.url.pathname.replace(/\/+$/, '') || '/', baseUrl);
 ---
 
 <meta property="og:title" content={title} />
 <meta property="og:type" content={type || 'website'} />
 {image && <meta property="og:image" content={image} />}
+{image && imageWidth && <meta property="og:image:width" content={String(imageWidth)} />}
+{image && imageHeight && <meta property="og:image:height" content={String(imageHeight)} />}
+{image && imageAlt && <meta property="og:image:alt" content={imageAlt} />}
 <meta property="og:url" content={url || defaultCanonicalUrl.href} />

@@ -6,3 +6,5 @@ export const previewSlugs = [`${configPrefix}/site-config`];
 export const forbiddenSlugs = [configPrefix, 'forms/'];
 
 export const specialApiSlugs = ['api', 'sitemap.xml', 'robots.txt'];
+
+export const removeHomeSlug = (path: string) => path.replace(new RegExp(`(^|/)${HOME_SLUG}/?$`), '');

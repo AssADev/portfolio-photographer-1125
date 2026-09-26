@@ -1,15 +1,22 @@
+import type { ISbStoryData } from '@storyblok/astro';
 import { join } from 'node:path';
 import { storyblokApiInstance as storyblokApi } from 'virtual:storyblok-init';
 
 import locales from '#utils/locales.json';
-import localesRegions from '#utils/localesRegions.ts';
 
 import { extractImagesFromStory } from '#storyblok/helpers/extractImagesFromStory';
-import { HOME_SLUG, forbiddenSlugs, previewSlugs } from '#storyblok/helpers/specialSlugs';
+import {
+	HOME_SLUG,
+	forbiddenSlugs,
+	pageContentTypes,
+	previewSlugs,
+	removeHomeSlug
+} from '#storyblok/helpers/specialSlugs';
 
 export interface ProcessedLink {
 	originalPath: string;
 	trimmedPath: string;
+	slug: string;
 	alternates: Array<{
 		lang: string;
 		translated_slug: string;
@@ -39,6 +46,7 @@ export async function getStoryblokLinks(): Promise<ProcessedLink[]> {
 			processedLinks.push({
 				originalPath: link.real_path,
 				trimmedPath,
+				slug: (link.slug || trimmedPath).replace(/^\/*|\/*$/g, ''),
 				alternates: link.alternates || []
 			});
 		}
@@ -117,72 +125,51 @@ export interface SitemapEntry {
 		url: string;
 	}>;
 	lastmod?: string;
-	changefreq?: string;
-	priority?: number;
 	images?: Array<{
 		url: string;
-		title?: string;
-		caption?: string;
 	}>;
 }
 
 /**
- * Generates sitemap entries with alternate language links and automated image metadata from Storyblok.
+ * Generates the sitemap entries : one entry per page and per language, each one listing all its language versions
+ * (hreflang, as recommended by Google), with the real publication date and the pictures of the page.
  */
 export async function getSitemapEntries(): Promise<SitemapEntry[]> {
 	const links = await getStoryblokLinks();
 	const entries: SitemapEntry[] = [];
 	const processedPaths = new Set<string>();
 
-	// Fetch all stories to extract images and metadata :
-	const allStories = await storyblokApi.getAll('cdn/stories', {
+	// Fetch all stories to get their content type, publication date and pictures :
+	const allStories: ISbStoryData[] = await storyblokApi.getAll('cdn/stories', {
 		version: 'published'
 	});
 
-	// Create a map for quick access :
-	const storiesByPath = new Map();
-	allStories.forEach((story: any) => {
-		const path = story.full_slug.replace(/\/$/, '');
-		storiesByPath.set(path, story);
-	});
+	const storiesBySlug = new Map(allStories.map((story) => [story.full_slug.replace(/^\/*|\/*$/g, ''), story]));
 
 	for (const link of links) {
-		if (!processedPaths.has(link.trimmedPath)) {
-			processedPaths.add(link.trimmedPath);
+		if (processedPaths.has(link.trimmedPath)) continue;
+		processedPaths.add(link.trimmedPath);
 
-			// Create the main entry for the default language :
-			const defaultUrl = link.trimmedPath;
-			const story = storiesByPath.get(defaultUrl) || storiesByPath.get(defaultUrl === '' ? 'home' : defaultUrl);
+		const story = storiesBySlug.get(link.slug) ?? storiesBySlug.get(link.trimmedPath || HOME_SLUG);
+		const component = story?.content?.component;
 
-			const entry: SitemapEntry = {
-				url: defaultUrl,
-				images: story ? extractImagesFromStory(story) : []
-			};
+		// Only the pages (not the forms, the config...), except the "links" pages which are not indexed :
+		if (!story || !component || !pageContentTypes.includes(component) || component === 'Links') continue;
 
-			// Add alternate language links if they exist :
-			if (link.alternates && link.alternates.length > 0) {
-				entry.links = [];
+		// Localized URLs (the translated slugs are used when they exist) :
+		const urls = locales.map((locale) => {
+			const alternate = link.alternates.find((alt) => alt.lang === locale && alt.translated_slug);
+			const slug = removeHomeSlug((alternate?.translated_slug ?? link.trimmedPath).replace(/^\/*|\/*$/g, ''));
 
-				// Add the default language as a link :
-				entry.links.push({
-					lang: localesRegions[locales[0]],
-					url: defaultUrl
-				});
+			return { lang: locale, url: webJoin('/', locale === locales[0] ? '' : locale, slug) };
+		});
 
-				// Add other language links :
-				for (const alternate of link.alternates) {
-					if (alternate.lang && alternate.translated_slug) {
-						const alternateUrl = buildUrlPath(alternate.lang, alternate.translated_slug);
+		const alternates = [...urls, { lang: 'x-default', url: urls[0].url }];
+		const images = extractImagesFromStory(story).map(({ url }) => ({ url }));
+		const lastmod = story.published_at || story.updated_at || undefined;
 
-						entry.links.push({
-							lang: localesRegions[alternate.lang],
-							url: alternateUrl
-						});
-					}
-				}
-			}
-
-			entries.push(entry);
+		for (const { url } of urls) {
+			entries.push({ url, links: alternates, lastmod, images });
 		}
 	}
 

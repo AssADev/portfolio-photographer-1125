@@ -1,4 +1,5 @@
 ---
+import { slimRelations } from '#storyblok/helpers/slimStory.ts';
 import ProjectMinimapVue from '#storyblok/modules/project/ProjectMinimap.vue';
 import type { StoryblokAsset } from '#types/component-types-sb.js';
 
@@ -9,4 +10,4 @@ type Props = {
 const { pictures } = Astro.props;
 ---
 
-<ProjectMinimapVue pictures={pictures} client:load />
+<ProjectMinimapVue pictures={slimRelations(pictures)} client:load />

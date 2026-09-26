@@ -8,6 +8,7 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 import Lenis from '#components/providers/Lenis.vue';
 
 import SEO from '#components/widgets/Head/SEO.astro';
+import StructuredData from '#components/widgets/Head/StructuredData.astro';
 import Head from '#components/widgets/Head/Head.astro';
 import Interloader from '#components/widgets/Interloader.vue';
 import Loader from '#components/widgets/Loader.vue';
@@ -20,10 +21,16 @@ import CursorProjects from '#components/widgets/CursorProjects.vue';
 import ScriptUtilities from '#components/scripts/ScriptUtilities.astro';
 
 import { setState } from '#utils/astro-state.ts';
+import { business } from '#utils/business.ts';
+import { formatDateMonthYear } from '#utils/formatDate.ts';
+import locales from '#utils/locales.json';
 import localesRegions from '#utils/localesRegions.ts';
+import { richTextToPlainText } from '#utils/richTextToPlainText.ts';
 import getAlternatesForStory from '#storyblok/helpers/getAlternatesForStory.ts';
 import { fetchProjectImagesServer } from '#storyblok/helpers/getProjectImages.ts';
+import { slimRelations, slimStoryMeta } from '#storyblok/helpers/slimStory.ts';
 import Grainient from '#components/widgets/Grainient.vue';
+import type { StoryblokAsset, StoryblokProject, StoryblokService } from '#types/component-types-sb.js';
 
 type Props = {
 	language: string;
@@ -43,9 +50,59 @@ const seo = Array.isArray(seoRaw) ? seoRaw[0] : seoRaw;
 // Languages :
 const lang = localesRegions[language];
 const languageAlternates = story ? getAlternatesForStory(Astro.site!.toString(), story, language) : undefined;
+const localeAlternates = locales.filter((locale) => locale !== language).map((locale) => localesRegions[locale]);
+
+// The projects without SEO description get a unique one, instead of the default description of the site :
+const getProjectDescription = () => {
+	if (story?.content?.component !== 'Project') return undefined;
+
+	const informations = (story.content as StoryblokProject).informations?.[0];
+	if (!informations) return undefined;
+
+	const service = informations.service?.find(
+		(item): item is ISbStoryData<StoryblokService> => typeof item !== 'string'
+	);
+	const details = [
+		richTextToPlainText(service?.content?.informations?.[0]?.name),
+		informations.location,
+		informations.date ? formatDateMonthYear(informations.date, language) : ''
+	]
+		.filter(Boolean)
+		.join(' · ');
+
+	const name = `${richTextToPlainText(informations.name)}${details ? ` – ${details}` : ''}`;
+	const cities = business.areaServed.join(language === locales[0] ? ' et ' : ' and ');
+
+	return language === locales[0]
+		? `${name}. Découvrez les photos de cette séance réalisée par ${siteConfig.identity}, photographe à ${cities}.`
+		: `${name}. Discover the photos of this session by ${siteConfig.identity}, photographer in ${cities}.`;
+};
+
+// Only what the Header (menu & contact forms) needs, as its props are serialized in every page :
+const headerSiteConfig = {
+	identity: siteConfig.identity,
+	email: siteConfig.email,
+	menuDescription: siteConfig.menuDescription,
+	titleContact: siteConfig.titleContact,
+	descriptionContact: siteConfig.descriptionContact,
+	menuLinks: slimRelations(siteConfig.menuLinks),
+	socials: slimRelations(siteConfig.socials),
+	formsContact: siteConfig.formsContact?.map(slimStoryMeta)
+};
+
+// The projects cursor is only used by the modules having the `cursorProjects` option :
+const hasCursorProjects = (value: unknown): boolean => {
+	if (Array.isArray(value)) return value.some(hasCursorProjects);
+	if (!value || typeof value !== 'object') return false;
+	return (value as Record<string, unknown>).cursorProjects === true || Object.values(value).some(hasCursorProjects);
+};
+
+const showCursorProjects = hasCursorProjects(story?.content);
 
 // Get project images :
-const projectImages = await fetchProjectImagesServer();
+const projectImages = showCursorProjects
+	? (await fetchProjectImagesServer()).map(({ filename, alt }) => ({ filename, alt }) as StoryblokAsset)
+	: [];
 
 // State :
 setState('language', language);
@@ -57,10 +114,14 @@ setState('url', Astro.url);
 		<SEO
 			storyTitle={story?.name}
 			seo={seo}
+			fallbackDescription={getProjectDescription()}
 			languageAlternates={languageAlternates}
+			locale={lang}
+			localeAlternates={localeAlternates}
 			nofollow={nofollow}
 			noindex={noindex}
 		/>
+		{!noindex && <StructuredData story={story} language={language} locale={lang} />}
 		<script is:inline>
 			(function () {
 				if (!window.isSiteLoaded) {
@@ -72,9 +133,24 @@ setState('url', Astro.url);
 		</script>
 		<style is:global>
 			html.is-site-loading #app {
-				visibility: hidden !important;
+				visibility: hidden;
+				animation: show-app 0s 6s forwards;
+			}
+
+			@keyframes show-app {
+				to {
+					visibility: visible;
+				}
 			}
 		</style>
+		<noscript>
+			<style is:inline>
+				[data-v-animate] {
+					pointer-events: auto !important;
+					opacity: 1 !important;
+				}
+			</style>
+		</noscript>
 		<Analytics />
 		<SpeedInsights />
 		<TrackingScripts />
@@ -86,8 +162,13 @@ setState('url', Astro.url);
 		<Interloader client:only="vue" />
 		<div id="app">
 			<Cursor client:load />
-			<CursorProjects client:load images={projectImages} />
-			<Header siteConfig={siteConfig} language={language} languageAlternates={languageAlternates} client:load />
+			{showCursorProjects && <CursorProjects client:load images={projectImages} />}
+			<Header
+				siteConfig={headerSiteConfig}
+				language={language}
+				languageAlternates={languageAlternates}
+				client:load
+			/>
 			<main>
 				<Lenis client:load root />
 				<slot />

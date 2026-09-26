@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { StoryblokRichText, type StoryblokRichTextNode } from '@storyblok/vue';
-import { type VNode, computed, createTextVNode, h, useTemplateRef } from 'vue';
+import { type VNode, computed, h, useTemplateRef } from 'vue';
 
 import LabelShuffle from '#components/partials/LabelShuffle.vue';
 
@@ -52,20 +52,24 @@ const plaintext = computed(() => {
 });
 
 // Resolvers (RichText) :
+// Storyblok expects a flat map of resolvers keyed by node/mark type.
+// For marks, the already rendered content is given in `node.text` (not `node.children`).
 const markResolvers = {
 	textStyle: (node: StoryblokRichTextNode<VNode>) => {
 		const color = node.attrs?.color?.trim();
 
-		if (!color) return h('span', {}, node.children);
-
-		return h('span', { style: `color:${color}` }, node.children);
+		return h('span', color ? { style: { color } } : {}, node.text);
 	},
 	link: (node: StoryblokRichTextNode<VNode>) => {
-		const { href, target, story } = node.attrs || {};
+		const { href: rawHref = '', anchor, linktype, target, story } = node.attrs || {};
+
+		// Same href resolution as the default Storyblok link resolver :
+		let href = linktype === 'email' ? `mailto:${rawHref}` : rawHref;
+		if (linktype === 'story' && anchor) href = `${href}#${anchor}`;
 
 		const currentPath = location.value.pathname.replace(/\/$/, '') || '/';
 		let targetPath = href;
-		let isInternal = !href.startsWith('http') && !href.startsWith('//');
+		let isInternal = !href.startsWith('http') && !href.startsWith('//') && !href.startsWith('mailto:');
 
 		if (!isInternal) {
 			try {
@@ -86,11 +90,14 @@ const markResolvers = {
 			isInternal &&
 			(story?.content?.component === 'Forms' || targetPath.includes('/forms/') || targetPath.endsWith('/forms'));
 
+		const linkTarget = isForm ? undefined : target || undefined;
+
 		return h(
 			'a',
 			{
 				href: href,
-				target: isForm ? undefined : target,
+				target: linkTarget,
+				rel: linkTarget === '_blank' ? 'noopener noreferrer' : undefined,
 				onClick: (e: MouseEvent) => {
 					if (isCurrentPage) {
 						e.preventDefault();
@@ -114,21 +121,15 @@ const markResolvers = {
 					}
 				}
 			},
-			node.children
+			node.text
 		);
 	}
 };
 
-const nodeResolvers = {
-	text: (node: StoryblokRichTextNode<VNode>) => createTextVNode(node.text || '')
-};
-
+// The default `text` resolver must be kept, as it is the one applying the marks (bold, italic, links...) :
 const mergedResolvers = {
-	marks: markResolvers,
-	nodes: {
-		...nodeResolvers,
-		...resolvers
-	}
+	...markResolvers,
+	...resolvers
 };
 
 // Expose :

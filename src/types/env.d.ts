@@ -18,6 +18,5 @@ declare global {
 	}
 	interface ImportMetaEnv {
 		readonly PUBLIC_WEB3FORMS_ACCESS_KEY: string;
-		readonly PUBLIC_HCAPTCHA_SITE_KEY: string;
 	}
 }

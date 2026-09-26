@@ -14,15 +14,21 @@ const pendingElements = new Map<HTMLElement, any>();
 let unsubscribe: (() => void) | null = null;
 
 const processPendingElements = () => {
-	if ($global.get().isSiteLoaded) {
-		pendingElements.forEach((binding, el) => {
+	if (!$global.get().isSiteLoaded) return;
+
+	// A single element failing to initialize (e.g. a GSAP/ScrollTrigger error) must not prevent
+	// the others from being processed, and the map/listener must always be cleaned up :
+	pendingElements.forEach((binding, el) => {
+		try {
 			init(el, binding);
-		});
-		pendingElements.clear();
-		if (unsubscribe) {
-			unsubscribe();
-			unsubscribe = null;
+		} catch (error) {
+			console.error('[v-animate] Failed to initialize an animation.', error, el);
 		}
+	});
+	pendingElements.clear();
+	if (unsubscribe) {
+		unsubscribe();
+		unsubscribe = null;
 	}
 };
 
@@ -61,14 +67,23 @@ const init = (el: HTMLElement & { _gsapAnim?: gsap.core.Animation }, binding: an
 	el.removeAttribute('data-v-animate');
 
 	if (anim instanceof gsap.core.Timeline || anim instanceof gsap.core.Tween) {
-		ScrollTrigger.create({
-			trigger: el,
-			once: true,
-			animation: anim,
-			toggleActions: 'play none none none',
-			containerAnimation: options.containerAnimation,
-			start: options.start || (options.containerAnimation ? 'left bottom' : 'top bottom')
-		});
+		try {
+			ScrollTrigger.create({
+				trigger: el,
+				once: true,
+				animation: anim,
+				toggleActions: 'play none none none',
+				containerAnimation: options.containerAnimation,
+				start: options.start || (options.containerAnimation ? 'left bottom' : 'top bottom')
+			});
+		} catch (error) {
+			// A stale/orphaned ScrollTrigger left over from a previous page (Astro islands aren't
+			// unmounted on client-side navigation) can corrupt GSAP's internal pin recalculation and
+			// make ScrollTrigger.create() throw. If that happens, fall back to just playing the
+			// animation immediately rather than leaving the element permanently hidden :
+			console.error('[v-animate] ScrollTrigger.create() failed, playing the animation immediately.', error, el);
+			anim.play();
+		}
 	}
 };
 

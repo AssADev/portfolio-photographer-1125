@@ -1,3 +1,5 @@
+import { STORYBLOK_OAUTH_TOKEN, STORYBLOK_SPACE_ID } from 'astro:env/server';
+
 import type { StoryblokAsset } from '#types/component-types-sb.js';
 
 interface StoryblokAssetFolder {
@@ -13,7 +15,6 @@ interface AssetFoldersResponse {
 interface AssetsResponse {
 	assets: StoryblokAsset[];
 }
-
 
 let isFetched = false;
 let imagesCache: StoryblokAsset[] = [];
@@ -49,8 +50,8 @@ export const fetchProjectImagesServer = async (): Promise<StoryblokAsset[]> => {
 	if (isFetched && imagesCache.length > 0) return imagesCache;
 
 	try {
-		const spaceId = import.meta.env.STORYBLOK_SPACE_ID;
-		const token = import.meta.env.STORYBLOK_OAUTH_TOKEN;
+		const spaceId = String(STORYBLOK_SPACE_ID);
+		const token = STORYBLOK_OAUTH_TOKEN;
 		const folderName = '[Pages] Projects';
 
 		if (!spaceId || !token) {
@@ -63,17 +64,19 @@ export const fetchProjectImagesServer = async (): Promise<StoryblokAsset[]> => {
 
 		const projectFolder = folders.find((folder) => folder.name === folderName);
 
-
 		if (!projectFolder) {
 			console.warn(`Folder "${folderName}" not found`);
 			return [];
 		}
 
 		// Get all assets of the desired folder :
-		const assetsData = await fetchFromStoryblok<AssetsResponse>(`assets?in_folder=${projectFolder.id}`, spaceId, token);
+		const assetsData = await fetchFromStoryblok<AssetsResponse>(
+			`assets?in_folder=${projectFolder.id}`,
+			spaceId,
+			token
+		);
 
 		const assets = assetsData.assets || [];
-
 
 		if (assets.length === 0) {
 			console.warn(`No images found in folder "${folderName}"`);

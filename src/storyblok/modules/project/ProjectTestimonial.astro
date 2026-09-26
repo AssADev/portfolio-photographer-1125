@@ -1,5 +1,6 @@
 ---
 import { storyblokEditable } from '#storyblok/helpers/storyblokEditable.ts';
+import { slimRelations } from '#storyblok/helpers/slimStory.ts';
 import ProjectTestimonialVue from '#storyblok/modules/project/ProjectTestimonial.vue';
 import type { StoryblokProjectTestimonial } from '#types/component-types-sb.js';
 
@@ -10,4 +11,9 @@ type Props = {
 const { blok } = Astro.props;
 ---
 
-<ProjectTestimonialVue {...storyblokEditable(blok, Astro.locals.isPreviewMode)} {...Astro.props} client:visible />
+<ProjectTestimonialVue
+	{...storyblokEditable(blok, Astro.locals.isPreviewMode)}
+	{...Astro.props}
+	blok={slimRelations(blok)}
+	client:visible
+/>

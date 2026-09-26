@@ -29,8 +29,7 @@ export const useRouter = ({ beforePreparation, afterLoad: afterSwap, beforeLoad 
 
 		const originalLoader = e.loader;
 		e.loader = async () => {
-			await beforeLoad?.();
-			await originalLoader();
+			await Promise.all([beforeLoad?.(), originalLoader()]);
 		};
 	};
 

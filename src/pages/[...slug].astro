@@ -23,18 +23,11 @@ const params = Astro.params;
 const props = parseUrl(params?.slug);
 const { slug = HOME_SLUG, language = locales[0] } = props;
 
-// Redirection logic for default locale :
-// If the URL starts with the default locale (explicitly), we redirect to the version without it.
-// Example: /fr/biography -> /biography
-if (params.slug?.startsWith(locales[0] + '/')) {
-	return Astro.redirect(`/${params.slug.replace(locales[0] + '/', '')}`);
-} else if (params.slug === locales[0]) {
-	return Astro.redirect('/');
-}
+// Note : the URLs prefixed with the default locale (e.g. /fr/biography) are redirected by the middleware.
 
 // Handle dev tool route send by Chrome for some reason :
 // https://stackoverflow.com/questions/79629915/well-known-appspecific-com-chrome-devtools-json-request
-if (slug.startsWith('.')) return Astro.rewrite('/500');
+if (slug.startsWith('.')) return Astro.rewrite('/404');
 
 // Early rewrite to 404 for unkown astro assets to avoid querying Storyblok :
 if (slug.startsWith('_astro/')) return Astro.rewrite('/404');
@@ -68,6 +61,6 @@ try {
 }
 ---
 
-<BaseLayout language={language} story={story}>
+<BaseLayout language={language} story={story} noindex={story.content.component === 'Links'}>
 	<StoryblokComponent blok={story.content as any} />
 </BaseLayout>

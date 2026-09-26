@@ -5,19 +5,21 @@ import type { SbBlokData } from '@storyblok/astro';
 import type { StoryblokHomeLayout, StoryblokHomeHero } from '#types/component-types-sb.js';
 import HomeHero from '#storyblok/modules/home/HomeHero.astro';
 import HomeHeroCircularStar from '#storyblok/modules/home/HomeHeroCircularStar.astro';
+import { slimProjectForFilter } from '#storyblok/helpers/slimStory.ts';
 
 type Props = { blok: StoryblokHome };
 
 const { blok } = Astro.props;
 
-// Find all projects :
-const projects =
-	blok.body?.filter((c): c is StoryblokHomeLayout => c.component === 'HomeLayout').flatMap((c) => c.projects) || [];
+// Find all projects (only what is needed to filter / count them, as they are sent to every layout) :
+const projects = (
+	blok.body?.filter((c): c is StoryblokHomeLayout => c.component === 'HomeLayout').flatMap((c) => c.projects) || []
+).map(slimProjectForFilter);
 ---
 
 <HomeHeroCircularStar />
 
-{blok.hero?.length && <HomeHero blok={blok.hero[0] as StoryblokHomeHero} projects={projects} />}
+{!!blok.hero?.length && <HomeHero blok={blok.hero[0] as StoryblokHomeHero} projects={projects} />}
 
 <div class="modules-container">
 	<div class="modules-inner-container">

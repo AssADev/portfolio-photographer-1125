@@ -11,19 +11,17 @@ import RichText from '#components/utils/RichText.vue';
 import type { StoryblokServiceInformations } from '#types/component-types-sb.js';
 
 // Props :
-defineProps<{
+const props = defineProps<{
 	blok: StoryblokServiceInformations;
+	servicesLink?: string;
 }>();
 
 // Injections :
-const siteConfig = inject<any>('siteConfig');
 const language = inject<string>('language');
 
 // Computed :
 const servicesLink = computed(() => {
-	const servicesMenuItem = siteConfig?.menuLinks?.find((item: any) => item.link?.component === 'Services');
-
-	if (servicesMenuItem) return servicesMenuItem.link.url;
+	if (props.servicesLink) return props.servicesLink;
 
 	// Fallback :
 	return language === locales[0] ? '/services' : `/${language}/services`;

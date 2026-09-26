@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, useTemplateRef } from 'vue';
+import { computed, onMounted, onUnmounted, useTemplateRef } from 'vue';
 
 import { getLinkAttributes } from '#utils/link.ts';
 import { trackNavigationClick } from '#utils/tracking.ts';
@@ -9,7 +9,7 @@ import Button from '#components/utils/Button.vue';
 import type { StoryblokAsset } from '#types/component-types-sb.js';
 
 // Props :
-defineProps<{
+const { thumbnail } = defineProps<{
 	video: StoryblokAsset;
 	thumbnail: StoryblokAsset;
 	link?: any;
@@ -21,10 +21,18 @@ const videoRef = useTemplateRef('videoRef');
 // Variables :
 let observer: IntersectionObserver | null = null;
 
+// Computed :
+// The poster is displayed at ~350px wide, so there's no need to load the original picture :
+const poster = computed(() => {
+	const url = thumbnail?.filename ?? undefined;
+	if (!url || !url.includes('storyblok.com') || url.endsWith('.svg')) return url;
+	return `${url}/m/720x0/filters:quality(75)`;
+});
+
 // Methods :
 const playVideo = () => {
 	if (!videoRef.value) return;
-	videoRef.value.play();
+	videoRef.value.play().catch(() => {});
 };
 
 const pauseVideo = () => {
@@ -63,15 +71,15 @@ onUnmounted(() => {
 
 <template>
 	<Button
-		v-if="thumbnail.filename && video.filename"
 		is="a"
+		v-if="thumbnail.filename && video.filename"
 		v-bind="getLinkAttributes(link)"
 		:aria-label="$t('watchVideo')"
 		:data-cursor-label="$t('watchVideo')"
 		class="partials-video"
 		@click="trackNavigationClick"
 	>
-		<video ref="videoRef" :poster="thumbnail.filename" :src="video.filename" loop muted playsinline></video>
+		<video ref="videoRef" :poster="poster" :src="video.filename" preload="metadata" loop muted playsinline></video>
 	</Button>
 </template>
 

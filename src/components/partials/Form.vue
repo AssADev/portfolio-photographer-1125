@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import VueHcaptcha from '@hcaptcha/vue3-hcaptcha';
 import { useResizeObserver } from '@vueuse/core';
-import { PUBLIC_HCAPTCHA_SITE_KEY, PUBLIC_WEB3FORMS_ACCESS_KEY } from 'astro:env/client';
+import { PUBLIC_WEB3FORMS_ACCESS_KEY } from 'astro:env/client';
 import gsap from 'gsap';
 import { useForm } from 'vee-validate';
 import { computed, ref, useTemplateRef, watch } from 'vue';
 
 import { animations } from '#utils/Animations.ts';
+import { escapeHtml } from '#utils/escapeHtml.ts';
 import { getFieldConfig, mapToProps } from '#utils/form.ts';
 import { formatDateForSubmission } from '#utils/formatDate.ts';
 import { formatIndex } from '#utils/formatIndex.ts';
@@ -31,6 +31,9 @@ const { form, language } = defineProps<{ form: any; language: string }>();
 const formEl = useTemplateRef('formEl');
 const submitCtaRef = useTemplateRef('submitCtaRef');
 const formContentContainerRef = useTemplateRef('formContentContainerRef');
+
+// Variables :
+const MIN_SUBMIT_DURATION = 2000;
 
 // Form :
 const { meta, errors, defineField, isSubmitting, handleSubmit } = useForm({
@@ -60,6 +63,9 @@ const submitError = ref(false);
 const submitSuccess = ref(false);
 const loading = useDeferredLoading(isSubmitting);
 
+// Anti-spam :
+const botcheck = ref(false);
+
 //// Fields :
 const fields: Record<string, any> = {};
 form.content.inputs.forEach((field: any) => {
@@ -69,15 +75,14 @@ form.content.inputs.forEach((field: any) => {
 });
 
 //// Computed :
+// The identity is typed by the user, so it must be escaped before being injected in the HTML :
+const identityHtml = computed(() => `<span class="identity">${escapeHtml(fields['identity']?.model.value)}</span>`);
+
 const formError = form.content.formError[0];
-const formErrorSubtitle = computed(() => {
-	return formError.subtitle.replace('{%i}', `<span class="identity">${fields['identity'].model.value}</span>`);
-});
+const formErrorSubtitle = computed(() => formError.subtitle.replace('{%i}', identityHtml.value));
 
 const formSuccess = form.content.formSuccess[0];
-const formSuccessSubtitle = computed(() => {
-	return formSuccess.subtitle.replace('{%i}', `<span class="identity">${fields['identity'].model.value}</span>`);
-});
+const formSuccessSubtitle = computed(() => formSuccess.subtitle.replace('{%i}', identityHtml.value));
 
 const totalFields = computed(() => Object.keys(fields).length);
 const validFieldsCount = computed(() => {
@@ -91,9 +96,14 @@ const validFieldsCount = computed(() => {
 //// Submit :
 const onSubmit = async () => {
 	await handleSubmit(async (values) => {
-		try {
-			await sleep(2000);
+		// Honeypot : only bots can check this hidden field, so we fake a success without sending anything :
+		if (botcheck.value) {
+			await sleep(MIN_SUBMIT_DURATION);
+			submitSuccess.value = true;
+			return;
+		}
 
+		try {
 			// Prepare form data for Web3Forms :
 			const web3FormData = new FormData();
 			web3FormData.append('access_key', PUBLIC_WEB3FORMS_ACCESS_KEY);
@@ -117,10 +127,13 @@ const onSubmit = async () => {
 			});
 
 			// Submit to Web3Forms :
-			const response = await fetch('https://api.web3forms.com/submit', {
-				method: 'POST',
-				body: web3FormData
-			});
+			const [response] = await Promise.all([
+				fetch('https://api.web3forms.com/submit', {
+					method: 'POST',
+					body: web3FormData
+				}),
+				sleep(MIN_SUBMIT_DURATION)
+			]);
 
 			const data = await response.json();
 
@@ -204,25 +217,25 @@ const onActionEnter = (el: any, done: () => void) => {
 				<div v-else-if="submitError" key="error" class="form-message error">
 					<p class="title" v-html="formErrorSubtitle"></p>
 					<p class="description">{{ formError.description }}</p>
-					<Button @click="submitError = false" theme="dot-khaki" :text="$t('tryAgain')" />
+					<Button theme="dot-khaki" :text="$t('tryAgain')" @click="submitError = false" />
 				</div>
-				<form ref="formEl" v-else key="form" @submit.prevent="onSubmit">
+				<form v-else ref="formEl" key="form" @submit.prevent="onSubmit">
 					<div ref="formContentContainerRef" class="form-content-container">
 						<component
-							v-for="(field, index) in form.content.inputs"
 							v-bind="fields[field.name].props.value"
-							:key="field.name"
 							:is="formInputs[field.component]"
+							v-for="(field, index) in form.content.inputs"
+							:key="field.name"
+							v-model="fields[field.name].model.value"
 							:name="field.name"
 							:placeholder="field.placeholder"
 							:index="Number(index) + 1"
 							:autocomplete="getFieldConfig(field).autocomplete"
 							:items="field.items"
-							v-model="fields[field.name].model.value"
 						/>
 					</div>
 
-					<Button type="submit" class="submit-cta" ref="submitCtaRef" :disabled="loading || isAnimating">
+					<Button ref="submitCtaRef" type="submit" class="submit-cta" :disabled="loading || isAnimating">
 						<div class="inner-submit-cta">
 							<transition mode="out-in" :css="false" @leave="onActionLeave" @enter="onActionEnter">
 								<div :key="loading ? 'sending' : 'submit'" class="label-submit">
@@ -235,7 +248,16 @@ const onActionEnter = (el: any, done: () => void) => {
 						</div>
 					</Button>
 
-					<VueHcaptcha :sitekey="PUBLIC_HCAPTCHA_SITE_KEY" size="invisible" />
+					<!-- Honeypot (anti-spam), hidden from humans : -->
+					<input
+						v-model="botcheck"
+						type="checkbox"
+						name="botcheck"
+						class="botcheck"
+						tabindex="-1"
+						autocomplete="off"
+						aria-hidden="true"
+					/>
 				</form>
 			</transition>
 		</div>
@@ -243,6 +265,10 @@ const onActionEnter = (el: any, done: () => void) => {
 </template>
 
 <style scoped lang="scss">
+.botcheck {
+	display: none;
+}
+
 .form-message {
 	padding: 16px var(--menu-padding-inline);
 

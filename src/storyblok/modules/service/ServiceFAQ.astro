@@ -1,5 +1,6 @@
 ---
 import { storyblokEditable } from '#storyblok/helpers/storyblokEditable.ts';
+import { slimRelations } from '#storyblok/helpers/slimStory.ts';
 import ServiceFAQVue from '#storyblok/modules/service/ServiceFAQ.vue';
 import type {
 	StoryblokServiceFAQ,
@@ -16,15 +17,17 @@ type Props = {
 	faqSections?: StoryblokServiceFAQSection[];
 };
 
-const { blok, faqTitle, faqDescription, faqLink, faqSections } = Astro.props;
+// The site config props are renamed, so they must not be spread twice :
+const { blok, faqTitle, faqDescription, faqLink, faqSections, ...attrs } = Astro.props;
 ---
 
 <ServiceFAQVue
 	{...storyblokEditable(blok, Astro.locals.isPreviewMode)}
-	{...Astro.props}
+	{...attrs}
+	blok={slimRelations(blok)}
 	heading={faqTitle}
 	description={faqDescription}
-	link={faqLink}
-	sections={faqSections}
+	link={slimRelations(faqLink)}
+	sections={slimRelations(faqSections)}
 	client:visible
 />

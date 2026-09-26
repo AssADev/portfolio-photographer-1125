@@ -13,9 +13,10 @@ import vMagnetic from '#directives/vMagnetic.ts';
 import { openMinimap } from '#stores/project.ts';
 
 // Props :
-const { blok, index } = defineProps<{
+const { blok, index, sizes } = defineProps<{
 	blok: StoryblokProjectItemPicture;
 	index?: number;
+	sizes?: string;
 }>();
 
 // Refs :
@@ -37,22 +38,26 @@ const onOpenMinimap = () => {
 
 <template>
 	<Button
-		class="partials-project-item-picture"
-		:data-cursor-label="$t('scaleUp')"
-		@click="onOpenMinimap"
 		v-magnetic="{
 			strength: 0.1,
 			parallax: { target: '.picture-viewer-container', strength: 0.025 }
 		}"
+		class="partials-project-item-picture"
+		:data-cursor-label="$t('scaleUp')"
+		@click="onOpenMinimap"
 	>
 		<div class="picture-viewer-container">
 			<div class="picture-container">
 				<div
+					ref="imageRef"
 					v-animate="{ type: 'mask-reveal', options: { direction: 'down', start: 'top 120%' } }"
 					class="picture-wrapper"
-					ref="imageRef"
 				>
-					<Image :src="blok.picture" object-fit="contain" :sizes="[{ widescreen: '2560px' }, '100vw']" />
+					<Image
+						:src="blok.picture"
+						object-fit="contain"
+						:sizes="sizes || [{ widescreen: '2560px' }, '100vw']"
+					/>
 				</div>
 			</div>
 		</div>

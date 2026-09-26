@@ -1,5 +1,6 @@
 ---
 import { storyblokEditable } from '#storyblok/helpers/storyblokEditable.ts';
+import { slimRelations } from '#storyblok/helpers/slimStory.ts';
 import ServiceOffersComparisonVue from '#storyblok/modules/service/ServiceOffersComparison.vue';
 import type { StoryblokServiceOffer, StoryblokServiceOffersComparison } from '#types/component-types-sb.js';
 
@@ -16,6 +17,7 @@ const isEvents = (Astro.locals.story?.full_slug ?? '').toLowerCase().includes('e
 <ServiceOffersComparisonVue
 	{...storyblokEditable(blok, Astro.locals.isPreviewMode)}
 	{...Astro.props}
+	blok={slimRelations(blok)}
 	heading={serviceOffersComparisonTitle}
 	offers={offers}
 	isEvents={isEvents}

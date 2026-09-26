@@ -116,7 +116,7 @@ onUnmounted(() => {
 							class="picture-wrapper"
 							:style="{ '--picture-width': `${item.width}px` }"
 						>
-							<Image :src="item.url" object-fit="contain" />
+							<Image :src="item.url" object-fit="contain" sizes="350px" />
 						</div>
 					</template>
 				</Marquee>

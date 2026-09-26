@@ -26,7 +26,8 @@ export async function getServices(
 	const queryBaseParams: ISbStoriesParams = {
 		language,
 		version: isPreviewMode ? 'draft' : 'published',
-		content_type: 'Service'
+		content_type: 'Service',
+		per_page: 100
 	};
 
 	try {

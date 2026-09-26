@@ -23,6 +23,9 @@ let activeSnapTarget: HTMLElement | null = null;
 const charsRefs = ref<HTMLSpanElement[]>([]);
 
 let hasPending = false;
+let squareEl: HTMLElement | null = null;
+let lastTransform = '';
+let lastSquareStyle = '';
 let isTransitioning = false;
 let pendingText: string | null = null;
 let outTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -133,19 +136,29 @@ const tick = () => {
 	target.rotation = Math.max(-state.maxRotation, Math.min(state.maxRotation, target.rotation));
 	state.rotation += (target.rotation - state.rotation) * config.LERP_ROTATION;
 
-	// 6. Render :
+	// 6. Render (the DOM is only updated when a value changed, so an idle cursor costs nothing) :
 	if (cursorEl.value) {
-		const square = cursorEl.value.querySelector('.cursor-square') as HTMLElement;
-		if (square) {
-			square.style.setProperty('--cursor-w', `${snapState.w}px`);
-			square.style.setProperty('--cursor-h', `${snapState.h}px`);
-			square.style.borderRadius = `${snapState.radius}px`;
+		squareEl ??= cursorEl.value.querySelector<HTMLElement>('.cursor-square');
+
+		const round = (value: number) => Math.round(value * 100) / 100;
+		const squareStyle = `${round(snapState.w)}|${round(snapState.h)}|${round(snapState.radius)}`;
+
+		if (squareEl && squareStyle !== lastSquareStyle) {
+			squareEl.style.setProperty('--cursor-w', `${round(snapState.w)}px`);
+			squareEl.style.setProperty('--cursor-h', `${round(snapState.h)}px`);
+			squareEl.style.borderRadius = `${round(snapState.radius)}px`;
+			lastSquareStyle = squareStyle;
 		}
 
-		pos.finalX = state.x;
-		pos.finalY = state.y;
+		pos.finalX = round(state.x);
+		pos.finalY = round(state.y);
 
-		cursorEl.value.style.transform = `translate3d(${pos.finalX}px, ${pos.finalY}px, 0) rotate(${state.rotation}deg)`;
+		const transform = `translate3d(${pos.finalX}px, ${pos.finalY}px, 0) rotate(${round(state.rotation)}deg)`;
+
+		if (transform !== lastTransform) {
+			cursorEl.value.style.transform = transform;
+			lastTransform = transform;
+		}
 	}
 };
 

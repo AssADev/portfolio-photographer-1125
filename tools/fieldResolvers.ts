@@ -6,7 +6,7 @@ import type { ResolveData } from './resolveData';
 import { type TypeResolver, arrayToElementType } from './types';
 
 const isRichTextEmpty = (data: any) => {
-	return !data || (data?.content?.[0].type !== 'blok' && !data?.content?.[0].content);
+	return !data || (data?.content?.[0]?.type !== 'blok' && !data?.content?.[0]?.content);
 };
 
 export type FieldResolver = {
@@ -53,7 +53,7 @@ export const fieldResolvers: Record<string, FieldResolver> = {
 	altImage: {
 		condition: ({ content }) => content.alt && content.fieldtype === 'asset',
 		async resolveFields({ content }) {
-			content.alt = content.meta_data.alt || content.alt;
+			content.alt = content.meta_data?.alt || content.alt;
 		}
 	},
 	filenameImage: {

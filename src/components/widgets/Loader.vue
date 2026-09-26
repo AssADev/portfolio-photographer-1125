@@ -42,6 +42,9 @@ const ANIMATION_OPTS = {
 	ease: 'power2.inOut'
 };
 
+// The loader waits for the page to be loaded, but never more than this (e.g. a slow picture or third party script) :
+const MAX_LOADING_DURATION = 3500;
+
 const animateOut = () => {
 	if (!containerRef.value) return;
 
@@ -87,7 +90,12 @@ onMounted(() => {
 	$global.setKey('lockScroll', true);
 	$global.setKey('isSiteLoaded', false);
 
+	let hasStarted = false;
+
 	const startOutAnimation = () => {
+		if (hasStarted) return;
+		hasStarted = true;
+
 		// add a small delay to make sure we show the identity nicely
 		// also, wait a bit so the browser can settle before animating heavily out
 		setTimeout(() => {
@@ -98,7 +106,8 @@ onMounted(() => {
 	if (document.readyState === 'complete') {
 		startOutAnimation();
 	} else {
-		window.addEventListener('load', startOutAnimation);
+		window.addEventListener('load', startOutAnimation, { once: true });
+		setTimeout(startOutAnimation, MAX_LOADING_DURATION);
 	}
 });
 

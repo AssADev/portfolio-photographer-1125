@@ -30,7 +30,8 @@ export function handleUnexpectedError(_request: Request, error: unknown) {
 		apiLogger.error(e);
 	}
 
-	return invalidRequestResponse(serializeError(error), 500);
+	// The details (stack trace...) are only exposed in development :
+	return invalidRequestResponse(import.meta.env.DEV ? serializeError(error) : 'Internal Server Error', 500);
 }
 
 export function invalidRequestResponse(error: unknown, status = 422) {
@@ -67,10 +68,15 @@ export function isOriginAllowed({ request, site }: APIContext) {
 	const isFromSameHost = originHostname === site?.hostname;
 
 	// Check if origin is from a preview domain
-	const previewDomains = PREVIEW_HOSTS?.split(',').map((d: string) => d.trim()) ?? [];
-	const isFromPreviewDomain = previewDomains.some((domain: string) => originHostname.includes(domain));
+	const previewDomains =
+		PREVIEW_HOSTS?.split(',')
+			.map((d: string) => d.trim())
+			.filter(Boolean) ?? [];
+	const isFromPreviewDomain = previewDomains.some(
+		(domain: string) => originHostname === domain || originHostname.endsWith(`.${domain}`)
+	);
 
-	return !isFromSameHost && !isFromPreviewDomain;
+	return isFromSameHost || isFromPreviewDomain;
 }
 
 export function getOrigin(request: Request) {

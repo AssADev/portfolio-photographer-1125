@@ -1,5 +1,6 @@
 ---
 import { storyblokEditable } from '#storyblok/helpers/storyblokEditable.ts';
+import { slimRelations } from '#storyblok/helpers/slimStory.ts';
 import type { ISbStoryData } from '@storyblok/js';
 import HomeHeroVue from '#storyblok/modules/home/HomeHero.vue';
 import type { StoryblokHomeHero, StoryblokProject } from '#types/component-types-sb.js';
@@ -15,6 +16,7 @@ const { blok, projects } = Astro.props;
 <HomeHeroVue
 	{...storyblokEditable(blok, Astro.locals.isPreviewMode)}
 	{...Astro.props}
+	blok={slimRelations(blok)}
 	projects={projects.filter((p) => typeof p !== 'string')}
 	client:visible
 />

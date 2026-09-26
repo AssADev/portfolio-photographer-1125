@@ -69,7 +69,6 @@ export default defineConfig({
 	env: {
 		schema: {
 			// Clients :
-			PUBLIC_HCAPTCHA_SITE_KEY: envField.string({ context: 'client', access: 'public' }),
 			PUBLIC_WEB3FORMS_ACCESS_KEY: envField.string({ context: 'client', access: 'public' }),
 
 			SITE_URL: envField.string({ context: 'client', access: 'public' }),

@@ -6,6 +6,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLenis } from 'lenis/vue';
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 
+import { getGridSizes } from '#utils/image.ts';
+
 import type { StoryblokHomeLayout, StoryblokProject } from '#types/component-types-sb.js';
 
 import { $currentFilter } from '#stores/filter.ts';
@@ -122,6 +124,7 @@ onMounted(() => {
 				:project="project"
 				:class="layouts[index % layouts.length]"
 				:index="getFilteredIndex(project)"
+				:sizes="getGridSizes(layouts[index % layouts.length])"
 			/>
 		</div>
 	</div>
