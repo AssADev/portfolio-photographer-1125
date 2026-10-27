@@ -8,12 +8,12 @@ import { trackNavigationClick } from '#utils/tracking.ts';
 
 import DrawerMenu from '#components/partials/DrawerMenu.vue';
 
-import type { StoryblokLabelLink } from '#types/component-types-sb.js';
+import type { StoryblokLabelLink, StoryblokSiteConfig } from '#types/component-types-sb.js';
 
 import { useRouter } from '#composables/useRouter.ts';
 
 // Injections :
-const siteConfig = inject<any>('siteConfig');
+const siteConfig = inject<Pick<StoryblokSiteConfig, 'identity' | 'menuDescription' | 'menuLinks'>>('siteConfig')!;
 
 // Props & Model :
 const toggled = defineModel<boolean>('toggled', { default: false });
@@ -24,7 +24,7 @@ const { identity, menuDescription, menuLinks } = siteConfig;
 const { location } = useRouter();
 
 // Refs :
-const drawerMenuRef = ref<any>(null);
+const drawerMenuRef = ref<InstanceType<typeof DrawerMenu> | null>(null);
 
 const titleRef = useTemplateRef('titleRef');
 const descriptionRef = useTemplateRef('descriptionRef');
@@ -44,14 +44,14 @@ const menuItems = computed(() => {
 
 const activeMenuItems = computed(() => {
 	const activeItem = findActiveMenuItem(menuItems.value, location.value.pathname);
-	return menuItems.value.map((i: StoryblokLabelLink) => ({ ...i, active: i === activeItem }));
+	return menuItems.value.map((i) => ({ ...i, active: i === activeItem }));
 });
 
 // Methods :
 /**
  * Finds the most specific (closest) matching menu item for the current path
  */
-const findActiveMenuItem = (menuItems: any[], currentPath: string) => {
+const findActiveMenuItem = (menuItems: { link: string; label: string }[], currentPath: string) => {
 	const normalizedCurrentPath = currentPath.replace(/\/$/, '');
 
 	return menuItems.find((item) => {
@@ -68,10 +68,10 @@ const onOpen = () => {
 	if (titleRef.value) tl.add(animations['reveal-paragraphs'](titleRef.value, { delay: 0.45 }), 0);
 	if (descriptionRef.value) tl.add(animations['reveal-paragraphs'](descriptionRef.value, { delay: 0.475 }), 0);
 
-	linksRef.value?.forEach((form: any, index: number) => {
+	linksRef.value?.forEach((form, index) => {
 		const reverseIndex = linksRef.value!.length - 1 - index;
 
-		const label = form.querySelector('span');
+		const label = form.querySelector('span') as HTMLElement;
 
 		tl!.add(animations['reveal-paragraphs'](label, { delay: 0.15 + reverseIndex * 0.1 }), 0);
 	});
@@ -160,8 +160,8 @@ $border: 1px solid rgba($white, 0.08);
 			}
 
 			a {
-				opacity: 1;
 				pointer-events: none;
+				opacity: 1;
 			}
 		}
 
@@ -169,13 +169,13 @@ $border: 1px solid rgba($white, 0.08);
 			content: '';
 			position: absolute;
 			inset: 0;
-			opacity: 0;
+			pointer-events: none;
 			background: map.get($gradients, 'menu-white');
+			opacity: 0;
+			transform: translate3d(-50%, 0, 0);
 			transition:
 				opacity 0.4s $power2Out,
 				transform 0.4s $power2Out 0.3s;
-			transform: translate3d(-50%, 0, 0);
-			pointer-events: none;
 		}
 
 		a {
@@ -184,8 +184,8 @@ $border: 1px solid rgba($white, 0.08);
 			display: block;
 			width: 100%;
 			height: 100%;
-			opacity: 0.6;
 			padding: 24px var(--menu-padding-inline);
+			opacity: 0.6;
 			transition: opacity 0.4s $power2Out;
 		}
 	}
@@ -193,8 +193,8 @@ $border: 1px solid rgba($white, 0.08);
 
 .languages-selector-container {
 	display: flex;
-	align-items: center;
 	gap: 5px;
+	align-items: center;
 
 	li {
 		@include hover {

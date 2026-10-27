@@ -61,8 +61,8 @@ const transformedSrc = computed(() => {
 <style lang="scss" scoped>
 .partials-cursor-projects-item {
 	position: absolute;
-	transform-origin: 0% 0%;
 	transform: scale3d(0, 0, 1);
+	transform-origin: 0% 0%;
 	will-change: transform, opacity;
 }
 

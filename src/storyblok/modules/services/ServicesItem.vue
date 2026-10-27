@@ -70,8 +70,8 @@ const serviceInformations = computed(() => {
 				</template>
 				<template #info>
 					<div
-						class="informations-label"
 						v-animate="{ type: 'reveal-button-dot', options: { delay: 0.025 } }"
+						class="informations-label"
 					>
 						<span>{{
 							numberOfProjects > 1
@@ -80,8 +80,8 @@ const serviceInformations = computed(() => {
 						}}</span>
 					</div>
 					<div
-						class="informations-label"
 						v-animate="{ type: 'reveal-button-dot', options: { delay: 0.175 } }"
+						class="informations-label"
 					>
 						<span>{{ $t('serviceStartPrice', { price: serviceStartPrice }) }}</span>
 					</div>
@@ -211,8 +211,8 @@ hr {
 		position: sticky;
 		top: 20%;
 		display: flex;
-		height: fit-content;
 		align-items: flex-start;
+		height: fit-content;
 	}
 
 	.project-container {

@@ -12,18 +12,19 @@ type MagneticOptions = {
 	};
 };
 
+type MagneticElement = HTMLElement & { __magnetic_cleanup__?: () => void };
+
 /**
  * Global tracker to ensure only one element is magnetic at a time.
  */
 let currentMagneticEl: HTMLElement | null = null;
 
 const vMagnetic: Directive = {
-	mounted(el: HTMLElement, binding: DirectiveBinding<MagneticOptions>) {
+	mounted(el: MagneticElement, binding: DirectiveBinding<MagneticOptions>) {
 		if (isTouchDevice()) return;
 
 		// Props
 		const strength = binding.value?.strength ?? 0.5;
-		const range = binding.value?.range ?? 100;
 		const parallax = binding.value?.parallax;
 
 		// State
@@ -142,15 +143,15 @@ const vMagnetic: Directive = {
 		el.addEventListener('mousemove', onFallbackMove);
 
 		// Cleanup function
-		(el as any).__magnetic_cleanup__ = () => {
+		el.__magnetic_cleanup__ = () => {
 			el.removeEventListener('mouseenter', onMouseEnter);
 			el.removeEventListener('mousemove', onFallbackMove);
 			onMouseLeave();
 		};
 	},
-	unmounted(el: HTMLElement) {
-		if ((el as any).__magnetic_cleanup__) {
-			(el as any).__magnetic_cleanup__();
+	unmounted(el: MagneticElement) {
+		if (el.__magnetic_cleanup__) {
+			el.__magnetic_cleanup__();
 		}
 	}
 };

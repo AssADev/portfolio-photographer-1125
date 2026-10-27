@@ -135,23 +135,23 @@ defineProps<{
 			@include mq($until: tablet) {
 				top: 0;
 				left: 50%;
-				transform: translate3d(-50%, -50%, 0);
 				width: 100%;
+				transform: translate3d(-50%, -50%, 0);
 			}
 
 			@include mq(tablet) {
 				top: 0;
 				right: 0;
-				transform: translate3d(50%, -50%, 0);
 				width: fluidSize(640px, 380px, null, widescreen);
+				transform: translate3d(50%, -50%, 0);
 			}
 		}
 
 		.socials-container {
 			display: flex;
+			gap: fluidSize(28px, 20px);
 			align-items: center;
 			justify-content: space-between;
-			gap: fluidSize(28px, 20px);
 			margin-block-start: fluidSize(16px, 12px);
 
 			.socials-wrapper {

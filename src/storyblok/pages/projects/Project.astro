@@ -34,7 +34,7 @@ const pictures =
 const marqueeBlok = {
 	_uid: `${blok._uid}-marquee`,
 	component: 'ProjectsMarquee'
-} as any as StoryblokProjectsMarquee;
+} as StoryblokProjectsMarquee;
 ---
 
 {
@@ -49,7 +49,7 @@ const marqueeBlok = {
 <div class="modules-container">
 	<div class="modules-inner-container">
 		{
-			blok.body?.map((blok, i) => {
+			blok.body?.map((blok) => {
 				return (
 					<StoryblokComponent
 						blok={blok as SbBlokData}
@@ -77,8 +77,8 @@ const marqueeBlok = {
 		@include pseudo-gradient('before', 'top', 'white-white-transparent', 1, fluidSize(240px, 160px));
 
 		position: relative;
-		background: $white;
 		margin-block-start: calc(100vh + fluidSize(240px, 160px));
+		background: $white;
 
 		&::before {
 			transform: translate3d(0, calc(-100% + 2px), 0);

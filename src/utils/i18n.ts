@@ -18,9 +18,9 @@ export const getLocale = () =>
 		? (getState('language', locales[0]) as string)
 		: arrayAt(document.documentElement.lang.split('-'), 0)!;
 
-export function t(key: string, mapping: Record<string, any> = {}, language = getLocale()) {
+export function t(key: string, mapping: Record<string, unknown> = {}, language = getLocale()) {
 	const translation = Object.entries(mapping).reduce(
-		(acc, [_key, value]) => acc.replace(`{${_key}}`, value),
+		(acc, [_key, value]) => acc.replace(`{${_key}}`, String(value)),
 		translations[language][key]?.replaceAll('\\n', '\n') || key
 	);
 

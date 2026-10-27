@@ -1,4 +1,9 @@
+import type { ISbStoryData } from '@storyblok/astro';
+
 import { generateAltText } from './extractImagesFromStory';
+
+const isStory = (value: Record<string, unknown>): value is Record<string, unknown> & ISbStoryData =>
+	Boolean(value.content && value.name);
 
 /**
  * Recursively adds a leading slash to all 'full_slug' properties in an object.
@@ -8,7 +13,7 @@ import { generateAltText } from './extractImagesFromStory';
  * @param rootStory - Internal use for recursion
  * @returns The normalized data
  */
-export default function normalizeStory<T>(data: T, rootStory?: any): T {
+export default function normalizeStory<T>(data: T, rootStory?: ISbStoryData): T {
 	if (!data || typeof data !== 'object') return data;
 
 	if (Array.isArray(data)) {
@@ -16,11 +21,11 @@ export default function normalizeStory<T>(data: T, rootStory?: any): T {
 		return data;
 	}
 
-	const obj = data as any;
+	const obj = data as Record<string, unknown>;
 
 	// If we detect a Story object (it has a content property and a name property) :
 	let currentRoot = rootStory;
-	if (obj.content && obj.name) {
+	if (isStory(obj)) {
 		currentRoot = obj;
 	}
 
@@ -38,7 +43,7 @@ export default function normalizeStory<T>(data: T, rootStory?: any): T {
 	) {
 		const isImage = /\.(jpg|jpeg|png|webp|avif|gif|svg)$/i.test(obj.filename);
 		if (isImage && !obj.alt) {
-			obj.alt = generateAltText(obj, currentRoot);
+			obj.alt = generateAltText({ filename: obj.filename }, currentRoot);
 		}
 	}
 

@@ -35,9 +35,7 @@ let startPos = 0;
 let startTranslate = 0;
 let currentTranslate = 0;
 let isDragging = false;
-let velocity = 0;
 let lastPos = 0;
-let lastTime = 0;
 let didMove = false;
 let axis = 'x';
 
@@ -173,8 +171,6 @@ const onPointerDown = (e: PointerEvent) => {
 	currentTranslate = isNaN(currentX) ? 0 : currentX;
 	startTranslate = currentTranslate;
 	lastPos = startPos;
-	lastTime = performance.now();
-	velocity = 0;
 	didMove = false;
 	isMoving.value = false;
 
@@ -231,10 +227,6 @@ const onPointerMove = (e: PointerEvent) => {
 
 	// Simplified update for ticker :
 	lastPos = pos;
-	lastTime = performance.now();
-
-	// Use ticker velocity instead of manual calculation :
-	velocity = tickerVelocity;
 };
 
 const onPointerUp = (e: PointerEvent) => {
@@ -398,17 +390,17 @@ defineExpose({
 </script>
 
 <template>
-	<div class="slideshow-container" ref="slideshowContainerRef" @pointerdown="onPointerDown">
+	<div ref="slideshowContainerRef" class="slideshow-container" @pointerdown="onPointerDown">
 		<div
-			class="slideshow-wrapper"
 			ref="slideshowWrapperRef"
+			class="slideshow-wrapper"
 			:class="{
 				'can-grab': enabled,
 				'is-grabbing': isGrabbing,
 				'is-hidden': isHidden
 			}"
 		>
-			<div class="active-indicator" ref="activeIndicatorRef" />
+			<div ref="activeIndicatorRef" class="active-indicator" />
 			<slot />
 		</div>
 	</div>
@@ -417,9 +409,9 @@ defineExpose({
 <style lang="scss" scoped>
 .slideshow-container {
 	position: relative;
-	touch-action: none;
-	height: 100%;
 	width: 100%;
+	height: 100%;
+	touch-action: none;
 }
 
 .slideshow-wrapper {
@@ -439,29 +431,29 @@ defineExpose({
 	@include mq($until: desktop) {
 		align-items: center;
 		width: max-content;
-		min-height: fluidSize(150px, 125px, null, desktop);
 		height: 100%;
+		min-height: fluidSize(150px, 125px, null, desktop);
 	}
 
 	@include mq(desktop) {
 		flex-direction: column;
-		height: auto;
 		width: 100%;
+		height: auto;
 
 		&.is-hidden {
-			opacity: 0;
 			pointer-events: none;
+			opacity: 0;
 		}
 	}
 }
 
 .active-indicator {
 	position: absolute;
-	z-index: 2;
 	left: 0;
-	border: 2px solid $khaki;
+	z-index: 2;
 	pointer-events: none;
 	background: rgba($khaki, 0.25);
+	border: 2px solid $khaki;
 
 	@include mq($until: desktop) {
 		top: 50%;

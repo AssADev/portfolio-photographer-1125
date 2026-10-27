@@ -47,8 +47,8 @@ defineProps<{
 
 .author-wrapper {
 	display: flex;
-	align-items: center;
 	gap: fluidSize(8px, 6px);
+	align-items: center;
 	color: $khaki;
 
 	svg {

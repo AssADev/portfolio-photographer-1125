@@ -17,7 +17,7 @@ defineProps<{
 <template>
 	<div class="steps-item-wrapper">
 		<div class="title-wrapper">
-			<span class="number" v-animate="{ type: 'reveal-letters', options: { delay: 0.4 } }"
+			<span v-animate="{ type: 'reveal-letters', options: { delay: 0.4 } }" class="number"
 				>/{{ formatIndex(index + 1) }}</span
 			>
 			<h2 v-if="blok.title" v-animate="'reveal-titles'">{{ blok.title }}</h2>
@@ -32,7 +32,7 @@ defineProps<{
 			@click="
 				blok.cta[0].link.component === 'Forms'
 					? trackFormOpenClick($event, { formId: (blok.cta[0].link.story as any)?.content?.id })
-					: trackNavigationClick
+					: trackNavigationClick($event)
 			"
 		/>
 	</div>

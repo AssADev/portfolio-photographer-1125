@@ -175,16 +175,17 @@ onUnmounted(() => {
 </script>
 
 <template>
-	<section class="modules service-projects-highlight" ref="sectionRef">
+	<section ref="sectionRef" class="modules service-projects-highlight">
 		<div
+			ref="emblaRef"
 			v-animate="{ type: 'mask-reveal', options: { direction: 'up' } }"
 			class="slideshow-container"
-			ref="emblaRef"
 		>
 			<div
 				class="slideshow-wrapper"
 				:class="{
-					'can-grab': emblaApi && (projects?.length ?? 0) > 1,
+					'has-navigation': projects.length > 1,
+					'can-grab': emblaApi && projects.length > 1,
 					'is-grabbing': isGrabbing
 				}"
 			>
@@ -228,10 +229,10 @@ onUnmounted(() => {
 					:key="index"
 					:ref="(el) => (progressBars[index] = el as HTMLElement)"
 					class="progress-bar"
-					@click="goToSlide(index)"
 					:disabled="currentSlide === index"
 					:aria-disabled="currentSlide === index"
 					:aria-label="$t('goToSlide', { n: index + 1 })"
+					@click="goToSlide(index)"
 				/>
 			</div>
 		</div>
@@ -257,14 +258,17 @@ onUnmounted(() => {
 
 	&.can-grab {
 		cursor: grab;
+	}
 
+	// Leaves room for the navigation, which is rendered on the server too :
+	&.has-navigation {
 		.project-slide {
 			&::before {
 				content: '';
 				position: absolute;
-				z-index: 1;
 				bottom: 0;
 				left: 0;
+				z-index: 1;
 				width: 100%;
 				height: fluidSize(125px, 100px);
 				background: linear-gradient(180deg, rgba($black, 0), rgba($black, 0.4));
@@ -283,8 +287,8 @@ onUnmounted(() => {
 
 .project-slide {
 	position: relative;
-	min-width: 0;
 	flex: 0 0 100%;
+	min-width: 0;
 	overflow: hidden;
 	cursor: inherit;
 
@@ -316,8 +320,8 @@ onUnmounted(() => {
 	bottom: var(--gutter);
 	left: var(--gutter);
 	display: flex;
-	align-items: center;
 	gap: $gap;
+	align-items: center;
 	width: calc(100% - (var(--gutter) * 2));
 }
 
@@ -339,8 +343,8 @@ onUnmounted(() => {
 		position: absolute;
 		inset: 0;
 		background: $white;
-		transform-origin: right center;
 		transform: scale3d(var(--progress-scale, 0), 1, 1);
+		transform-origin: right center;
 	}
 
 	&.active {

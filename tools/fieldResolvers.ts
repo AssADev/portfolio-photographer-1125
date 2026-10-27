@@ -1,11 +1,15 @@
 import { VideoRegex } from '#utils/assets.ts';
 
+import type { StoryblokMultilink } from '#types/component-types-sb.js';
+
 import { localizeLink } from '#storyblok/helpers/localizeLink.ts';
 
 import type { ResolveData } from './resolveData';
-import { type TypeResolver, arrayToElementType } from './types';
+import { type GetFromCacheFunction, type TypeResolver, arrayToElementType } from './types';
 
-const isRichTextEmpty = (data: any) => {
+type RichText = { content?: { type?: string; content?: unknown }[] } | null | undefined;
+
+const isRichTextEmpty = (data: RichText) => {
 	return !data || (data?.content?.[0]?.type !== 'blok' && !data?.content?.[0]?.content);
 };
 
@@ -14,7 +18,7 @@ export type FieldResolver = {
 } & (
 	| {
 			condition: (data: ResolveData) => boolean;
-			resolveFields: (data: ResolveData, cache: Record<string, any>) => void | Promise<void>;
+			resolveFields: (data: ResolveData, getFromCache: GetFromCacheFunction) => void | Promise<void>;
 	  }
 	| { condition?: never; resolveFields?: never }
 );
@@ -33,7 +37,7 @@ export const fieldResolvers: Record<string, FieldResolver> = {
 		condition: ({ content }) => content.fieldtype === 'multilink',
 		resolveFields({ content, language }) {
 			// Process multilinks (localize links) :
-			localizeLink(content as any, language);
+			localizeLink(content as StoryblokMultilink, language);
 		},
 		resolveTypes: {
 			interfaces: ['StoryblokMultilink'],
@@ -47,7 +51,7 @@ export const fieldResolvers: Record<string, FieldResolver> = {
 	richText: {
 		condition: ({ content }) => content.type === 'doc',
 		async resolveFields({ content }) {
-			if (isRichTextEmpty(content as any)) content.content = null;
+			if (isRichTextEmpty(content)) content.content = null;
 		}
 	},
 	altImage: {

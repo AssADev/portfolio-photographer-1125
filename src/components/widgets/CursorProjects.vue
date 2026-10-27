@@ -249,8 +249,8 @@ onUnmounted(() => {
 <style lang="scss" scoped>
 .cursor-projects-container {
 	position: fixed;
-	z-index: 10;
 	inset: 0;
+	z-index: 10;
 	overflow: hidden;
 	pointer-events: none;
 }

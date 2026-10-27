@@ -13,8 +13,10 @@ type ParallaxOptions = {
 	startAtZero?: boolean;
 };
 
+type ParallaxElement = HTMLElement & { __parallax_cleanup__?: () => void };
+
 const vParallax: Directive = {
-	mounted(el: HTMLElement, binding: DirectiveBinding<number | ParallaxOptions>) {
+	mounted(el: ParallaxElement, binding: DirectiveBinding<number | ParallaxOptions>) {
 		if (isTouchDevice()) return;
 
 		const options = typeof binding.value === 'object' ? binding.value : { value: binding.value };
@@ -61,15 +63,15 @@ const vParallax: Directive = {
 			}
 		);
 
-		(el as any).__parallax_cleanup__ = () => {
+		el.__parallax_cleanup__ = () => {
 			mm.revert();
 			tl.scrollTrigger?.kill();
 			tl.kill();
 		};
 	},
-	unmounted(el: HTMLElement) {
-		if ((el as any).__parallax_cleanup__) {
-			(el as any).__parallax_cleanup__();
+	unmounted(el: ParallaxElement) {
+		if (el.__parallax_cleanup__) {
+			el.__parallax_cleanup__();
 		}
 	}
 };

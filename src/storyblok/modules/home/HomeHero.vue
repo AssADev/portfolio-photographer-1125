@@ -438,8 +438,8 @@ onUnmounted(() => {
 <style lang="scss" scoped>
 .modules.home-hero {
 	position: sticky;
-	z-index: 2;
 	top: 0;
+	z-index: 2;
 	margin-block-end: fluidSize(128px, 56px, null, widescreen);
 }
 
@@ -476,9 +476,9 @@ onUnmounted(() => {
 		}
 
 		@include mq(desktop) {
-			white-space: nowrap;
 			display: inline-block;
 			margin-block-end: fluidSize(60px, 42px, null, widescreen);
+			white-space: nowrap;
 		}
 
 		em {
@@ -524,13 +524,13 @@ onUnmounted(() => {
 		@include roobert-14-uppercase;
 
 		display: flex;
+		gap: fluidSize(6px, 4px);
 		align-items: center;
 		justify-content: center;
-		gap: fluidSize(6px, 4px);
 		width: 100%;
 		height: 40px;
-		text-align: center;
 		padding-inline: fluidSize(20px, 16px);
+		text-align: center;
 		transition:
 			background 0.3s $power2Out,
 			color 0.3s $power2Out,
@@ -545,24 +545,24 @@ onUnmounted(() => {
 			}
 
 			&.active {
-				background: $eerieBlack;
 				color: $white;
 				pointer-events: none;
+				background: $eerieBlack;
 			}
 		}
 
 		@include mq(desktop) {
-			border-radius: 4px;
 			background: $whiteChoco;
+			border-radius: 4px;
 
 			@include hover {
 				background: $khaki;
 			}
 
 			&.active {
-				background: $eerieBlack;
 				color: $white;
 				pointer-events: none;
+				background: $eerieBlack;
 			}
 		}
 
@@ -610,16 +610,16 @@ onUnmounted(() => {
 
 .dropdown-container {
 	position: absolute;
-	z-index: 1;
 	top: 100%;
 	left: 0;
-	width: 100%;
+	z-index: 1;
 	display: grid;
 	grid-template-rows: 0fr;
-	transition: grid-template-rows 0.6s $power2InOut;
+	width: 100%;
 	overflow: hidden;
-	border-bottom-left-radius: 4px;
 	border-bottom-right-radius: 4px;
+	border-bottom-left-radius: 4px;
+	transition: grid-template-rows 0.6s $power2InOut;
 
 	&.toggle {
 		grid-template-rows: 1fr;

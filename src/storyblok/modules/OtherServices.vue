@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { ISbStoryData } from '@storyblok/js';
 import gsap from 'gsap';
-
 import { computed, shallowRef, useTemplateRef } from 'vue';
 
 import { breakPointsNoUnits } from '#utils/breakpoints.ts';
@@ -105,11 +104,11 @@ useGSAP(() => {
 	<section ref="sectionRef" class="modules other-services" :style="{ height: totalHeight }">
 		<div ref="containerRef" class="content-container">
 			<h2
+				ref="titleRef"
 				v-animate="{
 					type: 'reveal-letters',
 					options: { delay: 0.75, containerAnimation: horizontalTl }
 				}"
-				ref="titleRef"
 			>
 				{{ blok.title || $t('myServices') }}
 			</h2>
@@ -198,11 +197,11 @@ $serviceHeight: min(fluidSize(440px, 280px, null, xxlarge), calc(50svh - (var(--
 	& > h2 {
 		position: absolute;
 		margin-top: -0.14em;
-		line-height: 1;
-		white-space: nowrap;
-		letter-spacing: -0.02em;
-		text-transform: uppercase;
 		font-size: clampVw(280px, $min: 140px, $max: 320px, $bp: large);
+		line-height: 1;
+		text-transform: uppercase;
+		letter-spacing: -0.02em;
+		white-space: nowrap;
 
 		@include mq(1920px) {
 			font-size: clampVw(540px, $min: 320px, $max: 600px, $bp: widescreen);
@@ -213,10 +212,10 @@ $serviceHeight: min(fluidSize(440px, 280px, null, xxlarge), calc(50svh - (var(--
 .services-container {
 	position: absolute;
 	top: 50%;
-	transform: translate3d(0, -50%, 0);
 	display: flex;
 	column-gap: fluidSize(320px, 180px);
 	height: calc($serviceHeight * 2 + 5%);
+	transform: translate3d(0, -50%, 0);
 
 	&.is-odd {
 		.service-wrapper {
@@ -245,11 +244,11 @@ $serviceHeight: min(fluidSize(440px, 280px, null, xxlarge), calc(50svh - (var(--
 
 .service-wrapper {
 	position: relative;
+	flex-shrink: 0;
 	height: $serviceHeight;
 	aspect-ratio: 360 / 440;
-	background: $ivory;
 	overflow: hidden;
-	flex-shrink: 0;
+	background: $ivory;
 
 	&::before {
 		content: '';

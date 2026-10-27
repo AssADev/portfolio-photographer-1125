@@ -54,7 +54,7 @@ const openDrawer = () => {
 	);
 
 	const socialsLinks = socialsRef.value?.$el.querySelectorAll('a span');
-	socialsLinks.forEach((link: any, index: number) => {
+	socialsLinks.forEach((link: HTMLElement, index: number) => {
 		const reverseIndex = socialsLinks.length - 1 - index;
 
 		tl!.add(animations['reveal-letters-speed'](link, { delay: 0.25 + reverseIndex * 0.125 }), 0);
@@ -117,7 +117,7 @@ defineExpose({
 
 <template>
 	<div ref="drawerRef" class="drawer-menu">
-		<div class="overlay" @click="toggled = false" />
+		<div class="overlay" aria-hidden="true" @click="toggled = false" />
 		<div ref="containerRef" class="drawer-container" :class="theme">
 			<div ref="outerEl" class="drawer-body" :class="{ 'form-error': hasError }">
 				<div ref="innerEl" class="drawer-inner-body">
@@ -158,13 +158,13 @@ defineExpose({
 
 .drawer-container {
 	position: absolute;
-	z-index: 2;
-	bottom: var(--gutter);
 	right: var(--gutter);
+	bottom: var(--gutter);
+	z-index: 2;
 	width: 100%;
 	height: fit-content;
-	border-radius: var(--border-radius);
 	overflow: hidden;
+	border-radius: var(--border-radius);
 	clip-path: inset(100% 0% 0% 0%);
 
 	@include mq($until: tablet) {
@@ -236,13 +236,13 @@ defineExpose({
 		content: '';
 		position: absolute;
 		inset: 0;
-		opacity: 0;
+		pointer-events: none;
 		background: map.get($gradients, 'form-error-drawer-body');
+		opacity: 0;
+		transform: translate3d(0, -50%, 0);
 		transition:
 			opacity 0.4s $power2Out,
 			transform 0.4s $power2Out 0.3s;
-		transform: translate3d(0, -50%, 0);
-		pointer-events: none;
 	}
 
 	.drawer-inner-body {

@@ -9,7 +9,7 @@ const { blok } = Astro.props;
 ---
 
 {
-	blok.body?.map((blok, i) => {
+	blok.body?.map((blok) => {
 		return <StoryblokComponent blok={blok as SbBlokData} id={blok._uid} data-component-name={blok.component} />;
 	})
 }

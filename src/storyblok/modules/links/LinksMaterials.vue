@@ -71,9 +71,9 @@ const MaterialsComponents = {
 :deep(.partials-links-materials-item) {
 	&.item-product,
 	&.item-title {
+		margin: -0.5px;
 		background: $white;
 		border: 1px solid $eerieBlack;
-		margin: -0.5px;
 	}
 }
 </style>

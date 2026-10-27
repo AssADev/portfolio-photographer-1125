@@ -8,6 +8,7 @@ export default {
 	semi: true,
 	singleQuote: true,
 	trailingComma: 'none',
+	endOfLine: 'auto',
 	bracketSpacing: true,
 	bracketSameLine: false,
 	importOrder: [

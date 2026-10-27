@@ -1,8 +1,9 @@
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { type Directive, nextTick } from 'vue';
+import type { Directive, DirectiveBinding } from 'vue';
 
 import { type AnimationOptions, animations } from '#utils/Animations.ts';
+
 import { $global } from '#stores/global.ts';
 
 interface AnimateBinding {
@@ -10,7 +11,10 @@ interface AnimateBinding {
 	options?: AnimationOptions;
 }
 
-const pendingElements = new Map<HTMLElement, any>();
+type AnimateElement = HTMLElement & { _gsapAnim?: gsap.core.Animation };
+type AnimateDirectiveBinding = DirectiveBinding<string | AnimateBinding>;
+
+const pendingElements = new Map<HTMLElement, AnimateDirectiveBinding>();
 let unsubscribe: (() => void) | null = null;
 
 const processPendingElements = () => {
@@ -32,7 +36,7 @@ const processPendingElements = () => {
 	}
 };
 
-const init = (el: HTMLElement & { _gsapAnim?: gsap.core.Animation }, binding: any) => {
+const init = (el: AnimateElement, binding: AnimateDirectiveBinding) => {
 	if (!$global.get().isSiteLoaded) {
 		pendingElements.set(el, binding);
 		if (!unsubscribe) {
@@ -45,7 +49,7 @@ const init = (el: HTMLElement & { _gsapAnim?: gsap.core.Animation }, binding: an
 
 	const value = binding.value;
 	const type = typeof value === 'string' ? value : value.type;
-	const options = typeof value === 'string' ? {} : value.options || {};
+	const options: AnimationOptions = typeof value === 'string' ? {} : value.options || {};
 
 	// If containerAnimation is expected but not yet ready, we wait :
 	if ('containerAnimation' in options && !options.containerAnimation) return;
@@ -87,7 +91,7 @@ const init = (el: HTMLElement & { _gsapAnim?: gsap.core.Animation }, binding: an
 	}
 };
 
-const vAnimate: Directive<HTMLElement & { _gsapAnim?: gsap.core.Animation }, string | AnimateBinding> = {
+const vAnimate: Directive<AnimateElement, string | AnimateBinding> = {
 	mounted(el, binding) {
 		init(el, binding);
 	},

@@ -9,7 +9,7 @@ type RadioItem = {
 	_uid: string;
 	label: string;
 	component?: string;
-	[key: string]: any;
+	[key: string]: unknown;
 };
 
 // Props :
@@ -27,7 +27,8 @@ const blur = () => {
 };
 const focus = () => {
 	const checked = inputEls.value.find((el) => el.checked);
-	checked ? checked.focus() : inputEls.value[0]?.focus();
+	if (checked) checked.focus();
+	else inputEls.value[0]?.focus();
 };
 const clear = () => ((model.value = ''), focus());
 
@@ -36,16 +37,16 @@ defineExpose({ focus, blur, clear });
 
 <template>
 	<Field v-bind="props" :value="model">
-		<template #default="{ name, ariaDescribedby, ariaInvalid }">
-			<div class="radio-group">
+		<template #default="{ name, ariaLabel, ariaDescribedby, ariaInvalid }">
+			<div class="radio-group" role="radiogroup" :aria-label="ariaLabel">
 				<div v-for="item in items" :key="item._uid" class="radio-item">
 					<input
-						ref="inputEls"
-						type="radio"
 						:id="item._uid"
+						ref="inputEls"
+						v-model="model"
+						type="radio"
 						:name="name"
 						:value="item.label"
-						v-model="model"
 						:aria-describedby="ariaDescribedby || undefined"
 						:aria-invalid="ariaInvalid || undefined"
 					/>
@@ -70,24 +71,24 @@ defineExpose({ focus, blur, clear });
 
 	input[type='radio'] {
 		position: relative;
-		appearance: none;
 		width: 10px;
 		height: 10px;
-		aspect-ratio: 1/1;
 		min-height: auto;
+		aspect-ratio: 1/1;
+		margin-block-start: 3px;
+		appearance: none;
+		cursor: pointer;
 		border: 1px solid $eerieBlack;
 		border-radius: 50%;
-		margin-block-start: 3px;
-		cursor: pointer;
 
 		&::before {
 			content: '';
 			position: absolute;
 			inset: 0;
+			background: $eerieBlack;
 			border-radius: 50%;
 			transform: scale3d(0, 0, 1);
 			transition: transform 0.4s $power2Out;
-			background: $eerieBlack;
 		}
 
 		@include hover {

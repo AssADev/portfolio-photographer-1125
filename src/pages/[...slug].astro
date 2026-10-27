@@ -2,7 +2,7 @@
 import '#styles/app.scss';
 
 import BaseLayout from '#layouts/BaseLayout.astro';
-import { type ISbStoryData } from '@storyblok/astro';
+import { type ISbStoryData, type SbBlokData } from '@storyblok/astro';
 
 import { useStoryblokApi } from '@storyblok/astro';
 import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro';
@@ -53,7 +53,7 @@ try {
 
 	const storyblokApi = useStoryblokApi();
 	Astro.response.headers.set('X-Storyblok-CV', storyblokApi.cacheVersion().toString());
-} catch (e: any) {
+} catch (e) {
 	const error = AppError.autoError(e, slug, language);
 
 	Astro.response.status = error.statusCode;
@@ -62,5 +62,5 @@ try {
 ---
 
 <BaseLayout language={language} story={story} noindex={story.content.component === 'Links'}>
-	<StoryblokComponent blok={story.content as any} />
+	<StoryblokComponent blok={story.content as PageContentTypes & SbBlokData} />
 </BaseLayout>

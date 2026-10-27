@@ -101,7 +101,11 @@ export function getRoutePathsFromLinks(links: ProcessedLink[]): string[] {
 					}
 				} else {
 					// For default locale, we push the normalized path AS IS (no prefix) :
-					locale === locales[0] ? routeList.push(normalized) : routeList.push(webJoin(locale, normalized));
+					if (locale === locales[0]) {
+						routeList.push(normalized);
+					} else {
+						routeList.push(webJoin(locale, normalized));
+					}
 				}
 			});
 

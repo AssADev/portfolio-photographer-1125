@@ -1,3 +1,5 @@
+import propertyGroups from 'stylelint-config-recess-order/groups';
+
 /** @type {import('stylelint').Config} */
 export default {
 	customSyntax: 'postcss-html',
@@ -9,6 +11,14 @@ export default {
 		'stylelint-prettier/recommended'
 	],
 	rules: {
+		// Recess order, but `content` always comes first (right after the `{` of a pseudo-element) :
+		'order/properties-order': [
+			{ properties: ['content'] },
+			...propertyGroups.map((group) => ({
+				...group,
+				properties: group.properties.filter((property) => property !== 'content')
+			}))
+		],
 		'custom-property-pattern': null,
 		'selector-class-pattern': null,
 		'number-max-precision': null,
@@ -25,6 +35,8 @@ export default {
 		'declaration-property-value-no-unknown': null,
 		'scss/dollar-variable-empty-line-before': null,
 		'media-feature-range-notation': null,
+		'no-descending-specificity': null,
+		'scss/operator-no-newline-after': null,
 		'selector-pseudo-class-no-unknown': [true, { ignorePseudoClasses: ['deep', 'global', 'export', 'slotted'] }],
 		'selector-type-no-unknown': [true, { ignoreTypes: ['astro-island', 'astro-slot'] }]
 	},
@@ -32,6 +44,13 @@ export default {
 		{
 			files: ['**/*.scss'],
 			customSyntax: 'postcss-scss'
+		},
+		{
+			files: ['src/styles/tools/**/*.scss'],
+			rules: {
+				'block-no-redundant-nested-style-rules': null,
+				'no-invalid-position-declaration': null
+			}
 		}
 	]
 };

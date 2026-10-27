@@ -1,9 +1,15 @@
 <script setup lang="ts" generic="T">
-import { useDebounceFn, useIntersectionObserver, useResizeObserver, useTemplateRefsList } from '@vueuse/core';
+import {
+	useDebounceFn,
+	useIntersectionObserver,
+	usePreferredReducedMotion,
+	useResizeObserver,
+	useTemplateRefsList
+} from '@vueuse/core';
 import gsap from 'gsap';
 import type Lenis from 'lenis';
 import { useLenis } from 'lenis/vue';
-import { computed, nextTick, onUnmounted, reactive, ref, useTemplateRef, watch, watchEffect } from 'vue';
+import { computed, nextTick, onUnmounted, reactive, ref, useTemplateRef, watchEffect } from 'vue';
 
 import { Motion } from '#utils/Motion.ts';
 
@@ -85,6 +91,7 @@ const lengthKey = 'width';
 const percentKey = 'xPercent';
 
 const hovering = ref(false);
+const reducedMotion = usePreferredReducedMotion();
 
 // Variables :
 let gap = 0;
@@ -130,7 +137,7 @@ function updateExtraItems() {
 		index++;
 	}
 
-	extraItems.value = extraCount;
+	extraItems.value = Math.ceil(extraCount / items.length) * items.length;
 }
 
 function updateAnimation() {
@@ -216,16 +223,17 @@ function updateAnimation() {
 }
 
 const onScroll = (instance: Lenis) => {
-	if (pauseOnHover && hovering.value) return;
+	if (reducedMotion.value === 'reduce' || (pauseOnHover && hovering.value)) return;
 	rate.set(Math.abs(instance.velocity) * (scrollSpeed || 1) + 1);
 };
 
-const handleMouseOver = (e: MouseEvent) => {
+// Keyboard focus pauses the marquee the same way as hovering :
+const handleEnter = (e: MouseEvent | FocusEvent) => {
 	if (!pauseOnHover) return;
 	hovering.value = !!(e.target as HTMLElement).closest('.li-marquee');
 };
 
-const handleMouseOut = (e: MouseEvent) => {
+const handleLeave = (e: MouseEvent | FocusEvent) => {
 	if (!pauseOnHover) return;
 	const relatedTarget = e.relatedTarget as HTMLElement;
 	hovering.value = !!(relatedTarget && relatedTarget.closest('.li-marquee'));
@@ -277,7 +285,7 @@ useResizeObserver([containerRef, listRef], (entries) => {
 
 // Watchers :
 watchEffect(() => {
-	if (!playing.value) rate.set(0);
+	if (!playing.value || reducedMotion.value === 'reduce') rate.set(0);
 	else {
 		if (tl?.paused()) tl?.play();
 		if (pauseOnHover && hovering.value) rate.set(0.3);
@@ -290,11 +298,11 @@ useIntersectionObserver(containerRef, ([entry]) => {
 	if (entry.isIntersecting) {
 		inView = true;
 		if (rate.value > 0) tl?.play();
-		scrollSpeed && lenis.value?.on('scroll', onScroll);
+		if (scrollSpeed) lenis.value?.on('scroll', onScroll);
 	} else {
 		inView = false;
 		tl?.pause();
-		scrollSpeed && lenis.value?.off('scroll', onScroll);
+		if (scrollSpeed) lenis.value?.off('scroll', onScroll);
 	}
 });
 
@@ -310,8 +318,10 @@ onUnmounted(() => {
 		ref="container"
 		class="marquee-wrapper"
 		:aria-hidden="true"
-		@mouseover="handleMouseOver"
-		@mouseout="handleMouseOut"
+		@mouseover="handleEnter"
+		@mouseout="handleLeave"
+		@focusin="handleEnter"
+		@focusout="handleLeave"
 	>
 		<div class="marquee-inner" :inert>
 			<ul ref="list" class="ul-marquee">

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import CircularStar from '#components/utils/CircularStar.vue';
-import Label from '#components/utils/Label.vue';
+import TextLabel from '#components/utils/Label.vue';
 import RichText from '#components/utils/RichText.vue';
 
 import type { StoryblokBiographyCopyright } from '#types/component-types-sb.js';
@@ -15,8 +15,8 @@ defineProps<{
 	<section class="modules biography-copyright" :data-cursor-projects="blok.cursorProjects || undefined">
 		<CircularStar v-if="blok.circularStar" :scroll-speed="0.5" />
 		<div class="container">
-			<Label v-if="blok.label" :label="blok.label" />
-			<RichText :doc="blok.title" v-animate="'reveal-paragraphs'" />
+			<TextLabel v-if="blok.label" :label="blok.label" />
+			<RichText v-animate="'reveal-paragraphs'" :doc="blok.title" />
 		</div>
 	</section>
 </template>

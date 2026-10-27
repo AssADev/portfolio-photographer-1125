@@ -103,8 +103,8 @@ defineProps<{
 	position: relative;
 	display: flex;
 	flex-direction: column;
-	overflow: hidden;
 	width: 100%;
+	overflow: hidden;
 	border: 1px solid rgba($eerieBlack, 0.1);
 
 	&.is-popular {
@@ -136,16 +136,16 @@ defineProps<{
 	position: absolute;
 	top: 0;
 	right: 0;
-	transform: translate3d(50%, -50%, 0);
 	width: 125%;
+	transform: translate3d(50%, -50%, 0);
 }
 
 .header-container {
 	position: relative;
 	display: flex;
 	flex-direction: column;
-	justify-content: space-between;
 	gap: fluidSize(50px, 40px);
+	justify-content: space-between;
 	height: 100%;
 	padding: fluidSize(22px, 18px) fluidSize(20px, 18px) fluidSize(26px, 20px);
 }
@@ -168,8 +168,8 @@ defineProps<{
 
 .informations-wrapper {
 	display: flex;
-	align-items: flex-end;
 	gap: fluidSize(16px, 12px);
+	align-items: flex-end;
 }
 
 .price-wrapper {
@@ -185,8 +185,8 @@ defineProps<{
 }
 
 .duration-wrapper {
-	color: $grey;
 	margin-block-end: 4px;
+	color: $grey;
 
 	span {
 		@include roobert-28-light;
@@ -199,8 +199,8 @@ defineProps<{
 
 	& > li {
 		display: flex;
-		align-items: center;
 		gap: fluidSize(16px, 12px);
+		align-items: center;
 		padding: fluidSize(20px, 18px);
 		border-bottom: 1px solid rgba($eerieBlack, 0.1);
 
@@ -224,12 +224,12 @@ defineProps<{
 		align-items: center;
 		justify-content: center;
 		width: 100%;
-		border-radius: 4px;
-		background: $eerieBlack;
 		padding-block: fluidSize(12px, 10px);
-		border: 1px solid rgba($eerieBlack, 0.1);
-		transition: background 0.4s $power2Out;
 		overflow: hidden;
+		background: $eerieBlack;
+		border: 1px solid rgba($eerieBlack, 0.1);
+		border-radius: 4px;
+		transition: background 0.4s $power2Out;
 
 		@include hover {
 			:deep(span) {

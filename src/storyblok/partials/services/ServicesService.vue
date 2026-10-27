@@ -66,9 +66,9 @@ const resolvers = getRichTextResolvers('h2');
 .partials-services-service {
 	position: relative;
 	display: block;
-	overflow: hidden;
 	width: 100%;
 	height: 100%;
+	overflow: hidden;
 
 	@include hover {
 		.picture-wrapper {
@@ -84,8 +84,8 @@ const resolvers = getRichTextResolvers('h2');
 		&::before {
 			content: '';
 			position: absolute;
-			z-index: 1;
 			inset: 0;
+			z-index: 1;
 			background: linear-gradient(0deg, rgba($black, 0.4) 0%, rgba($black, 0) 100%);
 		}
 	}
@@ -96,30 +96,30 @@ const resolvers = getRichTextResolvers('h2');
 
 	.content-container {
 		position: absolute;
-		z-index: 2;
 		inset: 0;
+		z-index: 2;
 		display: flex;
+		flex-direction: column;
 		justify-content: space-between;
 		padding: var(--gutter);
 		padding-block-end: calc(var(--gutter) + fluidSize(12px, 8px));
-		flex-direction: column;
 		color: $white;
 	}
 
 	.informations-wrapper {
 		display: flex;
-		align-items: center;
 		gap: 10px;
+		align-items: center;
 	}
 
 	:slotted(.informations-label),
 	.informations-label {
 		position: relative;
-		border-radius: 3px;
-		color: $white;
-		background: $eerieBlack;
 		padding: fluidSize(5px, 2px) 8px fluidSize(7px, 6px);
 		overflow: hidden;
+		color: $white;
+		background: $eerieBlack;
+		border-radius: 3px;
 
 		span {
 			@include roobert-14-uppercase;

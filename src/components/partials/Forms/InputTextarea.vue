@@ -39,8 +39,8 @@ textarea {
 	@include roobert-14;
 	@include hide-scrollbar;
 
-	resize: none;
 	height: 95px;
 	margin-block-start: 6px;
+	resize: none;
 }
 </style>

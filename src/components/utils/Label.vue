@@ -23,8 +23,8 @@ const delay = computed(() => {
 <style lang="scss" scoped>
 .partials-label {
 	display: flex;
-	align-items: center;
 	gap: 6px;
+	align-items: center;
 	color: $khaki;
 
 	& > p {

@@ -91,9 +91,9 @@ const layouts = [
 	position: absolute;
 	top: 0;
 	left: 50%;
-	transform: translate3d(-50%, 0, 0);
 	overflow: hidden;
 	pointer-events: none;
+	transform: translate3d(-50%, 0, 0);
 
 	:deep(.partials-circular-star) {
 		@include mq($until: desktop) {

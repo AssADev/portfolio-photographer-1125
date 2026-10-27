@@ -125,8 +125,8 @@ onUnmounted(() => {
 
 .panel-wrapper {
 	display: flex;
-	flex-direction: column;
 	flex: 1;
+	flex-direction: column;
 	height: 100%;
 	overflow: hidden;
 }

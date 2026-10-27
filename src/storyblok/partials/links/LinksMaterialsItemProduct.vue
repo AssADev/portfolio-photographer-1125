@@ -37,7 +37,7 @@ const columnNumber = Number(blok.columnNumber ?? 1);
 			<CircularStar />
 			<div v-animate="'scale-up'" class="picture-wrapper">
 				<Image
-					objectFit="contain"
+					object-fit="contain"
 					:src="blok.picture"
 					:sizes="[
 						{
@@ -90,8 +90,8 @@ const columnNumber = Number(blok.columnNumber ?? 1);
 
 .pretitle-wrapper {
 	display: flex;
-	align-items: center;
 	gap: fluidSize(6px, 4px);
+	align-items: center;
 	color: $khaki;
 
 	& > p {
@@ -102,17 +102,17 @@ const columnNumber = Number(blok.columnNumber ?? 1);
 .picture-container {
 	position: relative;
 	height: 100%;
-	border-radius: 2px;
-	background: $ivory;
 	overflow: hidden;
+	background: $ivory;
+	border-radius: 2px;
 
 	:deep(.partials-circular-star) {
 		position: absolute;
 		top: 50%;
 		left: 50%;
-		transform: translate3d(-50%, -50%, 0);
 		width: 150%;
 		opacity: 0;
+		transform: translate3d(-50%, -50%, 0);
 		transition: opacity 0.4s $power2Out;
 	}
 

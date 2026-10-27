@@ -1,71 +1,71 @@
 // Roobert :
 @font-face {
-	font-family: 'Roobert';
+	font-family: Roobert;
+	font-style: normal;
+	font-weight: 300;
 	src:
 		url('/assets/fonts/Roobert/Roobert-Light.woff2') format('woff2'),
 		url('/assets/fonts/Roobert/Roobert-Light.woff') format('woff');
-	font-weight: 300;
-	font-style: normal;
 	font-display: swap;
 }
 
 @font-face {
-	font-family: 'Roobert';
+	font-family: Roobert;
+	font-style: normal;
+	font-weight: 400;
 	src:
 		url('/assets/fonts/Roobert/Roobert-Regular.woff2') format('woff2'),
 		url('/assets/fonts/Roobert/Roobert-Regular.woff') format('woff');
-	font-weight: 400;
-	font-style: normal;
 	font-display: swap;
 }
 
 @font-face {
-	font-family: 'Roobert';
+	font-family: Roobert;
+	font-style: normal;
+	font-weight: 500;
 	src:
 		url('/assets/fonts/Roobert/Roobert-Medium.woff2') format('woff2'),
 		url('/assets/fonts/Roobert/Roobert-Medium.woff') format('woff');
-	font-weight: 500;
-	font-style: normal;
 	font-display: swap;
 }
 
 // Romie :
 @font-face {
-	font-family: 'Romie';
+	font-family: Romie;
+	font-style: normal;
+	font-weight: 400;
 	src:
 		url('/assets/fonts/Romie/Romie-Regular.woff2') format('woff2'),
 		url('/assets/fonts/Romie/Romie-Regular.woff') format('woff');
-	font-weight: 400;
-	font-style: normal;
 	font-display: swap;
 }
 
 @font-face {
-	font-family: 'Romie';
+	font-family: Romie;
+	font-style: italic;
+	font-weight: 400;
 	src:
 		url('/assets/fonts/Romie/Romie-ItalicRegular.woff2') format('woff2'),
 		url('/assets/fonts/Romie/Romie-ItalicRegular.woff') format('woff');
-	font-weight: 400;
-	font-style: italic;
 	font-display: swap;
 }
 
 @font-face {
-	font-family: 'Romie';
+	font-family: Romie;
+	font-style: normal;
+	font-weight: 500;
 	src:
 		url('/assets/fonts/Romie/Romie-Medium.woff2') format('woff2'),
 		url('/assets/fonts/Romie/Romie-Medium.woff') format('woff');
-	font-weight: 500;
-	font-style: normal;
 	font-display: swap;
 }
 
 @font-face {
-	font-family: 'Romie';
+	font-family: Romie;
+	font-style: italic;
+	font-weight: 500;
 	src:
 		url('/assets/fonts/Romie/Romie-ItalicMedium.woff2') format('woff2'),
 		url('/assets/fonts/Romie/Romie-ItalicMedium.woff') format('woff');
-	font-weight: 500;
-	font-style: italic;
 	font-display: swap;
 }

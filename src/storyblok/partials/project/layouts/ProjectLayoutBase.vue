@@ -28,7 +28,7 @@ const ItemsComponents = {
 const limitedItems = computed(() => blok.items.slice(0, layouts.length));
 
 // Methods :
-const getGlobalIndex = (item: any) => {
+const getGlobalIndex = (item: StoryblokProjectLayout['items'][number]) => {
 	if (item.component !== 'ProjectItemPicture') return undefined;
 	return pictures.findIndex((p) => p.id === item.picture.id || p.filename === item.picture.filename);
 };

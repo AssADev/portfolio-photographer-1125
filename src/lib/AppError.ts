@@ -1,6 +1,10 @@
+import type { ISbError } from '@storyblok/astro';
+
 import locales from '#utils/locales.json';
 
 import logger from './logger.ts';
+
+const isAppError = (error: unknown): error is AppError => (error as Error | null | undefined)?.name === 'AppError';
 
 /**
  * Simple error class that knows its HTTP status and redirect path
@@ -21,16 +25,6 @@ export class AppError extends Error {
 	 * Log the error with appropriate level and send to Sentry if needed
 	 */
 	log() {
-		const normalizeError = (err: unknown): Error => {
-			if (err instanceof Error) return err;
-			try {
-				return new Error(typeof err === 'string' ? err : JSON.stringify(err));
-			} catch {
-				return new Error('Unknown error object');
-			}
-		};
-
-		const errorForSentry = normalizeError(this.originalError || this);
 		const logData = {
 			statusCode: this.statusCode,
 			redirectPath: this.redirectPath,
@@ -58,10 +52,10 @@ export class AppError extends Error {
 		}
 	}
 
-	static autoError(e: any, slug?: string, language?: string): AppError {
+	static autoError(e: unknown, slug?: string, language?: string): AppError {
 		if (e instanceof AppError) {
 			return e;
-		} else if (e?.response?.status && slug && language) {
+		} else if ((e as ISbError | null | undefined)?.response?.status && slug && language) {
 			// Has HTTP response status, likely a Storyblok API error
 			return AppError.storyblokError(slug, language, e);
 		} else {
@@ -84,8 +78,8 @@ export class AppError extends Error {
 	/**
 	 * Create a server error (500)
 	 */
-	static serverError(message: string, originalError?: any, context?: Record<string, unknown>): AppError {
-		if (originalError?.name === 'AppError') return originalError;
+	static serverError(message: string, originalError?: unknown, context?: Record<string, unknown>): AppError {
+		if (isAppError(originalError)) return originalError;
 
 		return new AppError(message, 500, '/500', originalError, context);
 	}
@@ -93,10 +87,10 @@ export class AppError extends Error {
 	/**
 	 * Create a Storyblok API error with proper status code mapping
 	 */
-	static storyblokError(slug: string, language: string, originalError: any): AppError {
-		if (originalError?.name === 'AppError') return originalError;
+	static storyblokError(slug: string, language: string, originalError: unknown): AppError {
+		if (isAppError(originalError)) return originalError;
 
-		const status = originalError?.response?.status;
+		const status = (originalError as ISbError | null | undefined)?.response?.status;
 		const context = { slug, language, storyblokStatus: status };
 
 		switch (status) {

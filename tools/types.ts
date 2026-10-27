@@ -2,7 +2,7 @@ import type { InterfaceDeclaration, OptionalKind, PropertySignatureStructure, So
 
 type FieldCallback = (tsInterface: InterfaceDeclaration) => void;
 
-export type GetFromCacheFunction<T = any> = (key: string, cb: () => Promise<T>) => T | Promise<T>;
+export type GetFromCacheFunction = <T>(key: string, cb: () => Promise<T>) => T | Promise<T>;
 
 export type TypeResolver = {
 	interfaces?: string[];

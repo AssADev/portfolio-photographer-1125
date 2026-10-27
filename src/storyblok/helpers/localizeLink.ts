@@ -1,6 +1,6 @@
 import locales from '#utils/locales.json';
 
-import type { StoryblokMultilink } from '#types/component-types-sb.js';
+import type { StoryblokMultilink, StoryblokMultilinkStory } from '#types/component-types-sb.js';
 
 import { removeHomeSlug } from '#storyblok/helpers/specialSlugs';
 
@@ -30,12 +30,13 @@ export const removeLinkFields = ['prep'] as const;
 export function localizeLink(link: StoryblokMultilink, language: string) {
 	if (link.linktype === 'story' && link.story) {
 		// Use full_slug instead of default_full_slug (which is null in link resolution) :
-		const fullSlug = (link.story as any).full_slug || '';
+		const story = link.story as StoryblokMultilinkStory;
+		const fullSlug = story.full_slug || '';
 		const trimmedPath = removeHomeSlug(fullSlug.replace(/^\/*|\/*$/g, ''));
 
 		// Check if we have translated slugs for alternate languages :
-		const translatedSlugs = (link.story as any).translated_slugs;
-		const alt = translatedSlugs?.find((alt: any) => alt.lang === language);
+		const translatedSlugs = story.translated_slugs;
+		const alt = translatedSlugs?.find((alt) => alt.lang === language);
 
 		if (locales[0] === language) {
 			link.url = trimmedPath;
@@ -47,7 +48,7 @@ export function localizeLink(link: StoryblokMultilink, language: string) {
 			link.url = trimmedPath;
 			link.name = link.story.name;
 		}
-		link.component = (link.story as any).content?.component;
+		link.component = story.content?.component;
 		link.url = `/${link.url}`;
 	}
 

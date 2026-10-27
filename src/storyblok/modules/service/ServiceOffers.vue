@@ -32,7 +32,7 @@ const resolvers = getRichTextResolvers('h2');
 					v-for="(offer, index) in offers"
 					:key="offer._uid"
 					:blok="offer"
-					:serviceBookingFormLink="serviceBookingFormLink"
+					:service-booking-form-link="serviceBookingFormLink"
 					:index="index"
 				/>
 			</div>
@@ -42,8 +42,8 @@ const resolvers = getRichTextResolvers('h2');
 
 <style lang="scss" scoped>
 .service-offers {
-	margin-block-start: fluidSize(56px, 24px, null, xxlarge);
 	padding-block: fluidSize(56px, 24px, null, xxlarge) fluidSize(72px, 48px, null, xxlarge);
+	margin-block-start: fluidSize(56px, 24px, null, xxlarge);
 }
 
 .title-wrapper {

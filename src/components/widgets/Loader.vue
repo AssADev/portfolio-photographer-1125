@@ -6,7 +6,7 @@ import { breakPointsNoUnits } from '#utils/breakpoints.ts';
 
 import { $global } from '#stores/global.ts';
 
-const props = defineProps<{
+defineProps<{
 	identity: string;
 }>();
 
@@ -22,7 +22,7 @@ const panelCount = computed(() => (isDesktop.value ? 13 : isTablet.value ? 9 : 7
 
 // Methods :
 const showApp = () => {
-	(window as any).isSiteLoaded = true;
+	(window as Window & { isSiteLoaded?: boolean }).isSiteLoaded = true;
 	document.documentElement.classList.remove('is-site-loading');
 };
 
@@ -152,8 +152,8 @@ onUnmounted(() => {
 
 .panel-wrapper {
 	display: flex;
-	flex-direction: column;
 	flex: 1;
+	flex-direction: column;
 	height: 100%;
 	overflow: hidden;
 }

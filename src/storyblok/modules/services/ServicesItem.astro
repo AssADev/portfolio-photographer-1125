@@ -3,18 +3,24 @@ import { storyblokEditable } from '#storyblok/helpers/storyblokEditable.ts';
 import { slimRelations } from '#storyblok/helpers/slimStory.ts';
 import ServicesItemVue from '#storyblok/modules/services/ServicesItem.vue';
 import type { StoryblokServicesItem } from '#types/component-types-sb.js';
-import { getProjectCountByTag } from '#storyblok/helpers/getProjectCountByTag.ts';
+import { getProjectCountByService } from '#storyblok/helpers/getProjects.ts';
+
+import locales from '#utils/locales.json';
+import parseUrl from '#utils/parseUrl.ts';
 
 type Props = {
 	blok: StoryblokServicesItem;
 };
 
 const { blok } = Astro.props;
+const { language = locales[0] } = parseUrl(Astro.url.pathname);
 
-// Fetch the number of projects associated with the service tag :
+// Fetch the number of projects associated with the service :
 const service = blok.service?.[0];
 const numberOfProjects =
-	service && typeof service !== 'string' ? await getProjectCountByTag(service.name, Astro.locals.isPreviewMode) : 0;
+	service && typeof service !== 'string'
+		? await getProjectCountByService(service.uuid, language, Astro.locals.isPreviewMode)
+		: 0;
 
 // Find the service start price :
 const serviceStartPrice = service && typeof service !== 'string' ? Number(service.content.offers?.[0]?.price || 0) : 0;

@@ -46,9 +46,9 @@ const projects = computed(() => {
 			<div
 				v-for="(layout, index) in PROJECT_LAYOUTS"
 				:key="index"
+				v-parallax="layout.parallax"
 				class="section-container"
 				:class="layout.classes"
-				v-parallax="layout.parallax"
 			>
 				<p
 					v-if="layout.hasDescription && blok.description"

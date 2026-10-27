@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import type { ISbStoryData } from '@storyblok/js';
 import { useElementSize } from '@vueuse/core';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { computed, nextTick, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 
 import { getLinkAttributes } from '#utils/link.ts';
 import { getMarqueeImageWidth } from '#utils/marquee.ts';
@@ -11,7 +10,7 @@ import { trackFormOpenClick, trackNavigationClick } from '#utils/tracking.ts';
 import ProjectsMarqueeItem from '#components/partials/ProjectsMarqueeItem.vue';
 import Button from '#components/utils/Button.vue';
 import CircularStar from '#components/utils/CircularStar.vue';
-import Marquee from '#components/utils/Marquee.vue';
+import MarqueeTrack from '#components/utils/Marquee.vue';
 import RichText from '#components/utils/RichText.vue';
 
 import type {
@@ -63,7 +62,7 @@ const scaledProjects = computed(() => {
 
 		return {
 			project,
-			width: getMarqueeImageWidth(url)
+			width: getMarqueeImageWidth(url, { minWidth: 160, minScale: 0.6, roundTo: 5 })
 		};
 	});
 });
@@ -114,14 +113,14 @@ const activeDescription = computed(() => {
 							? trackFormOpenClick($event, {
 									formId: ((blok?.link?.[0] || link?.[0])!.link.story as any)?.content?.id
 								})
-							: trackNavigationClick
+							: trackNavigationClick($event)
 					"
 				/>
 			</div>
 		</div>
 
 		<div ref="marqueeRef" class="marquee-container">
-			<Marquee
+			<MarqueeTrack
 				v-model:playing="marqueePlaying"
 				:speed="40"
 				pause-on-hover
@@ -139,7 +138,7 @@ const activeDescription = computed(() => {
 						:width="item.width"
 					/>
 				</template>
-			</Marquee>
+			</MarqueeTrack>
 		</div>
 	</section>
 </template>
@@ -153,9 +152,9 @@ const activeDescription = computed(() => {
 	position: absolute;
 	bottom: v-bind("marqueeHeight + 'px'");
 	left: 50%;
-	transform: translate3d(-50%, 0, 0);
 	overflow: hidden;
 	pointer-events: none;
+	transform: translate3d(-50%, 0, 0);
 
 	:deep(.partials-circular-star) {
 		@include mq($until: desktop) {

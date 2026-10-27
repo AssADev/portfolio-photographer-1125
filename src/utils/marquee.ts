@@ -3,6 +3,7 @@ import { parseDimensionsFromUrl } from '#utils/image.ts';
 export type MarqueeImageOptions = {
 	maxWidth?: number;
 	maxHeight?: number;
+	minWidth?: number;
 	minScale?: number;
 	maxScale?: number;
 	roundTo?: number;
@@ -13,7 +14,7 @@ export type MarqueeImageOptions = {
  * and preserving its original aspect ratio.
  */
 export function getMarqueeImageWidth(url: string, options: MarqueeImageOptions = {}): number {
-	const { maxWidth = 350, maxHeight = 300, minScale = 0.75, maxScale = 1.0, roundTo = 20 } = options;
+	const { maxWidth = 350, maxHeight = 300, minWidth = 0, minScale = 0.75, maxScale = 1.0, roundTo = 20 } = options;
 
 	// 1. Get original dimensions :
 	const { width, height } = parseDimensionsFromUrl(url);
@@ -36,10 +37,11 @@ export function getMarqueeImageWidth(url: string, options: MarqueeImageOptions =
 	}
 	const deterministicRandom = Math.abs(hash % 1000) / 1000;
 	const scale = minScale + deterministicRandom * (maxScale - minScale);
-	let finalWidth = baseWidth * scale;
+	let finalWidth = Math.max(baseWidth * scale, minWidth);
 
 	// 4. Rounding :
 	if (roundTo > 0) finalWidth = Math.round(finalWidth / roundTo) * roundTo;
 
-	return finalWidth;
+	// 5. Never exceed the base width, otherwise the picture is taller than the max height and gets cropped :
+	return Math.min(finalWidth, baseWidth);
 }

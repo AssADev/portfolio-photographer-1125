@@ -3,7 +3,7 @@ import { getLinkAttributes } from '#utils/link.ts';
 import { trackNavigationClick } from '#utils/tracking.ts';
 
 import LabelShuffle from '#components/partials/LabelShuffle.vue';
-import Video from '#components/partials/Video.vue';
+import VideoPreview from '#components/partials/Video.vue';
 
 import type { StoryblokLabelLink, StoryblokProjectItemVideo } from '#types/component-types-sb.js';
 
@@ -18,26 +18,30 @@ const { blok, socials } = props;
 // Methods :
 const getSocialLink = (label?: string) => {
 	if (!label) return null;
-	const key = `link_${label.toLowerCase()}` as keyof typeof blok;
-	return blok[key] as any;
+	const key = `link_${label.toLowerCase()}` as 'link_instagram' | 'link_tiktok';
+	return blok[key] ?? null;
 };
 </script>
 
 <template>
 	<div class="partials-project-item-video">
-		<Video
+		<VideoPreview
 			v-animate="{ type: 'mask-reveal', options: { direction: 'down', start: 'top 120%' } }"
 			:video="blok.video"
 			:thumbnail="blok.thumbnail"
 			:link="blok.link_instagram"
 			class="video-container"
 		/>
-		<ul v-if="socials.length" class="socials-container">
+		<div v-if="socials.length" class="socials-container">
 			<div class="socials-wrapper">
-				<div class="socials-sticky-wrapper">
+				<ul class="socials-sticky-wrapper">
 					<template v-for="(social, index) in socials" :key="social._uid">
 						<li v-if="social.label && getSocialLink(social.label)">
-							<a v-bind="getLinkAttributes(getSocialLink(social.label))" @click="trackNavigationClick">
+							<a
+								:href="getSocialLink(social.label)?.url"
+								v-bind="getLinkAttributes(getSocialLink(social.label))"
+								@click="trackNavigationClick"
+							>
 								<LabelShuffle
 									v-animate="{
 										type: 'reveal-label-shuffle',
@@ -49,9 +53,9 @@ const getSocialLink = (label?: string) => {
 							</a>
 						</li>
 					</template>
-				</div>
+				</ul>
 			</div>
-		</ul>
+		</div>
 	</div>
 </template>
 
@@ -68,10 +72,10 @@ const getSocialLink = (label?: string) => {
 
 	@include mq(desktop) {
 		position: absolute;
-		bottom: 0;
 		right: calc(fluidSize(6px, 4px) * -1);
-		transform: translate3d(100%, 0, 0);
+		bottom: 0;
 		height: 100%;
+		transform: translate3d(100%, 0, 0);
 	}
 }
 
@@ -84,8 +88,8 @@ const getSocialLink = (label?: string) => {
 	display: flex;
 
 	@include mq($until: desktop) {
-		justify-content: flex-end;
 		gap: fluidSize(28px, 20px);
+		justify-content: flex-end;
 	}
 
 	@include mq(desktop) {

@@ -105,6 +105,12 @@ const onLetterEnter = (index: number) => {
 	startShuffle(neighbors);
 };
 
+// The shuffle is decorative (letters are hidden from screen readers), so it is mouse only :
+const onLetterOver = (e: MouseEvent) => {
+	const index = innerRefs.value.indexOf(e.target as HTMLElement);
+	if (index !== -1) onLetterEnter(index);
+};
+
 // Animations :
 const animateIn = () => {
 	gsap.killTweensOf(innerRefs.value);
@@ -167,22 +173,21 @@ onMounted(() => {
 
 	window.addEventListener('resize', measureWidths);
 	rootEl.value?.addEventListener('label-shuffle-reveal', handleAnimateIn);
+	rootEl.value?.addEventListener('mouseover', onLetterOver);
+	rootEl.value?.addEventListener('mouseleave', resetLetters);
 });
 
 onUnmounted(() => {
 	window.removeEventListener('resize', measureWidths);
 	rootEl.value?.removeEventListener('label-shuffle-reveal', handleAnimateIn);
+	rootEl.value?.removeEventListener('mouseover', onLetterOver);
+	rootEl.value?.removeEventListener('mouseleave', resetLetters);
 });
 </script>
 
 <template>
-	<div
-		ref="rootEl"
-		class="partials-label-shuffle"
-		:data-cursor-snap="!noSnap ? true : null"
-		:aria-label="label"
-		@mouseleave="resetLetters"
-	>
+	<div ref="rootEl" class="partials-label-shuffle" :data-cursor-snap="!noSnap ? true : null">
+		<span class="sr-only">{{ label }}</span>
 		<span
 			v-for="(letter, index) in originalLetters"
 			:key="index"
@@ -191,7 +196,7 @@ onUnmounted(() => {
 			:style="{ width: letterWidths[index] ? `${letterWidths[index]}px` : 'auto' }"
 			aria-hidden="true"
 		>
-			<span ref="innerRefs" class="letter" @mouseenter="onLetterEnter(index)">
+			<span ref="innerRefs" class="letter">
 				{{ displayedLetters[index] === ' ' ? '\u00A0' : displayedLetters[index] }}
 			</span>
 		</span>
@@ -212,9 +217,9 @@ onUnmounted(() => {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	white-space: pre;
-	text-align: center;
 	overflow: hidden;
+	text-align: center;
+	white-space: pre;
 }
 
 .letter {

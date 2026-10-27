@@ -25,13 +25,13 @@ defineProps<{
 	bottom: var(--gutter);
 	left: var(--gutter);
 	z-index: 2;
-	overflow: hidden;
 	width: fit-content;
 	padding: 5px 8px fluidSize(7px, 6px) 18px;
-	border-radius: 3px;
-	background: $whiteChoco;
+	overflow: hidden;
 	color: $eerieBlack;
 	pointer-events: none;
+	background: $whiteChoco;
+	border-radius: 3px;
 
 	.dot-wrapper {
 		display: flex;

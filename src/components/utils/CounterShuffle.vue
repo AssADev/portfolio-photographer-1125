@@ -126,8 +126,8 @@ onUnmounted(() => {
 	&.measure-char {
 		position: absolute;
 		visibility: hidden;
-		pointer-events: none;
 		white-space: pre;
+		pointer-events: none;
 	}
 }
 

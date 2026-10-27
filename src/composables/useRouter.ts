@@ -5,7 +5,7 @@ import { getState } from '#utils/astro-state.ts';
 
 import { $global } from '#stores/global.ts';
 
-export const waitAfterLoad = new Set<Promise<any>>();
+export const waitAfterLoad = new Set<Promise<unknown>>();
 
 type UserRouterOptions = {
 	beforePreparation?: (event: TransitionBeforePreparationEvent) => void;

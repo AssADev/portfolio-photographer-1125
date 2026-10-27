@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { type SVGAttributes, computed, defineAsyncComponent, h } from 'vue';
+import { type Component, type SVGAttributes, computed, defineAsyncComponent, h } from 'vue';
 
 import { ICONS } from '#utils/icon.ts';
 
-const ASYNC_ICONS_CACHE = new Map<string | number, any>();
+const ASYNC_ICONS_CACHE = new Map<string | number, Component>();
 
 // Props :
 const { name, mirrorX, mirrorY, noFill } = defineProps<

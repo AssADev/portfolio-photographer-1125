@@ -344,13 +344,13 @@ onUnmounted(() => {
 	@include roobert-12-uppercase;
 
 	position: absolute;
-	left: 50%;
 	top: 50%;
-	transform: translate3d(0, -50%, 0);
+	left: 50%;
 	display: flex;
+	margin-inline-start: calc((var(--cursor-square-size) / 2) + 6px);
 	white-space: nowrap;
 	pointer-events: none;
-	margin-inline-start: calc((var(--cursor-square-size) / 2) + 6px);
+	transform: translate3d(0, -50%, 0);
 
 	.char-wrapper {
 		overflow: hidden;
@@ -367,19 +367,19 @@ onUnmounted(() => {
 	--cursor-square-size: 9px;
 
 	position: fixed;
-	z-index: 15;
 	inset: 0;
-	color: $white;
-	opacity: 0;
+	z-index: 15;
 	display: none;
+	color: $white;
 	pointer-events: none;
 	mix-blend-mode: difference;
+	opacity: 0;
 }
 
 .cursor-wrapper {
 	position: fixed;
-	left: 0;
 	top: 0;
+	left: 0;
 	will-change: transform;
 }
 
@@ -387,10 +387,10 @@ onUnmounted(() => {
 	position: absolute;
 	top: 50%;
 	left: 50%;
-	transform: translate3d(-50%, -50%, 0);
 	width: var(--cursor-w, var(--cursor-square-size));
 	height: var(--cursor-h, var(--cursor-square-size));
 	background: $white;
 	border-radius: 2px;
+	transform: translate3d(-50%, -50%, 0);
 }
 </style>

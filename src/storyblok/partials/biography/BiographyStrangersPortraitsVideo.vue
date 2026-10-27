@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import gsap from 'gsap';
-
-import Video from '#components/partials/Video.vue';
+import VideoPreview from '#components/partials/Video.vue';
 
 import type { StoryblokBiographyStrangersPortraitsVideo } from '#types/component-types-sb.js';
 
@@ -13,7 +11,7 @@ defineProps<{
 </script>
 
 <template>
-	<Video
+	<VideoPreview
 		v-animate="{
 			type: 'mask-reveal',
 			options: { direction: 'right', delay }

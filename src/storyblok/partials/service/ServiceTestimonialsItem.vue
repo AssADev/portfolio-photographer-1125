@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useEventListener } from '@vueuse/core';
+import { useTemplateRef } from 'vue';
+
 import Icon from '#components/utils/Icon.vue';
 import RichText from '#components/utils/RichText.vue';
 
@@ -11,13 +14,19 @@ defineProps<{
 }>();
 
 const emit = defineEmits<{
-	mouseenter: [];
-	mouseleave: [];
+	hoverChange: [hovered: boolean];
 }>();
+
+// Refs :
+const rootRef = useTemplateRef('rootRef');
+
+// Decorative hover (testimonials have no focusable content) :
+useEventListener(rootRef, 'mouseenter', () => emit('hoverChange', true));
+useEventListener(rootRef, 'mouseleave', () => emit('hoverChange', false));
 </script>
 
 <template>
-	<div class="partials-service-testimonials-item" @mouseenter="emit('mouseenter')" @mouseleave="emit('mouseleave')">
+	<div ref="rootRef" class="partials-service-testimonials-item">
 		<div class="content-container">
 			<RichText
 				v-animate="{ type: 'reveal-paragraphs', options: { delay: index * 0.125 } }"
@@ -70,8 +79,8 @@ const emit = defineEmits<{
 
 .author-wrapper {
 	display: flex;
-	align-items: center;
 	gap: fluidSize(8px, 6px);
+	align-items: center;
 	color: $khaki;
 
 	svg {

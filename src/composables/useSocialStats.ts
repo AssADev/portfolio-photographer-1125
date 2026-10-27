@@ -2,7 +2,7 @@ import { ref } from 'vue';
 
 export function useSocialStats() {
 	const loading = ref(false);
-	const error = ref(null);
+	const error = ref<string | null>(null);
 
 	const fetchInstagramFollowers = async (accessToken: string) => {
 		try {
@@ -12,15 +12,15 @@ export function useSocialStats() {
 			);
 			const data = await response.json();
 			return data.followers_count;
-		} catch (e: any) {
-			error.value = e.message;
+		} catch (e) {
+			error.value = (e as Error).message;
 			return null;
 		} finally {
 			loading.value = false;
 		}
 	};
 
-	const fetchTikTokFollowers = async (accessToken: string, username: string) => {
+	const fetchTikTokFollowers = async (accessToken: string, _username: string) => {
 		try {
 			loading.value = true;
 			const response = await fetch(`https://open.tiktokapis.com/v2/user/info/`, {
@@ -30,8 +30,8 @@ export function useSocialStats() {
 			});
 			const data = await response.json();
 			return data.data.user.follower_count;
-		} catch (e: any) {
-			error.value = e.message;
+		} catch (e) {
+			error.value = (e as Error).message;
 			return null;
 		} finally {
 			loading.value = false;

@@ -41,9 +41,9 @@ defineProps<{
 .partials-services-project {
 	position: relative;
 	display: block;
-	overflow: hidden;
 	width: 100%;
 	height: 100%;
+	overflow: hidden;
 
 	@include hover {
 		.picture-wrapper {
@@ -88,17 +88,17 @@ defineProps<{
 
 .informations-wrapper {
 	display: flex;
-	align-items: center;
 	gap: 10px;
+	align-items: center;
 }
 
 :slotted(.informations-label) {
 	position: relative;
-	border-radius: 3px;
-	color: $white;
-	background: $eerieBlack;
 	padding: fluidSize(5px, 2px) 8px fluidSize(7px, 6px);
 	overflow: hidden;
+	color: $white;
+	background: $eerieBlack;
+	border-radius: 3px;
 
 	span {
 		@include roobert-14-uppercase;

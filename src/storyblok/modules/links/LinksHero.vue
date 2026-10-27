@@ -94,6 +94,7 @@ const resolvers = getRichTextResolvers('h1');
 								type: 'reveal-square',
 								options: { delay: 0.8 + index * 0.175, fromBottomLeft: index % 2 === 1 }
 							}"
+							:href="social.link.url"
 							v-bind="getLinkAttributes(social.link)"
 							@click="trackNavigationClick"
 						>
@@ -135,11 +136,11 @@ const resolvers = getRichTextResolvers('h1');
 }
 
 .container {
-	height: 100%;
 	display: flex;
 	flex-direction: column;
-	justify-content: center;
 	align-items: center;
+	justify-content: center;
+	height: 100%;
 	color: $white;
 }
 
@@ -157,8 +158,8 @@ const resolvers = getRichTextResolvers('h1');
 	& > :deep(.partials-rich-text) {
 		@include roobert-96;
 
-		text-wrap: balance;
 		margin-block-end: 20px;
+		text-wrap: balance;
 
 		em {
 			@include romie-96-italic;
@@ -194,8 +195,8 @@ const resolvers = getRichTextResolvers('h1');
 
 		&.small-item {
 			@include mq(tablet) {
-				width: 40px;
 				flex: 0 0 auto;
+				width: 40px;
 			}
 		}
 	}
@@ -207,9 +208,9 @@ const resolvers = getRichTextResolvers('h1');
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		border-radius: 4px;
 		height: 100%;
 		background: $whiteChoco;
+		border-radius: 4px;
 		transition:
 			color 0.4s $power2Out,
 			background 0.4s $power2Out;

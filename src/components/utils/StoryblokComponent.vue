@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ISbStoryData } from '@storyblok/vue';
-import { type Component, useTemplateRef } from 'vue';
+import { type Component, type ComponentPublicInstance, useTemplateRef } from 'vue';
 
 /**
  * https://vuejs.org/api/sfc-script-setup.html#recursive-components
@@ -21,10 +21,12 @@ const ResolvedComponent = blok.component && components[blok.component] ? compone
 
 // Find nested component arrays (e.g. "body", "items", etc.) :
 const childrenKeys = Object.keys(blok).filter(
-	(key) => (Array.isArray(blok[key]) && blok[key].some((item: any) => item?.component)) || blok[key]?.component
+	(key) =>
+		(Array.isArray(blok[key]) && blok[key].some((item: { component?: string } | null) => item?.component)) ||
+		blok[key]?.component
 );
 
-const child = useTemplateRef<any>('child');
+const child = useTemplateRef<ComponentPublicInstance>('child');
 defineExpose({ child });
 </script>
 

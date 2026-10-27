@@ -1,10 +1,10 @@
 @use '../tools/colors' as *;
- 
- // Global animations :
- [data-v-animate] {
- 	opacity: 0;
- 	pointer-events: none;
- }
+
+// Global animations :
+[data-v-animate] {
+	pointer-events: none;
+	opacity: 0;
+}
 
 // Reveal titles :
 .reveal-titles-line-wrapper {
@@ -19,10 +19,10 @@
 
 .reveal-titles-block-revealer {
 	position: absolute;
-	z-index: 1;
 	inset: -4px;
+	z-index: 1;
 	pointer-events: none;
 	background: $eerieBlack;
-	transform-origin: left center;
 	transform: scale3d(0, 1, 1) translate3d(0, 12.5%, 0);
+	transform-origin: left center;
 }

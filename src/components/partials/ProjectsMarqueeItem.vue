@@ -185,8 +185,8 @@ onUnmounted(() => {
 
 	@include hover {
 		&::before {
-			transition: opacity 0.4s $power2Out;
 			opacity: 1;
+			transition: opacity 0.4s $power2Out;
 		}
 
 		img {
@@ -197,10 +197,10 @@ onUnmounted(() => {
 	&::before {
 		content: '';
 		position: absolute;
-		z-index: 1;
 		inset: 0;
-		opacity: 0;
+		z-index: 1;
 		background: radial-gradient(rgba($black, 0) 0%, rgba($black, 0.5) 100%);
+		opacity: 0;
 		transition: opacity 1.2s $power2Out 0.1s;
 	}
 }
@@ -213,8 +213,8 @@ onUnmounted(() => {
 	&::before {
 		content: '';
 		position: absolute;
-		z-index: 1;
 		inset: 0;
+		z-index: 1;
 		background: linear-gradient(180deg, rgba($black, 0) 0%, rgba($black, 0.1) 100%);
 	}
 
@@ -225,14 +225,14 @@ onUnmounted(() => {
 
 .content-container {
 	position: absolute;
-	z-index: 2;
 	inset: 0;
+	z-index: 2;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	text-align: center;
-	color: $white;
 	padding: var(--gutter);
+	color: $white;
+	text-align: center;
 
 	:deep(.title) {
 		@include roobert-28;
@@ -251,8 +251,8 @@ onUnmounted(() => {
 		position: absolute;
 		bottom: var(--gutter);
 		left: 50%;
-		transform: translate3d(-50%, 0, 0);
 		width: 100%;
+		transform: translate3d(-50%, 0, 0);
 	}
 }
 </style>

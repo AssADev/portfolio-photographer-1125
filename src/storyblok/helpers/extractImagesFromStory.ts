@@ -28,7 +28,7 @@ export function sanitizeFilename(filename: string): string {
 /**
  * Generates an SEO-friendly alt text for an image based on story metadata.
  */
-export function generateAltText(asset: StoryblokAsset, story: ISbStoryData): string {
+export function generateAltText(asset: Pick<StoryblokAsset, 'filename'>, story: ISbStoryData): string {
 	const storyName = story.name || '';
 	const fileName = sanitizeFilename(asset.filename || '');
 
@@ -49,30 +49,32 @@ export function generateAltText(asset: StoryblokAsset, story: ISbStoryData): str
  * Recursively extracts images from a Storyblok content object.
  */
 function findImages(
-	content: any,
+	content: unknown,
 	story: ISbStoryData,
 	images: SitemapImage[] = [],
-	visited = new WeakSet()
+	visited = new WeakSet<object>()
 ): SitemapImage[] {
 	if (!content || typeof content !== 'object') return images;
 	if (visited.has(content)) return images;
 	visited.add(content);
 
+	const node = content as Record<string, unknown>;
+
 	if (
-		content.filename &&
-		typeof content.filename === 'string' &&
-		(content.fieldtype === 'asset' || content.filename.includes('a.storyblok.com'))
+		node.filename &&
+		typeof node.filename === 'string' &&
+		(node.fieldtype === 'asset' || node.filename.includes('a.storyblok.com'))
 	) {
-		const isImage = /\.(jpg|jpeg|png|webp|avif|gif|svg)$/i.test(content.filename);
+		const isImage = /\.(jpg|jpeg|png|webp|avif|gif|svg)$/i.test(node.filename);
 		if (isImage) {
-			const alt = generateAltText(content as StoryblokAsset, story);
-			images.push({ url: content.filename, title: alt, caption: alt });
+			const alt = generateAltText({ filename: node.filename }, story);
+			images.push({ url: node.filename, title: alt, caption: alt });
 		}
 	}
 
-	for (const key in content) {
-		if (Object.prototype.hasOwnProperty.call(content, key)) {
-			findImages(content[key], story, images, visited);
+	for (const key in node) {
+		if (Object.prototype.hasOwnProperty.call(node, key)) {
+			findImages(node[key], story, images, visited);
 		}
 	}
 

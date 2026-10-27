@@ -85,18 +85,18 @@ const onMouseLeave = () => {
 };
 
 // Animations :
-const onTransitionStart = (el: any, uid: string) => {
-	if (el.propertyName === 'transform') {
+const onTransitionStart = (e: TransitionEvent, uid: string) => {
+	if (e.propertyName === 'transform') {
 		inFlightUids.value.add(uid);
 	}
 };
 
-const onTransitionEnd = (el: any, uid: string) => {
-	if (el.propertyName === 'transform') {
+const onTransitionEnd = (e: TransitionEvent, uid: string) => {
+	if (e.propertyName === 'transform') {
 		inFlightUids.value.delete(uid);
 
 		// If the element just finished its exit animation (not active anymore) :
-		if (!el.target.classList.contains('is-active')) {
+		if (!(e.target as HTMLElement).classList.contains('is-active')) {
 			finishedUids.value.delete(uid);
 		} else {
 			// If it just finished its entrance animation :
@@ -187,7 +187,7 @@ const layouts = [
 					@click="
 						link[0].link.component === 'Forms'
 							? trackFormOpenClick($event, { formId: (link[0].link.story as any)?.content?.id })
-							: trackNavigationClick
+							: trackNavigationClick($event)
 					"
 				/>
 			</div>
@@ -215,8 +215,7 @@ const layouts = [
 										? 0.4
 										: 1
 							}"
-							@mouseenter="onMouseEnter(index)"
-							@mouseleave="onMouseLeave"
+							@hover-change="(hovered: boolean) => (hovered ? onMouseEnter(index) : onMouseLeave())"
 						/>
 					</div>
 				</div>
@@ -281,8 +280,8 @@ const layouts = [
 
 <style lang="scss" scoped>
 .service-testimonials {
-	margin-block-start: fluidSize(96px, 36px, null, xxlarge);
 	padding-block: fluidSize(96px, 36px, null, xxlarge) fluidSize(142px, 96px, null, xxlarge);
+	margin-block-start: fluidSize(96px, 36px, null, xxlarge);
 }
 
 .container-grid {
@@ -324,9 +323,8 @@ const layouts = [
 	.picture-wrapper {
 		position: absolute;
 		height: fit-content;
-		overflow: hidden;
 		max-height: fluidSize(220px, 160px, null, widescreen);
-
+		overflow: hidden;
 		transform: translate3d(0, 108%, 0);
 		transition: transform 0.6s $power2InOut;
 		transition-delay: var(--delay);
@@ -372,8 +370,8 @@ const layouts = [
 	}
 
 	& > :deep(.slideshow-item) {
-		min-width: 0;
 		flex: 0 0 100%;
+		min-width: 0;
 		transition: opacity 0.6s $power2Out;
 
 		&.disabled {
@@ -391,8 +389,8 @@ const layouts = [
 
 .indicator-wrapper {
 	display: flex;
-	align-items: center;
 	gap: fluidSize(8px, 6px);
+	align-items: center;
 
 	svg {
 		margin-block-start: fluidSize(3px, 2px, null, widescreen);
@@ -409,16 +407,16 @@ const layouts = [
 
 	@include mq($until: tablet) {
 		display: flex;
-		align-items: center;
 		gap: $gap;
+		align-items: center;
 	}
 
 	button {
 		@include mq(tablet) {
 			&:last-child {
 				position: absolute;
-				right: 0;
 				top: 0;
+				right: 0;
 				transform: translate3d(calc(100% + $gap), 0, 0);
 			}
 		}

@@ -4,7 +4,11 @@ export function groupBy<T, K extends symbol | number | string>(iterable: Iterabl
 	let i = 0;
 	for (const value of iterable) {
 		const key = cb(value, i++);
-		key in obj ? obj[key].push(value) : (obj[key] = [value]);
+		if (key in obj) {
+			obj[key].push(value);
+		} else {
+			obj[key] = [value];
+		}
 	}
 	return obj as Record<string, T[]>;
 }

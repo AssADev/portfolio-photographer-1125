@@ -13,8 +13,8 @@ import { trackNavigationClick } from '#utils/tracking.ts';
 import Button from '#components/utils/Button.vue';
 import CircularStar from '#components/utils/CircularStar.vue';
 import Image from '#components/utils/Image.vue';
-import Label from '#components/utils/Label.vue';
-import Marquee from '#components/utils/Marquee.vue';
+import TextLabel from '#components/utils/Label.vue';
+import MarqueeTrack from '#components/utils/Marquee.vue';
 import RichText from '#components/utils/RichText.vue';
 
 import type { StoryblokProjectInformations, StoryblokService } from '#types/component-types-sb.js';
@@ -38,7 +38,7 @@ const { height: marqueeHeight } = useElementSize(marqueeRef);
 const scaledPictures = computed(() => {
 	return pictures.map((url) => ({
 		url,
-		width: getMarqueeImageWidth(url)
+		width: getMarqueeImageWidth(url, { minScale: 0.5, roundTo: 5 })
 	}));
 });
 
@@ -100,7 +100,7 @@ onUnmounted(() => {
 				/>
 			</div>
 			<div ref="marqueeRef" class="marquee-container">
-				<Marquee
+				<MarqueeTrack
 					v-model:playing="marqueePlaying"
 					:speed="40"
 					:items="scaledPictures"
@@ -119,14 +119,14 @@ onUnmounted(() => {
 							<Image :src="item.url" object-fit="contain" sizes="350px" />
 						</div>
 					</template>
-				</Marquee>
+				</MarqueeTrack>
 			</div>
 			<div class="container">
 				<div class="title-container">
 					<RichText v-animate="'reveal-titles'" :doc="blok.name" :resolvers="resolvers" tag="h1" />
 					<div class="informations-container">
 						<div v-for="information in informations" :key="information.label" class="information-wrapper">
-							<Label :label="$t(information.label)" :initial-delay="0.55" />
+							<TextLabel :label="$t(information.label)" :initial-delay="0.55" />
 							<template
 								v-if="information.isLink && information.value && typeof information.value === 'object'"
 							>
@@ -182,9 +182,9 @@ onUnmounted(() => {
 	position: absolute;
 	top: 0;
 	left: 50%;
-	transform: translate3d(-50%, 0, 0);
 	overflow: hidden;
 	pointer-events: none;
+	transform: translate3d(-50%, 0, 0);
 
 	:deep(.partials-circular-star) {
 		@include mq($until: desktop) {
@@ -266,8 +266,8 @@ onUnmounted(() => {
 
 		img {
 			width: 100%;
-			height: auto;
 			max-width: inherit;
+			height: auto;
 			max-height: inherit;
 		}
 	}
@@ -275,8 +275,8 @@ onUnmounted(() => {
 
 .container {
 	position: absolute;
-	z-index: 1;
 	inset: 0;
+	z-index: 1;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -309,11 +309,11 @@ onUnmounted(() => {
 	position: absolute;
 	bottom: calc(fluidSize(64px, 40px) * -1);
 	left: 50%;
-	transform: translate3d(-50%, +100%, 0);
-	width: 100%;
 	display: flex;
+	width: 100%;
 	max-width: fluidSize(1024px, 580px);
 	margin-inline: auto;
+	transform: translate3d(-50%, +100%, 0);
 
 	@include mq($until: tablet) {
 		flex-direction: column;
@@ -328,9 +328,9 @@ onUnmounted(() => {
 .information-wrapper {
 	display: flex;
 	flex-direction: column;
+	gap: fluidSize(8px, 6px);
 	align-items: center;
 	justify-content: center;
-	gap: fluidSize(8px, 6px);
 
 	@include mq(tablet) {
 		&:nth-child(2) {

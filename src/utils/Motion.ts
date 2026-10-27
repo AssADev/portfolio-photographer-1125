@@ -129,25 +129,25 @@ type InferConfig<T extends { easing: keyof EasingConfigs }> = T['easing'] extend
 		: never
 	: never;
 
-export class Motion<O extends number | object = any> extends Emitter<number> {
-	#val: any;
-	#key?: keyof O;
+export class Motion<O extends number | object = number> extends Emitter<number> {
+	#val: number | Record<PropertyKey, number>;
+	#key?: PropertyKey;
 
 	constructor(valOrObject: O);
 	constructor(valOrObject: O, key: keyof O);
-	constructor(valOrObject: any, key?: any) {
+	constructor(valOrObject: O, key?: keyof O) {
 		super();
-		this.#val = valOrObject;
+		this.#val = valOrObject as number | Record<PropertyKey, number>;
 		this.#key = key;
 	}
 
 	get value() {
-		return (this.#key ? this.#val[this.#key] : this.#val) as number;
+		return (this.#key ? (this.#val as Record<PropertyKey, number>)[this.#key] : this.#val) as number;
 	}
 	set value(v) {
 		if (v === this.value) return;
 		this.emit('change', v);
-		if (this.#key) this.#val[this.#key] = v;
+		if (this.#key) (this.#val as Record<PropertyKey, number>)[this.#key] = v;
 		else (this.#val as number) = v;
 	}
 

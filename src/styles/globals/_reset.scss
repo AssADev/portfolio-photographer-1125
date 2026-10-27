@@ -109,12 +109,14 @@ display:revert; revert to element instead of attribute */
 - fix for the content editable attribute will work properly.
 - webkit-user-select: auto; added for Safari in case of using user-select:none on wrapper element */
 :where([contenteditable]:not([contenteditable='false'])) {
-	overflow-wrap: break-word;
-	user-select: auto;
-	-moz-user-modify: read-write;
-	-webkit-user-modify: read-write;
 	-webkit-line-break: after-white-space;
 	line-break: after-white-space;
+	overflow-wrap: break-word;
+	user-select: auto;
+	/* stylelint-disable property-no-deprecated -- Part of the contenteditable fix above */
+	-moz-user-modify: read-write;
+	-webkit-user-modify: read-write;
+	/* stylelint-enable property-no-deprecated */
 }
 
 /* apply back the draggable feature - exist only in Chromium and Safari */
@@ -135,10 +137,10 @@ display:revert; revert to element instead of attribute */
 
 /* Improve text rendering */
 html {
-	user-select: none;
 	font-kerning: none;
-	text-size-adjust: 100%;
+	user-select: none;
 	text-rendering: optimizeLegibility;
+	text-size-adjust: 100%;
 }
 
 img,

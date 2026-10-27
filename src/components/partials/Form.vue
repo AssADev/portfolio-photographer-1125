@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import type { ISbStoryData } from '@storyblok/vue';
 import { useResizeObserver } from '@vueuse/core';
 import { PUBLIC_WEB3FORMS_ACCESS_KEY } from 'astro:env/client';
 import gsap from 'gsap';
 import { useForm } from 'vee-validate';
-import { computed, ref, useTemplateRef, watch } from 'vue';
+import { type Component, type Ref, computed, ref, useTemplateRef, watch } from 'vue';
 
 import { animations } from '#utils/Animations.ts';
 import { escapeHtml } from '#utils/escapeHtml.ts';
@@ -14,18 +15,32 @@ import { sleep } from '#utils/sleep.ts';
 
 import Button from '#components/utils/Button.vue';
 
+import type { StoryblokForms, StoryblokInputRadiosItem } from '#types/component-types-sb.js';
+
 import { useDeferredLoading } from '#composables/useDeferredLoading.ts';
 
 // Dynamic imports (Inputs) :
 const formInputs = Object.fromEntries(
-	Object.entries(import.meta.glob('./Forms/*.vue', { eager: true })).map(([path, mod]: [string, any]) => [
+	Object.entries(import.meta.glob<{ default: Component }>('./Forms/*.vue', { eager: true })).map(([path, mod]) => [
 		path.split('/').pop()?.replace('.vue', '') || '',
 		mod.default
 	])
 );
 
 // Props & Model :
-const { form, language } = defineProps<{ form: any; language: string }>();
+const { form, language } = defineProps<{ form: ISbStoryData<StoryblokForms>; language: string }>();
+
+// The inputs of the form, with the optional settings read by `getFieldConfig` :
+type FormField = {
+	name: string;
+	label: string;
+	component: string;
+	placeholder?: string;
+	items?: StoryblokInputRadiosItem[];
+	defaultValue?: string;
+};
+
+const inputs = form.content.inputs as FormField[];
 
 // Refs :
 const formEl = useTemplateRef('formEl');
@@ -39,14 +54,14 @@ const MIN_SUBMIT_DURATION = 2000;
 const { meta, errors, defineField, isSubmitting, handleSubmit } = useForm({
 	validationSchema: computed(() => {
 		const schema: Record<string, string> = {};
-		form.content.inputs.forEach((field: any) => {
+		inputs.forEach((field) => {
 			const config = getFieldConfig(field);
 			if (config.validation) schema[field.name] = config.validation;
 		});
 		return schema;
 	}),
-	initialValues: form.content.inputs.reduce(
-		(acc: Record<string, string>, field: any) => {
+	initialValues: inputs.reduce(
+		(acc: Record<string, string>, field) => {
 			acc[field.name] = field.defaultValue || '';
 			return acc;
 		},
@@ -67,8 +82,8 @@ const loading = useDeferredLoading(isSubmitting);
 const botcheck = ref(false);
 
 //// Fields :
-const fields: Record<string, any> = {};
-form.content.inputs.forEach((field: any) => {
+const fields: Record<string, { model: Ref<string>; props: Ref<Record<string, unknown>> }> = {};
+inputs.forEach((field) => {
 	const config = getFieldConfig(field);
 	const [model, props] = defineField(field.name, mapToProps(field.label, config.options));
 	fields[field.name] = { model, props };
@@ -78,10 +93,10 @@ form.content.inputs.forEach((field: any) => {
 // The identity is typed by the user, so it must be escaped before being injected in the HTML :
 const identityHtml = computed(() => `<span class="identity">${escapeHtml(fields['identity']?.model.value)}</span>`);
 
-const formError = form.content.formError[0];
+const formError = form.content.formError![0];
 const formErrorSubtitle = computed(() => formError.subtitle.replace('{%i}', identityHtml.value));
 
-const formSuccess = form.content.formSuccess[0];
+const formSuccess = form.content.formSuccess![0];
 const formSuccessSubtitle = computed(() => formSuccess.subtitle.replace('{%i}', identityHtml.value));
 
 const totalFields = computed(() => Object.keys(fields).length);
@@ -115,7 +130,7 @@ const onSubmit = async () => {
 
 			// Format form values :
 			Object.entries(values).forEach(([key, value]) => {
-				const field = form.content.inputs.find((f: any) => f.name === key);
+				const field = inputs.find((f) => f.name === key);
 				let formattedValue = value as string;
 
 				// Format date & datetime fields :
@@ -151,8 +166,7 @@ const onSubmit = async () => {
 	})();
 	// When the form isn't valid focus the first invalid field :
 	if (!meta.value.valid) {
-		// @ts-expect-error
-		formEl.value?.querySelector(`[name="${Object.keys(errors.value)[0]}"]`)?.focus();
+		formEl.value?.querySelector<HTMLElement>(`[name="${Object.keys(errors.value)[0]}"]`)?.focus();
 		return;
 	}
 };
@@ -174,7 +188,7 @@ watch(submitError, (val: boolean) => {
 });
 
 // Animations :
-const onActionLeave = (el: any, done: () => void) => {
+const onActionLeave = (el: Element, done: () => void) => {
 	isAnimating.value = true;
 
 	const label = el.querySelector('span');
@@ -186,7 +200,7 @@ const onActionLeave = (el: any, done: () => void) => {
 	}
 };
 
-const onActionEnter = (el: any, done: () => void) => {
+const onActionEnter = (el: Element, done: () => void) => {
 	const label = el.querySelector('span');
 	if (label) {
 		const anim = animations['reveal-letters-speed'](label, {
@@ -224,7 +238,7 @@ const onActionEnter = (el: any, done: () => void) => {
 						<component
 							v-bind="fields[field.name].props.value"
 							:is="formInputs[field.component]"
-							v-for="(field, index) in form.content.inputs"
+							v-for="(field, index) in inputs"
 							:key="field.name"
 							v-model="fields[field.name].model.value"
 							:name="field.name"
@@ -283,8 +297,8 @@ const onActionEnter = (el: any, done: () => void) => {
 	.description {
 		@include roobert-14;
 
-		color: $khaki;
 		margin-block-start: 8px;
+		color: $khaki;
 	}
 
 	.partials-button {
@@ -326,17 +340,17 @@ const onActionEnter = (el: any, done: () => void) => {
 		content: '';
 		position: absolute;
 		inset: 0;
-		opacity: 0.5;
 		background: linear-gradient(180deg, rgba($khaki, 0.2) 0%, rgba($khaki, 0) 100%);
+		opacity: 0.5;
 		transition: opacity 0.4s $power2Out;
 	}
 
 	.inner-submit-cta {
 		position: relative;
 		display: flex;
+		gap: var(--menu-padding-inline);
 		align-items: center;
 		justify-content: space-between;
-		gap: var(--menu-padding-inline);
 		width: 100%;
 		padding: 16px var(--menu-padding-inline);
 

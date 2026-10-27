@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import gsap from 'gsap';
-
 import { formatIndex } from '#utils/formatIndex.ts';
 import { getLinkAttributes } from '#utils/link.ts';
 import { nl2br } from '#utils/nl2br.ts';
@@ -61,15 +59,16 @@ defineProps<{
 			</div>
 			<ul v-if="socials.length" class="socials-wrapper">
 				<li
-					v-for="(social, index) in socials"
+					v-for="(social, socialIndex) in socials"
 					:key="social._uid"
 					v-animate="{
 						type: 'fade-in',
-						options: { delay: delay + 0.8 + index * 0.1 }
+						options: { delay: delay + 0.8 + socialIndex * 0.1 }
 					}"
 				>
 					<a
 						v-magnetic="{ strength: 0.1 }"
+						:href="social.link.url"
 						v-bind="getLinkAttributes(social.link)"
 						@click="trackNavigationClick"
 					>
@@ -115,8 +114,8 @@ defineProps<{
 	position: absolute;
 	top: 50%;
 	left: 0;
-	transform: translate3d(-50%, -50%, 0);
 	height: 200%;
+	transform: translate3d(-50%, -50%, 0);
 }
 
 .inner-container {
@@ -139,9 +138,9 @@ defineProps<{
 	width: 40px;
 	height: 40px;
 	aspect-ratio: 1 / 1;
-	border-radius: var(--border-radius);
-	background: $eerieBlack;
 	margin-block-end: fluidSize(20px, 16px);
+	background: $eerieBlack;
+	border-radius: var(--border-radius);
 
 	span {
 		@include roobert-16-uppercase;

@@ -14,6 +14,7 @@ import Icon from '#components/utils/Icon.vue';
 import ContactForms from '#components/widgets/ContactForms.vue';
 import Menu from '#components/widgets/Menu.vue';
 
+import type { StoryblokSiteConfig } from '#types/component-types-sb.js';
 import type { LanguageAlternate } from '#types/seo.ts';
 
 import { useRouter } from '#composables/useRouter.ts';
@@ -23,7 +24,17 @@ import { $projectMinimap, closeMinimap } from '#stores/project.ts';
 
 // Props :
 const { siteConfig, language, languageAlternates } = defineProps<{
-	siteConfig: any;
+	siteConfig: Pick<
+		StoryblokSiteConfig,
+		| 'identity'
+		| 'email'
+		| 'menuDescription'
+		| 'titleContact'
+		| 'descriptionContact'
+		| 'menuLinks'
+		| 'socials'
+		| 'formsContact'
+	>;
 	language: string;
 	languageAlternates?: LanguageAlternate[];
 }>();
@@ -50,8 +61,8 @@ const menuIconRef = useTemplateRef('menuIconRef');
 const scrollHide = ref(false);
 const hidden = ref(false);
 
-const contactFormsRef = ref<any>(null);
-const menuRef = ref<any>(null);
+const contactFormsRef = ref<InstanceType<typeof ContactForms> | null>(null);
+const menuRef = ref<InstanceType<typeof Menu> | null>(null);
 
 const initialWidth = ref(0);
 let tlHeader: gsap.core.Timeline | null = null;
@@ -89,8 +100,6 @@ const orderedLocales = computed(() => {
 });
 
 const isContactFormActive = computed(() => globalStore.value.isContactFormActive);
-
-const drawerEl = computed(() => activeDrawer.value?.containerRef);
 
 const isInteractionToggled = computed<boolean>({
 	get: () => isMenuToggled.value || isContactToggled.value,
@@ -175,13 +184,15 @@ const handleIdentityAction = (e: MouseEvent) => {
 	trackNavigationClick(e);
 };
 
-const onActionLeave = (el: any, done: () => void) => {
+type IdentityCta = HTMLElement & { _lastWidth?: number };
+
+const onActionLeave = (el: Element, done: () => void) => {
 	isAnimating.value = true;
 
 	if (el.classList.contains('label-identity')) {
-		const btn = el.closest('.identity-cta');
+		const btn = el.closest<IdentityCta>('.identity-cta');
 		if (btn) {
-			(btn as any)._lastWidth = btn.offsetWidth;
+			btn._lastWidth = btn.offsetWidth;
 		}
 	}
 
@@ -194,13 +205,13 @@ const onActionLeave = (el: any, done: () => void) => {
 	}
 };
 
-const onActionEnter = (el: any, done: () => void) => {
+const onActionEnter = (el: Element, done: () => void) => {
 	const label = el.querySelector('span');
 
 	if (el.classList.contains('label-identity')) {
-		const btn = el.closest('.identity-cta');
-		if (btn && (btn as any)._lastWidth) {
-			const lastWidth = (btn as any)._lastWidth;
+		const btn = el.closest<IdentityCta>('.identity-cta');
+		if (btn && btn._lastWidth) {
+			const lastWidth = btn._lastWidth;
 			gsap.set(btn, { width: 'auto' });
 			const targetWidth = btn.offsetWidth;
 
@@ -292,7 +303,7 @@ watch([isContactToggled, isMenuToggled], async ([contactVal, menuVal], [oldConta
 	isAnimating.value = true;
 
 	if (tlHeader) {
-		tlHeader.getChildren(true, true, true).forEach((tween: any) => {
+		tlHeader.getChildren(true, true, true).forEach((tween) => {
 			if (tween.data && tween.data.split) {
 				tween.data.split.revert();
 			}
@@ -344,10 +355,10 @@ watch([isContactToggled, isMenuToggled], async ([contactVal, menuVal], [oldConta
 			if (menuVal) {
 				// Reveal Languages :
 				tlHeader.set(languagesRef.value, { visibility: 'visible' }, 0.4);
-				languageItemsRef.value?.forEach((item: any, index: number) => {
+				languageItemsRef.value?.forEach((item, index) => {
 					tlHeader!.add(animations['reveal-letters'](item, { delay: 0.15 * index }), 0.4);
 				}, 0);
-				languageIconsRef.value?.forEach((icon: any, index: number) => {
+				languageIconsRef.value?.forEach((icon, index) => {
 					tlHeader!.add(
 						animations['scale-up'](icon?.$el || icon, {
 							delay: 0.15 + 0.15 * index,
@@ -382,10 +393,10 @@ watch([isContactToggled, isMenuToggled], async ([contactVal, menuVal], [oldConta
 
 			// 1. Hide current Header content :
 			if (oldMenu) {
-				languageItemsRef.value?.forEach((item: any, index: number) => {
+				languageItemsRef.value?.forEach((item, index) => {
 					tlHeader!.add(animations['hide-letters-speed'](item, { delay: 0.05 * index }), 0);
 				}, 0);
-				languageIconsRef.value?.forEach((icon: any, index: number) => {
+				languageIconsRef.value?.forEach((icon, index) => {
 					tlHeader!.add(
 						animations['scale-down'](icon?.$el || icon, {
 							delay: 0.05 + 0.05 * index,
@@ -566,9 +577,9 @@ onUnmounted(() => {
 <style scoped lang="scss">
 #header {
 	position: fixed;
-	z-index: 30;
 	bottom: 0;
 	left: 0;
+	z-index: 30;
 	width: 100%;
 	pointer-events: none;
 }
@@ -596,11 +607,11 @@ button {
 	position: absolute;
 	bottom: 0;
 	left: 0;
-	background: $eerieBlack;
 	justify-content: flex-start;
 	padding-inline: var(--header-padding-inline);
-	border-radius: var(--border-radius);
 	white-space: nowrap;
+	background: $eerieBlack;
+	border-radius: var(--border-radius);
 
 	span {
 		@include roobert-14-uppercase;
@@ -616,8 +627,8 @@ button {
 
 .interactions-container {
 	position: absolute;
-	bottom: 0;
 	right: 0;
+	bottom: 0;
 	display: flex;
 	align-items: center;
 	width: fit-content;
@@ -669,10 +680,10 @@ button {
 	&.is-menu-open {
 		.contact-cta-wrapper {
 			background: $eerieBlack;
+			border-radius: 0 0 var(--border-radius) var(--border-radius);
 			transition:
 				background 0.3s $power2InOut 0.5125s,
 				border-radius 0.3s $power2InOut 0.5125s;
-			border-radius: 0 0 var(--border-radius) var(--border-radius);
 
 			&::before {
 				transform: translate3d(0, 0, 0);
@@ -693,29 +704,29 @@ button {
 		justify-content: flex-start;
 		width: 100%;
 		height: 100%;
+		padding-inline: var(--header-padding-inline) 54px;
+		overflow: hidden;
 		background: $whiteChoco;
 		border-radius: var(--border-radius);
-		padding-inline: var(--header-padding-inline) 54px;
 		transition:
 			background 0.3s $power2Out,
 			border-radius 0.3s $power2Out 0.5125s;
-		overflow: hidden;
 
 		&::before {
 			content: '';
 			position: absolute;
 			inset: 0;
+			pointer-events: none;
 			background: $eerieBlack;
 			border-radius: inherit;
-			pointer-events: none;
 			transform: translate3d(100%, 0, 0);
 			transition: transform 0.85s $power2InOut;
 		}
 
 		.contact-trigger {
 			position: absolute;
-			z-index: 1;
 			inset: 0;
+			z-index: 1;
 		}
 
 		.label-contact,
@@ -731,10 +742,10 @@ button {
 		.label-action-wrapper,
 		.languages-wrapper {
 			position: absolute;
-			left: var(--header-padding-inline);
 			top: 50%;
-			transform: translate3d(0, -50%, 0);
+			left: var(--header-padding-inline);
 			visibility: hidden;
+			transform: translate3d(0, -50%, 0);
 		}
 
 		.label-action {
@@ -744,8 +755,8 @@ button {
 
 		.languages-selector-container {
 			display: flex;
-			align-items: center;
 			gap: 5px;
+			align-items: center;
 			color: $white;
 
 			li {
@@ -764,8 +775,8 @@ button {
 					@include roobert-12-uppercase;
 
 					position: relative;
-					opacity: 0.5;
 					pointer-events: all;
+					opacity: 0.5;
 					transition: opacity 0.4s $power2Out;
 				}
 
@@ -778,20 +789,20 @@ button {
 
 	.menu-cta {
 		position: absolute;
-		z-index: 2;
 		right: 0;
+		z-index: 2;
+		aspect-ratio: 1/1;
 		background: $eerieBlack;
 		border-radius: var(--border-radius);
-		aspect-ratio: 1/1;
 		transition: background 0.3s $power2Out 0.6125s;
 
 		&::before {
 			content: '';
 			position: absolute;
 			inset: 0;
+			pointer-events: none;
 			background: $whiteChoco;
 			border-radius: inherit;
-			pointer-events: none;
 			transform: translate3d(-100%, 0, 0);
 			transition: transform 0.425s $power2InOut 0.7s;
 		}

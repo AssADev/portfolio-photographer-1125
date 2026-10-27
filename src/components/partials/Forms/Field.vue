@@ -44,7 +44,7 @@ const accessibleLabel = computed(() => label || placeholder || name);
 						placeholder
 					}"
 				/>
-				<p class="error-message" v-if="error" :id="_id + '-error'">
+				<p v-if="error" :id="_id + '-error'" class="error-message">
 					<span>{{ error }}</span>
 				</p>
 			</div>
@@ -63,13 +63,13 @@ const accessibleLabel = computed(() => label || placeholder || name);
 		content: '';
 		position: absolute;
 		inset: 0;
-		opacity: 0;
+		pointer-events: none;
 		background: map.get($gradients, 'form-error');
+		opacity: 0;
+		transform: translate3d(-50%, 0, 0);
 		transition:
 			opacity 0.4s $power2Out,
 			transform 0.4s $power2Out 0.3s;
-		transform: translate3d(-50%, 0, 0);
-		pointer-events: none;
 	}
 
 	&.field-invalid {
@@ -147,7 +147,7 @@ const accessibleLabel = computed(() => label || placeholder || name);
 .error-message {
 	@include roobert-12;
 
-	color: $red;
 	margin-block-start: 8px;
+	color: $red;
 }
 </style>

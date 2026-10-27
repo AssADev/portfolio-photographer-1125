@@ -9,8 +9,8 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-function chain(...callbacks: any[]): (...args: any[]) => void {
-	return (...args: any[]) => {
+function chain(...callbacks: unknown[]): (...args: unknown[]) => void {
+	return (...args: unknown[]) => {
 		for (const callback of callbacks) {
 			if (typeof callback === 'function') {
 				callback(...args);
@@ -129,7 +129,7 @@ export function preventScrollMobileSafari() {
 function addEvent<K extends keyof GlobalEventHandlersEventMap>(
 	target: Document | Window,
 	event: K,
-	handler: (this: Document | Window, ev: GlobalEventHandlersEventMap[K]) => any,
+	handler: (this: Document | Window, ev: GlobalEventHandlersEventMap[K]) => unknown,
 	options?: boolean | AddEventListenerOptions
 ) {
 	// @ts-expect-error internal function, so it's ok to ignore the difficult to fix type error

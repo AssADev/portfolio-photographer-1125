@@ -10,7 +10,7 @@ import { getMarqueeImageWidth } from '#utils/marquee.ts';
 import ProjectsMarqueeItem from '#components/partials/ProjectsMarqueeItem.vue';
 import Button from '#components/utils/Button.vue';
 import CircularStar from '#components/utils/CircularStar.vue';
-import Marquee from '#components/utils/Marquee.vue';
+import MarqueeTrack from '#components/utils/Marquee.vue';
 import RichText from '#components/utils/RichText.vue';
 
 import type { StoryblokLabelLink, StoryblokProject, StoryblokRichtext } from '#types/component-types-sb';
@@ -55,14 +55,14 @@ const resolvers = getRichTextResolvers('h1');
 					:scroll-speed="1"
 				/>
 			</div>
-			<div class="marquee-container" ref="marqueeRef">
-				<Marquee
+			<div ref="marqueeRef" class="marquee-container">
+				<MarqueeTrack
+					v-model:playing="marqueePlaying"
 					:speed="40"
 					pause-on-hover
 					:items="scaledProjects"
 					:scroll-speed="0.35"
 					align-items="flex-start"
-					v-model:playing="marqueePlaying"
 				>
 					<template #item="{ item, index }">
 						<ProjectsMarqueeItem
@@ -74,7 +74,7 @@ const resolvers = getRichTextResolvers('h1');
 							:width="item.width / 1.325"
 						/>
 					</template>
-				</Marquee>
+				</MarqueeTrack>
 			</div>
 			<div class="container">
 				<div class="title-container">
@@ -102,8 +102,8 @@ const resolvers = getRichTextResolvers('h1');
 	width: 100%;
 	height: 100vh;
 	overflow: hidden;
-	touch-action: none;
 	overscroll-behavior: none;
+	touch-action: none;
 }
 
 .inner-container {
@@ -123,9 +123,9 @@ const resolvers = getRichTextResolvers('h1');
 	position: absolute;
 	top: 0;
 	left: 50%;
-	transform: translate3d(-50%, 0, 0);
 	overflow: hidden;
 	pointer-events: none;
+	transform: translate3d(-50%, 0, 0);
 
 	:deep(.partials-circular-star) {
 		@include mq($until: desktop) {
@@ -188,8 +188,8 @@ const resolvers = getRichTextResolvers('h1');
 
 		img {
 			width: 100%;
-			height: auto;
 			max-width: inherit;
+			height: auto;
 			max-height: inherit;
 		}
 	}
@@ -197,8 +197,8 @@ const resolvers = getRichTextResolvers('h1');
 
 .container {
 	position: absolute;
-	z-index: 1;
 	inset: 0;
+	z-index: 1;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -208,9 +208,9 @@ const resolvers = getRichTextResolvers('h1');
 .title-container {
 	position: relative;
 	display: flex;
-	align-items: center;
 	flex-direction: column;
 	gap: fluidSize(28px, 24px);
+	align-items: center;
 	width: 100%;
 	text-align: center;
 

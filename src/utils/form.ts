@@ -4,13 +4,15 @@ import { t } from '#utils/i18n.ts';
 
 type ValidatorFn = Parameters<typeof defineRule>[1];
 
+type FieldOptions = { error?: boolean; required?: boolean; min?: string };
+
 // Validators :
 export const is =
 	<T>(correct: T): ValidatorFn =>
-	(val: any) =>
+	(val: unknown) =>
 		val === correct;
 
-export const required: ValidatorFn = (val: unknown, _p, ctx) => (val != null && val !== '') || t('formRuleRequired');
+export const required: ValidatorFn = (val: unknown) => (val != null && val !== '') || t('formRuleRequired');
 
 export const email: ValidatorFn = (val: unknown, p, ctx) => {
 	const r = required(val, p, ctx);
@@ -37,7 +39,7 @@ export const minDate: ValidatorFn = (val: unknown) => {
 	return true;
 };
 
-export const url: ValidatorFn = (val: unknown, p, ctx) => {
+export const url: ValidatorFn = (val: unknown) => {
 	if (!val || val === '') return true;
 
 	return (
@@ -58,10 +60,10 @@ defineRule('url', url);
 // Map to props :
 export const mapToProps = (
 	label: string | undefined = undefined,
-	{ error = true, required = false, min = undefined }: any = {}
+	{ error = true, required = false, min = undefined }: FieldOptions = {}
 ) => ({
 	props: (state: { errors: string[] }) => {
-		const o: Record<string, any> = { label };
+		const o: Record<string, unknown> = { label };
 		if (error) o.error = state.errors.join(', ');
 		if (required) {
 			o.ariaRequired = true;
@@ -74,7 +76,7 @@ export const mapToProps = (
 });
 
 // Fields Configuration :
-const defaultFieldConfig: Record<string, { validation?: string; options?: any; autocomplete?: string }> = {
+const defaultFieldConfig: Record<string, { validation?: string; options?: FieldOptions; autocomplete?: string }> = {
 	identity: { validation: 'required', options: { required: true }, autocomplete: 'name' },
 	email: { validation: 'email', options: { required: true }, autocomplete: 'email' },
 	location: { validation: 'required', options: { required: true }, autocomplete: 'home address-level2' },
@@ -107,7 +109,12 @@ const defaultFieldConfig: Record<string, { validation?: string; options?: any; a
 	}
 };
 
-export const getFieldConfig = (field: any) => {
+export const getFieldConfig = (field: {
+	name: string;
+	validation?: string;
+	options?: FieldOptions;
+	autocomplete?: string;
+}) => {
 	const defaultConfig = defaultFieldConfig[field.name] || {};
 	return {
 		validation: field.validation || defaultConfig.validation,

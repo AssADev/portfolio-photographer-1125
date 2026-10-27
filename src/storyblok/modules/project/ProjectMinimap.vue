@@ -7,7 +7,7 @@ import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch 
 
 import { animations } from '#utils/Animations.ts';
 import { breakPointsNoUnits } from '#utils/breakpoints.ts';
-import { getAspectRatio, parseImageData, transform } from '#utils/image.ts';
+import { getAspectRatio } from '#utils/image.ts';
 import { sleep } from '#utils/sleep.ts';
 
 import Slideshow from '#components/partials/Slideshow.vue';
@@ -32,12 +32,13 @@ const viewerWrapperRef = useTemplateRef('viewerWrapperRef');
 const slideshowRef = useTemplateRef('slideshowRef');
 const themeCtaRef = useTemplateRef('themeCtaRef');
 const zoomContainer = useTemplateRef('zoomContainer');
+const preloadRef = useTemplateRef('preloadRef');
 
 const isOpening = ref(false);
 const isClosing = ref(false);
 const isVisible = ref(false);
 
-// The pictures are only loaded once the minimap has been opened :
+// The full size pictures are only loaded once the minimap has been opened :
 const hasBeenOpened = ref(false);
 const currentSlide = ref(0);
 const isDarkTheme = ref(false);
@@ -50,6 +51,16 @@ const isDesktop = ref(false);
 // Computed :
 const formattedZoom = computed(() => currentPictureZoom.value.toFixed(1));
 const isSlideshowHidden = computed(() => currentPictureZoom.value > 1.25);
+
+// The current picture and its neighbours, rendered hidden with the same props as the viewer, so the
+// browser loads the exact same files and navigating between slides is instant :
+const preloadedIndexes = computed(() => {
+	if (!hasBeenOpened.value) return [];
+
+	const { currentIndex } = projectMinimapStore.value;
+	const indexes = [0, 1, -1, 2, -2].map((offset) => currentIndex + offset);
+	return indexes.filter((index) => index >= 0 && index < pictures.length);
+});
 
 // Methods :
 const goToNext = () => {
@@ -94,27 +105,24 @@ const onKeyDown = (e: KeyboardEvent) => {
 	}
 };
 
-const preloadImage = (url: string) => {
-	return new Promise((resolve, reject) => {
-		const img = new window.Image();
-		img.src = url;
-		img.onload = resolve;
-		img.onerror = reject;
-	});
-};
+// Wait for a preloaded picture to be loaded and decoded (with a timeout, to never block the minimap) :
+const waitForPicture = async (index: number, timeout = 2000) => {
+	await nextTick();
 
-// Preload a picture with the same transformations as the Image component, so the browser already
-// has it cached by the time the user navigates to it (no fetch delay, no jump) :
-const preloadPictureAt = (index: number) => {
-	const picture = pictures[index];
-	if (!picture) return Promise.resolve();
+	const img = preloadRef.value?.querySelector<HTMLImageElement>(`[data-index="${index}"] img`);
+	if (!img) return;
 
-	const { bind, operations } = parseImageData({ src: picture, objectFit: 'contain' });
-	const transformer = transform(bind);
+	if (!img.complete) {
+		await Promise.race([
+			new Promise<void>((resolve) => {
+				img.addEventListener('load', () => resolve(), { once: true });
+				img.addEventListener('error', () => resolve(), { once: true });
+			}),
+			sleep(timeout)
+		]);
+	}
 
-	// We target a high-res version (1920px) which is likely to be used by unpic in the viewer
-	const url = transformer(bind.src, { ...operations, width: 1920 });
-	return preloadImage(url).catch(() => {});
+	if (img.complete && img.naturalWidth) await img.decode().catch(() => {});
 };
 
 // Animations :
@@ -144,10 +152,13 @@ const animateFlipOpen = async (clickedElement: HTMLElement) => {
 			duration: 0.8,
 			ease: 'power2.inOut',
 			onComplete: () => {
-				isOpening.value = false;
-				$projectMinimap.setKey('isFlipping', false);
-				(projectMinimapStore.value.clickedParentElement as HTMLElement)?.appendChild(clickedElement);
-				resolve();
+				// Keep the clicked picture until the full size one can be displayed (no empty frame) :
+				waitForPicture(projectMinimapStore.value.initialIndex).then(() => {
+					isOpening.value = false;
+					$projectMinimap.setKey('isFlipping', false);
+					(projectMinimapStore.value.clickedParentElement as HTMLElement)?.appendChild(clickedElement);
+					resolve();
+				});
 			}
 		});
 	});
@@ -244,7 +255,7 @@ const onClose = async () => {
 			const initialPictureWrapper = clickedParentElement.querySelector('.picture-wrapper') as HTMLElement;
 
 			if (initialPictureWrapper && pictureWrapper) {
-				await animateFlipClose(pictureWrapper, initialPictureWrapper, clickedParentElement as any);
+				await animateFlipClose(pictureWrapper, initialPictureWrapper, clickedParentElement as HTMLElement);
 			}
 		} else {
 			await animateFadeClose();
@@ -283,13 +294,6 @@ watch(
 			slideshowRef.value?.scrollToSlide(currentIndex, true);
 
 			slideshowRef.value?.animateInto();
-
-			// Preload the current image first, then the rest of the gallery in the background so that
-			// navigating between slides doesn't cause a network fetch delay :
-			preloadPictureAt(currentIndex);
-			pictures.forEach((_, index) => {
-				if (index !== currentIndex) preloadPictureAt(index);
-			});
 
 			// Animation of the Theme CTA :
 			animations['reveal-square'](themeCtaRef.value?.$el, {
@@ -335,7 +339,7 @@ watch(
 				tlZoom.from(zoomThumb, { scale: 0.85, opacity: 0, duration: 0.6, ease: 'power2.inOut' }, 0.575);
 			}
 
-			if (clickedElement) await animateFlipOpen(clickedElement as any);
+			if (clickedElement) await animateFlipOpen(clickedElement as HTMLElement);
 		} else {
 			if (isVisible.value && !isClosing.value) onClose();
 		}
@@ -441,14 +445,20 @@ onUnmounted(() => {
 					:style="{ aspectRatio: getAspectRatio(picture) }"
 					@click="goToSlide(index)"
 				>
-					<Image
-						v-if="hasBeenOpened"
-						:src="picture"
-						object-fit="contain"
-						:sizes="[{ desktop: '10vw' }, '150px']"
-					/>
+					<Image :src="picture" object-fit="contain" :sizes="[{ desktop: '10vw' }, '150px']" />
 				</Button>
 			</Slideshow>
+		</div>
+		<div ref="preloadRef" class="preload-container" aria-hidden="true">
+			<div v-for="index in preloadedIndexes" :key="index" :data-index="index">
+				<Image
+					:src="pictures[index]"
+					object-fit="contain"
+					loading="eager"
+					:fetchpriority="index === projectMinimapStore.currentIndex ? 'high' : 'low'"
+					alt=""
+				/>
+			</div>
 		</div>
 		<div ref="zoomContainer" class="zoom-container hide-mobile-tablet">
 			<div class="zoom-inner-container">
@@ -467,6 +477,7 @@ onUnmounted(() => {
 				<input
 					v-model.number="currentPictureZoom"
 					type="range"
+					:aria-label="$t('zoom')"
 					min="0.5"
 					max="2.0"
 					step="0.001"
@@ -491,8 +502,8 @@ onUnmounted(() => {
 <style lang="scss" scoped>
 .partials-project-minimap {
 	position: fixed;
-	z-index: 20;
 	inset: 0;
+	z-index: 20;
 	overflow: hidden;
 	pointer-events: none;
 
@@ -526,8 +537,8 @@ onUnmounted(() => {
 	@include mq($until: desktop) {
 		display: flex;
 		flex-direction: column;
-		justify-content: space-between;
 		gap: var(--gutter);
+		justify-content: space-between;
 		padding-block: calc(var(--header-height) + (var(--gutter) * 2));
 	}
 }
@@ -535,8 +546,8 @@ onUnmounted(() => {
 .overlay {
 	position: absolute;
 	inset: 0;
-	opacity: 0;
 	background: $white;
+	opacity: 0;
 	transition:
 		opacity 0.4s $power2InOut,
 		background 0.4s $power2InOut;
@@ -544,14 +555,14 @@ onUnmounted(() => {
 
 .theme-cta {
 	position: absolute;
-	z-index: 1;
 	top: var(--gutter);
 	right: var(--gutter);
-	background: $whiteChoco;
+	z-index: 1;
 	height: var(--header-height);
-	border-radius: var(--border-radius);
 	aspect-ratio: 1/1;
 	overflow: hidden;
+	background: $whiteChoco;
+	border-radius: var(--border-radius);
 
 	&.is-dark {
 		.icon-wrapper {
@@ -625,10 +636,18 @@ onUnmounted(() => {
 	}
 
 	:deep(.picture-wrapper) {
-		height: 100%;
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		width: 100%;
+		height: 100%;
+
+		// The picture is contained in the whole viewer, so its size doesn't depend on the resolution of the
+		// loaded file (the clicked one is smaller than the full size one, which made the picture jump) :
+		img {
+			width: 100%;
+			height: 100%;
+		}
 
 		&.is-smooth {
 			transition: transform 0.4s $power2Out;
@@ -672,8 +691,8 @@ onUnmounted(() => {
 		}
 
 		@include mq($until: desktop) {
-			min-width: 0;
 			flex: 0 0 fluidSize(150px, 85px);
+			min-width: 0;
 			height: fit-content;
 		}
 
@@ -683,20 +702,28 @@ onUnmounted(() => {
 	}
 }
 
+.preload-container {
+	position: absolute;
+	visibility: hidden;
+	width: 0;
+	height: 0;
+	overflow: hidden;
+}
+
 .zoom-container {
 	position: absolute;
 	bottom: 0;
 	left: 50%;
-	transform: translate3d(-50%, 0, 0);
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	width: fluidSize(280px, 240px);
 	height: var(--header-height);
+	padding-inline: fluidSize(24px, 20px);
 	margin: var(--gutter);
 	background: $whiteChoco;
 	border-radius: var(--border-radius);
-	padding-inline: fluidSize(24px, 20px);
-	width: fluidSize(280px, 240px);
+	transform: translate3d(-50%, 0, 0);
 }
 
 .zoom-inner-container {
@@ -712,10 +739,10 @@ onUnmounted(() => {
 		position: absolute;
 		top: 50%;
 		left: 0;
-		transform: translate3d(0, -50%, 0);
 		width: 100%;
 		height: 1px;
 		background: rgba($khaki, 0.25);
+		transform: translate3d(0, -50%, 0);
 	}
 
 	& > button {
@@ -751,21 +778,25 @@ onUnmounted(() => {
 	position: absolute;
 	top: 50%;
 	left: 50%;
-	transform: translate3d(-50%, -50%, 0);
 	width: calc(100% - fluidSize(20px, 16px));
 	height: 22px;
+	transform: translate3d(-50%, -50%, 0);
 
 	& > input[type='range'] {
 		position: relative;
-		appearance: none;
-		-webkit-appearance: none;
 		width: 100%;
 		height: 100%;
-		background: transparent;
+		appearance: none;
 		cursor: pointer;
+		background: transparent;
 
 		&:focus {
 			outline: none;
+		}
+
+		body:is(.keyboard-focus, .a11y-active) &:focus-visible {
+			outline: 2px solid #4285f4;
+			outline: 2px solid -webkit-focus-ring-color;
 		}
 
 		// Track :
@@ -781,46 +812,45 @@ onUnmounted(() => {
 
 		// Thumb (hidden but functional) :
 		&::-webkit-slider-thumb {
-			-webkit-appearance: none;
-			appearance: none;
 			width: 0;
 			height: 0;
-			border: none;
 			margin-top: -1px;
+			appearance: none;
 			background: transparent;
+			border: none;
 		}
 
 		&::-moz-range-thumb {
 			width: 0;
 			height: 0;
-			border: none;
 			background: transparent;
+			border: none;
 		}
 	}
 }
 
 .custom-thumb-wrapper {
 	position: absolute;
-	z-index: 2;
 	top: 50%;
 	left: 50%;
-	transform: translate3d(-50%, -50%, 0);
+	z-index: 2;
 	width: calc(100% - fluidSize(20px, 16px));
+	transform: translate3d(-50%, -50%, 0);
 }
 
 .custom-thumb {
 	position: absolute;
-	z-index: 1;
 	top: 50%;
-	transform: translate3d(0, -50%, 0);
+	z-index: 1;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	width: 32px;
 	height: 22px;
-	border-radius: 3px;
-	background: $eerieBlack;
 	pointer-events: none;
+	background: $eerieBlack;
+	border-radius: 3px;
+	transform: translate3d(0, -50%, 0);
 	transition: left 0s;
 
 	&.is-smooth {
@@ -830,9 +860,9 @@ onUnmounted(() => {
 	span {
 		@include roobert-12-uppercase;
 
-		color: $white;
 		display: flex;
 		margin-block-end: 1px;
+		color: $white;
 	}
 }
 </style>

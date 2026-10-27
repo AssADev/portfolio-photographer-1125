@@ -70,8 +70,8 @@ input {
 
 	// Ensure calendar icon remains visible/clickable :
 	&::-webkit-calendar-picker-indicator {
-		opacity: 1;
 		cursor: pointer;
+		opacity: 1;
 	}
 }
 
@@ -81,14 +81,14 @@ input {
 	position: absolute;
 	top: 50%;
 	left: 0;
-	transform: translateY(-50%);
-	color: $khaki;
-	pointer-events: none;
-	user-select: none;
 	z-index: 0;
 	width: 100%;
-	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	color: $khaki;
+	white-space: nowrap;
+	pointer-events: none;
+	user-select: none;
+	transform: translateY(-50%);
 }
 </style>

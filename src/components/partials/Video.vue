@@ -6,13 +6,13 @@ import { trackNavigationClick } from '#utils/tracking.ts';
 
 import Button from '#components/utils/Button.vue';
 
-import type { StoryblokAsset } from '#types/component-types-sb.js';
+import type { StoryblokAsset, StoryblokMultilink } from '#types/component-types-sb.js';
 
 // Props :
 const { thumbnail } = defineProps<{
 	video: StoryblokAsset;
 	thumbnail: StoryblokAsset;
-	link?: any;
+	link?: StoryblokMultilink;
 }>();
 
 // Refs :
@@ -46,7 +46,8 @@ const createObserver = () => {
 	observer = new IntersectionObserver(
 		(entries) => {
 			entries.forEach((entry) => {
-				entry.isIntersecting ? playVideo() : pauseVideo();
+				if (entry.isIntersecting) playVideo();
+				else pauseVideo();
 			});
 		},
 		{

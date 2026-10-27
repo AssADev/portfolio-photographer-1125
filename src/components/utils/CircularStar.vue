@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useIntersectionObserver, useResizeObserver, useTemplateRefsList } from '@vueuse/core';
+import { useIntersectionObserver } from '@vueuse/core';
 import type Lenis from 'lenis';
 import { useLenis } from 'lenis/vue';
 import { onUnmounted, ref, useTemplateRef, watch, watchEffect } from 'vue';
@@ -22,7 +22,7 @@ const numberOfRotations = 1000;
 const lenis = scrollSpeed ? useLenis() : ref();
 
 const rate = new Motion(1);
-rate.on('change', (r: any) => animation?.updatePlaybackRate(r));
+rate.on('change', (r: number) => animation?.updatePlaybackRate(r));
 
 // Methods :
 const onScroll = (instance: Lenis) => {

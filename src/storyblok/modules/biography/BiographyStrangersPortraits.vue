@@ -157,6 +157,7 @@ $stackedMedia: '(max-height: 500px) and (orientation: landscape)';
 	// Height of the sections, limited so they (and the header) always fit in the screen :
 	--sections-height: min(#{fluidSize(680px, 540px)}, calc(100svh - (var(--header-height) * 2) - (var(--gutter) * 3)));
 
+	padding-block-start: fluidSize(180px, 120px);
 	background: linear-gradient(
 		180deg,
 		rgba($white, 0) 0%,
@@ -164,7 +165,6 @@ $stackedMedia: '(max-height: 500px) and (orientation: landscape)';
 		rgba($ivory, 1) 75%,
 		rgba($white, 0) 100%
 	);
-	padding-block-start: fluidSize(180px, 120px);
 }
 
 .circular-star-container {
@@ -199,7 +199,6 @@ $stackedMedia: '(max-height: 500px) and (orientation: landscape)';
 
 		@include mq(desktop) {
 			width: var(--ctn-w);
-
 			transform: translate3d(-50%, -50%, 0) scale3d(0, 0, 1);
 		}
 	}
@@ -209,8 +208,8 @@ $stackedMedia: '(max-height: 500px) and (orientation: landscape)';
 	:deep(.partials-rich-text) {
 		@include roobert-96;
 
-		text-wrap: balance;
 		margin-block-end: fluidSize(65px, 48px);
+		text-wrap: balance;
 
 		em {
 			@include romie-96-italic;
@@ -233,9 +232,9 @@ $stackedMedia: '(max-height: 500px) and (orientation: landscape)';
 
 	// Vertically centered (the height is the real one, even when limited by the screen) :
 	top: calc(50% - (var(--sections-height) / 2));
-	width: 100%;
 	display: flex;
 	align-items: center;
+	width: 100%;
 	overflow: hidden;
 
 	// Not the `container` mixin, as it sets a relative position (which breaks the sticky) :

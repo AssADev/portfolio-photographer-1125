@@ -48,9 +48,9 @@
 
 @mixin a11y-focus($inset: -4px, $pseudo: 'before') {
 	&::#{$pseudo} {
+		content: '';
 		position: absolute;
 		inset: $inset;
-		content: '';
 	}
 }
 
@@ -91,12 +91,12 @@
 	&::#{$pseudo} {
 		content: '';
 		position: absolute;
-		#{$position}: 0;
 		left: 0;
 		width: 100%;
 		height: #{$height};
-		background: map.get($gradients, $gradient);
 		pointer-events: none;
+		background: map.get($gradients, $gradient);
+		#{$position}: 0;
 
 		@if $zIndex != 0 {
 			z-index: $zIndex;

@@ -235,7 +235,7 @@ export const getAspectRatio = (src: string | StoryblokAsset) => {
 	try {
 		const { width, height } = parseDimensionsFromUrl(url);
 		if (width && height) return width / height;
-	} catch (e) {
+	} catch {
 		return undefined;
 	}
 

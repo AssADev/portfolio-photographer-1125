@@ -41,7 +41,7 @@ const resolvers = getRichTextResolvers('h2');
 			@click="
 				data.cta[0].link.component === 'Forms'
 					? trackFormOpenClick($event, { formId: (data.cta[0].link.story as any)?.content?.id })
-					: trackNavigationClick
+					: trackNavigationClick($event)
 			"
 		/>
 	</div>
@@ -52,8 +52,8 @@ const resolvers = getRichTextResolvers('h2');
 	& > :deep(.partials-rich-text) {
 		@include roobert-48;
 
-		text-wrap: balance;
 		margin-block-end: fluidSize(28px, 20px);
+		text-wrap: balance;
 
 		em {
 			@include romie-48-italic;

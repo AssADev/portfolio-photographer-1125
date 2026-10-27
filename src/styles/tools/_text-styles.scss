@@ -2,7 +2,7 @@
 @use 'responsive' as *;
 
 // Mixins :
-@mixin fluidLineHeight($valueMb: 1, $valueDk: 1) {
+@mixin fluid-line-height($valueMb: 1, $valueDk: 1) {
 	@include mq($until: desktop) {
 		line-height: $valueMb;
 	}
@@ -14,7 +14,7 @@
 
 //// Roobert :
 @mixin roobert($weight: 400, $transform: none, $letter-spacing: normal) {
-	font-family: 'Roobert', sans-serif;
+	font-family: Roobert, sans-serif;
 	font-weight: $weight;
 	text-transform: $transform;
 	letter-spacing: $letter-spacing;
@@ -26,7 +26,7 @@
 
 //// Romie :
 @mixin romie($weight: 400, $transform: none, $letter-spacing: normal) {
-	font-family: 'Romie', sans-serif;
+	font-family: Romie, sans-serif;
 	font-weight: $weight;
 	text-transform: $transform;
 	letter-spacing: $letter-spacing;
@@ -40,14 +40,14 @@
 //// Roobert :
 @mixin roobert-96 {
 	@include roobert(500, none, -0.02em);
-	@include fluidLineHeight(0.9, 0.95);
+	@include fluid-line-height(0.9, 0.95);
 
 	font-size: fluidFontSize(96px, 58px);
 }
 
 @mixin roobert-96-smaller {
 	@include roobert(500, none, -0.02em);
-	@include fluidLineHeight(0.9, 0.95);
+	@include fluid-line-height(0.9, 0.95);
 
 	font-size: fluidFontSize(96px, 48px);
 }
@@ -167,7 +167,7 @@
 //// Romie :
 @mixin romie-96 {
 	@include romie(500, none, -0.02em);
-	@include fluidLineHeight(0.9, 0.95);
+	@include fluid-line-height(0.9, 0.95);
 
 	font-size: fluidFontSize(96px, 64px);
 }
@@ -180,7 +180,7 @@
 
 @mixin romie-96-smaller {
 	@include romie(500, none, -0.02em);
-	@include fluidLineHeight(0.9, 0.95);
+	@include fluid-line-height(0.9, 0.95);
 
 	font-size: fluidFontSize(96px, 48px);
 }
@@ -260,14 +260,14 @@
 	@include romie(500);
 
 	font-size: fluidFontSize(18px, 16px);
-	line-height: 1.25;
 	font-style: italic;
+	line-height: 1.25;
 }
 
 @mixin romie-12 {
 	@include romie(500);
 
 	font-size: fluidFontSize(12px, 10px);
-	line-height: 1.25;
 	font-style: italic;
+	line-height: 1.25;
 }

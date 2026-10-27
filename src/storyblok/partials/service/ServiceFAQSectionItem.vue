@@ -80,8 +80,8 @@ watch(isToggled, () => {
 .question-answer-container {
 	display: grid;
 	grid-template-rows: 0fr;
-	transition: grid-template-rows v-bind("transitionDuration + 's'") $power2InOut;
 	overflow: hidden;
+	transition: grid-template-rows v-bind("transitionDuration + 's'") $power2InOut;
 }
 
 .question-answer-wrapper {
@@ -89,9 +89,9 @@ watch(isToggled, () => {
 }
 
 .question-answer {
-	color: $grey;
 	max-width: fluidSize(460px, 320px);
 	padding-block-end: fluidSize(40px, 32px);
+	color: $grey;
 
 	& > :deep(.partials-rich-text) {
 		@include roobert-14;
@@ -102,8 +102,8 @@ watch(isToggled, () => {
 
 		a {
 			position: relative;
-			transition: color 0.4s $power2Out;
 			text-decoration: underline;
+			transition: color 0.4s $power2Out;
 
 			@include hover {
 				color: $white;

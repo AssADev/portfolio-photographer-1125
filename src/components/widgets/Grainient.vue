@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Mesh, Program, Renderer, Triangle } from 'ogl';
+import { Mesh, type OGLRenderingContext, Program, Renderer, Triangle } from 'ogl';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 
 import fragment from '#components/widgets/shaders/grainient.fs?raw';
@@ -72,7 +72,7 @@ const canvasRef = ref<HTMLCanvasElement | null>(null);
 const FRAME_INTERVAL = 1000 / 30;
 
 let raf = 0;
-let gl: any;
+let gl: OGLRenderingContext;
 let renderer: Renderer;
 let program: Program;
 let lastWidth = 0;

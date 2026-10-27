@@ -55,6 +55,7 @@ defineExpose({
 				&:nth-child(1) {
 					transform: translate3d(0, -50%, 0) scale3d(0, 1, 1);
 				}
+
 				&:nth-child(2) {
 					transform: translate3d(0, -50%, 0) scale3d(0, 1, 1);
 				}
@@ -79,35 +80,35 @@ defineExpose({
 			&:nth-child(1) {
 				top: 50%;
 				left: 0;
-				transform: translate3d(0, -50%, 0);
-				transform-origin: right center;
 				width: var(--length);
 				height: var(--thickness);
+				transform: translate3d(0, -50%, 0);
+				transform-origin: right center;
 			}
 
 			&:nth-child(2) {
 				top: 50%;
 				right: 0;
-				transform: translate3d(0, -50%, 0);
-				transform-origin: left center;
 				width: var(--length);
 				height: var(--thickness);
+				transform: translate3d(0, -50%, 0);
+				transform-origin: left center;
 			}
 
 			&:nth-child(3) {
 				top: 0;
 				left: 50%;
-				transform: translate3d(-50%, 0, 0);
 				width: var(--thickness);
 				height: var(--length);
+				transform: translate3d(-50%, 0, 0);
 			}
 
 			&:nth-child(4) {
 				bottom: 0;
 				left: 50%;
-				transform: translate3d(-50%, 0, 0);
 				width: var(--thickness);
 				height: var(--length);
+				transform: translate3d(-50%, 0, 0);
 			}
 		}
 	}

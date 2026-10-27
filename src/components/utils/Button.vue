@@ -3,6 +3,8 @@ import { computed } from 'vue';
 
 import Icon from '#components/utils/Icon.vue';
 
+import type { StoryblokMultilink } from '#types/component-types-sb.js';
+
 import { $global } from '#stores/global.ts';
 
 // Props :
@@ -15,10 +17,12 @@ const { to, is, type, disabled, target, rel, theme, link, text } = defineProps<{
 	target?: string;
 	rel?: string;
 	theme?: 'dot-khaki' | 'dot-white' | 'dot-light' | 'dot-dark' | 'light' | 'dark';
-	link?: any;
+	link?: StoryblokMultilink;
 }>();
 
-const isFormLink = link?.component === 'Forms' || link?.story?.content?.component === 'Forms';
+// Only the links to a story have a content :
+const linkContent = link?.story && 'content' in link.story ? link.story.content : undefined;
+const isFormLink = link?.component === 'Forms' || linkContent?.component === 'Forms';
 const isAnchor = (is === 'a' || !!to || !!link) && !isFormLink;
 
 // Methods :
@@ -56,7 +60,7 @@ const handleClick = (e: Event) => {
 	if (isFormLink) {
 		e.preventDefault();
 		$global.setKey('isContactToggled', true);
-		$global.setKey('contactFormId', link.story.content.id);
+		$global.setKey('contactFormId', linkContent?.id);
 	}
 };
 </script>
@@ -101,11 +105,11 @@ const handleClick = (e: Event) => {
 	//// Dot :
 	@mixin dot-theme($text-color, $bg-color) {
 		position: relative;
-		border-radius: 3px;
-		color: $text-color;
-		background: $bg-color;
 		padding: 5px 8px fluidSize(7px, 6px) 18px;
 		overflow: hidden;
+		color: $text-color;
+		background: $bg-color;
+		border-radius: 3px;
 
 		@include hover {
 			span {
@@ -139,15 +143,15 @@ const handleClick = (e: Event) => {
 				position: absolute;
 
 				&:first-of-type {
-					left: 8px;
 					top: 50%;
+					left: 8px;
 					transform: translate3d(0, -50%, 0);
 					transition: transform 0.4s $elasticOut 0.2s;
 				}
 
 				&:last-of-type {
-					right: 8px;
 					top: 50%;
+					right: 8px;
 					transform: translate3d(0, -50%, 0) scale3d(0, 0, 0) rotate(90deg);
 					transition: transform 0.4s $power2Out;
 				}

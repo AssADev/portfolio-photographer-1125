@@ -94,7 +94,7 @@ const comparisonConfig = computed<ComparisonSection[]>(() => [
 ]);
 
 // Methods :
-const getFormattedSuffix = (row: ComparisonRow, value: any) => {
+const getFormattedSuffix = (row: ComparisonRow, value: StoryblokServiceOffer[keyof StoryblokServiceOffer]) => {
 	if (!row.suffixKey) return '';
 
 	const key = row.suffixKeySingular && String(value) === '1' ? row.suffixKeySingular : row.suffixKey;
@@ -205,8 +205,8 @@ const getFormattedSuffix = (row: ComparisonRow, value: any) => {
 	margin-block-end: fluidSize(72px, 48px);
 
 	@include mq(tablet) {
-		text-align: right;
 		align-items: flex-end;
+		text-align: right;
 	}
 
 	& > :deep(.partials-rich-text) {
@@ -243,8 +243,8 @@ const getFormattedSuffix = (row: ComparisonRow, value: any) => {
 	.description {
 		@include roobert-14;
 
-		color: $khaki;
 		max-width: fluidSize(480px, 420px);
+		color: $khaki;
 	}
 }
 
@@ -266,8 +266,8 @@ const getFormattedSuffix = (row: ComparisonRow, value: any) => {
 	}
 
 	hr {
-		height: 1px;
 		width: 100%;
+		height: 1px;
 		background: $eerieBlack;
 
 		@include mq($until: desktop) {

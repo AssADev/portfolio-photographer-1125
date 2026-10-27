@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { ISbStoryData } from '@storyblok/vue';
 import gsap from 'gsap';
 import { computed, defineAsyncComponent, inject, nextTick, ref, useTemplateRef, watch } from 'vue';
 
@@ -9,6 +10,8 @@ import { nl2br } from '#utils/nl2br.ts';
 import DrawerMenu from '#components/partials/DrawerMenu.vue';
 import Button from '#components/utils/Button.vue';
 
+import type { StoryblokForms, StoryblokSiteConfig } from '#types/component-types-sb.js';
+
 import { $global } from '#stores/global.ts';
 
 // The form (validation, captcha, inputs...) is only loaded when needed, as the header is in every page :
@@ -16,7 +19,10 @@ const loadForm = () => import('#components/partials/Form.vue');
 const Form = defineAsyncComponent(loadForm);
 
 // Injections :
-const siteConfig = inject<any>('siteConfig');
+// The forms are resolved relations, so they are always stories :
+const siteConfig = inject<
+	Pick<StoryblokSiteConfig, 'titleContact' | 'descriptionContact'> & { formsContact?: ISbStoryData<StoryblokForms>[] }
+>('siteConfig')!;
 
 // Props & Model :
 const { language, formId } = defineProps<{
@@ -30,8 +36,8 @@ const { titleContact, descriptionContact, formsContact } = siteConfig;
 
 // Refs :
 const showTransition = ref(true);
-const drawerMenuRef = ref<any>(null);
-const selectedForm = ref<any | null>(null);
+const drawerMenuRef = ref<InstanceType<typeof DrawerMenu> | null>(null);
+const selectedForm = ref<ISbStoryData<StoryblokForms> | null>(null);
 const formStatus = ref<'idle' | 'success' | 'error'>('idle');
 
 const titleRef = useTemplateRef('titleRef');
@@ -47,8 +53,8 @@ const forms = computed(() => {
 
 const currentTitle = computed(() => {
 	if (selectedForm.value) {
-		if (formStatus.value === 'success') return selectedForm.value.content.formSuccess[0].title;
-		if (formStatus.value === 'error') return selectedForm.value.content.formError[0].title;
+		if (formStatus.value === 'success') return selectedForm.value.content.formSuccess![0].title;
+		if (formStatus.value === 'error') return selectedForm.value.content.formError![0].title;
 		return selectedForm.value.content.title;
 	}
 	return titleContact;
@@ -63,7 +69,7 @@ const currentDescription = computed(() => {
 });
 
 // Methods :
-const openForm = (form: any) => {
+const openForm = (form: ISbStoryData<StoryblokForms>) => {
 	selectedForm.value = form;
 	formStatus.value = 'idle';
 	$global.setKey('isContactFormActive', true);
@@ -77,14 +83,6 @@ const backToChoices = () => {
 
 const onFormStatusChange = (status: 'idle' | 'success' | 'error') => {
 	formStatus.value = status;
-};
-
-const closeDrawer = () => {
-	toggled.value = false;
-	formStatus.value = 'idle';
-	selectedForm.value = null;
-	showTransition.value = true;
-	$global.setKey('isContactFormActive', false);
 };
 
 // Watchers :
@@ -102,7 +100,7 @@ watch(
 	() => formId,
 	async (newId) => {
 		if (newId) {
-			const found = forms.value.find((f: any) => f.content.id === newId);
+			const found = forms.value.find((f) => f.content.id === newId);
 			if (found) {
 				showTransition.value = false;
 				selectedForm.value = found;
@@ -124,12 +122,12 @@ const onOpen = () => {
 	if (titleRef.value) tl.add(animations['reveal-paragraphs'](titleRef.value, { delay: 0.45 }), 0);
 	if (descriptionRef.value) tl.add(animations['reveal-paragraphs'](descriptionRef.value, { delay: 0.475 }), 0);
 
-	formsRef.value?.forEach((form: any, index: number) => {
+	formsRef.value?.forEach((form, index) => {
 		const reverseIndex = formsRef.value!.length - 1 - index;
 
-		const title = form.querySelector('.title');
-		const number = form.querySelector('.number');
-		const description = form.querySelector('.description');
+		const title = form.querySelector('.title') as HTMLElement;
+		const number = form.querySelector('.number') as HTMLElement;
+		const description = form.querySelector('.description') as HTMLElement;
 
 		tl!.add(animations['reveal-paragraphs'](title, { delay: 0.125 + reverseIndex * 0.1 }), 0);
 		tl!.add(animations['reveal-letters'](number, { delay: 0.3 + reverseIndex * 0.1 }), 0);
@@ -255,13 +253,13 @@ $border: 1px solid rgba($eerieBlack, 0.08);
 			content: '';
 			position: absolute;
 			inset: 0;
-			opacity: 0;
+			pointer-events: none;
 			background: map.get($gradients, 'menu-khaki');
+			opacity: 0;
+			transform: translate3d(-50%, 0, 0);
 			transition:
 				opacity 0.4s $power2Out,
 				transform 0.4s $power2Out 0.3s;
-			transform: translate3d(-50%, 0, 0);
-			pointer-events: none;
 		}
 
 		button {
@@ -275,8 +273,8 @@ $border: 1px solid rgba($eerieBlack, 0.08);
 
 		.title-wrapper {
 			display: flex;
-			justify-content: space-between;
 			gap: var(--menu-padding-inline);
+			justify-content: space-between;
 
 			.title {
 				@include roobert-16-uppercase;
@@ -287,8 +285,8 @@ $border: 1px solid rgba($eerieBlack, 0.08);
 			.number {
 				@include roobert-16-uppercase;
 
-				color: $khaki;
 				flex-shrink: 0;
+				color: $khaki;
 			}
 		}
 
@@ -296,8 +294,8 @@ $border: 1px solid rgba($eerieBlack, 0.08);
 			@include roobert-14;
 
 			width: 100%;
-			color: $khaki;
 			padding-inline-end: var(--menu-padding-inline);
+			color: $khaki;
 		}
 	}
 }

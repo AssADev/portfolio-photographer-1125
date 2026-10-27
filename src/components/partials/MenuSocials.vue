@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useEventListener } from '@vueuse/core';
 import gsap from 'gsap';
 import { computed, inject, ref, useTemplateRef } from 'vue';
 
@@ -7,8 +8,16 @@ import { trackNavigationClick } from '#utils/tracking.ts';
 
 import Icon from '#components/utils/Icon.vue';
 
+import type { StoryblokSiteConfig } from '#types/component-types-sb.js';
+
+// Types :
+type MenuSocial = {
+	label?: string;
+	link: { url?: string; target?: string };
+};
+
 // Injections :
-const siteConfig = inject<any>('siteConfig');
+const siteConfig = inject<StoryblokSiteConfig>('siteConfig');
 
 // Refs :
 const menuSocialsContainerRef = useTemplateRef('menuSocialsContainerRef');
@@ -17,8 +26,8 @@ const floatingIconRef = useTemplateRef('floatingIconRef');
 const isIconVisible = ref(false);
 
 // Computed :
-const menuSocials = computed(() => {
-	const socials = siteConfig?.socials || [];
+const menuSocials = computed<MenuSocial[]>(() => {
+	const socials: MenuSocial[] = siteConfig?.socials || [];
 	const email = siteConfig?.email;
 
 	if (email) {
@@ -28,13 +37,13 @@ const menuSocials = computed(() => {
 				link: { url: `mailto:${email}`, target: '_blank' },
 				label: email
 			}
-		] as any[];
+		];
 	}
-	return socials as any[];
+	return socials;
 });
 
 // Methods :
-const handleSocialHover = (e: MouseEvent) => {
+const handleSocialHover = (e: MouseEvent | FocusEvent) => {
 	const target = e.currentTarget as HTMLElement;
 
 	if (!menuSocialsContainerRef.value || !floatingIconRef.value) return;
@@ -66,15 +75,29 @@ const handleSocialHover = (e: MouseEvent) => {
 const handleSocialLeave = () => {
 	isIconVisible.value = false;
 };
+
+const handleSocialFocusOut = (e: FocusEvent) => {
+	if (!menuSocialsContainerRef.value?.contains(e.relatedTarget as Node | null)) handleSocialLeave();
+};
+
+// Delegated from the focusable links of the list :
+useEventListener(menuSocialsContainerRef, 'mouseleave', handleSocialLeave);
+useEventListener(menuSocialsContainerRef, 'focusout', handleSocialFocusOut);
 </script>
 
 <template>
-	<ul ref="menuSocialsContainerRef" class="menu-socials-container" @mouseleave="handleSocialLeave">
-		<div ref="floatingIconRef" class="floating-icon">
+	<ul ref="menuSocialsContainerRef" class="menu-socials-container">
+		<li ref="floatingIconRef" class="floating-icon" aria-hidden="true">
 			<Icon name="square-small" :class="{ visible: isIconVisible }" />
-		</div>
+		</li>
 		<li v-for="social in menuSocials" :key="social.label">
-			<a v-bind="getLinkAttributes(social.link)" @mouseenter="handleSocialHover" @click="trackNavigationClick">
+			<a
+				:href="social.link.url"
+				v-bind="getLinkAttributes(social.link)"
+				@mouseenter="handleSocialHover"
+				@focus="handleSocialHover"
+				@click="trackNavigationClick"
+			>
 				<span>{{ social.label }}</span>
 			</a>
 		</li>
@@ -99,15 +122,15 @@ const handleSocialLeave = () => {
 
 	.floating-icon {
 		position: absolute;
-		left: var(--menu-padding-inline);
 		top: 0;
+		left: var(--menu-padding-inline);
 		pointer-events: none;
 
 		& > svg {
 			position: absolute;
-			transition: transform 0.4s $power2Out;
 			transform: translate3d(0, -50%, 0) scale3d(0, 0, 0) rotate(90deg);
 			transform-origin: center center;
+			transition: transform 0.4s $power2Out;
 
 			&.visible {
 				transform: translate3d(0, -50%, 0) scale3d(1, 1, 1) rotate(0deg);
@@ -126,8 +149,8 @@ const handleSocialLeave = () => {
 
 			position: relative;
 			display: flex;
-			align-items: center;
 			gap: 5px;
+			align-items: center;
 
 			@include hover {
 				span {

@@ -58,7 +58,7 @@ const resolvers = getRichTextResolvers('h2');
 						@click="
 							link[0].link.component === 'Forms'
 								? trackFormOpenClick($event, { formId: (link[0].link.story as any)?.content?.id })
-								: trackNavigationClick
+								: trackNavigationClick($event)
 						"
 					/>
 				</div>
@@ -77,9 +77,9 @@ const resolvers = getRichTextResolvers('h2');
 }
 
 .inner-container {
+	padding-block-start: fluidSize(72px, 48px);
 	color: $white;
 	background: $smokyBlack;
-	padding-block-start: fluidSize(72px, 48px);
 }
 
 .container-grid {

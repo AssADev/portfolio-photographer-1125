@@ -1,4 +1,4 @@
-export class Emitter<T = any[]> {
+export class Emitter<T = unknown> {
 	#listeners = new Map<string, Set<(...a: T[]) => void>>();
 	on = (event: string, cb: (...a: T[]) => void) => {
 		if (this.#listeners.has(event)) {

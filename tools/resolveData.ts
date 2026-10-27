@@ -10,10 +10,11 @@ const dataResolvers = Object.values(componentResolvers).filter((resolver) => res
 const fieldResolvers = Object.values(fieldResolversObject).filter((resolver) => resolver.resolveFields);
 
 export type ResolveData = {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Arbitrary Storyblok JSON, mutated in place by the resolvers once their `condition` matched
 	content: Record<string, any>;
 	language: string;
 	siteConfig: StoryblokSiteConfig;
-	rootStory: ISbStoryData<Record<string, any>>;
+	rootStory: ISbStoryData;
 	preview: boolean;
 };
 
@@ -42,7 +43,6 @@ const resolveComponents = async (data: ResolveData, getFromCache: GetFromCacheFu
 					else {
 						for (const variableKey in content) {
 							// delete all keys matching regexp
-							// eslint-disable-next-line no-prototype-builtins
 							if (content.hasOwnProperty(variableKey) && field.test(variableKey))
 								delete content[variableKey];
 						}
@@ -54,7 +54,7 @@ const resolveComponents = async (data: ResolveData, getFromCache: GetFromCacheFu
 };
 
 export const resolveContent = async (data: ResolveData) => {
-	const cache: Record<string, any> = {};
+	const cache: Record<string, unknown> = {};
 
 	async function getFromCache<T>(key: string, cb: () => Promise<T>) {
 		if (key in cache) return cache[key as keyof typeof cache] as T;

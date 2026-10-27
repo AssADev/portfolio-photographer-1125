@@ -8,7 +8,20 @@ export interface AnimationOptions {
 	start?: string;
 	revert?: boolean;
 	direction?: 'up' | 'down' | 'left' | 'right';
-	[key: string]: any;
+	containerAnimation?: gsap.core.Animation;
+	duration?: number;
+	staggers?: number;
+	ease?: gsap.EaseString | gsap.EaseFunction;
+	rotate?: number;
+	reset?: boolean;
+	withTranslate?: boolean;
+	fromTopRight?: boolean;
+	fromBottomLeft?: boolean;
+	fromBottomRight?: boolean;
+	toTopRight?: boolean;
+	onStart?: () => void;
+	onComplete?: () => void;
+	[key: string]: unknown;
 }
 
 export const animations: Record<string, (el: HTMLElement, options: AnimationOptions) => gsap.core.Animation> = {
@@ -172,7 +185,7 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 			}
 		});
 
-		(tween as any).data = { split };
+		tween.data = { split };
 		return tween;
 	},
 
@@ -195,7 +208,7 @@ export const animations: Record<string, (el: HTMLElement, options: AnimationOpti
 			}
 		});
 
-		(tween as any).data = { split };
+		tween.data = { split };
 		return tween;
 	},
 

@@ -4,7 +4,7 @@ import { computed } from 'vue';
 
 import Image from '#components/utils/Image.vue';
 
-import type { StoryblokProject, StoryblokService, StoryblokServicesHighlight } from '#types/component-types-sb.js';
+import type { StoryblokService, StoryblokServicesHighlight } from '#types/component-types-sb.js';
 
 import vParallax from '#directives/vParallax.ts';
 import ServicesService from '#storyblok/partials/services/ServicesService.vue';
@@ -52,14 +52,14 @@ const service = computed(() => {
 				/>
 			</template>
 			<template #info>
-				<div class="informations-label" v-animate="{ type: 'reveal-button-dot', options: { delay: 0.65 } }">
+				<div v-animate="{ type: 'reveal-button-dot', options: { delay: 0.65 } }" class="informations-label">
 					<span>{{
 						numberOfProjects > 1
 							? $t('projectsNumber', { n: numberOfProjects })
 							: $t('projectNumber', { n: numberOfProjects })
 					}}</span>
 				</div>
-				<div class="informations-label" v-animate="{ type: 'reveal-button-dot', options: { delay: 0.775 } }">
+				<div v-animate="{ type: 'reveal-button-dot', options: { delay: 0.775 } }" class="informations-label">
 					<span>{{ $t('serviceStartPrice', { price: serviceStartPrice }) }}</span>
 				</div>
 			</template>

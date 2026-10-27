@@ -103,9 +103,9 @@ const resolvers = getRichTextResolvers('span');
 	@include roobert-14-uppercase;
 
 	display: flex;
+	gap: fluidSize(20px, 16px);
 	align-items: center;
 	justify-content: space-between;
-	gap: fluidSize(20px, 16px);
 	margin-block-end: fluidSize(10px, 8px);
 }
 

@@ -84,7 +84,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-	<div v-if="isVisible" class="partials-service-breadcrumb" v-animate="'reveal-square'">
+	<div v-if="isVisible" v-animate="'reveal-square'" class="partials-service-breadcrumb">
 		<Button
 			v-for="(button, index) in visibleButtons"
 			:key="button.id"
@@ -105,16 +105,16 @@ onUnmounted(() => {
 <style scoped lang="scss">
 .partials-service-breadcrumb {
 	position: fixed;
-	z-index: 20;
 	top: var(--gutter);
 	left: var(--gutter);
+	z-index: 20;
 	display: flex;
-	align-items: center;
 	gap: 14px;
-	background: $eerieBlack;
+	align-items: center;
 	height: var(--header-height);
-	border-radius: var(--border-radius);
 	padding-inline: var(--header-padding-inline);
+	background: $eerieBlack;
+	border-radius: var(--border-radius);
 }
 
 :deep(button) {

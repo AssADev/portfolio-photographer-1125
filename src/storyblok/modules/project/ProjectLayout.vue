@@ -29,8 +29,3 @@ const currentConfig = computed(() => PROJECT_LAYOUT_CONFIGS[blok.layout]);
 		/>
 	</section>
 </template>
-
-<style lang="scss" scoped>
-.project-layout {
-}
-</style>

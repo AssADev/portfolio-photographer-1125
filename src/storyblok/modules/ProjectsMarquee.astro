@@ -2,8 +2,14 @@
 import { storyblokEditable } from '#storyblok/helpers/storyblokEditable.ts';
 import { slimRelations, slimStory } from '#storyblok/helpers/slimStory.ts';
 import ProjectsMarqueeVue from '#storyblok/modules/ProjectsMarquee.vue';
-import type { StoryblokProjectsMarquee, StoryblokRichtext, StoryblokLabelLink } from '#types/component-types-sb.js';
-import { getProjects } from '#storyblok/helpers/getProjects.ts';
+import type { ISbStoryData } from '@storyblok/astro';
+import type {
+	StoryblokProject,
+	StoryblokProjectsMarquee,
+	StoryblokRichtext,
+	StoryblokLabelLink
+} from '#types/component-types-sb.js';
+import { getProjects, getProjectServiceUuids } from '#storyblok/helpers/getProjects.ts';
 
 import locales from '#utils/locales.json';
 import parseUrl from '#utils/parseUrl.ts';
@@ -21,8 +27,17 @@ const { blok } = Astro.props;
 const { marqueeLink } = Astro.locals.siteConfig;
 const { language = locales[0] } = parseUrl(Astro.url.pathname);
 
+// Find the service(s) of the current page (the service itself, or the services of the project) :
+const story = Astro.locals.story;
+const serviceUuids =
+	story?.content.component === 'Service'
+		? [story.uuid]
+		: story?.content.component === 'Project'
+			? getProjectServiceUuids(story as ISbStoryData<StoryblokProject>)
+			: [];
+
 // Fetch the projects :
-const { projects, isFallback } = await getProjects(language, Astro.locals.isPreviewMode, Astro.locals.story?.tag_list);
+const { projects, isFallback } = await getProjects(language, Astro.locals.isPreviewMode, serviceUuids);
 
 const finalLink = Astro.props.link || blok?.link || marqueeLink;
 ---
