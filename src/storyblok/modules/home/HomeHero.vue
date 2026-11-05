@@ -441,11 +441,19 @@ onUnmounted(() => {
 	top: 0;
 	z-index: 2;
 	margin-block-end: fluidSize(128px, 56px, null, widescreen);
+
+	// The dropdown overflows the section, iOS can clip it entirely :
+	@include mq($until: desktop) {
+		overflow: visible;
+	}
 }
 
 .content-container {
 	position: relative;
 	z-index: 1;
+
+	// Keeps its own layer at the top of the page, otherwise iOS stops painting the opened dropdown :
+	transform: translate3d(0, 0, 0);
 	transition: transform 0.8s $power2InOut;
 
 	&.is-scrolled {

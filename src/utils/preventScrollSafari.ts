@@ -121,7 +121,6 @@ export function preventScrollMobileSafari() {
 	return () => {
 		removeEvents();
 		style.remove();
-		HTMLElement.prototype.focus = focus;
 	};
 }
 
